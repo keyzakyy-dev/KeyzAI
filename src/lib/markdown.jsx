@@ -80,7 +80,7 @@ function renderInline(text) {
 function CodeBlock({ code, lang }) {
   return (
     <div className="overflow-hidden rounded-lg border border-border">
-      <div className="flex items-center justify-between border-b border-border bg-muted px-3 py-1.5">
+      <div className="flex items-center justify-between border-b border-border bg-muted px-3 py-1.5 font-sans">
         <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
           {lang || 'code'}
         </span>

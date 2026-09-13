@@ -3,7 +3,7 @@ import { ArrowUp, Square } from 'lucide-react'
 import { Button } from './ui/button'
 import { Textarea } from './ui/textarea'
 
-export function ChatInput({ onSend, loading, onStop }) {
+export function ChatInput({ onSend, loading, onStop, showDisclaimer = false }) {
   const [message, setMessage] = useState('')
   const textareaRef = useRef(null)
 
@@ -44,7 +44,7 @@ export function ChatInput({ onSend, loading, onStop }) {
             }
           }}
           onKeyDown={handleKeyDown}
-          placeholder="Message KeyzAI..."
+          placeholder="How can I help you today?"
           className="min-h-[52px] max-h-40 resize-none overflow-y-auto border-0 bg-transparent px-4 pt-3.5 pb-1 text-base text-foreground placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0"
           rows={1}
         />
@@ -89,9 +89,11 @@ export function ChatInput({ onSend, loading, onStop }) {
           )}
         </div>
       </div>
-      <p className="mt-2 text-center text-xs text-muted-foreground">
-        KeyzAI can make mistakes. Consider checking important information.
-      </p>
+      {showDisclaimer && (
+        <p className="mt-2 text-center text-xs text-muted-foreground">
+          KeyzAI can make mistakes. Consider checking important information.
+        </p>
+      )}
     </div>
   )
 }

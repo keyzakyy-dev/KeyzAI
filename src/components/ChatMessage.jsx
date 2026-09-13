@@ -19,7 +19,7 @@ export function ChatMessage({ role, content, timestamp, streaming }) {
           className={`rounded-2xl px-4 py-3 text-[15px] leading-relaxed sm:px-5 ${
             isUser
               ? 'rounded-tr-md bg-primary text-primary-foreground'
-              : 'rounded-tl-md bg-card text-foreground shadow-sm'
+              : 'rounded-tl-md bg-card font-serif text-foreground shadow-sm'
           }`}
         >
           {isUser ? (

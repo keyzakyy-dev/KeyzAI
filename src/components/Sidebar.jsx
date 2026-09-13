@@ -1,4 +1,4 @@
-import { Plus, MessageSquare, Trash2, User, Zap } from 'lucide-react'
+import { Plus, MessageSquare, Trash2, User } from 'lucide-react'
 import { Button } from './ui/button'
 
 const GROUPS = ['Today', 'Yesterday', 'Previous 7 days', 'Older']
@@ -32,11 +32,8 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
         } ${collapsed ? 'lg:-translate-x-full' : 'lg:translate-x-0'}`}
       >
         {/* Brand */}
-        <div className="flex h-14 flex-shrink-0 items-center gap-2.5 px-4">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary shadow-sm">
-            <Zap className="h-4 w-4 text-primary-foreground" />
-          </div>
-          <span className="font-semibold tracking-tight text-foreground">KeyzAI</span>
+        <div className="flex h-14 flex-shrink-0 items-center px-4">
+          <span className="font-heading text-lg font-semibold tracking-tight text-foreground">KeyzAI</span>
         </div>
 
         {/* New Chat */}

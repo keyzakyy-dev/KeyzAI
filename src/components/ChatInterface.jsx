@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
 import { Sidebar } from './Sidebar'
-import { Zap, Plus, Sun, Moon, Menu, X, ArrowDown, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
+import { Plus, Sun, Moon, Menu, X, ArrowDown, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { sendMessageStream, generateTitle } from '../api'
 import { Alert, AlertDescription } from './ui/alert'
 import { Button } from './ui/button'
@@ -226,7 +226,7 @@ export function ChatInterface() {
         collapsed={collapsed}
       />
       <main className={`flex min-w-0 flex-1 flex-col transition-[margin] duration-300 ${collapsed ? '' : 'lg:ml-64'}`}>
-        <header className="flex h-14 flex-shrink-0 items-center justify-between border-b border-border bg-background/80 px-4 backdrop-blur-sm sm:px-6">
+        <header className="flex h-14 flex-shrink-0 items-center justify-between bg-background/80 px-4 backdrop-blur-sm sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <Button
               variant="ghost"
@@ -277,20 +277,10 @@ export function ChatInterface() {
           >
           {messages.length === 0 ? (
             <div className="flex flex-1 items-center justify-center px-4 py-12">
-              <div className="w-full max-w-2xl space-y-7">
-                <div className="space-y-4 text-center">
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-primary shadow-lg">
-                    <Zap className="h-6 w-6 text-primary-foreground" />
-                  </div>
-                  <div className="space-y-2">
-                    <h1 className="font-heading text-3xl font-bold tracking-tight text-foreground md:text-4xl">
-                      What can I help you with?
-                    </h1>
-                    <p className="font-medium text-muted-foreground">
-                      Your AI thinking partner — ask anything, get answers in seconds.
-                    </p>
-                  </div>
-                </div>
+              <div className="w-full max-w-2xl space-y-4">
+                <h1 className="text-center font-serif text-3xl font-medium tracking-tight text-foreground md:text-4xl">
+                  What can I help you with?
+                </h1>
 
                 <ChatInput onSend={handleSend} loading={loading} />
               </div>
@@ -346,7 +336,7 @@ export function ChatInterface() {
 
         {messages.length > 0 && (
           <div className="flex-shrink-0 bg-background p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-            <ChatInput onSend={handleSend} loading={loading} onStop={handleStop} />
+            <ChatInput onSend={handleSend} loading={loading} onStop={handleStop} showDisclaimer />
           </div>
         )}
       </main>
