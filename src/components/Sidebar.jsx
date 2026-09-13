@@ -14,16 +14,16 @@ function relativeTime(ts) {
   return d.toLocaleDateString([], { month: 'short', day: 'numeric' })
 }
 
-export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, onClear, open, onClose }) {
+export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, onClear, open, onClose, collapsed }) {
   const sorted = [...conversations].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
 
   return (
     <>
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 z-40 flex h-dvh w-64 flex-col border-r border-border bg-background transition-transform lg:translate-x-0 ${
+        className={`fixed left-0 top-0 z-40 flex h-dvh w-64 flex-col border-r border-border bg-background transition-transform duration-300 ${
           open ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        } ${collapsed ? 'lg:-translate-x-full' : 'lg:translate-x-0'}`}
       >
         {/* Brand */}
         <div className="flex h-14 flex-shrink-0 items-center gap-2.5 border-b border-border px-4">

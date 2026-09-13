@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
 import { Sidebar } from './Sidebar'
-import { Zap, Plus, Sun, Moon, Menu, X, ArrowDown } from 'lucide-react'
+import { Zap, Plus, Sun, Moon, Menu, X, ArrowDown, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { sendMessageStream, generateTitle } from '../api'
 import { Alert, AlertDescription } from './ui/alert'
 import { Button } from './ui/button'
@@ -21,6 +21,7 @@ export function ChatInterface() {
   const [lastSent, setLastSent] = useState(null)
   const [confirm, setConfirm] = useState(null)
   const [atBottom, setAtBottom] = useState(true)
+  const [collapsed, setCollapsed] = useState(false)
   const scrollAreaRef = useRef(null)
   const abortRef = useRef(null)
 
@@ -222,10 +223,20 @@ export function ChatInterface() {
         onClear={handleClearAll}
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
+        collapsed={collapsed}
       />
-      <main className="flex min-w-0 flex-1 flex-col lg:ml-64">
+      <main className={`flex min-w-0 flex-1 flex-col transition-[margin] duration-300 ${collapsed ? '' : 'lg:ml-64'}`}>
         <header className="flex h-14 flex-shrink-0 items-center justify-between border-b border-border bg-background/80 px-4 backdrop-blur-sm sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hidden lg:flex -ml-2"
+              onClick={() => setCollapsed((c) => !c)}
+              aria-label={collapsed ? 'Show sidebar' : 'Hide sidebar'}
+            >
+              {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+            </Button>
             <p className="truncate text-sm font-medium text-foreground">
               {currentTitle || 'New chat'}
             </p>
