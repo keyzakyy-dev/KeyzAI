@@ -6,6 +6,7 @@ import { Zap, Plus, Sun, Moon, Menu, X } from 'lucide-react'
 import { sendMessageStream } from '../api'
 import { Alert, AlertDescription } from './ui/alert'
 import { Button } from './ui/button'
+import { ConfirmDialog } from './ui/confirm-dialog'
 import { useTheme } from '../lib/use-theme'
 
 export function ChatInterface() {
@@ -17,6 +18,7 @@ export function ChatInterface() {
   const [theme, setTheme] = useTheme()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [lastSent, setLastSent] = useState(null)
+  const [confirm, setConfirm] = useState(null)
   const messagesEndRef = useRef(null)
   const scrollAreaRef = useRef(null)
 
@@ -36,12 +38,26 @@ export function ChatInterface() {
 
   const currentTitle = conversations.find((c) => c.id === currentConvId)?.title
 
-  const handleNewChat = () => {
+  const startNewChat = () => {
     const newConvId = `conv_${Date.now()}`
     setCurrentConvId(newConvId)
     setMessages([])
     setError(null)
     setSidebarOpen(false)
+  }
+
+  const handleNewChat = () => {
+    if (loading) return
+    if (messages.length === 0) {
+      startNewChat()
+      return
+    }
+    setConfirm({
+      title: 'Start a new chat?',
+      description: 'The current messages in this chat will be discarded.',
+      confirmLabel: 'New chat',
+      onConfirm: startNewChat,
+    })
   }
 
   const handleSelectConv = (convId) => {
@@ -105,20 +121,36 @@ export function ChatInterface() {
   }
 
   const handleDeleteConv = (convId) => {
-    setConversations((prev) => prev.filter((c) => c.id !== convId))
-    if (currentConvId === convId) {
-      setCurrentConvId(null)
-      setMessages([])
-    }
+    const conv = conversations.find((c) => c.id === convId)
+    setConfirm({
+      title: 'Delete this conversation?',
+      description: `"${conv?.title || 'This conversation'}" will be permanently removed. This cannot be undone.`,
+      confirmLabel: 'Delete',
+      danger: true,
+      onConfirm: () => {
+        setConversations((prev) => prev.filter((c) => c.id !== convId))
+        if (currentConvId === convId) {
+          setCurrentConvId(null)
+          setMessages([])
+        }
+      },
+    })
   }
 
   const handleClearAll = () => {
-    if (window.confirm('Clear all conversations?')) {
-      setConversations([])
-      setCurrentConvId(null)
-      setMessages([])
-      setError(null)
-    }
+    if (conversations.length === 0) return
+    setConfirm({
+      title: 'Clear all conversations?',
+      description: 'All conversations will be permanently deleted. This cannot be undone.',
+      confirmLabel: 'Delete all',
+      danger: true,
+      onConfirm: () => {
+        setConversations([])
+        setCurrentConvId(null)
+        setMessages([])
+        setError(null)
+      },
+    })
   }
 
   return (
@@ -234,6 +266,16 @@ export function ChatInterface() {
           </div>
         )}
       </main>
+
+      <ConfirmDialog
+        open={!!confirm}
+        onOpenChange={(o) => !o && setConfirm(null)}
+        title={confirm?.title}
+        description={confirm?.description}
+        confirmLabel={confirm?.confirmLabel}
+        danger={confirm?.danger}
+        onConfirm={confirm?.onConfirm}
+      />
     </div>
   )
 }
