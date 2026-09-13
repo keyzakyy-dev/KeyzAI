@@ -49,7 +49,7 @@ cd worker
 npm install
 ```
 
-Create `.env.local`:
+Create `.dev.vars` (Wrangler loads this file automatically in dev):
 ```
 OPENAI_API_KEY=sk-...
 OPENAI_API_URL=https://api.openai.com/v1
