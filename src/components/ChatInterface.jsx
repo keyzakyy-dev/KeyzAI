@@ -276,8 +276,9 @@ export function ChatInterface() {
             className="flex h-full flex-col overflow-y-auto overscroll-contain"
           >
           {messages.length === 0 ? (
-            <div className="flex flex-1 items-center justify-center px-4 py-8 sm:py-12">
-              <div className="w-full max-w-2xl space-y-4">
+            <div className="relative flex flex-1 items-center justify-center overflow-hidden px-4 py-8 sm:py-12">
+              <div className="pointer-events-none absolute inset-0 bg-dots opacity-60 [mask-image:radial-gradient(ellipse_65%_55%_at_50%_42%,black,transparent)]" />
+              <div className="relative w-full max-w-2xl space-y-4">
                 <h1 className="text-center font-serif text-2xl font-medium tracking-tight text-foreground sm:text-3xl md:text-4xl">
                   What can I help you with?
                 </h1>
