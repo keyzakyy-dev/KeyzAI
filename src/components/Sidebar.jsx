@@ -1,7 +1,22 @@
 import { Plus, MessageSquare, Trash2, User, Zap } from 'lucide-react'
 import { Button } from './ui/button'
 
+function relativeTime(ts) {
+  if (!ts) return ''
+  const d = new Date(ts)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const thatDay = new Date(d.getFullYear(), d.getMonth(), d.getDate())
+  const days = Math.round((today - thatDay) / 86400000)
+  if (days <= 0) return 'Today'
+  if (days === 1) return 'Yesterday'
+  if (days < 7) return `${days}d ago`
+  return d.toLocaleDateString([], { month: 'short', day: 'numeric' })
+}
+
 export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, onClear, open, onClose }) {
+  const sorted = [...conversations].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+
   return (
     <>
       {/* Sidebar */}
@@ -40,7 +55,7 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
             </div>
           ) : (
             <div className="space-y-0.5">
-              {conversations.map((conv) => (
+              {sorted.map((conv) => (
                 <div
                   key={conv.id}
                   className={`group flex items-center gap-1 rounded-md pr-1 text-sm transition-colors ${
@@ -51,10 +66,13 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
                 >
                   <button
                     onClick={() => onSelect(conv.id)}
-                    className="flex-1 truncate px-3 py-2 text-left font-medium"
+                    className="flex min-w-0 flex-1 items-baseline gap-2 px-3 py-2 text-left font-medium"
                     title={conv.title}
                   >
-                    {conv.title}
+                    <span className="min-w-0 flex-1 truncate">{conv.title}</span>
+                    <span className="flex-shrink-0 text-[10px] font-normal text-muted-foreground transition-opacity group-hover:opacity-0 max-lg:hidden">
+                      {relativeTime(conv.createdAt)}
+                    </span>
                   </button>
                   <button
                     onClick={() => onDelete(conv.id)}

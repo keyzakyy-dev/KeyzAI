@@ -123,7 +123,7 @@ export function ChatInterface() {
         if (existing) {
           return prev.map((c) => (c.id === convId ? { ...c, messages: finalMessages } : c))
         }
-        return [...prev, { id: convId, title, messages: finalMessages }]
+        return [...prev, { id: convId, title, createdAt: Date.now(), messages: finalMessages }]
       })
     } catch (err) {
       console.error('Error:', err)
