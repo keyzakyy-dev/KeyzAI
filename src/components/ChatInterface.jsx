@@ -247,10 +247,10 @@ export function ChatInterface() {
                 variant="ghost"
                 size="sm"
                 onClick={handleNewChat}
-                className="gap-1.5 text-muted-foreground hover:text-foreground"
+                className="hidden gap-1.5 text-muted-foreground hover:text-foreground sm:inline-flex"
               >
                 <Plus className="h-4 w-4" />
-                <span className="hidden sm:inline">New chat</span>
+                New chat
               </Button>
             )}
             <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">

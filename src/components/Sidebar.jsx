@@ -41,7 +41,7 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
           <Button
             onClick={onNew}
             variant="ghost"
-            className="w-full justify-start gap-2 px-3 font-medium text-muted-foreground hover:text-foreground"
+            className="justify-start gap-2 px-3 font-medium text-muted-foreground hover:text-foreground"
           >
             <Plus className="w-4 h-4" />
             New chat
@@ -69,7 +69,7 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
                       key={conv.id}
                       className={`group flex items-center gap-1 rounded-md pr-1 text-sm transition-colors ${
                         currentId === conv.id
-                          ? 'bg-accent/60 font-medium text-foreground'
+                          ? 'bg-accent/60 text-foreground'
                           : 'text-muted-foreground hover:bg-accent/40 hover:text-foreground'
                       }`}
                     >
