@@ -339,7 +339,7 @@ export function ChatInterface() {
             </Button>
             {currentConv || messages.length > 0 ? (
               <div className="flex min-w-0 items-center gap-0.5">
-                <p className="truncate text-sm font-medium text-foreground">
+                <p className="min-w-0 truncate text-sm font-medium text-foreground">
                   {currentTitle || 'New chat'}
                 </p>
                 {currentConv && (
@@ -360,7 +360,7 @@ export function ChatInterface() {
                       <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
                       <div
                         role="menu"
-                        className="absolute left-0 top-full z-50 mt-1 w-48 overflow-hidden rounded-lg border border-border bg-popover p-1 shadow-md"
+                        className="absolute right-0 top-full z-50 mt-1 w-48 overflow-hidden rounded-lg border border-border bg-popover p-1 shadow-md"
                         onClick={() => setMenuOpen(false)}
                       >
                         <button
