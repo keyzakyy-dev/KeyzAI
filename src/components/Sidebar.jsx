@@ -1,8 +1,10 @@
 import { Plus, MessageSquare, Trash2, User, Zap } from 'lucide-react'
 import { Button } from './ui/button'
 
-function relativeTime(ts) {
-  if (!ts) return ''
+const GROUPS = ['Today', 'Yesterday', 'Previous 7 days', 'Older']
+
+function groupKey(ts) {
+  if (!ts) return 'Older'
   const d = new Date(ts)
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -10,12 +12,16 @@ function relativeTime(ts) {
   const days = Math.round((today - thatDay) / 86400000)
   if (days <= 0) return 'Today'
   if (days === 1) return 'Yesterday'
-  if (days < 7) return `${days}d ago`
-  return d.toLocaleDateString([], { month: 'short', day: 'numeric' })
+  if (days < 7) return 'Previous 7 days'
+  return 'Older'
 }
 
 export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, onClear, open, onClose, collapsed }) {
   const sorted = [...conversations].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+  const grouped = GROUPS.map((label) => ({
+    label,
+    items: sorted.filter((c) => groupKey(c.createdAt) === label),
+  })).filter((g) => g.items.length > 0)
 
   return (
     <>
@@ -26,7 +32,7 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
         } ${collapsed ? 'lg:-translate-x-full' : 'lg:translate-x-0'}`}
       >
         {/* Brand */}
-        <div className="flex h-14 flex-shrink-0 items-center gap-2.5 border-b border-border px-4">
+        <div className="flex h-14 flex-shrink-0 items-center gap-2.5 px-4">
           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary shadow-sm">
             <Zap className="h-4 w-4 text-primary-foreground" />
           </div>
@@ -34,18 +40,21 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
         </div>
 
         {/* New Chat */}
-        <div className="p-3">
-          <Button onClick={onNew} variant="secondary" className="w-full justify-start gap-2 font-medium">
+        <div className="px-2">
+          <Button
+            onClick={onNew}
+            variant="ghost"
+            className="w-full justify-start gap-2 px-3 font-medium text-muted-foreground hover:text-foreground"
+          >
             <Plus className="w-4 h-4" />
             New chat
           </Button>
         </div>
 
-        {/* Recents */}
-        <div className="flex-1 overflow-y-auto px-3 pb-3">
-          <p className="px-2 pb-2 text-xs font-medium text-muted-foreground">Recents</p>
+        {/* Conversations */}
+        <div className="flex-1 overflow-y-auto px-2 pb-3">
           {conversations.length === 0 ? (
-            <div className="px-2 py-8 text-center">
+            <div className="px-3 py-10 text-center">
               <MessageSquare className="mx-auto h-6 w-6 text-muted-foreground/40" />
               <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
                 No conversations yet.
@@ -54,40 +63,42 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
               </p>
             </div>
           ) : (
-            <div className="space-y-0.5">
-              {sorted.map((conv) => (
-                <div
-                  key={conv.id}
-                  className={`group flex items-center gap-1 rounded-md pr-1 text-sm transition-colors ${
-                    currentId === conv.id
-                      ? 'bg-accent text-accent-foreground'
-                      : 'text-foreground/80 hover:bg-accent/50'
-                  }`}
-                >
-                  <button
-                    onClick={() => onSelect(conv.id)}
-                    className="flex min-w-0 flex-1 items-baseline gap-2 px-3 py-2 text-left font-medium"
-                    title={conv.title || undefined}
-                  >
-                    {conv.titlePending ? (
-                      <span className="my-1.5 block h-3 w-24 animate-pulse rounded-full bg-muted-foreground/20" />
-                    ) : (
-                      <span className="min-w-0 flex-1 truncate">{conv.title}</span>
-                    )}
-                    <span className="flex-shrink-0 text-[10px] font-normal text-muted-foreground transition-opacity group-hover:opacity-0 max-lg:hidden">
-                      {relativeTime(conv.createdAt)}
-                    </span>
-                  </button>
-                  <button
-                    onClick={() => onDelete(conv.id)}
-                    className="rounded-sm p-1.5 text-muted-foreground opacity-100 transition-opacity hover:text-destructive focus-visible:opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
-                    aria-label="Delete conversation"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </button>
+            grouped.map((g) => (
+              <div key={g.label} className="mt-4 first:mt-0">
+                <p className="px-3 pb-1.5 text-[11px] font-medium text-muted-foreground">{g.label}</p>
+                <div className="space-y-0.5">
+                  {g.items.map((conv) => (
+                    <div
+                      key={conv.id}
+                      className={`group flex items-center gap-1 rounded-md pr-1 text-sm transition-colors ${
+                        currentId === conv.id
+                          ? 'bg-accent/60 font-medium text-foreground'
+                          : 'text-muted-foreground hover:bg-accent/40 hover:text-foreground'
+                      }`}
+                    >
+                      <button
+                        onClick={() => onSelect(conv.id)}
+                        className="flex min-w-0 flex-1 px-3 py-1.5 text-left"
+                        title={conv.title || undefined}
+                      >
+                        {conv.titlePending ? (
+                          <span className="my-1 block h-3 w-24 animate-pulse rounded-full bg-muted-foreground/20" />
+                        ) : (
+                          <span className="min-w-0 flex-1 truncate">{conv.title}</span>
+                        )}
+                      </button>
+                      <button
+                        onClick={() => onDelete(conv.id)}
+                        className="rounded-sm p-1.5 text-muted-foreground opacity-100 transition-opacity hover:text-destructive focus-visible:opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
+                        aria-label="Delete conversation"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+            ))
           )}
         </div>
 
