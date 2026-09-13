@@ -99,7 +99,7 @@ export function Markdown({ text = '', className = '' }) {
       i++ // skip closing fence
       blocks.push(
         <pre key={key++} className="overflow-x-auto rounded-lg bg-muted p-3 text-xs leading-relaxed">
-          <code className="font-mono whitespace-pre-wrap break-words">{buf.join('\n')}</code>
+          <code className="font-mono whitespace-pre">{buf.join('\n')}</code>
         </pre>
       )
       continue

@@ -105,7 +105,7 @@ export function ChatInterface() {
   }
 
   return (
-    <div className="flex h-screen bg-background text-foreground">
+    <div className="flex h-dvh bg-background text-foreground">
       <Sidebar
         conversations={conversations}
         currentId={currentConvId}
@@ -214,7 +214,7 @@ export function ChatInterface() {
         )}
 
         {messages.length > 0 && (
-          <div className="flex-shrink-0 border-t border-border bg-background p-4">
+          <div className="flex-shrink-0 border-t border-border bg-background p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
             <ChatInput onSend={handleSend} loading={loading} />
           </div>
         )}

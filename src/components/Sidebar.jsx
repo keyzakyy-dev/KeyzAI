@@ -6,7 +6,7 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
     <>
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 z-40 flex h-screen w-64 flex-col border-r border-border bg-background transition-transform lg:translate-x-0 ${
+        className={`fixed left-0 top-0 z-40 flex h-dvh w-64 flex-col border-r border-border bg-background transition-transform lg:translate-x-0 ${
           open ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -58,7 +58,7 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
                   </button>
                   <button
                     onClick={() => onDelete(conv.id)}
-                    className="rounded-sm p-1.5 text-muted-foreground opacity-0 transition-opacity hover:text-destructive focus-visible:opacity-100 group-hover:opacity-100"
+                    className="rounded-sm p-1.5 text-muted-foreground opacity-100 transition-opacity hover:text-destructive focus-visible:opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
                     aria-label="Delete conversation"
                   >
                     <Trash2 className="h-3.5 w-3.5" />

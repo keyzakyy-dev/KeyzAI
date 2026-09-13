@@ -278,7 +278,7 @@ function Hero({ navigate }) {
             </a>
 
             <h1
-              className="animate-fade-up text-5xl font-bold leading-[1.08] tracking-tighter text-foreground md:text-6xl xl:text-7xl"
+              className="animate-fade-up text-4xl font-bold leading-[1.08] tracking-tighter text-foreground sm:text-5xl md:text-6xl xl:text-7xl"
               style={{ animationDelay: '0.1s' }}
             >
               Ask anything.
@@ -317,7 +317,9 @@ function Hero({ navigate }) {
             </div>
           </div>
 
-          <ChatMock />
+          <div className="hidden md:block">
+            <ChatMock />
+          </div>
         </div>
       </div>
     </section>
