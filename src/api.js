@@ -60,6 +60,31 @@ export async function sendMessage(message, model) {
 }
 
 /**
+ * Asks the model to name the conversation. Returns a short clean title,
+ * or null if the call fails (caller should fall back).
+ */
+export async function generateTitle(userText, aiText) {
+  const prompt =
+    'Summarize the following conversation as a very short title ' +
+    '(max 5 words). Output ONLY the title, no quotes, no trailing punctuation.\n\n' +
+    `User: ${String(userText).slice(0, 300)}\n\n` +
+    `Assistant: ${String(aiText).slice(0, 500)}`
+
+  try {
+    const { message } = await sendMessage(prompt)
+    const clean = String(message)
+      .trim()
+      .split('\n')[0]
+      .replace(/^["'`\s]+|["'`\s]+$/g, '')
+      .replace(/[.!?]+$/, '')
+      .trim()
+    return clean.slice(0, 40) || null
+  } catch {
+    return null
+  }
+}
+
+/**
  * Streams the answer; onDelta receives the cumulative text per chunk.
  * Falls back to a single JSON response when browser or backend can't stream.
  * Optional `signal` lets the caller abort generation (throws AbortError).

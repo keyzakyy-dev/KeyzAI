@@ -4,7 +4,7 @@ import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
 import { Sidebar } from './Sidebar'
 import { Zap, Plus, Sun, Moon, Menu, X, ArrowDown } from 'lucide-react'
-import { sendMessageStream } from '../api'
+import { sendMessageStream, generateTitle } from '../api'
 import { Alert, AlertDescription } from './ui/alert'
 import { Button } from './ui/button'
 import { ConfirmDialog } from './ui/confirm-dialog'
@@ -73,6 +73,9 @@ export function ChatInterface() {
     setSidebarOpen(false)
   }
 
+  const patchConv = (id, patch) =>
+    setConversations((prev) => prev.map((c) => (c.id === id ? { ...c, ...patch } : c)))
+
   const handleSend = async (content) => {
     if (loading) return
     setError(null)
@@ -118,14 +121,21 @@ export function ChatInterface() {
       setMessages((prev) =>
         prev.map((m) => (m.id === aiMsg.id ? { ...m, content: text, streaming: false } : m))
       )
-      const title = content.length > 30 ? content.slice(0, 30) + '...' : content
+      const fallbackTitle =
+        content.length > 30 ? content.slice(0, 30) + '...' : content
+      const isNewConversation = !conversations.some((c) => c.id === convId)
       setConversations((prev) => {
         const existing = prev.find((c) => c.id === convId)
         if (existing) {
           return prev.map((c) => (c.id === convId ? { ...c, messages: finalMessages } : c))
         }
-        return [...prev, { id: convId, title, createdAt: Date.now(), messages: finalMessages }]
+        return [...prev, { id: convId, title: null, titlePending: true, createdAt: Date.now(), messages: finalMessages }]
       })
+      if (isNewConversation) {
+        generateTitle(content, text)
+          .then((t) => patchConv(convId, { title: t || fallbackTitle, titlePending: false }))
+          .catch(() => patchConv(convId, { title: fallbackTitle, titlePending: false }))
+      }
     } catch (err) {
       console.error('Error:', err)
       const aborted = err.name === 'AbortError'

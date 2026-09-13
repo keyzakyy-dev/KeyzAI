@@ -67,9 +67,13 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
                   <button
                     onClick={() => onSelect(conv.id)}
                     className="flex min-w-0 flex-1 items-baseline gap-2 px-3 py-2 text-left font-medium"
-                    title={conv.title}
+                    title={conv.title || undefined}
                   >
-                    <span className="min-w-0 flex-1 truncate">{conv.title}</span>
+                    {conv.titlePending ? (
+                      <span className="my-1.5 block h-3 w-24 animate-pulse rounded-full bg-muted-foreground/20" />
+                    ) : (
+                      <span className="min-w-0 flex-1 truncate">{conv.title}</span>
+                    )}
                     <span className="flex-shrink-0 text-[10px] font-normal text-muted-foreground transition-opacity group-hover:opacity-0 max-lg:hidden">
                       {relativeTime(conv.createdAt)}
                     </span>
