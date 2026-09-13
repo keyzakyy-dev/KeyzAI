@@ -2,8 +2,8 @@
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
 import { Sidebar } from './Sidebar'
-import { Zap, Sparkles, Plus, Sun, Moon, Menu, X } from 'lucide-react'
-import { sendMessage } from '../api'
+import { Zap, Plus, Sun, Moon, Menu, X } from 'lucide-react'
+import { sendMessageStream } from '../api'
 import { Alert, AlertDescription } from './ui/alert'
 import { Button } from './ui/button'
 import { useTheme } from '../lib/use-theme'
@@ -56,20 +56,29 @@ export function ChatInterface() {
       content,
       timestamp: Math.floor(Date.now() / 1000),
     }
-    const newMessages = [...messages, userMsg]
-    setMessages(newMessages)
+    const aiMsg = {
+      id: `msg_${Date.now() + 1}`,
+      role: 'assistant',
+      content: '',
+      timestamp: Math.floor(Date.now() / 1000),
+      streaming: true,
+    }
+    const history = [...messages, userMsg, aiMsg]
+    setMessages((prev) => [...prev, userMsg, aiMsg])
     setLoading(true)
 
     try {
-      const response = await sendMessage(content)
-      const aiMsg = {
-        id: `msg_${Date.now() + 1}`,
-        role: 'assistant',
-        content: response.message,
-        timestamp: Math.floor(Date.now() / 1000),
-      }
-      const finalMessages = [...newMessages, aiMsg]
-      setMessages(finalMessages)
+      const text = await sendMessageStream(content, (partial) => {
+        setMessages((prev) =>
+          prev.map((m) => (m.id === aiMsg.id ? { ...m, content: partial } : m))
+        )
+      })
+      const finalMessages = history.map((m) =>
+        m.id === aiMsg.id ? { ...m, content: text, streaming: false } : m
+      )
+      setMessages((prev) =>
+        prev.map((m) => (m.id === aiMsg.id ? { ...m, content: text, streaming: false } : m))
+      )
       const title = content.length > 30 ? content.slice(0, 30) + '...' : content
       setConversations((prev) => {
         const existing = prev.find((c) => c.id === convId)
@@ -81,7 +90,7 @@ export function ChatInterface() {
     } catch (err) {
       console.error('Error:', err)
       setError(err.message || 'Failed to send message')
-      setMessages(newMessages)
+      setMessages((prev) => prev.filter((m) => m.id !== aiMsg.id || m.content))
     } finally {
       setLoading(false)
     }
@@ -178,26 +187,14 @@ export function ChatInterface() {
           ) : (
             <div className="mx-auto w-full max-w-3xl flex-1 space-y-6 px-4 py-8">
               {messages.map((msg) => (
-                <ChatMessage key={msg.id} role={msg.role} content={msg.content} timestamp={msg.timestamp} />
+                <ChatMessage
+                  key={msg.id}
+                  role={msg.role}
+                  content={msg.content}
+                  timestamp={msg.timestamp}
+                  streaming={msg.streaming}
+                />
               ))}
-              {loading && (
-                <div className="flex gap-3">
-                  <div className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border border-border bg-muted">
-                    <Sparkles className="h-3.5 w-3.5 text-muted-foreground" />
-                  </div>
-                  <div className="rounded-2xl rounded-tl-md bg-card">
-                    <div className="flex items-center gap-1 px-4 py-3">
-                      {[0, 1, 2].map((i) => (
-                        <span
-                          key={i}
-                          className="h-1.5 w-1.5 rounded-full bg-muted-foreground animate-typing-dot"
-                          style={{ animationDelay: `${i * 0.15}s` }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
               <div ref={messagesEndRef} />
             </div>
           )}

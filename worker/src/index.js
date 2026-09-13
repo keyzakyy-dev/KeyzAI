@@ -38,7 +38,7 @@ export default {
         } catch {
           return response(false, 'Bad request', 400, { error: 'Invalid JSON' }, corsHeaders(request, env))
         }
-        const { message, model } = body
+        const { message, model, stream } = body
 
         // Validate input
         if (!message || typeof message !== 'string' || message.trim().length === 0) {
@@ -55,6 +55,40 @@ export default {
 
         if (!apiKey) {
           return response(false, 'API key not configured', 500, { error: 'Server error' }, corsHeaders(request, env))
+        }
+
+        // Streaming: relay upstream SSE body as-is
+        // ponytail: mid-stream upstream drop shows as truncated answer; upgrade path = emit an SSE error event
+        if (stream) {
+          const upstream = await fetch(`${apiUrl}/chat/completions`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${apiKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: modelName,
+              messages: [{ role: 'user', content: message }],
+              temperature: 0.7,
+              max_tokens: Number(env.OPENAI_MAX_TOKENS) || 8192,
+              stream: true,
+            }),
+            signal: AbortSignal.timeout(120000),
+          })
+
+          if (!upstream.ok) {
+            const error = await upstream.text()
+            console.error('OpenAI stream error:', error)
+            return response(false, 'OpenAI error', 500, { error: 'Service error' }, corsHeaders(request, env))
+          }
+
+          return new Response(upstream.body, {
+            headers: {
+              ...corsHeaders(request, env),
+              'Content-Type': upstream.headers.get('Content-Type') || 'text/event-stream',
+              'Cache-Control': 'no-cache',
+            },
+          })
         }
 
         // Call OpenAI

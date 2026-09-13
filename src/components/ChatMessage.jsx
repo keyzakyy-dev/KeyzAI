@@ -1,7 +1,7 @@
 import { Sparkles, User } from 'lucide-react'
 import { Markdown } from '../lib/markdown'
 
-export function ChatMessage({ role, content, timestamp }) {
+export function ChatMessage({ role, content, timestamp, streaming }) {
   const isUser = role === 'user'
 
   return (
@@ -22,11 +22,23 @@ export function ChatMessage({ role, content, timestamp }) {
         >
           {isUser ? (
             <p className="whitespace-pre-wrap break-words">{content}</p>
+          ) : streaming && !content ? (
+            <div className="flex items-center gap-1 px-1 py-1.5">
+              {[0, 1, 2].map((i) => (
+                <span
+                  key={i}
+                  className="h-1.5 w-1.5 rounded-full bg-muted-foreground animate-typing-dot"
+                  style={{ animationDelay: `${i * 0.15}s` }}
+                />
+              ))}
+            </div>
+          ) : streaming ? (
+            <p className="whitespace-pre-wrap break-words">{content}</p>
           ) : (
             <Markdown text={content} />
           )}
         </div>
-        {timestamp && (
+        {timestamp && !streaming && (
           <p className={`px-1 text-[11px] text-muted-foreground ${isUser ? 'text-right' : ''}`}>
             {new Date(timestamp * 1000).toLocaleTimeString([], {
               hour: '2-digit',
