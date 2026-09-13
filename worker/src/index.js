@@ -19,7 +19,13 @@ export default {
     // POST /api/chat
     if (request.method === 'POST' && new URL(request.url).pathname === '/api/chat') {
       try {
-        const { message, model } = await request.json()
+        let body
+        try {
+          body = await request.json()
+        } catch {
+          return response(false, 'Bad request', 400, { error: 'Invalid JSON' }, CORS_HEADERS)
+        }
+        const { message, model } = body
 
         // Validate input
         if (!message || typeof message !== 'string' || message.trim().length === 0) {
@@ -49,8 +55,9 @@ export default {
             model: modelName,
             messages: [{ role: 'user', content: message }],
             temperature: 0.7,
-            max_tokens: 8192,
+            max_tokens: Number(env.OPENAI_MAX_TOKENS) || 8192,
           }),
+          signal: AbortSignal.timeout(30000),
         })
 
         if (!openaiRes.ok) {
@@ -70,7 +77,7 @@ export default {
         }, CORS_HEADERS)
       } catch (error) {
         console.error('Error:', error)
-        return response(false, 'Server error', 500, { error: error.message }, CORS_HEADERS)
+        return response(false, 'Server error', 500, { error: 'Server error' }, CORS_HEADERS)
       }
     }
 

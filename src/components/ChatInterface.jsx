@@ -48,6 +48,8 @@ export function ChatInterface() {
 
   const handleSend = async (content) => {
     setError(null)
+    const convId = currentConvId || `conv_${Date.now()}`
+    if (convId !== currentConvId) setCurrentConvId(convId)
     const userMsg = {
       id: `msg_${Date.now()}`,
       role: 'user',
@@ -68,16 +70,14 @@ export function ChatInterface() {
       }
       const finalMessages = [...newMessages, aiMsg]
       setMessages(finalMessages)
-      if (currentConvId) {
-        setConversations((prev) => {
-          const existing = prev.find((c) => c.id === currentConvId)
-          if (existing) {
-            return prev.map((c) => (c.id === currentConvId ? { ...c, messages: finalMessages } : c))
-          } else {
-            return [...prev, { id: currentConvId, title: content.slice(0, 30) + '...', messages: finalMessages }]
-          }
-        })
-      }
+      const title = content.length > 30 ? content.slice(0, 30) + '...' : content
+      setConversations((prev) => {
+        const existing = prev.find((c) => c.id === convId)
+        if (existing) {
+          return prev.map((c) => (c.id === convId ? { ...c, messages: finalMessages } : c))
+        }
+        return [...prev, { id: convId, title, messages: finalMessages }]
+      })
     } catch (err) {
       console.error('Error:', err)
       setError(err.message || 'Failed to send message')

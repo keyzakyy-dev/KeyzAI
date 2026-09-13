@@ -366,7 +366,7 @@ function SkeletonBar({ className = '' }) {
 
 function Features() {
   return (
-    <section id="features" className="py-24 lg:py-32">
+    <section id="features" className="scroll-mt-20 py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-6">
         <div className="mx-auto mb-16 max-w-2xl space-y-4 text-center">
           <span className="inline-block rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
@@ -424,7 +424,7 @@ function Features() {
 
 function HowItWorks({ navigate }) {
   return (
-    <section id="how-it-works" className="border-y border-border py-24 lg:py-32">
+    <section id="how-it-works" className="scroll-mt-20 border-y border-border py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-6">
         <div className="mx-auto mb-16 max-w-2xl space-y-4 text-center">
           <span className="inline-block rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
@@ -472,7 +472,7 @@ function HowItWorks({ navigate }) {
 
 function FAQ({ navigate }) {
   return (
-    <section id="faq" className="relative overflow-hidden py-24 lg:py-32">
+    <section id="faq" className="relative scroll-mt-20 overflow-hidden py-24 lg:py-32">
       {/* Decorative glow */}
       <div className="pointer-events-none absolute -right-24 top-1/4 h-80 w-80 rounded-full bg-primary/5 blur-3xl" />
 

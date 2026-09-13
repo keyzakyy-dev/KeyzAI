@@ -3,8 +3,20 @@
 // bullet/numbered lists, blockquotes, tables, links, strikethrough, hr.
 import React from 'react'
 
-const INLINE_RE =
-  /(\*\*[^*\s][^*]*\*\*|__[^_\s][^_]*__|(?<![\w*])\*[^*\s][^*]*\*(?![\w*])|(?<!\w)_[^_\s][^_]*_(?!\w)|`[^`]+`|~~[^~]+~~|\[[^\]]+\]\([^)\s]+\))/g
+// Lookbehind unsupported in Safari < 16.4 — building at runtime with fallback
+// avoids a SyntaxError that would crash the whole app on parse.
+function buildInlineRe() {
+  try {
+    return new RegExp(
+      '(\\*\\*[^*\\s][^*]*\\*\\*|__[^_\\s][^_]*__|(?<![\\w*])\\*[^*\\s][^*]*\\*(?![\\w*])|(?<!\\w)_[^_\\s][^_]*_(?!\\w)|`[^`]+`|~~[^~]+~~|\\[[^\\]]+\\]\\([^)\\s]+\\))',
+      'g'
+    )
+  } catch {
+    return /(\*\*[^*\s][^*]*\*\*|__[^_\s][^_]*__|\*[^*\s][^*]*\*|_[^_\s][^_]*_|`[^`]+`|~~[^~]+~~|\[[^\]]+\]\([^)\s]+\))/g
+  }
+}
+
+const INLINE_RE = buildInlineRe()
 
 function renderInline(text) {
   const nodes = []
@@ -27,7 +39,8 @@ function renderInline(text) {
       )
     } else if (tok.startsWith('[')) {
       const lm = /^\[([^\]]+)\]\(([^)\s]+)\)$/.exec(tok)
-      node = lm ? (
+      // Only http(s)/mailto links — prevents javascript: URL injection
+      node = lm && /^(https?:\/\/|mailto:)/i.test(lm[2]) ? (
         <a
           key={nodes.length}
           href={lm[2]}

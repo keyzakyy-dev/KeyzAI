@@ -8,6 +8,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/chat" element={<ChatInterface />} />
+        <Route path="*" element={<LandingPage />} />
       </Routes>
     </Router>
   )
