@@ -49,7 +49,7 @@ export default {
             model: modelName,
             messages: [{ role: 'user', content: message }],
             temperature: 0.7,
-            max_tokens: 1000,
+            max_tokens: 8192,
           }),
         })
 
