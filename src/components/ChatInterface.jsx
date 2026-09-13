@@ -24,10 +24,28 @@ function initialSidebarW() {
   return 256
 }
 
+function loadState() {
+  try {
+    const raw = localStorage.getItem('keyzai-state')
+    if (!raw) return { convs: [], activeId: null }
+    const parsed = JSON.parse(raw)
+    const convs = Array.isArray(parsed.convs)
+      ? parsed.convs.filter((c) => c && c.id && Array.isArray(c.messages))
+      : []
+    const activeId = convs.some((c) => c.id === parsed.activeId) ? parsed.activeId : null
+    return { convs, activeId }
+  } catch {
+    return { convs: [], activeId: null }
+  }
+}
+
 export function ChatInterface() {
-  const [conversations, setConversations] = useState([])
-  const [currentConvId, setCurrentConvId] = useState(null)
-  const [messages, setMessages] = useState([])
+  const [initialState] = useState(loadState)
+  const [conversations, setConversations] = useState(initialState.convs)
+  const [currentConvId, setCurrentConvId] = useState(initialState.activeId)
+  const [messages, setMessages] = useState(
+    () => initialState.convs.find((c) => c.id === initialState.activeId)?.messages || []
+  )
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [theme, setTheme] = useTheme()
@@ -107,6 +125,17 @@ export function ChatInterface() {
       path: '/chat',
     })
   }, [currentTitle])
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        'keyzai-state',
+        JSON.stringify({ convs: conversations, activeId: currentConvId })
+      )
+    } catch {
+      // storage unavailable — conversations just won't persist
+    }
+  }, [conversations, currentConvId])
 
   const startNewChat = () => {
     const newConvId = `conv_${Date.now()}`
