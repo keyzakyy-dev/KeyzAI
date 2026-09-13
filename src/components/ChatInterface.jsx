@@ -16,7 +16,9 @@ export function ChatInterface() {
   const [error, setError] = useState(null)
   const [theme, setTheme] = useTheme()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [lastSent, setLastSent] = useState(null)
   const messagesEndRef = useRef(null)
+  const scrollAreaRef = useRef(null)
 
   const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
 
@@ -25,7 +27,11 @@ export function ChatInterface() {
   }
 
   useEffect(() => {
-    scrollToBottom()
+    const el = scrollAreaRef.current
+    if (!el) return
+    const last = messages[messages.length - 1]
+    const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 150
+    if (nearBottom || last?.role === 'user') scrollToBottom()
   }, [messages, loading])
 
   const currentTitle = conversations.find((c) => c.id === currentConvId)?.title
@@ -47,7 +53,9 @@ export function ChatInterface() {
   }
 
   const handleSend = async (content) => {
+    if (loading) return
     setError(null)
+    setLastSent(content)
     const convId = currentConvId || `conv_${Date.now()}`
     if (convId !== currentConvId) setCurrentConvId(convId)
     const userMsg = {
@@ -125,7 +133,7 @@ export function ChatInterface() {
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />
-      <main className="flex flex-1 flex-col lg:ml-64">
+      <main className="flex min-w-0 flex-1 flex-col lg:ml-64">
         <header className="flex h-14 flex-shrink-0 items-center justify-between border-b border-border bg-background/80 px-4 backdrop-blur-sm sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md bg-primary lg:hidden">
@@ -163,7 +171,7 @@ export function ChatInterface() {
           </div>
         </header>
 
-        <div className="flex flex-1 flex-col overflow-y-auto">
+        <div ref={scrollAreaRef} className="flex flex-1 flex-col overflow-y-auto">
           {messages.length === 0 ? (
             <div className="flex flex-1 items-center justify-center px-4 py-12">
               <div className="w-full max-w-2xl space-y-7">
@@ -204,7 +212,17 @@ export function ChatInterface() {
           <div className="flex-shrink-0 border-t border-border px-4 py-4">
             <div className="mx-auto max-w-3xl">
               <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
+                <AlertDescription className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                  {error}
+                  {lastSent && (
+                    <button
+                      onClick={() => handleSend(lastSent)}
+                      className="font-semibold underline underline-offset-2 hover:opacity-80"
+                    >
+                      Retry
+                    </button>
+                  )}
+                </AlertDescription>
               </Alert>
             </div>
           </div>

@@ -1,8 +1,12 @@
 import { Sparkles, User } from 'lucide-react'
 import { Markdown } from '../lib/markdown'
+import { CopyButton } from '../lib/copy-button'
 
 export function ChatMessage({ role, content, timestamp, streaming }) {
   const isUser = role === 'user'
+  const time = timestamp
+    ? new Date(timestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    : null
 
   return (
     <div className={`flex gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}>
@@ -38,13 +42,12 @@ export function ChatMessage({ role, content, timestamp, streaming }) {
             <Markdown text={content} />
           )}
         </div>
-        {timestamp && !streaming && (
-          <p className={`px-1 text-[11px] text-muted-foreground ${isUser ? 'text-right' : ''}`}>
-            {new Date(timestamp * 1000).toLocaleTimeString([], {
-              hour: '2-digit',
-              minute: '2-digit',
-            })}
-          </p>
+
+        {!streaming && (time || !isUser) && (
+          <div className={`flex items-center gap-1 px-1 ${isUser ? 'justify-end' : ''}`}>
+            {time && <p className="text-[11px] text-muted-foreground">{time}</p>}
+            {!isUser && <CopyButton text={content} />}
+          </div>
         )}
       </div>
 

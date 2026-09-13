@@ -2,6 +2,7 @@
 // Supports: **bold**, *italic*, `code`, fenced code blocks, headings,
 // bullet/numbered lists, blockquotes, tables, links, strikethrough, hr.
 import React from 'react'
+import { CopyButton } from './copy-button'
 
 // Lookbehind unsupported in Safari < 16.4 — building at runtime with fallback
 // avoids a SyntaxError that would crash the whole app on parse.
@@ -63,6 +64,22 @@ function renderInline(text) {
   return nodes
 }
 
+function CodeBlock({ code, lang }) {
+  return (
+    <div className="overflow-hidden rounded-lg border border-border">
+      <div className="flex items-center justify-between border-b border-border bg-muted px-3 py-1.5">
+        <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+          {lang || 'code'}
+        </span>
+        <CopyButton text={code} withLabel />
+      </div>
+      <pre className="overflow-x-auto bg-muted/50 p-3 text-xs leading-relaxed">
+        <code className="font-mono whitespace-pre">{code}</code>
+      </pre>
+    </div>
+  )
+}
+
 const HR_RE = /^\s*(?:-{3,}|\*{3,}|_{3,})\s*$/
 const HEADING_RE = /^(#{1,6})\s+(.*)$/
 const UL_RE = /^\s*[-*•]\s+/
@@ -103,6 +120,7 @@ export function Markdown({ text = '', className = '' }) {
 
     // Fenced code block
     if (FENCE_RE.test(line)) {
+      const lang = /^\s*```\s*([A-Za-z0-9+#._-]*)/.exec(line)?.[1] || ''
       const buf = []
       i++
       while (i < lines.length && !FENCE_RE.test(lines[i])) {
@@ -110,11 +128,7 @@ export function Markdown({ text = '', className = '' }) {
         i++
       }
       i++ // skip closing fence
-      blocks.push(
-        <pre key={key++} className="overflow-x-auto rounded-lg bg-muted p-3 text-xs leading-relaxed">
-          <code className="font-mono whitespace-pre">{buf.join('\n')}</code>
-        </pre>
-      )
+      blocks.push(<CodeBlock key={key++} code={buf.join('\n')} lang={lang} />)
       continue
     }
 
