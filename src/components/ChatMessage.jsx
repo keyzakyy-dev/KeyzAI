@@ -74,7 +74,7 @@ export function ChatMessage({ role, content, timestamp, streaming, id, onEdit, e
               onChange={(e) => setDraft(e.target.value)}
               onKeyDown={handleKeyDown}
               rows={1}
-              className="block resize-none overflow-hidden bg-transparent text-[15px] leading-relaxed text-secondary-foreground focus:outline-none [field-sizing:content]"
+              className="block resize-none overflow-hidden bg-transparent text-base text-secondary-foreground focus:outline-none sm:text-[15px] [field-sizing:content]"
             />
           ) : isUser ? (
             <p className="whitespace-pre-wrap break-words">{content}</p>

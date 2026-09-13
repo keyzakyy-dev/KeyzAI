@@ -34,7 +34,7 @@ export function RenameDialog({ open, onOpenChange, value, onSave }) {
                 submit()
               }
             }}
-            className="mt-4"
+            className="mt-4 text-base sm:text-sm"
             autoFocus
             maxLength={120}
           />
