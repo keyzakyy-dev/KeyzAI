@@ -355,7 +355,7 @@ export function ChatInterface() {
         onDragStart={startResize}
       />
       <main className={`flex min-w-0 flex-1 flex-col ${collapsed || resizing ? '' : 'transition-[margin] duration-300'} ${collapsed ? '' : 'lg:ml-[var(--sidebar-w)]'}`}>
-        <header className="flex h-14 flex-shrink-0 items-center justify-between bg-background/80 px-4 backdrop-blur-sm sm:px-6">
+        <header className="relative z-20 flex h-14 flex-shrink-0 items-center justify-between bg-background/80 px-4 backdrop-blur-sm sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <Button
               variant="ghost"
