@@ -21,14 +21,15 @@ export function ChatInterface() {
   const [lastSent, setLastSent] = useState(null)
   const [confirm, setConfirm] = useState(null)
   const [atBottom, setAtBottom] = useState(true)
-  const messagesEndRef = useRef(null)
   const scrollAreaRef = useRef(null)
   const abortRef = useRef(null)
 
   const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    const el = scrollAreaRef.current
+    // scrollTo container langsung — scrollIntoView ikut menggulung window (bug mobile)
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
   }
 
   const handleScroll = () => {
@@ -42,6 +43,13 @@ export function ChatInterface() {
   }, [messages, loading, atBottom])
 
   const currentTitle = conversations.find((c) => c.id === currentConvId)?.title
+
+  useEffect(() => {
+    document.title = currentTitle ? `${currentTitle} - KeyzAI` : 'New chat - KeyzAI'
+    return () => {
+      document.title = 'KeyzAI — Your AI Thinking Partner'
+    }
+  }, [currentTitle])
 
   const startNewChat = () => {
     const newConvId = `conv_${Date.now()}`
@@ -254,7 +262,7 @@ export function ChatInterface() {
           <div
             ref={scrollAreaRef}
             onScroll={handleScroll}
-            className="flex h-full flex-col overflow-y-auto"
+            className="flex h-full flex-col overflow-y-auto overscroll-contain"
           >
           {messages.length === 0 ? (
             <div className="flex flex-1 items-center justify-center px-4 py-12">
@@ -287,7 +295,6 @@ export function ChatInterface() {
                   streaming={msg.streaming}
                 />
               ))}
-              <div ref={messagesEndRef} />
             </div>
           )}
           </div>
