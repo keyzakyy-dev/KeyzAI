@@ -1,4 +1,4 @@
-import { Plus, MessageSquare, Trash2 } from 'lucide-react'
+import { Plus, MessageSquare, Trash2, Pin } from 'lucide-react'
 import { Button } from './ui/button'
 
 const GROUPS = ['Today', 'Yesterday', 'Previous 7 days', 'Older']
@@ -17,7 +17,9 @@ function groupKey(ts) {
 }
 
 export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, onClear, open, onClose, collapsed, onDragStart }) {
-  const sorted = [...conversations].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+  const sorted = [...conversations].sort(
+    (a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || (b.createdAt || 0) - (a.createdAt || 0)
+  )
   const grouped = GROUPS.map((label) => ({
     label,
     items: sorted.filter((c) => groupKey(c.createdAt) === label),
@@ -89,7 +91,11 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
                         className="flex min-w-0 flex-1 items-center gap-2 px-3 py-1.5 text-left"
                         title={conv.title || undefined}
                       >
-                        <MessageSquare className="h-3.5 w-3.5 shrink-0 opacity-50" />
+                        {conv.pinned ? (
+                          <Pin className="h-3.5 w-3.5 shrink-0 fill-primary/90" />
+                        ) : (
+                          <MessageSquare className="h-3.5 w-3.5 shrink-0 opacity-50" />
+                        )}
                         {conv.titlePending ? (
                           <span className="my-1 block h-3 w-24 animate-pulse rounded-full bg-muted-foreground/20" />
                         ) : (

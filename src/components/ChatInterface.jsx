@@ -3,10 +3,11 @@ import { useSearchParams } from 'react-router-dom'
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
 import { Sidebar } from './Sidebar'
-import { Plus, Sun, Moon, Menu, X, ArrowDown, PanelLeftClose, PanelLeftOpen, AlertCircle, RotateCcw } from 'lucide-react'
+import { Plus, Sun, Moon, Menu, X, ArrowDown, PanelLeftClose, PanelLeftOpen, AlertCircle, RotateCcw, ChevronDown, Pin, Pencil, Trash2 } from 'lucide-react'
 import { sendMessageStream, generateTitle } from '../api'
 import { Button } from './ui/button'
 import { ConfirmDialog } from './ui/confirm-dialog'
+import { RenameDialog } from './ui/rename-dialog'
 import { useTheme } from '../lib/use-theme'
 import { applyPageMeta } from '../lib/seo'
 
@@ -38,6 +39,8 @@ export function ChatInterface() {
   const [sidebarW, setSidebarW] = useState(initialSidebarW)
   const [resizing, setResizing] = useState(false)
   const [editingId, setEditingId] = useState(null)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [renameOpen, setRenameOpen] = useState(false)
   const scrollAreaRef = useRef(null)
   const abortRef = useRef(null)
 
@@ -85,7 +88,18 @@ export function ChatInterface() {
     if (atBottom) scrollToBottom()
   }, [messages, loading, atBottom])
 
-  const currentTitle = conversations.find((c) => c.id === currentConvId)?.title
+  const currentConv = conversations.find((c) => c.id === currentConvId)
+  const currentTitle = currentConv?.title
+
+  const togglePin = () => {
+    if (!currentConv) return
+    patchConv(currentConv.id, { pinned: !currentConv.pinned })
+  }
+
+  const submitRename = (title) => {
+    if (!currentConvId) return
+    patchConv(currentConvId, { title, titlePending: false })
+  }
 
   useEffect(() => {
     applyPageMeta({
@@ -101,6 +115,8 @@ export function ChatInterface() {
     setError(null)
     setSidebarOpen(false)
     setEditingId(null)
+    setMenuOpen(false)
+    setRenameOpen(false)
   }
 
   const handleNewChat = () => {
@@ -321,9 +337,64 @@ export function ChatInterface() {
             >
               {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
             </Button>
-            <p className="truncate text-sm font-medium text-foreground">
-              {currentTitle || 'New chat'}
-            </p>
+            {currentConv || messages.length > 0 ? (
+              <div className="flex min-w-0 items-center gap-0.5">
+                <p className="truncate text-sm font-medium text-foreground">
+                  {currentTitle || 'New chat'}
+                </p>
+                {currentConv && (
+                <div className="relative flex-shrink-0">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7"
+                    onClick={() => setMenuOpen((o) => !o)}
+                    aria-label="Chat options"
+                    aria-haspopup="menu"
+                    aria-expanded={menuOpen}
+                  >
+                    <ChevronDown className="h-3.5 w-3.5" />
+                  </Button>
+                  {menuOpen && (
+                    <>
+                      <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
+                      <div
+                        role="menu"
+                        className="absolute left-0 top-full z-50 mt-1 w-48 overflow-hidden rounded-lg border border-border bg-popover p-1 shadow-md"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        <button
+                          role="menuitem"
+                          onClick={togglePin}
+                          className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm text-foreground hover:bg-accent"
+                        >
+                          <Pin className={`h-3.5 w-3.5 ${currentConv.pinned ? 'fill-current' : ''}`} />
+                          {currentConv.pinned ? 'Lepas sematan' : 'Sematkan'}
+                        </button>
+                        <button
+                          role="menuitem"
+                          onClick={() => setRenameOpen(true)}
+                          className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm text-foreground hover:bg-accent"
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                          Ganti nama
+                        </button>
+                        <div className="my-1 h-px bg-border" />
+                        <button
+                          role="menuitem"
+                          onClick={() => handleDeleteConv(currentConvId)}
+                          className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm text-destructive hover:bg-destructive/10"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                          Hapus
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+                )}
+              </div>
+            ) : null}
           </div>
 
           <div className="flex flex-shrink-0 items-center gap-1.5">
@@ -433,6 +504,12 @@ export function ChatInterface() {
         )}
       </main>
 
+      <RenameDialog
+        open={renameOpen}
+        onOpenChange={setRenameOpen}
+        value={currentConv?.title || ''}
+        onSave={submitRename}
+      />
       <ConfirmDialog
         open={!!confirm}
         onOpenChange={(o) => !o && setConfirm(null)}
