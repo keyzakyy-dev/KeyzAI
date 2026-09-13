@@ -73,7 +73,7 @@ function CodeBlock({ code, lang }) {
         </span>
         <CopyButton text={code} withLabel />
       </div>
-      <pre className="overflow-x-auto bg-muted/50 p-3 text-xs leading-relaxed">
+      <pre className="overflow-x-auto bg-muted/50 p-3 text-[13px] leading-relaxed">
         <code className="font-mono whitespace-pre">{code}</code>
       </pre>
     </div>
