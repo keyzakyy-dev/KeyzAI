@@ -39,10 +39,10 @@ export function ChatMessage({ role, content, timestamp, streaming }) {
           )}
         </div>
 
-        {!streaming && (time || !isUser) && (
+        {!streaming && (
           <div className={`flex items-center gap-1 px-1 ${isUser ? 'justify-end' : ''}`}>
             {time && <p className="text-[11px] text-muted-foreground">{time}</p>}
-            {!isUser && <CopyButton text={content} />}
+            <CopyButton text={content} />
           </div>
         )}
       </div>
