@@ -3,17 +3,30 @@
  * POST /api/chat - relay messages to OpenAI
  */
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
+// If ALLOWED_ORIGINS is unset, all origins are allowed (backwards compatible).
+// When set (comma-separated), only listed origins get CORS headers.
+function corsHeaders(request, env) {
+  const origin = request.headers.get('Origin')
+  const allowed = (env.ALLOWED_ORIGINS || '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean)
+
+  if (allowed.length === 0 || (origin && allowed.includes(origin))) {
+    return {
+      'Access-Control-Allow-Origin': origin || '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    }
+  }
+  return {}
 }
 
 export default {
   async fetch(request, env, ctx) {
     // CORS preflight
     if (request.method === 'OPTIONS') {
-      return new Response(null, { headers: CORS_HEADERS })
+      return new Response(null, { headers: corsHeaders(request, env) })
     }
 
     // POST /api/chat
@@ -23,17 +36,17 @@ export default {
         try {
           body = await request.json()
         } catch {
-          return response(false, 'Bad request', 400, { error: 'Invalid JSON' }, CORS_HEADERS)
+          return response(false, 'Bad request', 400, { error: 'Invalid JSON' }, corsHeaders(request, env))
         }
         const { message, model } = body
 
         // Validate input
         if (!message || typeof message !== 'string' || message.trim().length === 0) {
-          return response(false, 'Message required', 400, { error: 'Invalid message' }, CORS_HEADERS)
+          return response(false, 'Message required', 400, { error: 'Invalid message' }, corsHeaders(request, env))
         }
 
         if (message.length > 2000) {
-          return response(false, 'Message too long', 400, { error: 'Max 2000 chars' }, CORS_HEADERS)
+          return response(false, 'Message too long', 400, { error: 'Max 2000 chars' }, corsHeaders(request, env))
         }
 
         const apiKey = env.OPENAI_API_KEY
@@ -41,7 +54,7 @@ export default {
         const modelName = model || env.OPENAI_MODEL || 'deepseek-v4.1-flash'
 
         if (!apiKey) {
-          return response(false, 'API key not configured', 500, { error: 'Server error' }, CORS_HEADERS)
+          return response(false, 'API key not configured', 500, { error: 'Server error' }, corsHeaders(request, env))
         }
 
         // Call OpenAI
@@ -63,7 +76,7 @@ export default {
         if (!openaiRes.ok) {
           const error = await openaiRes.text()
           console.error('OpenAI error:', error)
-          return response(false, 'OpenAI error', 500, { error: 'Service error' }, CORS_HEADERS)
+          return response(false, 'OpenAI error', 500, { error: 'Service error' }, corsHeaders(request, env))
         }
 
         const data = await openaiRes.json()
@@ -74,15 +87,15 @@ export default {
           message: aiMessage,
           model: modelName,
           tokensUsed,
-        }, CORS_HEADERS)
+        }, corsHeaders(request, env))
       } catch (error) {
         console.error('Error:', error)
-        return response(false, 'Server error', 500, { error: 'Server error' }, CORS_HEADERS)
+        return response(false, 'Server error', 500, { error: 'Server error' }, corsHeaders(request, env))
       }
     }
 
     // 404
-    return new Response('Not Found', { status: 404, headers: CORS_HEADERS })
+    return new Response('Not Found', { status: 404, headers: corsHeaders(request, env) })
   },
 }
 

@@ -8,3 +8,4 @@ name = "keyzai-worker-prod"
 [env.production.vars]
 OPENAI_API_URL = "https://api.b.ai/v1"
 OPENAI_MODEL = "deepseek-v4.1-flash"
+ALLOWED_ORIGINS = "http://localhost:5173,https://your-frontend.vercel.app"
