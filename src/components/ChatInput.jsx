@@ -45,7 +45,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false }) {
           }}
           onKeyDown={handleKeyDown}
           placeholder="How can I help you today?"
-          className="min-h-[52px] max-h-40 resize-none overflow-y-auto border-0 bg-transparent px-4 pt-3.5 pb-1 text-base text-foreground placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0"
+          className="min-h-[52px] max-h-40 resize-none overflow-y-auto border-0 bg-transparent px-4 pt-3.5 pb-1 text-base text-foreground placeholder:text-transparent sm:placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0"
           rows={1}
         />
 

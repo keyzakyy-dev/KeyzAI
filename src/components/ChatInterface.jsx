@@ -9,6 +9,19 @@ import { Button } from './ui/button'
 import { ConfirmDialog } from './ui/confirm-dialog'
 import { useTheme } from '../lib/use-theme'
 
+const SIDEBAR_MIN = 220
+const SIDEBAR_MAX = 420
+
+function initialSidebarW() {
+  try {
+    const n = Number(localStorage.getItem('keyzai-sidebar-w'))
+    if (n >= SIDEBAR_MIN && n <= SIDEBAR_MAX) return n
+  } catch {
+    // storage unavailable — default width
+  }
+  return 256
+}
+
 export function ChatInterface() {
   const [conversations, setConversations] = useState([])
   const [currentConvId, setCurrentConvId] = useState(null)
@@ -21,10 +34,38 @@ export function ChatInterface() {
   const [confirm, setConfirm] = useState(null)
   const [atBottom, setAtBottom] = useState(true)
   const [collapsed, setCollapsed] = useState(false)
+  const [sidebarW, setSidebarW] = useState(initialSidebarW)
+  const [resizing, setResizing] = useState(false)
   const scrollAreaRef = useRef(null)
   const abortRef = useRef(null)
 
   const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
+
+  const startResize = (e) => {
+    e.preventDefault()
+    setResizing(true)
+    document.body.style.userSelect = 'none'
+    document.body.style.cursor = 'col-resize'
+    let w = sidebarW
+    const onMove = (ev) => {
+      w = Math.min(SIDEBAR_MAX, Math.max(SIDEBAR_MIN, ev.clientX))
+      setSidebarW(w)
+    }
+    const onUp = () => {
+      document.removeEventListener('pointermove', onMove)
+      document.removeEventListener('pointerup', onUp)
+      document.body.style.userSelect = ''
+      document.body.style.cursor = ''
+      setResizing(false)
+      try {
+        localStorage.setItem('keyzai-sidebar-w', String(w))
+      } catch {
+        // storage unavailable — width just won't persist
+      }
+    }
+    document.addEventListener('pointermove', onMove)
+    document.addEventListener('pointerup', onUp)
+  }
 
   const scrollToBottom = () => {
     const el = scrollAreaRef.current
@@ -212,7 +253,7 @@ export function ChatInterface() {
   }
 
   return (
-    <div className="flex h-dvh bg-background text-foreground">
+    <div className="flex h-dvh bg-background text-foreground" style={{ '--sidebar-w': `${sidebarW}px` }}>
       <Sidebar
         conversations={conversations}
         currentId={currentConvId}
@@ -223,8 +264,9 @@ export function ChatInterface() {
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         collapsed={collapsed}
+        onDragStart={startResize}
       />
-      <main className={`flex min-w-0 flex-1 flex-col transition-[margin] duration-300 ${collapsed ? '' : 'lg:ml-64'}`}>
+      <main className={`flex min-w-0 flex-1 flex-col ${collapsed || resizing ? '' : 'transition-[margin] duration-300'} ${collapsed ? '' : 'lg:ml-[var(--sidebar-w)]'}`}>
         <header className="flex h-14 flex-shrink-0 items-center justify-between bg-background/80 px-4 backdrop-blur-sm sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <Button

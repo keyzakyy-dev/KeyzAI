@@ -16,7 +16,7 @@ function groupKey(ts) {
   return 'Older'
 }
 
-export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, onClear, open, onClose, collapsed }) {
+export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, onClear, open, onClose, collapsed, onDragStart }) {
   const sorted = [...conversations].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
   const grouped = GROUPS.map((label) => ({
     label,
@@ -27,10 +27,18 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
     <>
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 z-40 flex h-dvh w-64 flex-col border-r border-border bg-background transition-transform duration-300 ${
+        className={`fixed left-0 top-0 z-40 flex h-dvh w-64 flex-col border-r border-border bg-background transition-transform duration-300 lg:w-[var(--sidebar-w)] ${
           open ? 'translate-x-0' : '-translate-x-full'
         } ${collapsed ? 'lg:-translate-x-full' : 'lg:translate-x-0'}`}
       >
+        {/* Resize handle (desktop) */}
+        {onDragStart && (
+          <div
+            onPointerDown={onDragStart}
+            aria-hidden="true"
+            className="absolute -right-1 top-0 z-50 hidden h-full w-2 cursor-col-resize transition-colors hover:bg-foreground/10 lg:block"
+          />
+        )}
         {/* Brand */}
         <div className="flex h-14 flex-shrink-0 items-center px-4">
           <span className="font-heading text-lg font-semibold tracking-tight text-foreground">KeyzAI</span>
@@ -41,9 +49,11 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
           <Button
             onClick={onNew}
             variant="ghost"
-            className="justify-start gap-2 px-3 font-medium text-muted-foreground hover:text-foreground"
+            className="h-8 w-full justify-start gap-2 px-3 font-medium text-muted-foreground hover:text-foreground"
           >
-            <Plus className="w-4 h-4" />
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border/70 bg-foreground/5">
+              <Plus />
+            </span>
             New chat
           </Button>
         </div>
@@ -51,12 +61,13 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
         {/* Conversations */}
         <div className="flex-1 overflow-y-auto px-2 pb-3">
           {conversations.length === 0 ? (
-            <div className="px-3 py-10 text-center">
-              <MessageSquare className="mx-auto h-6 w-6 text-muted-foreground/40" />
-              <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-                No conversations yet.
-                <br />
-                Start a new chat!
+            <div className="flex flex-col items-center px-3 pt-12 text-center">
+              <div className="flex h-11 w-11 items-center justify-center rounded-full border border-dashed border-border">
+                <MessageSquare className="h-4 w-4 text-muted-foreground/50" />
+              </div>
+              <p className="mt-3 text-sm font-medium text-muted-foreground">No conversations yet</p>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground/60">
+                Your chats will show up here
               </p>
             </div>
           ) : (
