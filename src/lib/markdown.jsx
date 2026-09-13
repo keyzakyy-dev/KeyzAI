@@ -1,19 +1,23 @@
 // Lightweight markdown renderer for chat bubbles — no external deps.
 // Supports: **bold**, *italic*, `code`, fenced code blocks, headings,
-// bullet/numbered lists, blockquotes, tables, links, strikethrough, hr.
-import React from 'react'
+// bullet/numbered lists (with nesting + wrapped continuation lines),
+// blockquotes, tables (with column alignment), images, links,
+// strikethrough, hr.
+import React, { useMemo } from 'react'
 import { CopyButton } from './copy-button'
 
 // Lookbehind unsupported in Safari < 16.4 — building at runtime with fallback
 // avoids a SyntaxError that would crash the whole app on parse.
+const INLINE_PATTERN =
+  '(\\*\\*[^*\\s][^*]*\\*\\*|__[^_\\s][^_]*__|(?<![\\w*])\\*[^*\\s][^*]*\\*(?![\\w*])|(?<!\\w)_[^_\\s][^_]*_(?!\\w)|`[^`]+`|~~[^~]+~~|!\\[[^\\]]*\\]\\([^)\\s]+\\)|\\[[^\\]]+\\]\\([^)\\s]+\\))'
+const INLINE_PATTERN_SAFE =
+  '(\\*\\*[^*\\s][^*]*\\*\\*|__[^_\\s][^_]*__|\\*[^*\\s][^*]*\\*|_[^_\\s][^_]*_|`[^`]+`|~~[^~]+~~|!\\[[^\\]]*\\]\\([^)\\s]+\\)|\\[[^\\]]+\\]\\([^)\\s]+\\))'
+
 function buildInlineRe() {
   try {
-    return new RegExp(
-      '(\\*\\*[^*\\s][^*]*\\*\\*|__[^_\\s][^_]*__|(?<![\\w*])\\*[^*\\s][^*]*\\*(?![\\w*])|(?<!\\w)_[^_\\s][^_]*_(?!\\w)|`[^`]+`|~~[^~]+~~|\\[[^\\]]+\\]\\([^)\\s]+\\))',
-      'g'
-    )
+    return new RegExp(INLINE_PATTERN, 'g')
   } catch {
-    return /(\*\*[^*\s][^*]*\*\*|__[^_\s][^_]*__|\*[^*\s][^*]*\*|_[^_\s][^_]*_|`[^`]+`|~~[^~]+~~|\[[^\]]+\]\([^)\s]+\))/g
+    return new RegExp(INLINE_PATTERN_SAFE, 'g')
   }
 }
 
@@ -34,9 +38,18 @@ function renderInline(text) {
       node = <s key={nodes.length}>{tok.slice(2, -2)}</s>
     } else if (tok.startsWith('`')) {
       node = (
-        <code key={nodes.length} className="rounded bg-muted px-1 py-0.5 font-mono text-[0.85em]">
+        <code key={nodes.length} className="rounded bg-muted px-1.5 py-px font-mono text-[0.85em]">
           {tok.slice(1, -1)}
         </code>
+      )
+    } else if (tok.startsWith('![')) {
+      const im = /^!\[([^\]]*)\]\(([^)\s]+)\)$/.exec(tok)
+      node = im && /^https?:\/\//i.test(im[2]) ? (
+        <img key={nodes.length} src={im[2]} alt={im[1]} loading="lazy" className="my-1 block max-h-64 rounded-lg border border-border" />
+      ) : im ? (
+        im[1]
+      ) : (
+        tok
       )
     } else if (tok.startsWith('[')) {
       const lm = /^\[([^\]]+)\]\(([^)\s]+)\)$/.exec(tok)
@@ -47,7 +60,7 @@ function renderInline(text) {
           href={lm[2]}
           target="_blank"
           rel="noreferrer"
-          className="underline underline-offset-2 hover:opacity-80"
+          className="font-medium underline underline-offset-2 decoration-muted-foreground/50 hover:decoration-foreground"
         >
           {lm[1]}
         </a>
@@ -82,8 +95,7 @@ function CodeBlock({ code, lang }) {
 
 const HR_RE = /^\s*(?:-{3,}|\*{3,}|_{3,})\s*$/
 const HEADING_RE = /^(#{1,6})\s+(.*)$/
-const UL_RE = /^\s*[-*•]\s+/
-const OL_RE = /^\s*\d+[.)]\s+/
+const LIST_ITEM_RE = /^(\s*)([-*•]|\d+[.)])\s+(.*)$/
 const QUOTE_RE = /^\s*>\s?/
 const TABLE_ROW_RE = /^\s*\|.*\|\s*$/
 const TABLE_SEP_RE = /^\s*\|[\s:|-]+\|\s*$/
@@ -94,8 +106,7 @@ function isBlockStart(line) {
     FENCE_RE.test(line) ||
     HEADING_RE.test(line) ||
     HR_RE.test(line) ||
-    UL_RE.test(line) ||
-    OL_RE.test(line) ||
+    LIST_ITEM_RE.test(line) ||
     QUOTE_RE.test(line) ||
     TABLE_ROW_RE.test(line)
   )
@@ -104,13 +115,94 @@ function isBlockStart(line) {
 function parseTable(rows) {
   const cells = (r) =>
     r.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map((c) => c.trim())
+  const sepRow = rows.find((r) => TABLE_SEP_RE.test(r))
+  const aligns = sepRow
+    ? cells(sepRow).map((c) => {
+        const left = c.startsWith(':')
+        const right = c.endsWith(':')
+        return left && right ? 'center' : right ? 'right' : left ? 'left' : undefined
+      })
+    : []
   const dataRows = rows.filter((r) => !TABLE_SEP_RE.test(r))
   if (dataRows.length === 0) return null
-  return { header: cells(dataRows[0]), body: dataRows.slice(1).map(cells) }
+  return { header: cells(dataRows[0]), body: dataRows.slice(1).map(cells), aligns }
 }
 
-export function Markdown({ text = '', className = '' }) {
-  const lines = String(text).split('\n')
+// Build an indent-nested tree from flat list items, then render recursively.
+function ListView({ items }) {
+  const roots = []
+  const stack = []
+  for (const it of items) {
+    const node = { ...it, children: [] }
+    while (stack.length && stack[stack.length - 1].indent >= it.indent) stack.pop()
+    if (stack.length === 0) roots.push(node)
+    else stack[stack.length - 1].node.children.push(node)
+    stack.push({ indent: it.indent, node })
+  }
+
+  const renderLevel = (nodes, depth) => {
+    if (nodes.length === 0) return null
+    const ordered = nodes[0].ordered
+    const List = ordered ? 'ol' : 'ul'
+    return (
+      <List
+        start={ordered ? nodes[0].start : undefined}
+        className={`${ordered ? 'list-decimal' : 'list-disc'} ml-4 space-y-1`}
+      >
+        {nodes.map((n, j) => (
+          <li key={j} className="break-words pl-0.5">
+            <span className="whitespace-pre-wrap">{renderInline([n.content, ...n.extra].join('\n'))}</span>
+            {renderLevel(n.children, depth + 1)}
+          </li>
+        ))}
+      </List>
+    )
+  }
+
+  return renderLevel(roots, 0)
+}
+
+function collectList(lines, start) {
+  const items = []
+  let i = start
+  while (i < lines.length) {
+    const line = lines[i]
+    if (line.trim() === '') {
+      // loose list: keep going only if the next non-blank line is still a list item
+      let j = i + 1
+      while (j < lines.length && lines[j].trim() === '') j++
+      if (j < lines.length && LIST_ITEM_RE.test(lines[j])) {
+        i = j
+        continue
+      }
+      break
+    }
+    const m = LIST_ITEM_RE.exec(line)
+    if (m) {
+      const ordered = /\d/.test(m[2])
+      items.push({
+        indent: m[1].replace(/\t/g, '    ').length,
+        ordered,
+        start: ordered ? parseInt(m[2], 10) : undefined,
+        content: m[3],
+        extra: [],
+      })
+      i++
+      continue
+    }
+    // wrapped continuation text belongs to the current item
+    if (items.length > 0 && !isBlockStart(line)) {
+      items[items.length - 1].extra.push(line.trim())
+      i++
+      continue
+    }
+    break
+  }
+  return { items, next: i }
+}
+
+function renderMarkdown(text) {
+  const lines = text.split('\n')
   const blocks = []
   let i = 0
   let key = 0
@@ -135,11 +227,12 @@ export function Markdown({ text = '', className = '' }) {
     // Heading
     const h = HEADING_RE.exec(line)
     if (h) {
-      const size = h[1].length <= 1 ? 'text-base' : h[1].length === 2 ? 'text-[15px]' : 'text-sm'
+      const Tag = h[1].length <= 1 ? 'h3' : h[1].length === 2 ? 'h4' : 'h5'
+      const size = h[1].length <= 1 ? 'text-[17px]' : h[1].length === 2 ? 'text-[16px]' : 'text-[15px]'
       blocks.push(
-        <p key={key++} className={`${size} font-semibold`}>
+        <Tag key={key++} className={`${size} font-semibold tracking-tight`}>
           {renderInline(h[2])}
-        </p>
+        </Tag>
       )
       i++
       continue
@@ -160,7 +253,10 @@ export function Markdown({ text = '', className = '' }) {
         i++
       }
       blocks.push(
-        <blockquote key={key++} className="space-y-1 border-l-2 border-border pl-3 text-muted-foreground">
+        <blockquote
+          key={key++}
+          className="space-y-1 rounded-r-lg border-l-2 border-border bg-muted/40 py-1.5 pl-3 pr-3 text-muted-foreground"
+        >
           {buf.map((l, j) => (
             <p key={j} className="whitespace-pre-wrap">
               {renderInline(l)}
@@ -180,13 +276,14 @@ export function Markdown({ text = '', className = '' }) {
       }
       const table = parseTable(rows)
       if (table) {
+        const align = (j) => (table.aligns[j] ? { textAlign: table.aligns[j] } : undefined)
         blocks.push(
-          <div key={key++} className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+          <div key={key++} className="overflow-x-auto rounded-lg border border-border">
+            <table className="w-full border-collapse text-[13px]">
               <thead>
-                <tr className="border-b border-border">
+                <tr className="border-b border-border bg-muted/60">
                   {table.header.map((c, j) => (
-                    <th key={j} className="px-2 py-1 font-semibold">
+                    <th key={j} style={align(j)} className="px-3 py-1.5 font-semibold text-foreground">
                       {renderInline(c)}
                     </th>
                   ))}
@@ -194,9 +291,9 @@ export function Markdown({ text = '', className = '' }) {
               </thead>
               <tbody>
                 {table.body.map((r, ri) => (
-                  <tr key={ri} className="border-b border-border/60">
+                  <tr key={ri} className="border-b border-border/60 last:border-0">
                     {r.map((c, ci) => (
-                      <td key={ci} className="px-2 py-1">
+                      <td key={ci} style={align(ci)} className="px-3 py-1.5">
                         {renderInline(c)}
                       </td>
                     ))}
@@ -210,41 +307,11 @@ export function Markdown({ text = '', className = '' }) {
       continue
     }
 
-    // Unordered list
-    if (UL_RE.test(line)) {
-      const items = []
-      while (i < lines.length && UL_RE.test(lines[i])) {
-        items.push(lines[i].replace(UL_RE, ''))
-        i++
-      }
-      blocks.push(
-        <ul key={key++} className="ml-4 list-disc space-y-1">
-          {items.map((it, j) => (
-            <li key={j} className="whitespace-pre-wrap break-words">
-              {renderInline(it)}
-            </li>
-          ))}
-        </ul>
-      )
-      continue
-    }
-
-    // Ordered list
-    if (OL_RE.test(line)) {
-      const items = []
-      while (i < lines.length && OL_RE.test(lines[i])) {
-        items.push(lines[i].replace(OL_RE, ''))
-        i++
-      }
-      blocks.push(
-        <ol key={key++} className="ml-4 list-decimal space-y-1">
-          {items.map((it, j) => (
-            <li key={j} className="whitespace-pre-wrap break-words">
-              {renderInline(it)}
-            </li>
-          ))}
-        </ol>
-      )
+    // Lists (nested, with continuation lines)
+    if (LIST_ITEM_RE.test(line)) {
+      const { items, next } = collectList(lines, i)
+      i = next
+      blocks.push(<ListView key={key++} items={items} />)
       continue
     }
 
@@ -268,5 +335,10 @@ export function Markdown({ text = '', className = '' }) {
     )
   }
 
-  return <div className={`space-y-2 ${className}`}>{blocks}</div>
+  return blocks
+}
+
+export function Markdown({ text = '', className = '' }) {
+  const blocks = useMemo(() => renderMarkdown(String(text)), [text])
+  return <div className={`space-y-3 ${className}`}>{blocks}</div>
 }

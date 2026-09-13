@@ -1,6 +1,11 @@
 import { Markdown } from '../lib/markdown'
 import { CopyButton } from '../lib/copy-button'
 
+// Close an unterminated ``` fence so partial streaming text still renders formatted
+function closeOpenFence(s) {
+  return (s.match(/```/g)?.length || 0) % 2 === 1 ? s + '\n```' : s
+}
+
 export function ChatMessage({ role, content, timestamp, streaming }) {
   const isUser = role === 'user'
   const time = timestamp
@@ -11,7 +16,7 @@ export function ChatMessage({ role, content, timestamp, streaming }) {
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
       <div className={`min-w-0 space-y-1.5 ${isUser ? 'max-w-[90%]' : 'w-full'}`}>
         <div
-          className={`rounded-2xl px-4 py-2.5 text-[15px] leading-relaxed ${
+          className={`rounded-2xl px-4 py-3 text-[15px] leading-relaxed sm:px-5 ${
             isUser
               ? 'rounded-tr-md bg-primary text-primary-foreground'
               : 'rounded-tl-md bg-card text-foreground shadow-sm'
@@ -29,10 +34,8 @@ export function ChatMessage({ role, content, timestamp, streaming }) {
                 />
               ))}
             </div>
-          ) : streaming ? (
-            <p className="whitespace-pre-wrap break-words">{content}</p>
           ) : (
-            <Markdown text={content} />
+            <Markdown text={streaming ? closeOpenFence(content) : content} />
           )}
         </div>
 
