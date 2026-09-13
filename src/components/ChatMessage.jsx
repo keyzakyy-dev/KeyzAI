@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Pencil } from 'lucide-react'
+import { Pencil, RotateCcw } from 'lucide-react'
 import { Markdown } from '../lib/markdown'
 import { CopyButton } from '../lib/copy-button'
 
@@ -8,7 +8,7 @@ function closeOpenFence(s) {
   return (s.match(/```/g)?.length || 0) % 2 === 1 ? s + '\n```' : s
 }
 
-export function ChatMessage({ role, content, timestamp, streaming, id, onEdit, editing = false, onEditSave, onEditCancel }) {
+export function ChatMessage({ role, content, timestamp, streaming, id, onEdit, editing = false, onEditSave, onEditCancel, onRegenerate }) {
   const isUser = role === 'user'
   const time = timestamp
     ? new Date(timestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -110,6 +110,17 @@ export function ChatMessage({ role, content, timestamp, streaming, id, onEdit, e
                   className="flex items-center gap-1 rounded p-1 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                 >
                   <Pencil className="h-3.5 w-3.5" />
+                </button>
+              )}
+              {!isUser && onRegenerate && (
+                <button
+                  type="button"
+                  onClick={() => onRegenerate(id)}
+                  aria-label="Regenerate response"
+                  title="Regenerate"
+                  className="flex items-center gap-1 rounded p-1 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                >
+                  <RotateCcw className="h-3.5 w-3.5" />
                 </button>
               )}
               <CopyButton text={content} />

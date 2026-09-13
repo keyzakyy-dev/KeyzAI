@@ -8,6 +8,7 @@ import { sendMessageStream, generateTitle } from '../api'
 import { Button } from './ui/button'
 import { ConfirmDialog } from './ui/confirm-dialog'
 import { useTheme } from '../lib/use-theme'
+import { applyPageMeta } from '../lib/seo'
 
 const SIDEBAR_MIN = 220
 const SIDEBAR_MAX = 420
@@ -87,10 +88,10 @@ export function ChatInterface() {
   const currentTitle = conversations.find((c) => c.id === currentConvId)?.title
 
   useEffect(() => {
-    document.title = currentTitle ? `${currentTitle} - KeyzAI` : 'New chat - KeyzAI'
-    return () => {
-      document.title = 'KeyzAI — Your AI Thinking Partner'
-    }
+    applyPageMeta({
+      title: currentTitle || 'New chat',
+      path: '/chat',
+    })
   }, [currentTitle])
 
   const startNewChat = () => {
@@ -133,7 +134,7 @@ export function ChatInterface() {
     setEditingId(msgId)
   }
 
-  const runSend = async (content, editTargetId = null) => {
+  const runSend = async (content, editTargetId = null, regenerateIndex = null) => {
     if (loading) return
     setError(null)
     setLastSent(content)
@@ -157,7 +158,10 @@ export function ChatInterface() {
 
     const isEdit = editTargetId != null
     let history
-    if (isEdit) {
+    if (regenerateIndex != null) {
+      // regenerate: keep messages up to (incl.) the user question, re-ask with a fresh AI bubble
+      history = [...messages.slice(0, regenerateIndex + 1), aiMsg]
+    } else if (isEdit) {
       // replace the edited message and drop everything after it
       const base = [...messages]
       const idx = base.findIndex((m) => m.id === editTargetId)
@@ -231,6 +235,16 @@ export function ChatInterface() {
   const handleSend = (content) => runSend(content, null)
 
   const handleEditSave = (msgId, content) => runSend(content, msgId)
+
+  const handleRegenerate = (aiMsgId) => {
+    if (loading) return
+    const idx = messages.findIndex((m) => m.id === aiMsgId)
+    if (idx < 1) return
+    let userIdx = idx - 1
+    while (userIdx >= 0 && messages[userIdx].role !== 'user') userIdx--
+    if (userIdx < 0) return
+    runSend(messages[userIdx].content, null, userIdx)
+  }
 
   const handleStop = () => {
     abortRef.current?.abort()
@@ -370,6 +384,7 @@ export function ChatInterface() {
                   editing={msg.id === editingId}
                   onEditSave={handleEditSave}
                   onEditCancel={() => setEditingId(null)}
+                  onRegenerate={handleRegenerate}
                 />
               ))}
               {error && (

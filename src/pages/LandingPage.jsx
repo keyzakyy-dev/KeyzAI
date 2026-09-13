@@ -1,7 +1,8 @@
-﻿import { useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../components/ui/button'
 import { useTheme } from '../lib/use-theme'
+import { usePageMeta, SITE_NAME, SITE_DESC, faqSchema, injectJsonLd } from '../lib/seo'
 import {
   Zap, ArrowRight, Sparkles, MessageSquare, MessageCircle, Code2, PenLine, ShieldCheck,
   BookOpen, Plus, Menu, X, Send, Check, Brain, Globe, Rocket, Sun, Moon,
@@ -693,6 +694,12 @@ export function LandingPage() {
   const navigate = useNavigate()
   const [theme, setTheme] = useTheme()
   const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
+
+  usePageMeta({ title: SITE_NAME, description: SITE_DESC, path: '/' })
+
+  useEffect(() => {
+    injectJsonLd(faqSchema(FAQS))
+  }, [])
 
   return (
     <div className="min-h-screen bg-background text-foreground antialiased">
