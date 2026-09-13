@@ -8,6 +8,21 @@ function closeOpenFence(s) {
   return (s.match(/```/g)?.length || 0) % 2 === 1 ? s + '\n```' : s
 }
 
+const THINKING_WORDS = ['Thinking…', 'Researching…', 'Writing…', 'Polishing…']
+
+function ThinkingIndicator() {
+  const [i, setI] = useState(0)
+  useEffect(() => {
+    const t = setInterval(() => setI((v) => (v + 1) % THINKING_WORDS.length), 1100)
+    return () => clearInterval(t)
+  }, [])
+  return (
+    <div key={i} className="animate-in fade-in-0 font-serif text-foreground" style={{ animationDuration: '350ms' }}>
+      {THINKING_WORDS[i]}
+    </div>
+  )
+}
+
 export function ChatMessage({ role, content, timestamp, streaming, id, onEdit, editing = false, onEditSave, onEditCancel, onRegenerate }) {
   const isUser = role === 'user'
   const time = timestamp
@@ -64,15 +79,7 @@ export function ChatMessage({ role, content, timestamp, streaming, id, onEdit, e
           ) : isUser ? (
             <p className="whitespace-pre-wrap break-words">{content}</p>
           ) : streaming && !content ? (
-            <div className="flex items-center gap-1 px-1 py-1.5">
-              {[0, 1, 2].map((i) => (
-                <span
-                  key={i}
-                  className="h-1.5 w-1.5 rounded-full bg-muted-foreground animate-typing-dot"
-                  style={{ animationDelay: `${i * 0.15}s` }}
-                />
-              ))}
-            </div>
+            <ThinkingIndicator />
           ) : (
             <Markdown text={streaming ? closeOpenFence(content) : content} />
           )}
