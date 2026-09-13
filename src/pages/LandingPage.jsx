@@ -683,7 +683,17 @@ function Footer() {
         </div>
         <div className="flex flex-col items-center justify-between gap-4 border-t border-border pt-8 sm:flex-row">
           <p className="text-xs text-muted-foreground">© 2026 KeyzAI. All rights reserved.</p>
-          <p className="text-xs text-muted-foreground">Powered by OpenAI · Built with React &amp; Tailwind</p>
+          <p className="text-xs text-muted-foreground">
+            Powered by OpenAI · Built with React &amp; Tailwind · by{' '}
+            <a
+              href="https://github.com/keyzakyy-dev"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-foreground"
+            >
+              Keyzakyy
+            </a>
+          </p>
         </div>
       </div>
     </footer>

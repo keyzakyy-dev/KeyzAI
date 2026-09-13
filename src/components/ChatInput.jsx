@@ -93,7 +93,14 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false }) {
         <div className="mt-2 flex items-center justify-between gap-3 text-[10px] leading-none text-muted-foreground/70">
           <span className="hidden sm:block">KeyzAI can make mistakes. Consider checking important information.</span>
           <span className="sm:hidden">KeyzAI is an AI and can make mistakes.</span>
-          <span className="shrink-0">by Keyzakyy.</span>
+          <a
+            href="https://github.com/keyzakyy-dev"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 transition-colors hover:text-foreground"
+          >
+            by Keyzakyy.
+          </a>
         </div>
       )}
     </div>
