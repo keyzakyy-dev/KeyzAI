@@ -218,9 +218,6 @@ export function ChatInterface() {
       <main className="flex min-w-0 flex-1 flex-col lg:ml-64">
         <header className="flex h-14 flex-shrink-0 items-center justify-between border-b border-border bg-background/80 px-4 backdrop-blur-sm sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md bg-primary lg:hidden">
-              <Zap className="h-4 w-4 text-primary-foreground" />
-            </div>
             <p className="truncate text-sm font-medium text-foreground">
               {currentTitle || 'New chat'}
             </p>
@@ -330,7 +327,7 @@ export function ChatInterface() {
         )}
 
         {messages.length > 0 && (
-          <div className="flex-shrink-0 border-t border-border bg-background p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <div className="flex-shrink-0 bg-background p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
             <ChatInput onSend={handleSend} loading={loading} onStop={handleStop} />
           </div>
         )}
