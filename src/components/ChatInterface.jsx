@@ -2,7 +2,7 @@
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
 import { Sidebar } from './Sidebar'
-import { Zap, Plus, Sun, Moon, Menu, X } from 'lucide-react'
+import { Zap, Plus, Sun, Moon, Menu, X, ArrowDown } from 'lucide-react'
 import { sendMessageStream } from '../api'
 import { Alert, AlertDescription } from './ui/alert'
 import { Button } from './ui/button'
@@ -19,8 +19,10 @@ export function ChatInterface() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [lastSent, setLastSent] = useState(null)
   const [confirm, setConfirm] = useState(null)
+  const [atBottom, setAtBottom] = useState(true)
   const messagesEndRef = useRef(null)
   const scrollAreaRef = useRef(null)
+  const abortRef = useRef(null)
 
   const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
 
@@ -28,13 +30,15 @@ export function ChatInterface() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
-  useEffect(() => {
+  const handleScroll = () => {
     const el = scrollAreaRef.current
     if (!el) return
-    const last = messages[messages.length - 1]
-    const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 150
-    if (nearBottom || last?.role === 'user') scrollToBottom()
-  }, [messages, loading])
+    setAtBottom(el.scrollHeight - el.scrollTop - el.clientHeight < 150)
+  }
+
+  useEffect(() => {
+    if (atBottom) scrollToBottom()
+  }, [messages, loading, atBottom])
 
   const currentTitle = conversations.find((c) => c.id === currentConvId)?.title
 
@@ -72,6 +76,7 @@ export function ChatInterface() {
     if (loading) return
     setError(null)
     setLastSent(content)
+    setAtBottom(true)
     const convId = currentConvId || `conv_${Date.now()}`
     if (convId !== currentConvId) setCurrentConvId(convId)
     const userMsg = {
@@ -91,12 +96,21 @@ export function ChatInterface() {
     setMessages((prev) => [...prev, userMsg, aiMsg])
     setLoading(true)
 
+    const controller = new AbortController()
+    abortRef.current = controller
+    let streamed = false
+
     try {
-      const text = await sendMessageStream(content, (partial) => {
-        setMessages((prev) =>
-          prev.map((m) => (m.id === aiMsg.id ? { ...m, content: partial } : m))
-        )
-      })
+      const text = await sendMessageStream(
+        content,
+        (partial) => {
+          streamed = true
+          setMessages((prev) =>
+            prev.map((m) => (m.id === aiMsg.id ? { ...m, content: partial } : m))
+          )
+        },
+        controller.signal
+      )
       const finalMessages = history.map((m) =>
         m.id === aiMsg.id ? { ...m, content: text, streaming: false } : m
       )
@@ -113,11 +127,24 @@ export function ChatInterface() {
       })
     } catch (err) {
       console.error('Error:', err)
-      setError(err.message || 'Failed to send message')
-      setMessages((prev) => prev.filter((m) => m.id !== aiMsg.id || m.content))
+      const aborted = err.name === 'AbortError'
+      if (!aborted) setError(err.message || 'Failed to send message')
+      if (aborted && !streamed) {
+        // stopped before any token arrived — drop the empty bubble
+        setMessages((prev) => prev.filter((m) => m.id !== aiMsg.id))
+      } else {
+        setMessages((prev) =>
+          prev.map((m) => (m.id === aiMsg.id ? { ...m, streaming: false } : m))
+        )
+      }
     } finally {
+      abortRef.current = null
       setLoading(false)
     }
+  }
+
+  const handleStop = () => {
+    abortRef.current?.abort()
   }
 
   const handleDeleteConv = (convId) => {
@@ -203,7 +230,12 @@ export function ChatInterface() {
           </div>
         </header>
 
-        <div ref={scrollAreaRef} className="flex flex-1 flex-col overflow-y-auto">
+        <div className="relative flex-1 min-h-0">
+          <div
+            ref={scrollAreaRef}
+            onScroll={handleScroll}
+            className="flex h-full flex-col overflow-y-auto"
+          >
           {messages.length === 0 ? (
             <div className="flex flex-1 items-center justify-center px-4 py-12">
               <div className="w-full max-w-2xl space-y-7">
@@ -238,6 +270,20 @@ export function ChatInterface() {
               <div ref={messagesEndRef} />
             </div>
           )}
+          </div>
+
+          {!atBottom && messages.length > 0 && (
+            <button
+              onClick={() => {
+                setAtBottom(true)
+                scrollToBottom()
+              }}
+              aria-label="Scroll to bottom"
+              className="absolute bottom-4 left-1/2 z-10 flex h-9 w-9 -translate-x-1/2 items-center justify-center rounded-full border border-border bg-background text-foreground shadow-lg transition-colors hover:bg-accent"
+            >
+              <ArrowDown className="h-4 w-4" />
+            </button>
+          )}
         </div>
 
         {error && (
@@ -262,7 +308,7 @@ export function ChatInterface() {
 
         {messages.length > 0 && (
           <div className="flex-shrink-0 border-t border-border bg-background p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-            <ChatInput onSend={handleSend} loading={loading} />
+            <ChatInput onSend={handleSend} loading={loading} onStop={handleStop} />
           </div>
         )}
       </main>

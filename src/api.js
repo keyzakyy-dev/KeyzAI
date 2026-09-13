@@ -62,9 +62,10 @@ export async function sendMessage(message, model) {
 /**
  * Streams the answer; onDelta receives the cumulative text per chunk.
  * Falls back to a single JSON response when browser or backend can't stream.
+ * Optional `signal` lets the caller abort generation (throws AbortError).
  * Returns the full text.
  */
-export async function sendMessageStream(message, onDelta) {
+export async function sendMessageStream(message, onDelta, signal) {
   const msg = validateMessage(message)
 
   if (typeof ReadableStream === 'undefined') {
@@ -73,53 +74,66 @@ export async function sendMessageStream(message, onDelta) {
     return fallback.message
   }
 
-  const response = await fetch(`${API_URL}/api/chat`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ message: msg, stream: true }),
-    signal: timeout(120000),
-  })
-
-  if (!response.ok) throw await httpError(response)
-
-  const contentType = response.headers.get('Content-Type') || ''
-  if (!contentType.includes('text/event-stream') || !response.body) {
-    const data = await response.json()
-    if (!data.success) throw new Error(data.error || 'Request failed')
-    onDelta(data.message)
-    return data.message
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), 120000)
+  const relayAbort = () => controller.abort()
+  if (signal) {
+    if (signal.aborted) relayAbort()
+    else signal.addEventListener('abort', relayAbort, { once: true })
   }
 
-  const reader = response.body.getReader()
-  const decoder = new TextDecoder()
-  let buffer = ''
-  let full = ''
+  try {
+    const response = await fetch(`${API_URL}/api/chat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message: msg, stream: true }),
+      signal: controller.signal,
+    })
 
-  while (true) {
-    const { done, value } = await reader.read()
-    if (done) break
-    buffer += decoder.decode(value, { stream: true })
-    const lines = buffer.split('\n')
-    buffer = lines.pop()
-    for (const line of lines) {
-      const trimmed = line.trim()
-      if (!trimmed.startsWith('data:')) continue
-      const payload = trimmed.slice(5).trim()
-      if (payload === '[DONE]') continue
-      try {
-        const json = JSON.parse(payload)
-        const delta = json.choices?.[0]?.delta?.content
-        if (delta) {
-          full += delta
-          onDelta(full)
+    if (!response.ok) throw await httpError(response)
+
+    const contentType = response.headers.get('Content-Type') || ''
+    if (!contentType.includes('text/event-stream') || !response.body) {
+      const data = await response.json()
+      if (!data.success) throw new Error(data.error || 'Request failed')
+      onDelta(data.message)
+      return data.message
+    }
+
+    const reader = response.body.getReader()
+    const decoder = new TextDecoder()
+    let buffer = ''
+    let full = ''
+
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+      buffer += decoder.decode(value, { stream: true })
+      const lines = buffer.split('\n')
+      buffer = lines.pop()
+      for (const line of lines) {
+        const trimmed = line.trim()
+        if (!trimmed.startsWith('data:')) continue
+        const payload = trimmed.slice(5).trim()
+        if (payload === '[DONE]') continue
+        try {
+          const json = JSON.parse(payload)
+          const delta = json.choices?.[0]?.delta?.content
+          if (delta) {
+            full += delta
+            onDelta(full)
+          }
+        } catch {
+          // keepalives / non-JSON lines — ignore
         }
-      } catch {
-        // keepalives / non-JSON lines — ignore
       }
     }
-  }
 
-  return full
+    return full
+  } finally {
+    clearTimeout(timer)
+    if (signal) signal.removeEventListener('abort', relayAbort)
+  }
 }
