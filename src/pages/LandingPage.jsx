@@ -26,12 +26,14 @@ const FEATURES = [
     title: 'Ask anything',
     desc: 'From quick facts to deep questions — get thoughtful, accurate answers in seconds.',
     span: 'md:col-span-2',
+    prompt: 'What is compound interest, explained simply?',
   },
   {
     icon: PenLine,
     title: 'Write faster',
     desc: 'Draft emails, essays, and content with AI that matches your tone.',
     span: '',
+    prompt: 'Write a friendly follow-up email to a client who went quiet.',
   },
   {
     icon: Code2,
@@ -39,12 +41,14 @@ const FEATURES = [
     desc: 'Paste a snippet, get fixes, explanations, and optimizations instantly.',
     span: '',
     code: true,
+    prompt: 'Why does this throw "cannot read property of undefined"?',
   },
   {
     icon: BookOpen,
     title: 'Learn new topics',
     desc: 'Break down complex subjects into simple, digestible explanations.',
     span: '',
+    prompt: 'Explain how neural networks learn, like I am a beginner.',
   },
   {
     icon: ShieldCheck,
@@ -345,26 +349,41 @@ function Stats() {
   )
 }
 
-function FeatureCard({ icon: Icon, title, desc, span, children }) {
-  return (
-    <div className={`group relative overflow-hidden rounded-xl border border-border bg-card p-6 transition-colors hover:bg-accent/40 ${span}`}>
-      <div className="relative">
-        <div className="mb-4 inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-muted">
-          <Icon className="h-4 w-4 text-foreground" />
-        </div>
-        <h3 className="mb-1.5 text-lg font-semibold tracking-tight text-foreground">{title}</h3>
-        <p className="text-sm leading-relaxed text-muted-foreground">{desc}</p>
-        {children}
+function FeatureCard({ icon: Icon, title, desc, span, prompt, onPrompt, children }) {
+  const content = (
+    <div className="relative">
+      <div className="mb-4 inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-muted">
+        <Icon className="h-4 w-4 text-foreground" />
       </div>
+      <h3 className="mb-1.5 text-lg font-semibold tracking-tight text-foreground">{title}</h3>
+      <p className="text-sm leading-relaxed text-muted-foreground">{desc}</p>
+      {children}
+      {prompt && (
+        <span className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-foreground">
+          Try it <ArrowRight className="h-3 w-3" />
+        </span>
+      )}
     </div>
   )
+
+  const className = `group relative overflow-hidden rounded-xl border border-border bg-card p-6 text-left transition-colors hover:bg-accent/40 ${span}`
+
+  if (prompt && onPrompt) {
+    return (
+      <button type="button" onClick={() => onPrompt(prompt)} className={className}>
+        {content}
+      </button>
+    )
+  }
+  return <div className={className}>{content}</div>
 }
 
 function SkeletonBar({ className = '' }) {
   return <div className={`h-2.5 rounded-full bg-muted ${className}`} />
 }
 
-function Features() {
+function Features({ navigate }) {
+  const onPrompt = (p) => navigate(`/chat?q=${encodeURIComponent(p)}`)
   return (
     <section id="features" className="scroll-mt-20 py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-6">
@@ -381,7 +400,7 @@ function Features() {
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
-          <FeatureCard {...FEATURES[0]}>
+          <FeatureCard {...FEATURES[0]} onPrompt={onPrompt}>
             <div className="mt-6 space-y-3">
               <div className="flex justify-end">
                 <div className="rounded-lg bg-primary px-3 py-1.5 text-xs text-primary-foreground">
@@ -401,9 +420,9 @@ function Features() {
             </div>
           </FeatureCard>
 
-          <FeatureCard {...FEATURES[1]} />
+          <FeatureCard {...FEATURES[1]} onPrompt={onPrompt} />
 
-          <FeatureCard {...FEATURES[2]}>
+          <FeatureCard {...FEATURES[2]} onPrompt={onPrompt}>
             <pre className="mt-4 overflow-x-auto rounded-lg border border-border bg-muted/50 p-3.5 font-mono text-xs leading-relaxed">
               <code>
                 <span className="text-rose-600 dark:text-rose-400">const</span> <span className="text-blue-600 dark:text-blue-400">total</span> = (price, tax) =&gt; {'{'}{'\n'}
@@ -414,8 +433,8 @@ function Features() {
             </pre>
           </FeatureCard>
 
-          <FeatureCard {...FEATURES[3]} />
-          <FeatureCard {...FEATURES[4]} />
+          <FeatureCard {...FEATURES[3]} onPrompt={onPrompt} />
+          <FeatureCard {...FEATURES[4]} onPrompt={onPrompt} />
         </div>
       </div>
     </section>
@@ -681,7 +700,7 @@ export function LandingPage() {
       <main>
         <Hero navigate={navigate} />
         <Stats />
-        <Features />
+        <Features navigate={navigate} />
         <HowItWorks navigate={navigate} />
         <FAQ navigate={navigate} />
         <CTA navigate={navigate} />

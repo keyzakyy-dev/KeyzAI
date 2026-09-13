@@ -1,4 +1,5 @@
 ﻿import { useState, useRef, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
 import { Sidebar } from './Sidebar'
@@ -146,6 +147,18 @@ export function ChatInterface() {
   const handleStop = () => {
     abortRef.current?.abort()
   }
+
+  const [searchParams, setSearchParams] = useSearchParams()
+  const autoSentRef = useRef(false)
+  useEffect(() => {
+    const q = searchParams.get('q')
+    if (q && !autoSentRef.current) {
+      autoSentRef.current = true
+      setSearchParams({}, { replace: true })
+      handleSend(q)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams])
 
   const handleDeleteConv = (convId) => {
     const conv = conversations.find((c) => c.id === convId)
