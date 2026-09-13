@@ -36,6 +36,7 @@ export function ChatInterface() {
   const [collapsed, setCollapsed] = useState(false)
   const [sidebarW, setSidebarW] = useState(initialSidebarW)
   const [resizing, setResizing] = useState(false)
+  const [editingId, setEditingId] = useState(null)
   const scrollAreaRef = useRef(null)
   const abortRef = useRef(null)
 
@@ -98,6 +99,7 @@ export function ChatInterface() {
     setMessages([])
     setError(null)
     setSidebarOpen(false)
+    setEditingId(null)
   }
 
   const handleNewChat = () => {
@@ -120,33 +122,56 @@ export function ChatInterface() {
     setMessages(conv?.messages || [])
     setError(null)
     setSidebarOpen(false)
+    setEditingId(null)
   }
 
   const patchConv = (id, patch) =>
     setConversations((prev) => prev.map((c) => (c.id === id ? { ...c, ...patch } : c)))
 
-  const handleSend = async (content) => {
+  const startEdit = (msgId) => {
+    if (loading) return
+    setEditingId(msgId)
+  }
+
+  const runSend = async (content, editTargetId = null) => {
     if (loading) return
     setError(null)
     setLastSent(content)
     setAtBottom(true)
     const convId = currentConvId || `conv_${Date.now()}`
     if (convId !== currentConvId) setCurrentConvId(convId)
+    const now = Math.floor(Date.now() / 1000)
     const userMsg = {
       id: `msg_${Date.now()}`,
       role: 'user',
       content,
-      timestamp: Math.floor(Date.now() / 1000),
+      timestamp: now,
     }
     const aiMsg = {
       id: `msg_${Date.now() + 1}`,
       role: 'assistant',
       content: '',
-      timestamp: Math.floor(Date.now() / 1000),
+      timestamp: now,
       streaming: true,
     }
-    const history = [...messages, userMsg, aiMsg]
-    setMessages((prev) => [...prev, userMsg, aiMsg])
+
+    const isEdit = editTargetId != null
+    let history
+    if (isEdit) {
+      // replace the edited message and drop everything after it
+      const base = [...messages]
+      const idx = base.findIndex((m) => m.id === editTargetId)
+      if (idx !== -1) {
+        base.splice(idx, 1, { ...userMsg, id: editTargetId })
+        history = [...base, aiMsg]
+      } else {
+        history = [...messages, userMsg, aiMsg]
+      }
+    } else {
+      history = [...messages, userMsg, aiMsg]
+    }
+    setMessages(history)
+    if (isEdit) setEditingId(null)
     setLoading(true)
 
     const controller = new AbortController()
@@ -202,6 +227,10 @@ export function ChatInterface() {
       setLoading(false)
     }
   }
+
+  const handleSend = (content) => runSend(content, null)
+
+  const handleEditSave = (msgId, content) => runSend(content, msgId)
 
   const handleStop = () => {
     abortRef.current?.abort()
@@ -332,10 +361,15 @@ export function ChatInterface() {
               {messages.map((msg) => (
                 <ChatMessage
                   key={msg.id}
+                  id={msg.id}
                   role={msg.role}
                   content={msg.content}
                   timestamp={msg.timestamp}
                   streaming={msg.streaming}
+                  onEdit={startEdit}
+                  editing={msg.id === editingId}
+                  onEditSave={handleEditSave}
+                  onEditCancel={() => setEditingId(null)}
                 />
               ))}
               {error && (

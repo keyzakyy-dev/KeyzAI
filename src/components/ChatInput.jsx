@@ -45,7 +45,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false }) {
           }}
           onKeyDown={handleKeyDown}
           placeholder="How can I help you today?"
-          className="min-h-[52px] max-h-40 resize-none overflow-y-auto border-0 bg-transparent px-4 pt-3.5 pb-1 text-base text-foreground placeholder:font-serif placeholder:text-sm placeholder:italic placeholder:text-muted-foreground/80 focus-visible:ring-0 focus-visible:ring-offset-0"
+          className="min-h-[52px] max-h-40 resize-none overflow-y-auto border-0 bg-transparent px-4 pt-3.5 pb-1 text-base text-foreground placeholder:font-serif placeholder:text-sm placeholder:text-muted-foreground/80 focus-visible:ring-0 focus-visible:ring-offset-0"
           rows={1}
         />
 
@@ -90,9 +90,10 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false }) {
         </div>
       </div>
       {showDisclaimer && (
-        <div className="mt-2 flex flex-col items-center gap-1 text-xs text-muted-foreground sm:flex-row sm:justify-between sm:gap-3">
-          <span>KeyzAI can make mistakes. Consider checking important information.</span>
-          <span className="shrink-0">build by Keyzakyy.</span>
+        <div className="mt-2 flex items-center justify-between gap-3 text-[10px] leading-none text-muted-foreground/70">
+          <span className="hidden sm:block">KeyzAI can make mistakes. Consider checking important information.</span>
+          <span className="sm:hidden">KeyzAI is an AI and can make mistakes.</span>
+          <span className="shrink-0">by Keyzakyy.</span>
         </div>
       )}
     </div>
