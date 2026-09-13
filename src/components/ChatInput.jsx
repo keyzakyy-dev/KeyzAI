@@ -90,9 +90,10 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false }) {
         </div>
       </div>
       {showDisclaimer && (
-        <p className="mt-2 text-center text-xs text-muted-foreground">
-          KeyzAI can make mistakes. Consider checking important information.
-        </p>
+        <div className="mt-2 flex flex-col items-center gap-1 text-xs text-muted-foreground sm:flex-row sm:justify-between sm:gap-3">
+          <span>KeyzAI can make mistakes. Consider checking important information.</span>
+          <span className="shrink-0">build by Keyzakyy.</span>
+        </div>
       )}
     </div>
   )

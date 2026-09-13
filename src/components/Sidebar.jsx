@@ -1,4 +1,4 @@
-import { Plus, MessageSquare, Trash2, User } from 'lucide-react'
+import { Plus, MessageSquare, Trash2 } from 'lucide-react'
 import { Button } from './ui/button'
 
 const GROUPS = ['Today', 'Yesterday', 'Previous 7 days', 'Older']
@@ -75,9 +75,10 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
                     >
                       <button
                         onClick={() => onSelect(conv.id)}
-                        className="flex min-w-0 flex-1 px-3 py-1.5 text-left"
+                        className="flex min-w-0 flex-1 items-center gap-2 px-3 py-1.5 text-left"
                         title={conv.title || undefined}
                       >
+                        <MessageSquare className="h-3.5 w-3.5 shrink-0 opacity-50" />
                         {conv.titlePending ? (
                           <span className="my-1 block h-3 w-24 animate-pulse rounded-full bg-muted-foreground/20" />
                         ) : (
@@ -100,25 +101,16 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
         </div>
 
         {/* Footer */}
-        <div className="border-t border-border p-3">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-primary">
-              <User className="h-4 w-4 text-primary-foreground" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium text-foreground">Guest</p>
-              <p className="text-xs text-muted-foreground">Free plan</p>
-            </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-destructive hover:text-destructive"
-              onClick={onClear}
-              aria-label="Clear all conversations"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
+        <div className="border-t border-border p-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClear}
+            className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
+          >
+            <Trash2 className="w-4 h-4" />
+            Clear conversations
+          </Button>
         </div>
       </aside>
 

@@ -3,9 +3,8 @@ import { useSearchParams } from 'react-router-dom'
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
 import { Sidebar } from './Sidebar'
-import { Plus, Sun, Moon, Menu, X, ArrowDown, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
+import { Plus, Sun, Moon, Menu, X, ArrowDown, PanelLeftClose, PanelLeftOpen, AlertCircle, RotateCcw } from 'lucide-react'
 import { sendMessageStream, generateTitle } from '../api'
-import { Alert, AlertDescription } from './ui/alert'
 import { Button } from './ui/button'
 import { ConfirmDialog } from './ui/confirm-dialog'
 import { useTheme } from '../lib/use-theme'
@@ -297,6 +296,27 @@ export function ChatInterface() {
                   streaming={msg.streaming}
                 />
               ))}
+              {error && (
+                <div className="flex gap-3">
+                  <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-destructive/40 bg-destructive/10">
+                    <AlertCircle className="h-3.5 w-3.5 text-destructive" />
+                  </div>
+                  <div className="min-w-0 space-y-2.5">
+                    <p className="text-[15px] leading-relaxed text-foreground">{error}</p>
+                    {lastSent && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleSend(lastSent)}
+                        className="gap-1.5"
+                      >
+                        <RotateCcw className="h-3.5 w-3.5" />
+                        Try again
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           )}
           </div>
@@ -314,26 +334,6 @@ export function ChatInterface() {
             </button>
           )}
         </div>
-
-        {error && (
-          <div className="flex-shrink-0 border-t border-border px-4 py-4">
-            <div className="mx-auto max-w-3xl">
-              <Alert variant="destructive">
-                <AlertDescription className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                  {error}
-                  {lastSent && (
-                    <button
-                      onClick={() => handleSend(lastSent)}
-                      className="font-semibold underline underline-offset-2 hover:opacity-80"
-                    >
-                      Retry
-                    </button>
-                  )}
-                </AlertDescription>
-              </Alert>
-            </div>
-          </div>
-        )}
 
         {messages.length > 0 && (
           <div className="flex-shrink-0 bg-background p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">

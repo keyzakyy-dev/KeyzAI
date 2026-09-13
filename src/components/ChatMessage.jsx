@@ -18,7 +18,7 @@ export function ChatMessage({ role, content, timestamp, streaming }) {
         <div
           className={`text-[15px] leading-relaxed ${
             isUser
-              ? 'rounded-2xl rounded-tr-md bg-primary px-4 py-3 text-primary-foreground sm:px-5'
+              ? 'rounded-2xl rounded-tr-md bg-secondary px-4 py-3 text-secondary-foreground sm:px-5'
               : 'font-serif text-foreground'
           }`}
         >
