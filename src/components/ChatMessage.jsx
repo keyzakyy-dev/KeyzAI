@@ -1,4 +1,3 @@
-import { Sparkles, User } from 'lucide-react'
 import { Markdown } from '../lib/markdown'
 import { CopyButton } from '../lib/copy-button'
 
@@ -9,14 +8,8 @@ export function ChatMessage({ role, content, timestamp, streaming }) {
     : null
 
   return (
-    <div className={`flex gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}>
-      {!isUser && (
-        <div className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-muted shadow-sm">
-          <Sparkles className="h-3.5 w-3.5 text-muted-foreground" />
-        </div>
-      )}
-
-      <div className="min-w-0 max-w-[85%] space-y-1.5">
+    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
+      <div className="min-w-0 max-w-[90%] space-y-1.5">
         <div
           className={`rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
             isUser
@@ -50,12 +43,6 @@ export function ChatMessage({ role, content, timestamp, streaming }) {
           </div>
         )}
       </div>
-
-      {isUser && (
-        <div className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-primary">
-          <User className="h-3.5 w-3.5 text-primary-foreground" />
-        </div>
-      )}
     </div>
   )
 }

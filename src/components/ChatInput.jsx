@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Send, Paperclip } from 'lucide-react'
+import { Send } from 'lucide-react'
 import { Button } from './ui/button'
 import { Textarea } from './ui/textarea'
 
@@ -45,20 +45,13 @@ export function ChatInput({ onSend, loading }) {
         </span>
 
         <div className="absolute bottom-1.5 right-2 flex items-center gap-1.5">
-            <button
-              type="button"
-              className="flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground sm:h-8 sm:w-8"
-              aria-label="Attach file"
-            >
-              <Paperclip className="h-4 w-4" />
-            </button>
-            <Button
-              onClick={handleSend}
-              disabled={!message.trim() || loading}
-              size="icon"
-              className="h-9 w-9 rounded-md sm:h-8 sm:w-8"
-              aria-label="Send message"
-            >
+          <Button
+            onClick={handleSend}
+            disabled={!message.trim() || loading}
+            size="icon"
+            className="h-9 w-9 rounded-md sm:h-8 sm:w-8"
+            aria-label="Send message"
+          >
             <Send className="h-4 w-4" />
           </Button>
         </div>
