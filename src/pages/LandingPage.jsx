@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from '../components/ui/button'
 import { useTheme } from '../lib/use-theme'
 import { usePageMeta, SITE_NAME, SITE_DESC, faqSchema, injectJsonLd } from '../lib/seo'
+import { Reveal } from '../lib/reveal'
 import {
   Zap, ArrowRight, Sparkles, MessageSquare, MessageCircle, Code2, PenLine, ShieldCheck,
   BookOpen, Plus, Menu, X, Send, Brain, Rocket, Sun, Moon,
@@ -316,18 +317,18 @@ function Hero({ navigate }) {
 function Stats() {
   return (
     <section className="border-y border-border">
-      <div className="mx-auto max-w-7xl px-6 py-14">
+      <Reveal from="up" className="mx-auto max-w-7xl px-6 py-14">
         <div className="grid grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-4">
-          {STATS.map((stat) => (
-            <div key={stat.label} className="space-y-1.5 text-center">
+          {STATS.map((stat, i) => (
+            <Reveal key={stat.label} from="scale" delay={i * 90} className="space-y-1.5 text-center">
               <p className="font-heading text-3xl font-bold tracking-tight text-foreground md:text-4xl">
                 {stat.value}
               </p>
               <p className="text-sm text-muted-foreground">{stat.label}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
-      </div>
+      </Reveal>
     </section>
   )
 }
@@ -370,7 +371,7 @@ function Features({ navigate }) {
   return (
     <section id="features" className="scroll-mt-20 py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="mx-auto mb-16 max-w-2xl space-y-4 text-center">
+        <Reveal from="up" className="mx-auto mb-16 max-w-2xl space-y-4 text-center">
           <span className="inline-block rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
             Fitur
           </span>
@@ -380,44 +381,55 @@ function Features({ navigate }) {
           <p className="text-lg text-muted-foreground">
             Semua yang kamu butuhkan untuk berpikir, menciptakan, dan belajar lebih cepat — dalam satu antarmuka yang rapi.
           </p>
-        </div>
+        </Reveal>
 
         <div className="grid gap-4 md:grid-cols-3">
-          <FeatureCard {...FEATURES[0]} onPrompt={onPrompt}>
-            <div className="mt-6 space-y-3">
-              <div className="flex justify-end">
-                <div className="rounded-lg bg-primary px-3 py-1.5 text-xs text-primary-foreground">
-                  Apa itu bunga berbunga?
-                </div>
+          <Reveal from="tilt" delay={0} className="md:col-span-2">
+            <FeatureCard {...FEATURES[0]} onPrompt={onPrompt}>
+              <div className="mt-6 space-y-3">
+                <Reveal from="right" delay={250} className="flex justify-end">
+                  <div className="rounded-lg bg-primary px-3 py-1.5 text-xs text-primary-foreground">
+                    Apa itu bunga berbunga?
+                  </div>
+                </Reveal>
+                <Reveal from="left" delay={450} className="flex gap-2.5">
+                  <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border border-border">
+                    <Sparkles className="h-3.5 w-3.5 text-muted-foreground" />
+                  </div>
+                  <div className="flex-1 space-y-2 pt-1.5">
+                    <SkeletonBar className="w-full" />
+                    <SkeletonBar className="w-5/6" />
+                    <SkeletonBar className="w-2/3" />
+                  </div>
+                </Reveal>
               </div>
-              <div className="flex gap-2.5">
-                <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border border-border">
-                  <Sparkles className="h-3.5 w-3.5 text-muted-foreground" />
-                </div>
-                <div className="flex-1 space-y-2 pt-1.5">
-                  <SkeletonBar className="w-full" />
-                  <SkeletonBar className="w-5/6" />
-                  <SkeletonBar className="w-2/3" />
-                </div>
-              </div>
-            </div>
-          </FeatureCard>
+            </FeatureCard>
+          </Reveal>
 
-          <FeatureCard {...FEATURES[1]} onPrompt={onPrompt} />
+          <Reveal from="tilt" delay={120}>
+            <FeatureCard {...FEATURES[1]} onPrompt={onPrompt} />
+          </Reveal>
 
-          <FeatureCard {...FEATURES[2]} onPrompt={onPrompt}>
-            <pre className="mt-4 overflow-x-auto rounded-lg border border-border bg-muted/50 p-3.5 font-mono text-xs leading-relaxed">
-              <code>
-                <span className="text-rose-600 dark:text-rose-400">const</span> <span className="text-blue-600 dark:text-blue-400">total</span> = (price, tax) =&gt; {'{'}{'\n'}
-                {'  '}<span className="text-muted-foreground">// AI: pajak harusnya dikali, bukan ditambah</span>{'\n'}
-                {'  '}<span className="text-emerald-600 dark:text-emerald-400">return</span> price + price * tax;{'\n'}
-                {'}'};
-              </code>
-            </pre>
-          </FeatureCard>
+          <Reveal from="tilt" delay={200}>
+            <FeatureCard {...FEATURES[2]} onPrompt={onPrompt}>
+              <pre className="mt-4 overflow-x-auto rounded-lg border border-border bg-muted/50 p-3.5 font-mono text-xs leading-relaxed">
+                <code>
+                  <span className="text-rose-600 dark:text-rose-400">const</span> <span className="text-blue-600 dark:text-blue-400">total</span> = (price, tax) =&gt; {'{'}{'\n'}
+                  {'  '}<span className="text-muted-foreground">// AI: pajak harusnya dikali, bukan ditambah</span>{'\n'}
+                  {'  '}<span className="text-emerald-600 dark:text-emerald-400">return</span> price + price * tax;{'\n'}
+                  {'}'};
+                </code>
+              </pre>
+            </FeatureCard>
+          </Reveal>
 
-          <FeatureCard {...FEATURES[3]} onPrompt={onPrompt} />
-          <FeatureCard {...FEATURES[4]} onPrompt={onPrompt} />
+          <Reveal from="tilt" delay={280}>
+            <FeatureCard {...FEATURES[3]} onPrompt={onPrompt} />
+          </Reveal>
+
+          <Reveal from="tilt" delay={360}>
+            <FeatureCard {...FEATURES[4]} onPrompt={onPrompt} />
+          </Reveal>
         </div>
       </div>
     </section>
@@ -428,7 +440,7 @@ function HowItWorks({ navigate }) {
   return (
     <section id="how-it-works" className="scroll-mt-20 border-y border-border py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="mx-auto mb-16 max-w-2xl space-y-4 text-center">
+        <Reveal from="up" className="mx-auto mb-16 max-w-2xl space-y-4 text-center">
           <span className="inline-block rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
             Cara Kerja
           </span>
@@ -438,27 +450,32 @@ function HowItWorks({ navigate }) {
           <p className="text-lg text-muted-foreground">
             Dari nol sampai jawaban pertama dalam waktu kurang dari sepuluh detik.
           </p>
-        </div>
+        </Reveal>
 
         <div className="relative grid gap-12 md:grid-cols-3 md:gap-8">
-          <div className="absolute left-[16%] right-[16%] top-6 hidden h-px bg-border md:block" />
-          {STEPS.map((item) => (
-            <div key={item.step} className="relative space-y-4 text-center">
+          <Reveal
+            from="mask"
+            delay={200}
+            duration={900}
+            className="absolute left-[16%] right-[16%] top-6 hidden h-px bg-border md:block"
+          />
+          {STEPS.map((item, i) => (
+            <Reveal key={item.step} from="up" delay={i * 160} className="relative space-y-4 text-center">
               <div className="relative mx-auto w-fit">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-border bg-card shadow-sm">
+                <Reveal from="scale" delay={i * 160 + 80} className="flex h-12 w-12 items-center justify-center rounded-lg border border-border bg-card shadow-sm">
                   <item.icon className="h-5 w-5 text-foreground" />
-                </div>
+                </Reveal>
               </div>
               <p className="text-xs font-medium text-muted-foreground">{item.step}</p>
               <div className="space-y-1.5">
                 <h3 className="text-lg font-semibold tracking-tight text-foreground">{item.title}</h3>
                 <p className="mx-auto max-w-xs text-sm leading-relaxed text-muted-foreground">{item.desc}</p>
               </div>
-            </div>
+            </Reveal>
           ))}
         </div>
 
-        <div className="mt-16 text-center">
+        <Reveal from="up" delay={400} className="mt-16 text-center">
           <button
             onClick={() => navigate('/chat')}
             className="group inline-flex h-10 items-center justify-center gap-2 rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
@@ -466,7 +483,7 @@ function HowItWorks({ navigate }) {
             Coba sekarang
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </button>
-        </div>
+        </Reveal>
       </div>
     </section>
   )
@@ -480,8 +497,8 @@ function FAQ({ navigate }) {
 
       <div className="relative mx-auto grid max-w-7xl gap-14 px-6 lg:grid-cols-[1fr,1.35fr] lg:gap-20">
         {/* Left: heading + support card */}
-        <div className="lg:sticky lg:top-28 lg:self-start">
-          <div className="space-y-4">
+        <Reveal from="left" className="lg:sticky lg:top-28 lg:self-start">
+          <Reveal from="up" className="space-y-4">
             <span className="inline-block rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
               FAQ
             </span>
@@ -492,9 +509,9 @@ function FAQ({ navigate }) {
               Semua yang perlu kamu tahu soal KeyzAI. Nggak nemu jawabannya? Tanya saja —
               AI-nya selalu siap bantu.
             </p>
-          </div>
+          </Reveal>
 
-          <div className="relative mt-10 overflow-hidden rounded-2xl border border-border bg-card p-6">
+          <Reveal from="up" delay={150} className="relative mt-10 overflow-hidden rounded-2xl border border-border bg-card p-6">
             <div className="absolute inset-0 bg-dots opacity-50 [mask-image:radial-gradient(ellipse_60%_80%_at_50%_50%,black,transparent)]" />
             <div className="relative flex flex-col gap-4 sm:flex-row sm:items-start">
               <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg border border-border bg-muted">
@@ -515,30 +532,31 @@ function FAQ({ navigate }) {
                 </Button>
               </div>
             </div>
-          </div>
-        </div>
+          </Reveal>
+        </Reveal>
 
         {/* Right: accordion */}
         <div className="space-y-3">
-          {FAQS.map((item) => (
-            <details
-              key={item.q}
-              className="group overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 open:border-primary/30 open:shadow-md"
-            >
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-5 transition-colors hover:bg-accent/40 [&::-webkit-details-marker]:hidden">
-                <span className="font-heading text-sm font-semibold text-foreground md:text-base">
-                  {item.q}
-                </span>
-                <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border border-border bg-muted transition-all duration-300 group-open:rotate-45 group-open:border-primary/40 group-open:bg-primary group-open:text-primary-foreground">
-                  <Plus className="h-3.5 w-3.5" />
-                </span>
-              </summary>
+          {FAQS.map((item, i) => (
+            <Reveal key={item.q} from="right" delay={i * 90} as="div">
+              <details
+                className="group overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 open:border-primary/30 open:shadow-md"
+              >
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-5 transition-colors hover:bg-accent/40 [&::-webkit-details-marker]:hidden">
+                  <span className="font-heading text-sm font-semibold text-foreground md:text-base">
+                    {item.q}
+                  </span>
+                  <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border border-border bg-muted transition-all duration-300 group-open:rotate-45 group-open:border-primary/40 group-open:bg-primary group-open:text-primary-foreground">
+                    <Plus className="h-3.5 w-3.5" />
+                  </span>
+                </summary>
 
-              <div className="px-5 pb-5">
-                <div className="h-px bg-border" />
-                <p className="pt-4 text-sm leading-relaxed text-muted-foreground">{item.a}</p>
-              </div>
-            </details>
+                <div className="px-5 pb-5">
+                  <div className="h-px bg-border" />
+                  <p className="pt-4 text-sm leading-relaxed text-muted-foreground">{item.a}</p>
+                </div>
+              </details>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -549,15 +567,15 @@ function FAQ({ navigate }) {
 function Footer() {
   return (
     <footer className="border-t border-border">
-      <div className="mx-auto max-w-7xl px-6 py-14">
+      <Reveal from="up" className="mx-auto max-w-7xl px-6 py-14">
         <div className="mb-12 flex flex-col justify-between gap-10 md:flex-row">
-          <div className="max-w-xs space-y-4">
+          <Reveal from="left" className="max-w-xs space-y-4">
             <Logo />
             <p className="text-sm leading-relaxed text-muted-foreground">
               Teman AI-mu yang serba cepat untuk jawaban, ide, dan semuanya.
             </p>
-          </div>
-          <div className="grid grid-cols-2 gap-10 sm:grid-cols-3">
+          </Reveal>
+          <Reveal from="right" delay={100} className="grid grid-cols-2 gap-10 sm:grid-cols-3">
             <div className="space-y-3">
               <p className="text-sm font-medium text-foreground">Produk</p>
               {NAV_LINKS.map((link) => (
@@ -582,7 +600,7 @@ function Footer() {
                 </a>
               ))}
             </div>
-          </div>
+          </Reveal>
         </div>
         <div className="flex flex-col items-center justify-between gap-4 border-t border-border pt-8 sm:flex-row">
           <p className="text-xs text-muted-foreground">© 2026 KeyzAI. Seluruh hak cipta dilindungi.</p>
@@ -598,7 +616,7 @@ function Footer() {
             </a>
           </p>
         </div>
-      </div>
+      </Reveal>
     </footer>
   )
 }
