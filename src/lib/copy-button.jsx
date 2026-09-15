@@ -38,14 +38,14 @@ export function CopyButton({ text, withLabel = false, className }) {
     <button
       type="button"
       onClick={handleCopy}
-      aria-label={copied ? 'Copied' : 'Copy'}
+      aria-label={copied ? 'Tersalin' : 'Salin'}
       className={cn(
         'flex items-center gap-1 rounded p-1 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground',
         className
       )}
     >
       {copied ? <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
-      {withLabel && <span>{copied ? 'Copied' : 'Copy'}</span>}
+      {withLabel && <span>{copied ? 'Tersalin' : 'Salin'}</span>}
     </button>
   )
 }

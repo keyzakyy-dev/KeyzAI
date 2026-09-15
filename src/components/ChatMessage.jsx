@@ -8,7 +8,7 @@ function closeOpenFence(s) {
   return (s.match(/```/g)?.length || 0) % 2 === 1 ? s + '\n```' : s
 }
 
-const THINKING_WORDS = ['Thinking…', 'Researching…', 'Writing…', 'Polishing…']
+const THINKING_WORDS = ['Berpikir…', 'Menelusuri…', 'Menulis…', 'Memoles…']
 
 function ThinkingIndicator() {
   const [i, setI] = useState(0)
@@ -90,7 +90,7 @@ export function ChatMessage({ role, content, timestamp, streaming, id, onEdit, e
             <button
               type="button"
               onClick={() => onEditCancel?.()}
-              aria-label="Cancel editing"
+              aria-label="Batalkan edit"
               className="rounded-lg px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
             >
               Batalkan
@@ -99,7 +99,7 @@ export function ChatMessage({ role, content, timestamp, streaming, id, onEdit, e
               type="button"
               onClick={handleSave}
               disabled={!draft.trim()}
-              aria-label="Save edit"
+              aria-label="Simpan editan"
               className="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-opacity disabled:opacity-40"
             >
               Simpan
@@ -113,7 +113,7 @@ export function ChatMessage({ role, content, timestamp, streaming, id, onEdit, e
                 <button
                   type="button"
                   onClick={() => onEdit(id)}
-                  aria-label="Edit message"
+                  aria-label="Edit pesan"
                   className="flex items-center gap-1 rounded p-1 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                 >
                   <Pencil className="h-3.5 w-3.5" />
@@ -123,8 +123,8 @@ export function ChatMessage({ role, content, timestamp, streaming, id, onEdit, e
                 <button
                   type="button"
                   onClick={() => onRegenerate(id)}
-                  aria-label="Regenerate response"
-                  title="Regenerate"
+                  aria-label="Buat ulang respons"
+                  title="Buat ulang"
                   className="flex items-center gap-1 rounded p-1 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                 >
                   <RotateCcw className="h-3.5 w-3.5" />

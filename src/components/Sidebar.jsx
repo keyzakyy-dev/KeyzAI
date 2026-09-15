@@ -1,19 +1,19 @@
 import { Plus, MessageSquare, Trash2, Pin } from 'lucide-react'
 import { Button } from './ui/button'
 
-const GROUPS = ['Today', 'Yesterday', 'Previous 7 days', 'Older']
+const GROUPS = ['Hari ini', 'Kemarin', '7 hari terakhir', 'Lebih lama']
 
 function groupKey(ts) {
-  if (!ts) return 'Older'
+  if (!ts) return 'Lebih lama'
   const d = new Date(ts)
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const thatDay = new Date(d.getFullYear(), d.getMonth(), d.getDate())
   const days = Math.round((today - thatDay) / 86400000)
-  if (days <= 0) return 'Today'
-  if (days === 1) return 'Yesterday'
-  if (days < 7) return 'Previous 7 days'
-  return 'Older'
+  if (days <= 0) return 'Hari ini'
+  if (days === 1) return 'Kemarin'
+  if (days < 7) return '7 hari terakhir'
+  return 'Lebih lama'
 }
 
 export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, onClear, open, onClose, collapsed, onDragStart }) {
@@ -56,7 +56,7 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
             <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border/70 bg-foreground/5">
               <Plus />
             </span>
-            New chat
+            Chat baru
           </Button>
         </div>
 
@@ -67,9 +67,9 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
               <div className="flex h-11 w-11 items-center justify-center rounded-full border border-dashed border-border">
                 <MessageSquare className="h-4 w-4 text-muted-foreground/50" />
               </div>
-              <p className="mt-3 text-sm font-medium text-muted-foreground">No conversations yet</p>
+              <p className="mt-3 text-sm font-medium text-muted-foreground">Belum ada percakapan</p>
               <p className="mt-1 text-xs leading-relaxed text-muted-foreground/60">
-                Your chats will show up here
+                Chat-mu akan muncul di sini
               </p>
             </div>
           ) : (
@@ -105,7 +105,7 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
                       <button
                         onClick={() => onDelete(conv.id)}
                         className="rounded-sm p-1.5 text-muted-foreground opacity-100 transition-opacity hover:text-destructive focus-visible:opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
-                        aria-label="Delete conversation"
+                        aria-label="Hapus percakapan"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
@@ -126,7 +126,7 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
             className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
           >
             <Trash2 className="w-4 h-4" />
-            Clear conversations
+            Bersihkan semua percakapan
           </Button>
         </div>
       </aside>

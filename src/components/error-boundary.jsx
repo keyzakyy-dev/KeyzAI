@@ -24,12 +24,12 @@ export class ErrorBoundary extends React.Component {
             <AlertTriangle className="h-6 w-6 text-destructive" />
           </div>
           <div className="space-y-1.5">
-            <h1 className="text-lg font-semibold tracking-tight text-foreground">Something went wrong</h1>
+            <h1 className="text-lg font-semibold tracking-tight text-foreground">Terjadi kesalahan</h1>
             <p className="max-w-sm text-sm text-muted-foreground">
-              An unexpected error occurred. Reloading usually fixes it.
+              Ada error tak terduga. Biasanya cukup muat ulang halaman.
             </p>
           </div>
-          <Button onClick={() => window.location.reload()}>Reload</Button>
+          <Button onClick={() => window.location.reload()}>Muat ulang</Button>
         </div>
       )
     }

@@ -6,16 +6,16 @@ const API_URL = import.meta.env?.VITE_WORKER_URL || 'http://localhost:8787'
 
 function validateMessage(message) {
   if (!message || typeof message !== 'string' || message.trim().length === 0) {
-    throw new Error('Message required')
+    throw new Error('Pesan tidak boleh kosong')
   }
   if (message.length > 2000) {
-    throw new Error('Message too long (max 2000 chars)')
+    throw new Error('Pesan terlalu panjang (maks 2000 karakter)')
   }
   return message.trim()
 }
 
 async function httpError(response) {
-  let msg = `Server error: ${response.status}`
+  let msg = `Error server: ${response.status}`
   try {
     const data = await response.json()
     if (data.error) msg = data.error
@@ -49,7 +49,7 @@ export async function sendMessage(message, model) {
   const data = await response.json()
 
   if (!data.success) {
-    throw new Error(data.error || 'Request failed')
+    throw new Error(data.error || 'Permintaan gagal')
   }
 
   return {
@@ -122,7 +122,7 @@ export async function sendMessageStream(message, onDelta, signal) {
     const contentType = response.headers.get('Content-Type') || ''
     if (!contentType.includes('text/event-stream') || !response.body) {
       const data = await response.json()
-      if (!data.success) throw new Error(data.error || 'Request failed')
+      if (!data.success) throw new Error(data.error || 'Permintaan gagal')
       onDelta(data.message)
       return data.message
     }

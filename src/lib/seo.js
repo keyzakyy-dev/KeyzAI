@@ -3,7 +3,7 @@
 export const SITE_URL = 'https://keyz-ai.vercel.app'
 export const SITE_NAME = 'KeyzAI'
 export const SITE_DESC =
-  'KeyzAI is a free AI chat companion. Brainstorm ideas, write code, debug, learn new topics, and get instant answers without signup.'
+  'KeyzAI adalah teman chat AI gratis. Brainstorm ide, tulis kode, debug, pelajari topik baru, dan dapatkan jawaban instan tanpa daftar.'
 
 function upsertMeta(attr, key, content) {
   if (!content) return

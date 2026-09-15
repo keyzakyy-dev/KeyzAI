@@ -121,7 +121,7 @@ export function ChatInterface() {
 
   useEffect(() => {
     applyPageMeta({
-      title: currentTitle || 'New chat',
+      title: currentTitle || 'Chat baru',
       path: '/chat',
     })
   }, [currentTitle])
@@ -155,9 +155,9 @@ export function ChatInterface() {
       return
     }
     setConfirm({
-      title: 'Start a new chat?',
-      description: 'The current messages in this chat will be discarded.',
-      confirmLabel: 'New chat',
+      title: 'Mulai chat baru?',
+      description: 'Pesan saat ini di chat ini akan dibuang.',
+      confirmLabel: 'Chat baru',
       onConfirm: startNewChat,
     })
   }
@@ -262,7 +262,7 @@ export function ChatInterface() {
     } catch (err) {
       console.error('Error:', err)
       const aborted = err.name === 'AbortError'
-      if (!aborted) setError(err.message || 'Failed to send message')
+      if (!aborted) setError(err.message || 'Gagal mengirim pesan')
       if (aborted && !streamed) {
         // stopped before any token arrived — drop the empty bubble
         setMessages((prev) => prev.filter((m) => m.id !== aiMsg.id))
@@ -310,9 +310,9 @@ export function ChatInterface() {
   const handleDeleteConv = (convId) => {
     const conv = conversations.find((c) => c.id === convId)
     setConfirm({
-      title: 'Delete this conversation?',
-      description: `"${conv?.title || 'This conversation'}" will be permanently removed. This cannot be undone.`,
-      confirmLabel: 'Delete',
+      title: 'Hapus percakapan ini?',
+      description: `"${conv?.title || 'Percakapan ini'}" akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.`,
+      confirmLabel: 'Hapus',
       danger: true,
       onConfirm: () => {
         setConversations((prev) => prev.filter((c) => c.id !== convId))
@@ -327,9 +327,9 @@ export function ChatInterface() {
   const handleClearAll = () => {
     if (conversations.length === 0) return
     setConfirm({
-      title: 'Clear all conversations?',
-      description: 'All conversations will be permanently deleted. This cannot be undone.',
-      confirmLabel: 'Delete all',
+      title: 'Hapus semua percakapan?',
+      description: 'Semua percakapan akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.',
+      confirmLabel: 'Hapus semua',
       danger: true,
       onConfirm: () => {
         setConversations([])
@@ -362,14 +362,14 @@ export function ChatInterface() {
               size="icon"
               className="hidden lg:flex -ml-2"
               onClick={() => setCollapsed((c) => !c)}
-              aria-label={collapsed ? 'Show sidebar' : 'Hide sidebar'}
+              aria-label={collapsed ? 'Tampilkan sidebar' : 'Sembunyikan sidebar'}
             >
               {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
             </Button>
             {currentConv || messages.length > 0 ? (
               <div className="flex min-w-0 items-center gap-0.5">
                 <p className="min-w-0 truncate text-sm font-medium text-foreground">
-                  {currentTitle || 'New chat'}
+                  {currentTitle || 'Chat baru'}
                 </p>
                 {currentConv && (
                 <div className="relative flex-shrink-0">
@@ -378,7 +378,7 @@ export function ChatInterface() {
                     size="icon"
                     className="h-7 w-7"
                     onClick={() => setMenuOpen((o) => !o)}
-                    aria-label="Chat options"
+                    aria-label="Opsi chat"
                     aria-haspopup="menu"
                     aria-expanded={menuOpen}
                   >
@@ -427,7 +427,7 @@ export function ChatInterface() {
           </div>
 
           <div className="flex flex-shrink-0 items-center gap-1.5">
-            <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
+            <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Ganti tema">
               {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
             <Button
@@ -435,7 +435,7 @@ export function ChatInterface() {
               size="icon"
               className="lg:hidden"
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              aria-label="Toggle sidebar"
+              aria-label="Buka/tutup sidebar"
             >
               {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </Button>
@@ -453,7 +453,7 @@ export function ChatInterface() {
             <div className="flex flex-1 items-center justify-center px-4 py-8 sm:py-12">
               <div className="w-full max-w-2xl space-y-4">
                 <h1 className="text-center font-serif text-2xl font-medium tracking-tight text-foreground sm:text-3xl md:text-4xl">
-                  What can I help you with?
+                  Ada yang bisa dibantu?
                 </h1>
 
                 <ChatInput onSend={handleSend} loading={loading} />
@@ -491,7 +491,7 @@ export function ChatInterface() {
                         className="gap-1.5"
                       >
                         <RotateCcw className="h-3.5 w-3.5" />
-                        Try again
+                        Coba lagi
                       </Button>
                     )}
                   </div>
@@ -507,7 +507,7 @@ export function ChatInterface() {
                 setAtBottom(true)
                 scrollToBottom()
               }}
-              aria-label="Scroll to bottom"
+              aria-label="Gulir ke bawah"
               className="absolute bottom-4 left-1/2 z-10 flex h-9 w-9 -translate-x-1/2 items-center justify-center rounded-full border border-border bg-background text-foreground shadow-lg transition-colors hover:bg-accent"
             >
               <ArrowDown className="h-4 w-4" />

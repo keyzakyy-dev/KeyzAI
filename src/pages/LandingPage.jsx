@@ -5,56 +5,56 @@ import { useTheme } from '../lib/use-theme'
 import { usePageMeta, SITE_NAME, SITE_DESC, faqSchema, injectJsonLd } from '../lib/seo'
 import {
   Zap, ArrowRight, Sparkles, MessageSquare, MessageCircle, Code2, PenLine, ShieldCheck,
-  BookOpen, Plus, Menu, X, Send, Check, Brain, Rocket, Sun, Moon,
+  BookOpen, Plus, Menu, X, Send, Brain, Rocket, Sun, Moon,
 } from 'lucide-react'
 
 const NAV_LINKS = [
-  { label: 'Features', href: '#features' },
-  { label: 'How it works', href: '#how-it-works' },
+  { label: 'Fitur', href: '#features' },
+  { label: 'Cara Kerja', href: '#how-it-works' },
   { label: 'FAQ', href: '#faq' },
 ]
 
 const STATS = [
-  { value: '<2s', label: 'Average response time' },
-  { value: '1M+', label: 'Questions answered' },
-  { value: '100+', label: 'Languages supported' },
-  { value: '$0', label: 'Cost to get started' },
+  { value: '<2s', label: 'Rata-rata waktu respons' },
+  { value: '1M+', label: 'Pertanyaan terjawab' },
+  { value: '100+', label: 'Bahasa didukung' },
+  { value: 'Rp0', label: 'Biaya untuk memulai' },
 ]
 
 const FEATURES = [
   {
     icon: MessageSquare,
-    title: 'Ask anything',
-    desc: 'From quick facts to deep questions — get thoughtful, accurate answers in seconds.',
+    title: 'Tanya apa saja',
+    desc: 'Dari fakta singkat sampai pertanyaan mendalam — dapat jawaban tepat dan rapi dalam hitungan detik.',
     span: 'md:col-span-2',
-    prompt: 'What is compound interest, explained simply?',
+    prompt: 'Apa itu bunga berbunga, dijelaskan dengan sederhana?',
   },
   {
     icon: PenLine,
-    title: 'Write faster',
-    desc: 'Draft emails, essays, and content with AI that matches your tone.',
+    title: 'Menulis lebih cepat',
+    desc: 'Draf email, esai, dan konten dengan AI yang mengikuti gaya tulisanmu.',
     span: '',
-    prompt: 'Write a friendly follow-up email to a client who went quiet.',
+    prompt: 'Tulis email follow-up yang ramah ke klien yang menghilang.',
   },
   {
     icon: Code2,
-    title: 'Debug code',
-    desc: 'Paste a snippet, get fixes, explanations, and optimizations instantly.',
+    title: 'Debug kode',
+    desc: 'Tempel snippet, langsung dapat perbaikan, penjelasan, dan optimasi.',
     span: '',
     code: true,
-    prompt: 'Why does this throw "cannot read property of undefined"?',
+    prompt: 'Kenapa ini error "cannot read property of undefined"?',
   },
   {
     icon: BookOpen,
-    title: 'Learn new topics',
-    desc: 'Break down complex subjects into simple, digestible explanations.',
+    title: 'Pelajari topik baru',
+    desc: 'Pecah topik rumit menjadi penjelasan sederhana yang mudah dipahami.',
     span: '',
-    prompt: 'Explain how neural networks learn, like I am a beginner.',
+    prompt: 'Jelaskan cara kerja neural network untuk pemula.',
   },
   {
     icon: ShieldCheck,
-    title: 'Private & secure',
-    desc: 'Your conversations stay yours. No tracking, no data selling.',
+    title: 'Privat & aman',
+    desc: 'Percakapanmu milikmu. Tanpa pelacakan, tanpa jual data.',
     span: '',
   },
 ]
@@ -62,40 +62,40 @@ const FEATURES = [
 const STEPS = [
   {
     icon: Rocket,
-    step: 'Step 1',
-    title: 'Open the chat',
-    desc: 'One click and you are in. No signup, no downloads, no credit card.',
+    step: 'Langkah 1',
+    title: 'Buka chat-nya',
+    desc: 'Sekali klik langsung masuk. Tanpa daftar, tanpa unduhan, tanpa kartu kredit.',
   },
   {
     icon: MessageSquare,
-    step: 'Step 2',
-    title: 'Ask your question',
-    desc: 'Type anything — code, ideas, homework, or that thing you keep googling.',
+    step: 'Langkah 2',
+    title: 'Ajukan pertanyaan',
+    desc: 'Ketik apa saja — kode, ide, PR, atau hal yang terus kamu cari di Google.',
   },
   {
     icon: Zap,
-    step: 'Step 3',
-    title: 'Get instant answers',
-    desc: 'Clear, accurate responses powered by advanced AI. Follow up as much as you want.',
+    step: 'Langkah 3',
+    title: 'Dapat jawaban instan',
+    desc: 'Respons jelas dan akurat berkat AI canggih. Lanjut tanya sesukamu.',
   },
 ]
 
 const FAQS = [
   {
-    q: 'Is KeyzAI really free?',
-    a: 'Yes. KeyzAI is completely free to use — no subscriptions, no hidden fees, no credit card required. Just open the chat and start asking.',
+    q: 'KeyzAI benar-benar gratis?',
+    a: 'Iya. KeyzAI sepenuhnya gratis — tanpa langganan, tanpa biaya tersembunyi, tanpa kartu kredit. Buka chat dan mulai bertanya.',
   },
   {
-    q: 'Do I need to create an account?',
-    a: 'No. There is no signup, no email, and no password. Click "Start chatting" and you are talking to AI in seconds.',
+    q: 'Harus bikin akun dulu?',
+    a: 'Tidak perlu. Tanpa daftar, tanpa email, tanpa password. Klik "Mulai Chatting" dan kamu langsung ngobrol dengan AI dalam hitungan detik.',
   },
   {
-    q: 'What kind of questions can I ask?',
-    a: 'Anything. Brainstorm business ideas, debug code, plan a trip, understand a concept, draft an email, or just have a conversation. If you can type it, KeyzAI can help.',
+    q: 'Boleh tanya apa saja?',
+    a: 'Apa saja. Brainstorm ide bisnis, debug kode, rencanakan perjalanan, pahami konsep, draf email, atau sekadar ngobrol. Selama bisa diketik, KeyzAI bisa bantu.',
   },
   {
-    q: 'Is my conversation data private?',
-    a: 'Your messages are processed to generate responses and are not used for advertising or sold to third parties. Your chats stay between you and the AI.',
+    q: 'Data percakapanku aman?',
+    a: 'Pesanmu diproses untuk menghasilkan respons dan tidak dipakai untuk iklan atau dijual ke pihak ketiga. Chat-mu tetap antara kamu dan AI.',
   },
 ]
 
@@ -124,19 +124,19 @@ function Navbar({ navigate, theme, toggleTheme }) {
           ))}
         </div>
         <div className="hidden md:flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
+          <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Ganti tema">
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
           <Button onClick={() => navigate('/chat')}>
-            Start Chatting
+            Mulai Chatting
             <ArrowRight />
           </Button>
         </div>
         <div className="md:hidden flex items-center gap-1">
-          <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
+          <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Ganti tema">
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
-          <Button variant="ghost" size="icon" onClick={() => setOpen(!open)} aria-label="Toggle menu">
+          <Button variant="ghost" size="icon" onClick={() => setOpen(!open)} aria-label="Buka menu">
             {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </Button>
         </div>
@@ -154,7 +154,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
             </a>
           ))}
           <Button onClick={() => navigate('/chat')} className="w-full mt-2">
-            Start Chatting
+            Mulai Chatting
             <ArrowRight />
           </Button>
         </div>
@@ -205,7 +205,7 @@ function ChatMock() {
         <div className="space-y-4 p-5">
           <div className="flex justify-end">
             <div className="max-w-[80%] rounded-lg bg-primary px-3.5 py-2 text-sm text-primary-foreground">
-              Explain quantum computing like I&apos;m 5
+              Jelaskan komputasi kuantum seolah aku anak kecil
             </div>
           </div>
           <div className="flex gap-2.5">
@@ -213,13 +213,13 @@ function ChatMock() {
               <Sparkles className="h-3.5 w-3.5 text-muted-foreground" />
             </div>
             <div className="max-w-[85%] rounded-lg bg-muted px-3.5 py-2 text-sm leading-relaxed text-foreground">
-              Imagine a coin spinning in the air — while it spins, it&apos;s both heads
-              and tails at once. Quantum particles do that too, until you look at them!
+              Bayangkan koin yang berputar di udara — selama berputar, dia sekaligus
+              gambar dan angka. Partikel kuantum juga begitu, sampai kamu melihatnya!
             </div>
           </div>
           <div className="flex justify-end">
             <div className="max-w-[80%] rounded-lg bg-primary px-3.5 py-2 text-sm text-primary-foreground">
-              Summarize it in one line
+              Ringkas dalam satu baris
             </div>
           </div>
           <div className="flex gap-2.5">
@@ -234,7 +234,7 @@ function ChatMock() {
 
         <div className="px-5 pb-5">
           <div className="flex items-center gap-3 rounded-lg border border-border bg-background px-3.5 py-2.5">
-            <span className="flex-1 text-sm text-muted-foreground">How can I help you today?</span>
+            <span className="flex-1 text-sm text-muted-foreground">Ada yang bisa dibantu?</span>
             <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary">
               <Send className="h-3.5 w-3.5 text-primary-foreground" />
             </div>
@@ -248,7 +248,7 @@ function ChatMock() {
         </div>
         <div>
           <p className="text-xs font-semibold leading-none text-foreground">&lt;2s</p>
-          <p className="mt-0.5 text-[10px] text-muted-foreground">response time</p>
+          <p className="mt-0.5 text-[10px] text-muted-foreground">waktu respons</p>
         </div>
       </div>
       <div className="absolute -right-5 bottom-16 hidden animate-float-delayed items-center gap-2.5 rounded-lg border border-border bg-background/95 px-3 py-2 shadow-lg backdrop-blur lg:flex">
@@ -256,8 +256,8 @@ function ChatMock() {
           <Brain className="h-3.5 w-3.5 text-foreground" />
         </div>
         <div>
-          <p className="text-xs font-semibold leading-none text-foreground">100+ topics</p>
-          <p className="mt-0.5 text-[10px] text-muted-foreground">it knows deeply</p>
+          <p className="text-xs font-semibold leading-none text-foreground">100+ topik</p>
+          <p className="mt-0.5 text-[10px] text-muted-foreground">dikuasai mendalam</p>
         </div>
       </div>
     </div>
@@ -273,27 +273,18 @@ function Hero({ navigate }) {
       <div className="relative mx-auto max-w-7xl px-6">
         <div className="grid items-center gap-16 lg:grid-cols-2">
           <div className="space-y-8">
-            <a
-              href="#features"
-              className="inline-flex animate-fade-up items-center gap-2 rounded-full border border-border bg-background px-3.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
-            >
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              Introducing KeyzAI — chat smarter, faster
-              <ArrowRight className="h-3 w-3" />
-            </a>
-
             <h1
               className="animate-fade-up text-4xl font-bold leading-[1.08] tracking-tighter text-foreground sm:text-5xl md:text-6xl xl:text-7xl"
               style={{ animationDelay: '0.1s' }}
             >
-              Ask anything.
+              Tanya apa saja.
               <br />
-              Understand everything.
+              Pahami semuanya.
             </h1>
 
             <p className="animate-fade-up max-w-lg text-lg leading-relaxed text-muted-foreground" style={{ animationDelay: '0.2s' }}>
-              KeyzAI is your instant AI companion. Brainstorm ideas, write code,
-              learn new topics, and get answers in seconds.
+              KeyzAI adalah teman AI-mu yang serba cepat. Brainstorm ide, tulis kode,
+              pelajari topik baru, dan dapat jawaban dalam hitungan detik.
             </p>
 
             <div className="animate-fade-up flex flex-col gap-3 sm:flex-row" style={{ animationDelay: '0.25s' }}>
@@ -301,24 +292,15 @@ function Hero({ navigate }) {
                 onClick={() => navigate('/chat')}
                 className="group inline-flex h-10 w-full sm:w-auto items-center justify-center gap-2 rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
               >
-                Start chatting free
+                Mulai chatting gratis
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </button>
               <a
                 href="#how-it-works"
                 className="inline-flex h-10 w-full sm:w-auto items-center justify-center gap-2 rounded-md border border-input bg-background px-6 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
               >
-                See how it works
+                Lihat cara kerjanya
               </a>
-            </div>
-
-            <div className="animate-fade-up flex flex-wrap gap-x-6 gap-y-2" style={{ animationDelay: '0.3s' }}>
-              {['No signup required', 'Free forever', 'Powered by GPT'].map((item) => (
-                <span key={item} className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                  {item}
-                </span>
-              ))}
             </div>
           </div>
 
@@ -361,7 +343,7 @@ function FeatureCard({ icon: Icon, title, desc, span, prompt, onPrompt, children
       {children}
       {prompt && (
         <span className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-foreground">
-          Try it <ArrowRight className="h-3 w-3" />
+          Coba <ArrowRight className="h-3 w-3" />
         </span>
       )}
     </div>
@@ -390,13 +372,13 @@ function Features({ navigate }) {
       <div className="mx-auto max-w-7xl px-6">
         <div className="mx-auto mb-16 max-w-2xl space-y-4 text-center">
           <span className="inline-block rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
-            Features
+            Fitur
           </span>
           <h2 className="text-4xl font-bold tracking-tighter text-foreground md:text-5xl">
-            One AI, endless possibilities
+            Satu AI, kemungkinan tanpa batas
           </h2>
           <p className="text-lg text-muted-foreground">
-            Everything you need to think, create, and learn faster — in one clean interface.
+            Semua yang kamu butuhkan untuk berpikir, menciptakan, dan belajar lebih cepat — dalam satu antarmuka yang rapi.
           </p>
         </div>
 
@@ -405,7 +387,7 @@ function Features({ navigate }) {
             <div className="mt-6 space-y-3">
               <div className="flex justify-end">
                 <div className="rounded-lg bg-primary px-3 py-1.5 text-xs text-primary-foreground">
-                  What is compound interest?
+                  Apa itu bunga berbunga?
                 </div>
               </div>
               <div className="flex gap-2.5">
@@ -427,7 +409,7 @@ function Features({ navigate }) {
             <pre className="mt-4 overflow-x-auto rounded-lg border border-border bg-muted/50 p-3.5 font-mono text-xs leading-relaxed">
               <code>
                 <span className="text-rose-600 dark:text-rose-400">const</span> <span className="text-blue-600 dark:text-blue-400">total</span> = (price, tax) =&gt; {'{'}{'\n'}
-                {'  '}<span className="text-muted-foreground">// AI: tax should be multiplied, not added</span>{'\n'}
+                {'  '}<span className="text-muted-foreground">// AI: pajak harusnya dikali, bukan ditambah</span>{'\n'}
                 {'  '}<span className="text-emerald-600 dark:text-emerald-400">return</span> price + price * tax;{'\n'}
                 {'}'};
               </code>
@@ -448,13 +430,13 @@ function HowItWorks({ navigate }) {
       <div className="mx-auto max-w-7xl px-6">
         <div className="mx-auto mb-16 max-w-2xl space-y-4 text-center">
           <span className="inline-block rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
-            How it works
+            Cara Kerja
           </span>
           <h2 className="text-4xl font-bold tracking-tighter text-foreground md:text-5xl">
-            Answers in three steps
+            Jawaban dalam tiga langkah
           </h2>
           <p className="text-lg text-muted-foreground">
-            From zero to your first answer in under ten seconds.
+            Dari nol sampai jawaban pertama dalam waktu kurang dari sepuluh detik.
           </p>
         </div>
 
@@ -481,7 +463,7 @@ function HowItWorks({ navigate }) {
             onClick={() => navigate('/chat')}
             className="group inline-flex h-10 items-center justify-center gap-2 rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
           >
-            Try it now
+            Coba sekarang
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </button>
         </div>
@@ -504,11 +486,11 @@ function FAQ({ navigate }) {
               FAQ
             </span>
             <h2 className="text-4xl font-bold tracking-tighter text-foreground md:text-5xl">
-              Frequently asked questions
+              Pertanyaan yang sering diajukan
             </h2>
             <p className="max-w-md text-lg text-muted-foreground">
-              Everything you need to know about KeyzAI. Can&apos;t find your answer? Just ask —
-              the AI is always happy to help.
+              Semua yang perlu kamu tahu soal KeyzAI. Nggak nemu jawabannya? Tanya saja —
+              AI-nya selalu siap bantu.
             </p>
           </div>
 
@@ -521,14 +503,14 @@ function FAQ({ navigate }) {
               <div className="space-y-3">
                 <div>
                   <h3 className="font-heading text-base font-semibold tracking-tight text-foreground">
-                    Still have questions?
+                    Masih ada pertanyaan?
                   </h3>
                   <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                    Get instant answers from the AI — no wait time, no ticket queue, available 24/7.
+                    Dapat jawaban instan dari AI — tanpa antre, tanpa tiket, aktif 24/7.
                   </p>
                 </div>
                 <Button onClick={() => navigate('/chat')} size="sm">
-                  Start a chat
+                  Mulai chat
                   <ArrowRight />
                 </Button>
               </div>
@@ -572,12 +554,12 @@ function Footer() {
           <div className="max-w-xs space-y-4">
             <Logo />
             <p className="text-sm leading-relaxed text-muted-foreground">
-              Your instant AI companion for answers, ideas, and everything in between.
+              Teman AI-mu yang serba cepat untuk jawaban, ide, dan semuanya.
             </p>
           </div>
           <div className="grid grid-cols-2 gap-10 sm:grid-cols-3">
             <div className="space-y-3">
-              <p className="text-sm font-medium text-foreground">Product</p>
+              <p className="text-sm font-medium text-foreground">Produk</p>
               {NAV_LINKS.map((link) => (
                 <a key={link.label} href={link.href} className="block text-sm text-muted-foreground transition-colors hover:text-foreground">
                   {link.label}
@@ -585,16 +567,16 @@ function Footer() {
               ))}
             </div>
             <div className="space-y-3">
-              <p className="text-sm font-medium text-foreground">Company</p>
-              {['Terms', 'Privacy', 'Contact'].map((label) => (
+              <p className="text-sm font-medium text-foreground">Perusahaan</p>
+              {['Ketentuan', 'Privasi', 'Kontak'].map((label) => (
                 <a key={label} href="#" className="block text-sm text-muted-foreground transition-colors hover:text-foreground">
                   {label}
                 </a>
               ))}
             </div>
             <div className="space-y-3">
-              <p className="text-sm font-medium text-foreground">Resources</p>
-              {['OpenAI Docs', 'Status', 'Changelog'].map((label) => (
+              <p className="text-sm font-medium text-foreground">Sumber Daya</p>
+              {['Dokumentasi OpenAI', 'Status', 'Riwayat Perubahan'].map((label) => (
                 <a key={label} href="#" className="block text-sm text-muted-foreground transition-colors hover:text-foreground">
                   {label}
                 </a>
@@ -603,9 +585,9 @@ function Footer() {
           </div>
         </div>
         <div className="flex flex-col items-center justify-between gap-4 border-t border-border pt-8 sm:flex-row">
-          <p className="text-xs text-muted-foreground">© 2026 KeyzAI. All rights reserved.</p>
+          <p className="text-xs text-muted-foreground">© 2026 KeyzAI. Seluruh hak cipta dilindungi.</p>
           <p className="text-xs text-muted-foreground">
-            Powered by OpenAI · Built with React &amp; Tailwind · by{' '}
+            oleh{' '}
             <a
               href="https://github.com/keyzakyy-dev"
               target="_blank"

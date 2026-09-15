@@ -44,7 +44,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false }) {
             }
           }}
           onKeyDown={handleKeyDown}
-          placeholder="How can I help you today?"
+          placeholder="Ada yang bisa dibantu?"
           className="min-h-[52px] max-h-40 resize-none overflow-y-auto border-0 bg-transparent px-4 pt-3.5 pb-1 text-base text-foreground placeholder:font-serif placeholder:text-sm placeholder:text-muted-foreground/80 focus-visible:ring-0 focus-visible:ring-offset-0"
           rows={1}
         />
@@ -72,7 +72,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false }) {
               size="icon"
               variant="destructive"
               className="h-8 w-8 flex-shrink-0 rounded-full"
-              aria-label="Stop generating"
+              aria-label="Hentikan generasi"
             >
               <Square className="h-3 w-3 fill-current" />
             </Button>
@@ -82,7 +82,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false }) {
               disabled={!message.trim()}
               size="icon"
               className="h-8 w-8 flex-shrink-0 rounded-full"
-              aria-label="Send message"
+              aria-label="Kirim pesan"
             >
               <ArrowUp className="h-4 w-4" />
             </Button>
@@ -91,8 +91,8 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false }) {
       </div>
       {showDisclaimer && (
         <div className="mt-2 flex items-center justify-between gap-3 text-[10px] leading-none text-muted-foreground/70">
-          <span className="hidden sm:block">KeyzAI can make mistakes. Consider checking important information.</span>
-          <span className="sm:hidden">KeyzAI is an AI and can make mistakes.</span>
+          <span className="hidden sm:block">KeyzAI bisa keliru. Cek kembali info penting.</span>
+          <span className="sm:hidden">KeyzAI adalah AI dan bisa keliru.</span>
           <a
             href="https://github.com/keyzakyy-dev"
             target="_blank"

@@ -1,7 +1,7 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import { Button } from './button'
 
-export function ConfirmDialog({ open, onOpenChange, title, description, confirmLabel = 'Confirm', cancelLabel = 'Cancel', danger = false, onConfirm }) {
+export function ConfirmDialog({ open, onOpenChange, title, description, confirmLabel = 'Konfirmasi', cancelLabel = 'Batal', danger = false, onConfirm }) {
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
