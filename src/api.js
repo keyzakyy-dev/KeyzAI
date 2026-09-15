@@ -90,11 +90,11 @@ export async function generateTitle(userText, aiText) {
  * Optional `signal` lets the caller abort generation (throws AbortError).
  * Returns the full text.
  */
-export async function sendMessageStream(message, onDelta, signal) {
+export async function sendMessageStream(message, onDelta, signal, model) {
   const msg = validateMessage(message)
 
   if (typeof ReadableStream === 'undefined') {
-    const fallback = await sendMessage(message)
+    const fallback = await sendMessage(message, model)
     onDelta(fallback.message)
     return fallback.message
   }
@@ -113,7 +113,7 @@ export async function sendMessageStream(message, onDelta, signal) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ message: msg, stream: true }),
+      body: JSON.stringify({ message: msg, stream: true, ...(model ? { model } : {}) }),
       signal: controller.signal,
     })
 

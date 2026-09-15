@@ -51,10 +51,14 @@ export default {
 
         const apiKey = env.OPENAI_API_KEY
         const apiUrl = env.OPENAI_API_URL || 'https://api.openai.com/v1'
-        const modelName = model || env.OPENAI_MODEL || 'deepseek-v4.1-flash'
+        const ALLOWED_MODELS = ['qwen3.8-flash', 'glm-5.3-flash']
+        if (model && !ALLOWED_MODELS.includes(model)) {
+          return response(false, 'Unknown model', 400, { error: `Model tidak dikenal: ${model}` }, corsHeaders(request, env))
+        }
+        const modelName = model || env.OPENAI_MODEL || ALLOWED_MODELS[0]
 
         if (!apiKey) {
-          return response(false, 'API key not configured', 500, { error: 'Server error' }, corsHeaders(request, env))
+          return response(false, 'API key not configured', 500, { error: 'Server error: OPENAI_API_KEY secret is not set' }, corsHeaders(request, env))
         }
 
         // Streaming: relay upstream SSE body as-is
@@ -79,7 +83,7 @@ export default {
           if (!upstream.ok) {
             const error = await upstream.text()
             console.error('OpenAI stream error:', error)
-            return response(false, 'OpenAI error', 500, { error: 'Service error' }, corsHeaders(request, env))
+            return response(false, 'OpenAI error', 500, { error: `Service error (${upstream.status})` }, corsHeaders(request, env))
           }
 
           return new Response(upstream.body, {
@@ -110,7 +114,7 @@ export default {
         if (!openaiRes.ok) {
           const error = await openaiRes.text()
           console.error('OpenAI error:', error)
-          return response(false, 'OpenAI error', 500, { error: 'Service error' }, corsHeaders(request, env))
+          return response(false, 'OpenAI error', 500, { error: `Service error (${openaiRes.status})` }, corsHeaders(request, env))
         }
 
         const data = await openaiRes.json()

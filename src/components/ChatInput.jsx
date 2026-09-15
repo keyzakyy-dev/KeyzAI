@@ -1,11 +1,14 @@
 import { useState, useRef, useEffect } from 'react'
-import { ArrowUp, Square } from 'lucide-react'
+import { ArrowUp, Square, ChevronDown, Check, Sparkles } from 'lucide-react'
 import { Button } from './ui/button'
 import { Textarea } from './ui/textarea'
+import { MODELS } from '../lib/models'
 
-export function ChatInput({ onSend, loading, onStop, showDisclaimer = false }) {
+export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, model, onModelChange }) {
   const [message, setMessage] = useState('')
+  const [modelOpen, setModelOpen] = useState(false)
   const textareaRef = useRef(null)
+  const modelBtnRef = useRef(null)
 
   useEffect(() => {
     const el = textareaRef.current
@@ -13,6 +16,15 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false }) {
     el.style.height = 'auto'
     el.style.height = `${Math.min(el.scrollHeight, 160)}px`
   }, [message])
+
+  useEffect(() => {
+    if (!modelOpen) return
+    const onDocClick = (e) => {
+      if (modelBtnRef.current && !modelBtnRef.current.contains(e.target)) setModelOpen(false)
+    }
+    document.addEventListener('mousedown', onDocClick)
+    return () => document.removeEventListener('mousedown', onDocClick)
+  }, [modelOpen])
 
   const handleSend = () => {
     if (message.trim() && !loading) {
@@ -31,6 +43,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false }) {
   const charCount = message.length
   const maxChars = 2000
   const nearLimit = charCount > 1800
+  const currentModel = MODELS.find((m) => m.id === model) || MODELS[0]
 
   return (
     <div className="mx-auto w-full max-w-3xl">
@@ -50,21 +63,72 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false }) {
         />
 
         <div className="flex items-center justify-between gap-3 px-3 pb-2.5">
-          <span className="flex min-w-0 items-center gap-1.5 text-[11px] text-muted-foreground">
-            {nearLimit ? (
-              <span className={`tabular-nums ${charCount > 1950 ? 'text-destructive' : ''}`}>
-                {charCount}/{maxChars}
-              </span>
-            ) : (
-              <span className="hidden items-center gap-1.5 sm:flex">
-                <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-sans text-foreground">↵</kbd>
-                <span>kirim</span>
-                <span className="opacity-40">·</span>
-                <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-sans text-foreground">⇧↵</kbd>
-                <span>baris baru</span>
-              </span>
+          <div className="flex min-w-0 items-center gap-2">
+            {model && onModelChange && (
+              <div ref={modelBtnRef} className="relative">
+                <button
+                  type="button"
+                  onClick={() => setModelOpen((o) => !o)}
+                  aria-haspopup="listbox"
+                  aria-expanded={modelOpen}
+                  aria-label="Pilih model"
+                  className="inline-flex h-7 items-center gap-1.5 rounded-full border border-border bg-background px-2.5 text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <Sparkles className="h-3 w-3" />
+                  <span className="truncate">{currentModel.label}</span>
+                  <ChevronDown className={`h-3 w-3 transition-transform ${modelOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {modelOpen && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setModelOpen(false)} />
+                    <ul
+                      role="listbox"
+                      className="absolute bottom-full left-0 z-50 mb-1.5 w-56 overflow-hidden rounded-lg border border-border bg-popover p-1 shadow-md"
+                    >
+                      {MODELS.map((m) => {
+                        const active = m.id === model
+                        return (
+                          <li key={m.id} role="option" aria-selected={active}>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                onModelChange(m.id)
+                                setModelOpen(false)
+                              }}
+                              className={`flex w-full items-center justify-between gap-2 rounded-md px-2.5 py-1.5 text-left text-sm transition-colors hover:bg-accent ${
+                                active ? 'text-foreground' : 'text-muted-foreground'
+                              }`}
+                            >
+                              <span className="min-w-0">
+                                <span className="block truncate font-medium">{m.label}</span>
+                                <span className="block truncate text-[11px] text-muted-foreground/70">{m.id}</span>
+                              </span>
+                              {active && <Check className="h-3.5 w-3.5 shrink-0" />}
+                            </button>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  </>
+                )}
+              </div>
             )}
-          </span>
+            <span className="flex min-w-0 items-center gap-1.5 text-[11px] text-muted-foreground">
+              {nearLimit ? (
+                <span className={`tabular-nums ${charCount > 1950 ? 'text-destructive' : ''}`}>
+                  {charCount}/{maxChars}
+                </span>
+              ) : (
+                <span className="hidden items-center gap-1.5 lg:flex">
+                  <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-sans text-foreground">↵</kbd>
+                  <span>kirim</span>
+                  <span className="opacity-40">·</span>
+                  <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-sans text-foreground">⇧↵</kbd>
+                  <span>baris baru</span>
+                </span>
+              )}
+            </span>
+          </div>
 
           {loading ? (
             <Button

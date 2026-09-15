@@ -10,6 +10,7 @@ import { ConfirmDialog } from './ui/confirm-dialog'
 import { RenameDialog } from './ui/rename-dialog'
 import { useTheme } from '../lib/use-theme'
 import { applyPageMeta } from '../lib/seo'
+import { loadModel, saveModel } from '../lib/models'
 
 const SIDEBAR_MIN = 220
 const SIDEBAR_MAX = 420
@@ -59,10 +60,12 @@ export function ChatInterface() {
   const [editingId, setEditingId] = useState(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const [renameOpen, setRenameOpen] = useState(false)
+  const [model, setModel] = useState(loadModel)
   const scrollAreaRef = useRef(null)
   const abortRef = useRef(null)
 
   const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
+  const changeModel = (id) => { setModel(id); saveModel(id) }
 
   const startResize = (e) => {
     e.preventDefault()
@@ -236,7 +239,8 @@ export function ChatInterface() {
             prev.map((m) => (m.id === aiMsg.id ? { ...m, content: partial } : m))
           )
         },
-        controller.signal
+        controller.signal,
+        model
       )
       const finalMessages = history.map((m) =>
         m.id === aiMsg.id ? { ...m, content: text, streaming: false } : m
@@ -456,7 +460,7 @@ export function ChatInterface() {
                   Ada yang bisa dibantu?
                 </h1>
 
-                <ChatInput onSend={handleSend} loading={loading} />
+                <ChatInput onSend={handleSend} loading={loading} model={model} onModelChange={changeModel} />
               </div>
             </div>
           ) : (
@@ -517,7 +521,7 @@ export function ChatInterface() {
 
         {messages.length > 0 && (
           <div className="flex-shrink-0 bg-background p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-            <ChatInput onSend={handleSend} loading={loading} onStop={handleStop} showDisclaimer />
+            <ChatInput onSend={handleSend} loading={loading} onStop={handleStop} showDisclaimer model={model} onModelChange={changeModel} />
           </div>
         )}
       </main>
