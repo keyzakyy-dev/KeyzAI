@@ -595,14 +595,6 @@ function CTA({ navigate }) {
             Ready when you are
           </span>
 
-          <h2 className="text-4xl font-bold leading-tight tracking-tighter text-foreground md:text-5xl">
-            Meet your new
-            <br />
-            <span className="inline-block rounded-xl bg-primary/10 px-3 py-1">
-              thinking partner
-            </span>
-          </h2>
-
           <p className="mx-auto mt-5 max-w-md text-lg text-muted-foreground">
             Join thousands asking smarter questions. It takes ten seconds to start.
           </p>
