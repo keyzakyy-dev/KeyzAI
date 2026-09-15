@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
 import { Sidebar } from './Sidebar'
-import { Plus, Sun, Moon, Menu, X, ArrowDown, PanelLeftClose, PanelLeftOpen, AlertCircle, RotateCcw, ChevronDown, Pin, Pencil, Trash2 } from 'lucide-react'
+import { Sun, Moon, Menu, X, ArrowDown, PanelLeftClose, PanelLeftOpen, AlertCircle, RotateCcw, ChevronDown, Pin, Pencil, Trash2 } from 'lucide-react'
 import { sendMessageStream, generateTitle } from '../api'
 import { Button } from './ui/button'
 import { ConfirmDialog } from './ui/confirm-dialog'
@@ -427,17 +427,6 @@ export function ChatInterface() {
           </div>
 
           <div className="flex flex-shrink-0 items-center gap-1.5">
-            {messages.length > 0 && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleNewChat}
-                className="hidden gap-1.5 text-muted-foreground hover:text-foreground sm:inline-flex"
-              >
-                <Plus className="h-4 w-4" />
-                New chat
-              </Button>
-            )}
             <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
               {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
