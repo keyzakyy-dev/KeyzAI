@@ -41,7 +41,17 @@ function loadState() {
 }
 
 export function ChatInterface() {
-  const [initialState] = useState(loadState)
+  const [initialState] = useState(() => {
+    const s = loadState()
+    // Self-heal: any conversation left with null title gets a fallback from its first user msg.
+    s.convs = s.convs.map((c) => {
+      if (c.title) return { ...c, titlePending: false }
+      const first = c.messages.find((m) => m.role === 'user')?.content || ''
+      const fb = first.length > 30 ? first.slice(0, 30) + '...' : first
+      return { ...c, title: fb || 'Chat', titlePending: false }
+    })
+    return s
+  })
   const [conversations, setConversations] = useState(initialState.convs)
   const [currentConvId, setCurrentConvId] = useState(initialState.activeId)
   const [messages, setMessages] = useState(
@@ -256,10 +266,10 @@ export function ChatInterface() {
         if (existing) {
           return prev.map((c) => (c.id === convId ? { ...c, messages: finalMessages } : c))
         }
-        return [...prev, { id: convId, title: null, titlePending: true, createdAt: Date.now(), messages: finalMessages }]
+        return [...prev, { id: convId, title: fallbackTitle, titlePending: true, createdAt: Date.now(), messages: finalMessages }]
       })
       if (isNewConversation) {
-        generateTitle(content, text)
+        generateTitle(content, text, model)
           .then((t) => patchConv(convId, { title: t || fallbackTitle, titlePending: false }))
           .catch(() => patchConv(convId, { title: fallbackTitle, titlePending: false }))
       }

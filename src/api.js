@@ -63,15 +63,15 @@ export async function sendMessage(message, model) {
  * Asks the model to name the conversation. Returns a short clean title,
  * or null if the call fails (caller should fall back).
  */
-export async function generateTitle(userText, aiText) {
+export async function generateTitle(userText, aiText, model) {
   const prompt =
-    'Summarize the following conversation as a very short title ' +
-    '(max 5 words). Output ONLY the title, no quotes, no trailing punctuation.\n\n' +
+    'Ringkas percakapan berikut jadi judul sangat pendek (maks 4 kata). ' +
+    'Hanya keluar judul, tanpa kutip, tanpa tanda baca di akhir.\n\n' +
     `User: ${String(userText).slice(0, 300)}\n\n` +
     `Assistant: ${String(aiText).slice(0, 500)}`
 
   try {
-    const { message } = await sendMessage(prompt)
+    const { message } = await sendMessage(prompt, model)
     const clean = String(message)
       .trim()
       .split('\n')[0]

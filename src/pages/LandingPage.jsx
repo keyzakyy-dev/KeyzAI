@@ -115,7 +115,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
   const [open, setOpen] = useState(false)
   return (
     <header className="fixed top-0 inset-x-0 z-50 border-b border-border bg-background/80 backdrop-blur-sm">
-      <nav className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
         <Logo />
         <div className="hidden md:flex items-center gap-6">
           {NAV_LINKS.map((link) => (
@@ -143,7 +143,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
         </div>
       </nav>
       {open && (
-        <div className="md:hidden border-t border-border bg-background px-6 py-4 space-y-1">
+        <div className="md:hidden border-t border-border bg-background px-4 sm:px-6 py-4 space-y-1">
           {NAV_LINKS.map((link) => (
             <a
               key={link.label}
@@ -267,15 +267,15 @@ function ChatMock() {
 
 function Hero({ navigate }) {
   return (
-    <section className="relative overflow-hidden pb-24 pt-32 lg:pb-32 lg:pt-40">
+    <section className="relative overflow-hidden pb-16 pt-24 sm:pb-24 sm:pt-32 lg:pb-32 lg:pt-40">
       <div className="absolute inset-0 bg-dots [mask-image:radial-gradient(ellipse_65%_55%_at_50%_0%,black,transparent)]" />
-      <div className="absolute left-1/2 top-0 h-72 w-[700px] -translate-x-1/2 rounded-full bg-foreground/5 blur-[120px]" />
+      <div className="absolute left-1/2 top-0 h-56 w-[520px] -translate-x-1/2 rounded-full bg-foreground/5 blur-[100px] sm:h-72 sm:w-[700px] sm:blur-[120px]" />
 
-      <div className="relative mx-auto max-w-7xl px-6">
-        <div className="grid items-center gap-16 lg:grid-cols-2">
-          <div className="space-y-8">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="grid items-center gap-10 sm:gap-16 lg:grid-cols-2">
+          <div className="space-y-6 sm:space-y-8">
             <h1
-              className="animate-fade-up text-4xl font-bold leading-[1.08] tracking-tighter text-foreground sm:text-5xl md:text-6xl xl:text-7xl"
+              className="animate-fade-up text-[34px] font-bold leading-[1.08] tracking-tighter text-foreground sm:text-5xl md:text-6xl xl:text-7xl"
               style={{ animationDelay: '0.1s' }}
             >
               Tanya apa saja.
@@ -283,7 +283,7 @@ function Hero({ navigate }) {
               Pahami semuanya.
             </h1>
 
-            <p className="animate-fade-up max-w-lg text-lg leading-relaxed text-muted-foreground" style={{ animationDelay: '0.2s' }}>
+            <p className="animate-fade-up max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg" style={{ animationDelay: '0.2s' }}>
               KeyzAI adalah teman AI-mu yang serba cepat. Brainstorm ide, tulis kode,
               pelajari topik baru, dan dapat jawaban dalam hitungan detik.
             </p>
@@ -305,7 +305,7 @@ function Hero({ navigate }) {
             </div>
           </div>
 
-          <div className="hidden md:block">
+          <div className="-mx-2 sm:mx-0">
             <ChatMock />
           </div>
         </div>
@@ -317,14 +317,14 @@ function Hero({ navigate }) {
 function Stats() {
   return (
     <section className="border-y border-border">
-      <Reveal from="up" className="mx-auto max-w-7xl px-6 py-14">
-        <div className="grid grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-4">
+      <Reveal from="up" className="mx-auto max-w-7xl px-4 sm:px-6 py-10 sm:py-14">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:gap-x-8 sm:gap-y-10 md:grid-cols-4">
           {STATS.map((stat, i) => (
             <Reveal key={stat.label} from="scale" delay={i * 90} className="space-y-1.5 text-center">
-              <p className="font-heading text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+              <p className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl md:text-4xl">
                 {stat.value}
               </p>
-              <p className="text-sm text-muted-foreground">{stat.label}</p>
+              <p className="text-xs text-muted-foreground sm:text-sm">{stat.label}</p>
             </Reveal>
           ))}
         </div>
@@ -339,7 +339,7 @@ function FeatureCard({ icon: Icon, title, desc, span, prompt, onPrompt, children
       <div className="mb-4 inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-muted">
         <Icon className="h-4 w-4 text-foreground" />
       </div>
-      <h3 className="mb-1.5 text-lg font-semibold tracking-tight text-foreground">{title}</h3>
+      <h3 className="mb-1.5 text-base sm:text-lg font-semibold tracking-tight text-foreground">{title}</h3>
       <p className="text-sm leading-relaxed text-muted-foreground">{desc}</p>
       {children}
       {prompt && (
@@ -350,7 +350,7 @@ function FeatureCard({ icon: Icon, title, desc, span, prompt, onPrompt, children
     </div>
   )
 
-  const className = `group relative overflow-hidden rounded-xl border border-border bg-card p-6 text-left transition-colors hover:bg-accent/40 ${span}`
+  const className = `group relative flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card p-5 sm:p-6 text-left transition-colors hover:bg-accent/40 ${span}`
 
   if (prompt && onPrompt) {
     return (
@@ -369,21 +369,21 @@ function SkeletonBar({ className = '' }) {
 function Features({ navigate }) {
   const onPrompt = (p) => navigate(`/chat?q=${encodeURIComponent(p)}`)
   return (
-    <section id="features" className="scroll-mt-20 py-24 lg:py-32">
-      <div className="mx-auto max-w-7xl px-6">
-        <Reveal from="up" className="mx-auto mb-16 max-w-2xl space-y-4 text-center">
+    <section id="features" className="scroll-mt-20 py-16 sm:py-24 lg:py-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <Reveal from="up" className="mx-auto mb-10 sm:mb-16 max-w-2xl space-y-4 text-center">
           <span className="inline-block rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
             Fitur
           </span>
-          <h2 className="text-4xl font-bold tracking-tighter text-foreground md:text-5xl">
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-foreground md:text-5xl">
             Satu AI, kemungkinan tanpa batas
           </h2>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-base sm:text-lg text-muted-foreground">
             Semua yang kamu butuhkan untuk berpikir, menciptakan, dan belajar lebih cepat — dalam satu antarmuka yang rapi.
           </p>
         </Reveal>
 
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-3 sm:gap-4 md:grid-cols-3">
           <Reveal from="tilt" delay={0} className="md:col-span-2">
             <FeatureCard {...FEATURES[0]} onPrompt={onPrompt}>
               <div className="mt-6 space-y-3">
@@ -438,21 +438,21 @@ function Features({ navigate }) {
 
 function HowItWorks({ navigate }) {
   return (
-    <section id="how-it-works" className="scroll-mt-20 border-y border-border py-24 lg:py-32">
-      <div className="mx-auto max-w-7xl px-6">
-        <Reveal from="up" className="mx-auto mb-16 max-w-2xl space-y-4 text-center">
+    <section id="how-it-works" className="scroll-mt-20 border-y border-border py-16 sm:py-24 lg:py-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <Reveal from="up" className="mx-auto mb-12 sm:mb-16 max-w-2xl space-y-4 text-center">
           <span className="inline-block rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
             Cara Kerja
           </span>
-          <h2 className="text-4xl font-bold tracking-tighter text-foreground md:text-5xl">
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-foreground md:text-5xl">
             Jawaban dalam tiga langkah
           </h2>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-base sm:text-lg text-muted-foreground">
             Dari nol sampai jawaban pertama dalam waktu kurang dari sepuluh detik.
           </p>
         </Reveal>
 
-        <div className="relative grid gap-12 md:grid-cols-3 md:gap-8">
+        <div className="relative grid gap-10 sm:gap-12 md:grid-cols-3 md:gap-8">
           <Reveal
             from="mask"
             delay={200}
@@ -491,21 +491,21 @@ function HowItWorks({ navigate }) {
 
 function FAQ({ navigate }) {
   return (
-    <section id="faq" className="relative scroll-mt-20 overflow-hidden py-24 lg:py-32">
+    <section id="faq" className="relative scroll-mt-20 overflow-hidden py-16 sm:py-24 lg:py-32">
       {/* Decorative glow */}
       <div className="pointer-events-none absolute -right-24 top-1/4 h-80 w-80 rounded-full bg-primary/5 blur-3xl" />
 
-      <div className="relative mx-auto grid max-w-7xl gap-14 px-6 lg:grid-cols-[1fr,1.35fr] lg:gap-20">
+      <div className="relative mx-auto grid max-w-7xl gap-10 sm:gap-14 px-4 sm:px-6 lg:grid-cols-[1fr,1.35fr] lg:gap-20">
         {/* Left: heading + support card */}
         <Reveal from="left" className="lg:sticky lg:top-28 lg:self-start">
           <Reveal from="up" className="space-y-4">
             <span className="inline-block rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
               FAQ
             </span>
-            <h2 className="text-4xl font-bold tracking-tighter text-foreground md:text-5xl">
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-foreground md:text-5xl">
               Pertanyaan yang sering diajukan
             </h2>
-            <p className="max-w-md text-lg text-muted-foreground">
+            <p className="max-w-md text-base sm:text-lg text-muted-foreground">
               Semua yang perlu kamu tahu soal KeyzAI. Nggak nemu jawabannya? Tanya saja —
               AI-nya selalu siap bantu.
             </p>
@@ -542,7 +542,7 @@ function FAQ({ navigate }) {
               <details
                 className="group overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 open:border-primary/30 open:shadow-md"
               >
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-5 transition-colors hover:bg-accent/40 [&::-webkit-details-marker]:hidden">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 sm:gap-4 p-4 sm:p-5 transition-colors hover:bg-accent/40 [&::-webkit-details-marker]:hidden">
                   <span className="font-heading text-sm font-semibold text-foreground md:text-base">
                     {item.q}
                   </span>
@@ -551,7 +551,7 @@ function FAQ({ navigate }) {
                   </span>
                 </summary>
 
-                <div className="px-5 pb-5">
+                <div className="px-4 sm:px-5 pb-4 sm:pb-5">
                   <div className="h-px bg-border" />
                   <p className="pt-4 text-sm leading-relaxed text-muted-foreground">{item.a}</p>
                 </div>
@@ -567,7 +567,7 @@ function FAQ({ navigate }) {
 function Footer() {
   return (
     <footer className="border-t border-border">
-      <Reveal from="up" className="mx-auto max-w-7xl px-6 py-14">
+      <Reveal from="up" className="mx-auto max-w-7xl px-4 sm:px-6 py-10 sm:py-14">
         <div className="mb-12 flex flex-col justify-between gap-10 md:flex-row">
           <Reveal from="left" className="max-w-xs space-y-4">
             <Logo />
