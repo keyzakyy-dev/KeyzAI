@@ -5,7 +5,7 @@ import { useTheme } from '../lib/use-theme'
 import { usePageMeta, SITE_NAME, SITE_DESC, faqSchema, injectJsonLd } from '../lib/seo'
 import {
   Zap, ArrowRight, Sparkles, MessageSquare, MessageCircle, Code2, PenLine, ShieldCheck,
-  BookOpen, Plus, Menu, X, Send, Check, Brain, Globe, Rocket, Sun, Moon,
+  BookOpen, Plus, Menu, X, Send, Check, Brain, Rocket, Sun, Moon,
 } from 'lucide-react'
 
 const NAV_LINKS = [
@@ -564,77 +564,6 @@ function FAQ({ navigate }) {
   )
 }
 
-function CTA({ navigate }) {
-  return (
-    <section className="px-6 pb-24">
-      <div className="relative mx-auto max-w-6xl overflow-hidden rounded-3xl border border-border bg-card">
-        {/* Layered background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent" />
-        <div className="absolute inset-0 bg-dots opacity-50 [mask-image:radial-gradient(ellipse_65%_90%_at_50%_0%,black,transparent)]" />
-        <div className="absolute left-1/2 top-0 h-56 w-[560px] -translate-x-1/2 rounded-full bg-primary/20 blur-[110px]" />
-
-        {/* Floating decorative chips */}
-        <div className="pointer-events-none absolute -left-4 top-16 hidden h-12 w-12 animate-float items-center justify-center rounded-2xl border border-border bg-background/80 shadow-lg backdrop-blur lg:flex">
-          <Zap className="h-5 w-5 text-foreground" />
-        </div>
-        <div className="pointer-events-none absolute right-8 top-24 hidden h-14 w-14 animate-float-delayed items-center justify-center rounded-2xl border border-border bg-background/80 shadow-lg backdrop-blur lg:flex">
-          <MessageCircle className="h-6 w-6 text-foreground" />
-        </div>
-        <div className="pointer-events-none absolute bottom-14 left-20 hidden h-10 w-10 animate-float items-center justify-center rounded-xl border border-border bg-background/80 shadow-lg backdrop-blur lg:flex" style={{ animationDelay: '0.8s' }}>
-          <Sparkles className="h-4 w-4 text-foreground" />
-        </div>
-
-        <div className="relative mx-auto max-w-3xl px-8 py-20 text-center lg:py-28">
-          {/* Icon with pulse ring */}
-          <div className="relative mx-auto mb-8 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary shadow-lg">
-            <div className="absolute inset-0 animate-pulse rounded-2xl bg-primary/40" />
-            <Sparkles className="relative h-7 w-7 text-primary-foreground" />
-          </div>
-
-          <span className="mb-5 inline-block rounded-full border border-border bg-background/60 px-3.5 py-1 text-xs font-medium text-muted-foreground">
-            Ready when you are
-          </span>
-
-          <p className="mx-auto mt-5 max-w-md text-lg text-muted-foreground">
-            Join thousands asking smarter questions. It takes ten seconds to start.
-          </p>
-
-          <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
-            <button
-              onClick={() => navigate('/chat')}
-              className="group inline-flex h-11 w-full sm:w-auto items-center justify-center gap-2 rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
-            >
-              Start chatting — it&apos;s free
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-            </button>
-            <a
-              href="#how-it-works"
-              className="inline-flex h-11 w-full sm:w-auto items-center justify-center rounded-md border border-input bg-background px-6 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
-            >
-              See how it works
-            </a>
-          </div>
-
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
-            <span className="flex items-center gap-2">
-              <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-              No signup required
-            </span>
-            <span className="flex items-center gap-2">
-              <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-              Free forever
-            </span>
-            <span className="flex items-center gap-2">
-              <Globe className="h-3.5 w-3.5" />
-              Works on any device
-            </span>
-          </div>
-        </div>
-      </div>
-    </section>
-  )
-}
-
 function Footer() {
   return (
     <footer className="border-t border-border">
@@ -712,7 +641,6 @@ export function LandingPage() {
         <Features navigate={navigate} />
         <HowItWorks navigate={navigate} />
         <FAQ navigate={navigate} />
-        <CTA navigate={navigate} />
       </main>
       <Footer />
     </div>
