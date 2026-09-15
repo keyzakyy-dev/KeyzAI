@@ -38,7 +38,7 @@ export default {
         } catch {
           return response(false, 'Bad request', 400, { error: 'Invalid JSON' }, corsHeaders(request, env))
         }
-        const { message, model, stream } = body
+        const { message, model, stream, messages } = body
 
         // Validate input
         if (!message || typeof message !== 'string' || message.trim().length === 0) {
@@ -57,6 +57,26 @@ export default {
         }
         const modelName = model || env.OPENAI_MODEL || ALLOWED_MODELS[0]
 
+        // Konteks: `messages` = transkrip penuh (termasuk pesan user terbaru) dari client.
+        // ponytail: cap 40 msg x 2000 char; upgrade path = summarisasi turn lama di worker
+        let chatMessages = [{ role: 'user', content: message }]
+        if (Array.isArray(messages) && messages.length > 0) {
+          const ok =
+            messages.length <= 40 &&
+            messages[messages.length - 1]?.role === 'user' &&
+            messages.every(
+              (m) =>
+                m &&
+                (m.role === 'user' || m.role === 'assistant') &&
+                typeof m.content === 'string' &&
+                m.content.length <= 2000
+            )
+          if (!ok) {
+            return response(false, 'Invalid messages', 400, { error: 'Invalid messages' }, corsHeaders(request, env))
+          }
+          chatMessages = messages
+        }
+
         if (!apiKey) {
           return response(false, 'API key not configured', 500, { error: 'Server error: OPENAI_API_KEY secret is not set' }, corsHeaders(request, env))
         }
@@ -72,7 +92,7 @@ export default {
             },
             body: JSON.stringify({
               model: modelName,
-              messages: [{ role: 'user', content: message }],
+              messages: chatMessages,
               temperature: 0.7,
               max_tokens: Number(env.OPENAI_MAX_TOKENS) || 8192,
               stream: true,
@@ -104,7 +124,7 @@ export default {
           },
           body: JSON.stringify({
             model: modelName,
-            messages: [{ role: 'user', content: message }],
+            messages: chatMessages,
             temperature: 0.7,
             max_tokens: Number(env.OPENAI_MAX_TOKENS) || 8192,
           }),

@@ -240,6 +240,13 @@ export function ChatInterface() {
     abortRef.current = controller
     let streamed = false
 
+    // konteks utk model: max 20 turn terakhir, diurut s.d. pesan user terkini
+    const ctx = history
+      .slice(0, -1)
+      .filter((m) => (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string')
+      .slice(-20)
+      .map((m) => ({ role: m.role, content: m.content }))
+
     try {
       const text = await sendMessageStream(
         content,
@@ -250,7 +257,8 @@ export function ChatInterface() {
           )
         },
         controller.signal,
-        model
+        model,
+        ctx
       )
       const finalMessages = history.map((m) =>
         m.id === aiMsg.id ? { ...m, content: text, streaming: false } : m

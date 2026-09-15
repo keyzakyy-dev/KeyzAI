@@ -29,11 +29,12 @@ function timeout(ms) {
   return typeof AbortSignal !== 'undefined' && AbortSignal.timeout ? AbortSignal.timeout(ms) : undefined
 }
 
-export async function sendMessage(message, model) {
+export async function sendMessage(message, model, history) {
   const msg = validateMessage(message)
 
   const body = { message: msg }
   if (model) body.model = model
+  if (history?.length) body.messages = history
 
   const response = await fetch(`${API_URL}/api/chat`, {
     method: 'POST',
@@ -90,11 +91,11 @@ export async function generateTitle(userText, aiText, model) {
  * Optional `signal` lets the caller abort generation (throws AbortError).
  * Returns the full text.
  */
-export async function sendMessageStream(message, onDelta, signal, model) {
+export async function sendMessageStream(message, onDelta, signal, model, history) {
   const msg = validateMessage(message)
 
   if (typeof ReadableStream === 'undefined') {
-    const fallback = await sendMessage(message, model)
+    const fallback = await sendMessage(message, model, history)
     onDelta(fallback.message)
     return fallback.message
   }
@@ -113,7 +114,7 @@ export async function sendMessageStream(message, onDelta, signal, model) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ message: msg, stream: true, ...(model ? { model } : {}) }),
+      body: JSON.stringify({ message: msg, stream: true, ...(model ? { model } : {}), ...(history?.length ? { messages: history } : {}) }),
       signal: controller.signal,
     })
 
