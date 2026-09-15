@@ -181,8 +181,8 @@ function TypingDots() {
 function ChatMock() {
   return (
     <div className="relative animate-fade-up" style={{ animationDelay: '0.3s' }}>
-      <div className="absolute -top-10 -right-6 h-32 w-40 rounded-full bg-foreground/5 blur-3xl" />
-      <div className="absolute -bottom-10 -left-6 h-32 w-40 rounded-full bg-foreground/5 blur-3xl" />
+      <div className="absolute -top-10 -right-6 hidden h-32 w-40 rounded-full bg-foreground/5 blur-3xl sm:block" />
+      <div className="absolute -bottom-10 -left-6 hidden h-32 w-40 rounded-full bg-foreground/5 blur-3xl sm:block" />
 
       <div className="relative overflow-hidden rounded-xl border border-border bg-card shadow-lg shadow-foreground/5">
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
@@ -269,7 +269,7 @@ function Hero({ navigate }) {
   return (
     <section className="relative overflow-hidden pb-16 pt-24 sm:pb-24 sm:pt-32 lg:pb-32 lg:pt-40">
       <div className="absolute inset-0 bg-dots [mask-image:radial-gradient(ellipse_65%_55%_at_50%_0%,black,transparent)]" />
-      <div className="absolute left-1/2 top-0 h-56 w-[520px] -translate-x-1/2 rounded-full bg-foreground/5 blur-[100px] sm:h-72 sm:w-[700px] sm:blur-[120px]" />
+      <div className="absolute left-1/2 top-0 h-56 w-[min(520px,100vw)] -translate-x-1/2 rounded-full bg-foreground/5 blur-[100px] sm:h-72 sm:w-[700px] sm:blur-[120px]" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         <div className="grid items-center gap-10 sm:gap-16 lg:grid-cols-2">
@@ -305,7 +305,7 @@ function Hero({ navigate }) {
             </div>
           </div>
 
-          <div className="-mx-2 sm:mx-0">
+          <div className="mx-auto w-full max-w-md">
             <ChatMock />
           </div>
         </div>
