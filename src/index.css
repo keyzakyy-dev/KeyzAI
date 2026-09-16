@@ -138,6 +138,29 @@
   }
 }
 
+/* Dialog: animasi popup (Radix mengatur data-state; keyframes menjaga
+   perataan tengah -50% supaya tidak ditimpa transform animasi) */
+@keyframes announcement-in {
+  0% { opacity: 0; transform: translate(-50%, calc(-50% + 14px)) scale(0.97); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes announcement-out {
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, calc(-50% + 8px)) scale(0.98); }
+}
+@keyframes overlay-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes overlay-fade-out { from { opacity: 1; } to { opacity: 0; } }
+.announcement-pop[data-state='open'] { animation: announcement-in 240ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.announcement-pop[data-state='closed'] { animation: announcement-out 160ms ease-in both; }
+.announcement-fade[data-state='open'] { animation: overlay-fade-in 200ms ease-out both; }
+.announcement-fade[data-state='closed'] { animation: overlay-fade-out 160ms ease-in both; }
+@media (prefers-reduced-motion: reduce) {
+  .announcement-pop,
+  .announcement-fade {
+    animation: none;
+  }
+}
+
 /* Scrollbar */
 * {
   scrollbar-width: thin;
