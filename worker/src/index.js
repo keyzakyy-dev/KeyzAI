@@ -80,7 +80,7 @@ export default {
 
         const apiKey = env.OPENAI_API_KEY
         const apiUrl = env.OPENAI_API_URL || 'https://api.openai.com/v1'
-        const ALLOWED_MODELS = ['deepseek/deepseek-v4-flash-free', 'tencent/hy3-free', 'z-ai/glm-5.3-flash-free']
+        const ALLOWED_MODELS = ['dahono/ai-chat', 'dahono/qwen3.7-max', 'dahono/deepseek-v4-flash', 'dahono/deepseek-v4-pro', 'dahono/kimi-k2.6', 'dahono/mimo-v2.5-pro', 'dahono/glm-5.2', 'dahono/kimi-k2.7-code', 'dahono/kimi-k2.7-code-highspeed', 'dahono/hy3', 'dahono/auto', 'dahono/kimi-k3', 'dahono/qwen3.8-max', 'dahono/deepseek-v4-pro-0813', 'dahono/glm-5.3', 'dahono/deepseek-v4-flash-0731', 'dahono/deepseek-v4-custom', 'dahono/glm-5.1', 'dahono/deepseek-v4-flash-vision', 'dahono/glm-5.3-flash', 'dahono/glm-5.2-custom', 'dahono/glm-5.3-custom', 'dahono/kimi-k3-custom', 'dahono/hy4', 'dahono/union-alpha']
         if (model && !ALLOWED_MODELS.includes(model)) {
           return response(false, 'Unknown model', 400, { error: `Model tidak dikenal: ${model}` }, corsHeaders(request, env))
         }
