@@ -91,6 +91,20 @@
   background-size: 22px 22px;
 }
 
+/* Thinking indicator: fade the cycling word in */
+@keyframes thinking-fade {
+  0% { opacity: 0; transform: translateY(4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.thinking-fade {
+  animation: thinking-fade 0.4s ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .thinking-fade {
+    animation: none;
+  }
+}
+
 /* Scroll reveal */
 [data-reveal] {
   opacity: 0;

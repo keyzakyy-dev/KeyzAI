@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Pencil, RotateCcw } from 'lucide-react'
+import { Pencil, RotateCcw, Sparkles } from 'lucide-react'
 import { Markdown } from '../lib/markdown'
 import { CopyButton } from '../lib/copy-button'
 
@@ -17,8 +17,18 @@ function ThinkingIndicator() {
     return () => clearInterval(t)
   }, [])
   return (
-    <div key={i} className="animate-in fade-in-0 font-serif text-foreground" style={{ animationDuration: '350ms' }}>
-      {THINKING_WORDS[i]}
+    <div className="flex items-center gap-2">
+      <Sparkles
+        className="animate-pulsing h-4 w-4 shrink-0 text-primary"
+        style={{ animationDelay: `${i * 0.15}s` }}
+      />
+      <div
+        key={i}
+        className="font-serif text-foreground thinking-fade"
+        style={{ animationDuration: '400ms' }}
+      >
+        {THINKING_WORDS[i]}
+      </div>
     </div>
   )
 }

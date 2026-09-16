@@ -65,12 +65,17 @@ export default {
           '0%, 60%, 100%': { transform: 'translateY(0)', opacity: '0.4' },
           '30%': { transform: 'translateY(-4px)', opacity: '1' },
         },
+        pulsing: {
+          '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+          '50%': { opacity: '0.45', transform: 'scale(0.85)' },
+        },
       },
       animation: {
         'fade-up': 'fade-up 0.8s ease-out both',
         float: 'float 6s ease-in-out infinite',
         'float-delayed': 'float 7s ease-in-out 1.2s infinite',
         'typing-dot': 'typing-dot 1.2s ease-in-out infinite',
+        pulsing: 'pulsing 1.5s ease-in-out infinite',
       },
     },
   },
