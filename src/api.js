@@ -134,10 +134,10 @@ export async function sendMessageStream(message, onDelta, signal, model, history
     const decoder = new TextDecoder()
     let buffer = ''
     let full = ''
-    // Model reasoning memancarkan chain-of-thought di reasoning_content sebelum/sambil
-    // content. Kita akumulasi: tampilkan reasoning sebagai progres agar bubble tidak
-    // mati; jika content tidak pernah datang, reasoning jadi jawaban pengganti.
-    let reasoning = ''
+    // Model reasoning memancarkan chain-of-thought di reasoning_content sebelum
+    // content. Chunk reasoning tidak ditampilkan — bubble memakai indikator
+    // "Berpikir…" (ChatMessage) sampai content tiba. Jika content tidak pernah
+    // datang, ChatInterface membuang bubble + menampilkan pesan coba lagi.
 
     while (true) {
       const { done, value } = await reader.read()
@@ -156,9 +156,6 @@ export async function sendMessageStream(message, onDelta, signal, model, history
           if (delta?.content) {
             full += delta.content
             onDelta(full)
-          } else if (delta?.reasoning_content) {
-            reasoning += delta.reasoning_content
-            if (!full) onDelta(reasoning)
           }
         } catch {
           // keepalives / non-JSON lines — ignore
@@ -166,7 +163,7 @@ export async function sendMessageStream(message, onDelta, signal, model, history
       }
     }
 
-    return full || reasoning
+    return full
   } finally {
     clearTimeout(timer)
     if (signal) signal.removeEventListener('abort', relayAbort)

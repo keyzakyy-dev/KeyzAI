@@ -69,7 +69,8 @@ try {
   await post({ message: 'ringkas jadi judul', system: false })
   assert.equal(sent[3].messages[0].role, 'user', 'system: false melewati injeksi (generate judul)')
 
-  // --- model reasoning: content null tapi reasoning_content ada -> pakai reasoning
+  // --- model reasoning: content null (budget habis di reasoning) -> pesan fallback,
+  // reasoning tidak ditampilkan ke pengguna
   globalThis.fetch = async () =>
     new Response(
       JSON.stringify({
@@ -81,7 +82,7 @@ try {
   const reasoningRes = await post({ message: 'hai' })
   const reasoningJson = await reasoningRes.json()
   assert.equal(reasoningJson.success, true, 'request sukses')
-  assert.equal(reasoningJson.message, 'proses berpikir', 'fallback ke reasoning_content saat content kosong')
+  assert.equal(reasoningJson.message, 'Tidak ada respons dari model.', 'content kosong -> fallback, bukan reasoning')
 } finally {
   globalThis.fetch = realFetch
 }

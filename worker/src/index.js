@@ -200,10 +200,9 @@ export default {
         }
 
         const data = await openaiRes.json()
-        // Model reasoning (Atria) bisa habiskan budget di reasoning_content sampai content
-        // kosong; jatuh ke reasoning daripada menampilkan pesan kosong.
-        const msg = data.choices?.[0]?.message
-        const aiMessage = msg?.content || msg?.reasoning_content || 'Tidak ada respons dari model.'
+        // Model reasoning bisa habiskan budget di reasoning_content sampai content
+        // kosong; reasoning tidak ditampilkan ke pengguna — minta kirim ulang.
+        const aiMessage = data.choices?.[0]?.message?.content || 'Tidak ada respons dari model.'
         const tokensUsed = data.usage?.total_tokens || 0
 
         return response(true, aiMessage, 200, {
