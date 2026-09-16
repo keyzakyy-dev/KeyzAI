@@ -29,7 +29,7 @@ const FEATURES = [
     icon: MessageSquare,
     title: 'Tanya apa saja',
     desc: 'Dari fakta singkat sampai pertanyaan mendalam — dapat jawaban tepat dan rapi dalam hitungan detik.',
-    span: 'md:col-span-2',
+    span: 'sm:col-span-2 md:col-span-2',
     prompt: 'Apa itu bunga berbunga, dijelaskan dengan sederhana?',
   },
   {
@@ -488,7 +488,7 @@ function Stats() {
   return (
     <section className="border-y border-border">
       <Reveal from="up" className="mx-auto max-w-7xl px-4 sm:px-6 py-10 sm:py-14">
-        <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:gap-x-8 sm:gap-y-10 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-8 sm:gap-y-10 md:grid-cols-4">
           {STATS.map((stat, i) => (
             <Reveal key={stat.label} from="scale" delay={i * 90} className="space-y-1.5 text-center">
               <p className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl md:text-4xl">
@@ -520,7 +520,7 @@ function FeatureCard({ icon: Icon, title, desc, span, prompt, onPrompt, children
     </div>
   )
 
-  const className = `group relative flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card p-5 sm:p-6 text-left transition-colors hover:bg-accent/40 ${span}`
+  const className = `group relative flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card p-4 sm:p-6 text-left transition-colors hover:bg-accent/40 ${span}`
 
   if (prompt && onPrompt) {
     return (
@@ -553,8 +553,8 @@ function Features({ navigate }) {
           </p>
         </Reveal>
 
-        <div className="grid gap-3 sm:gap-4 md:grid-cols-3">
-          <Reveal from="tilt" delay={0} className="md:col-span-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-3">
+          <Reveal from="tilt" delay={0} className="sm:col-span-2 md:col-span-2">
             <FeatureCard {...FEATURES[0]} onPrompt={onPrompt}>
               <div className="mt-6 space-y-3">
                 <Reveal from="right" delay={250} className="flex justify-end">
@@ -750,9 +750,9 @@ function Footer({ navigate }) {
       />
 
       <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
-        <div className="grid gap-10 lg:grid-cols-[1.7fr_repeat(3,1fr)] lg:gap-12">
+        <div className="grid gap-8 sm:grid-cols-2 sm:gap-10 lg:grid-cols-[1.7fr_repeat(3,1fr)] lg:gap-12">
           {/* Brand */}
-          <Reveal from="up" className="max-w-sm space-y-5">
+          <Reveal from="up" className="max-w-sm space-y-5 sm:col-span-2 lg:col-span-1 lg:max-w-sm">
             <Logo />
             <p className="text-sm leading-relaxed text-muted-foreground">
               Teman AI-mu yang serba cepat untuk jawaban, ide, dan semuanya. Gratis, tanpa daftar.
