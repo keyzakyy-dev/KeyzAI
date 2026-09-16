@@ -58,7 +58,7 @@ export default {
         const modelName = model || env.OPENAI_MODEL || ALLOWED_MODELS[0]
 
         // Konteks: `messages` = transkrip penuh (termasuk pesan user terbaru) dari client.
-        // ponytail: cap 40 msg x 2000 char; upgrade path = summarisasi turn lama di worker
+        // ponytail: cap 40 msg; user 2000 char, assistant 32000 (batas max_tokens); upgrade = summarisasi turn lama
         let chatMessages = [{ role: 'user', content: message }]
         if (Array.isArray(messages) && messages.length > 0) {
           const ok =
@@ -69,7 +69,7 @@ export default {
                 m &&
                 (m.role === 'user' || m.role === 'assistant') &&
                 typeof m.content === 'string' &&
-                m.content.length <= 2000
+                m.content.length <= (m.role === 'user' ? 2000 : 32000)
             )
           if (!ok) {
             return response(false, 'Invalid messages', 400, { error: 'Invalid messages' }, corsHeaders(request, env))

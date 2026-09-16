@@ -1,12 +1,13 @@
-﻿import { useEffect, useState } from 'react'
+﻿import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../components/ui/button'
 import { useTheme } from '../lib/use-theme'
 import { usePageMeta, SITE_NAME, SITE_DESC, faqSchema, injectJsonLd } from '../lib/seo'
+import { MODELS } from '../lib/models'
 import { Reveal } from '../lib/reveal'
 import {
-  Zap, ArrowRight, Sparkles, MessageSquare, MessageCircle, Code2, PenLine, ShieldCheck,
-  BookOpen, Plus, Menu, X, Send, Brain, Rocket, Sun, Moon,
+  Zap, ArrowRight, ArrowUp, Github, Sparkles, MessageSquare, MessageCircle, Code2, PenLine,
+  ShieldCheck, BookOpen, Plus, Menu, X, Send, Brain, Rocket, Sun, Moon,
 } from 'lucide-react'
 
 const NAV_LINKS = [
@@ -100,6 +101,36 @@ const FAQS = [
   },
 ]
 
+const FOOTER_COLUMNS = [
+  {
+    title: 'Produk',
+    links: [
+      { label: 'Fitur', href: '#features' },
+      { label: 'Cara kerja', href: '#how-it-works' },
+      { label: 'FAQ', href: '#faq' },
+    ],
+  },
+  {
+    title: 'Perusahaan',
+    links: [
+      { label: 'Ketentuan', href: '#' },
+      { label: 'Privasi', href: '#' },
+      { label: 'Kontak', href: '#' },
+    ],
+  },
+  {
+    title: 'Sumber daya',
+    links: [
+      { label: 'Dokumentasi OpenAI', href: '#' },
+      { label: 'Status', href: '#' },
+      { label: 'Riwayat perubahan', href: '#' },
+    ],
+  },
+]
+
+// Badge stack diambil dari data model agar tidak pernah basi saat model ditambah/diganti.
+const FOOTER_STACK = ['Cloudflare Workers', 'Vercel', ...MODELS.map((m) => m.label)]
+
 function Logo() {
   return (
     <div className="flex items-center gap-2.5">
@@ -113,53 +144,194 @@ function Logo() {
 
 function Navbar({ navigate, theme, toggleTheme }) {
   const [open, setOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  const [active, setActive] = useState('')
+  const progressRef = useRef(null)
+
+  // Satu listener untuk semua: status scroll, progress baca, dan scroll-spy.
+  useEffect(() => {
+    const onScroll = () => {
+      setScrolled(window.scrollY > 12)
+
+      // progress baca — ditulis langsung ke DOM agar tidak memicu re-render tiap frame
+      const doc = document.documentElement
+      const max = doc.scrollHeight - doc.clientHeight
+      if (progressRef.current) {
+        const ratio = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0
+        progressRef.current.style.transform = `scaleX(${ratio})`
+      }
+
+      // scroll-spy: section terakhir yang sudah melewati garis 140px dari atas viewport
+      const line = window.scrollY + 140
+      let current = ''
+      for (const link of NAV_LINKS) {
+        const el = document.getElementById(link.href.slice(1))
+        if (el && el.getBoundingClientRect().top + window.scrollY <= line) current = link.href
+      }
+      setActive(current)
+    }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
+  }, [])
+
+  // Tutup panel mobile dengan Escape
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e) => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [open])
+
+  // Panel mobile tidak relevan lagi saat layar melebar ke desktop
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)')
+    const onChange = (e) => {
+      if (e.matches) setOpen(false)
+    }
+    mq.addEventListener?.('change', onChange)
+    return () => mq.removeEventListener?.('change', onChange)
+  }, [])
+
+  const linkClass = (href) =>
+    `rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ${
+      active === href
+        ? 'bg-card text-foreground shadow-sm shadow-black/5'
+        : 'text-muted-foreground hover:text-foreground'
+    }`
+
   return (
-    <header className="fixed top-0 inset-x-0 z-50 border-b border-border bg-background/80 backdrop-blur-sm">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-        <Logo />
-        <div className="hidden md:flex items-center gap-6">
-          {NAV_LINKS.map((link) => (
-            <a key={link.label} href={link.href} className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-              {link.label}
-            </a>
-          ))}
-        </div>
-        <div className="hidden md:flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Ganti tema">
-            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </Button>
-          <Button onClick={() => navigate('/chat')}>
-            Mulai Chatting
-            <ArrowRight />
-          </Button>
-        </div>
-        <div className="md:hidden flex items-center gap-1">
-          <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Ganti tema">
-            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </Button>
-          <Button variant="ghost" size="icon" onClick={() => setOpen(!open)} aria-label="Buka menu">
-            {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-          </Button>
-        </div>
-      </nav>
-      {open && (
-        <div className="md:hidden border-t border-border bg-background px-4 sm:px-6 py-4 space-y-1">
-          {NAV_LINKS.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              onClick={() => setOpen(false)}
-              className="block rounded-md px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+    <header className="fixed inset-x-0 top-0 z-50">
+      {/* Hairline progress baca */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[2px] overflow-hidden" aria-hidden="true">
+        <div
+          ref={progressRef}
+          className="h-full w-full origin-left scale-x-0 bg-gradient-to-r from-primary via-primary/70 to-primary/0"
+        />
+      </div>
+
+      <div className="mx-auto max-w-7xl px-3 sm:px-6">
+        <div
+          className={`mt-2 overflow-hidden rounded-2xl border transition-all duration-300 sm:mt-3 ${
+            scrolled
+              ? 'border-border bg-background/85 shadow-xl shadow-black/5 backdrop-blur-xl dark:shadow-black/40'
+              : 'border-border/60 bg-background/60 backdrop-blur-md'
+          }`}
+        >
+          <nav className="flex h-14 items-center justify-between gap-2 px-2.5 sm:h-[60px] sm:px-3">
+            <button
+              type="button"
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              aria-label="Kembali ke atas"
+              className="shrink-0 rounded-xl transition-opacity hover:opacity-80"
             >
-              {link.label}
-            </a>
-          ))}
-          <Button onClick={() => navigate('/chat')} className="w-full mt-2">
-            Mulai Chatting
-            <ArrowRight />
-          </Button>
+              <Logo />
+            </button>
+
+            {/* Segmented links (desktop) */}
+            <div className="hidden items-center gap-0.5 rounded-full border border-border/70 bg-muted/40 p-1 md:flex">
+              {NAV_LINKS.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className={linkClass(link.href)}
+                  aria-current={active === link.href ? 'true' : undefined}
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
+            <div className="hidden shrink-0 items-center gap-1.5 md:flex">
+              <button
+                type="button"
+                onClick={toggleTheme}
+                aria-label="Ganti tema"
+                className="flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              >
+                {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </button>
+              <span className="mx-0.5 h-5 w-px bg-border" aria-hidden="true" />
+              <Button onClick={() => navigate('/chat')} className="group h-9 rounded-full pl-4 pr-3.5 shadow-sm">
+                Mulai chatting
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </Button>
+            </div>
+
+            <div className="flex shrink-0 items-center gap-1.5 md:hidden">
+              <button
+                type="button"
+                onClick={toggleTheme}
+                aria-label="Ganti tema"
+                className="flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              >
+                {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </button>
+              <button
+                type="button"
+                onClick={() => setOpen((o) => !o)}
+                aria-label={open ? 'Tutup menu' : 'Buka menu'}
+                aria-expanded={open}
+                aria-controls="landing-mobile-nav"
+                className="relative flex h-9 w-9 items-center justify-center rounded-full border border-border/70 bg-card text-foreground transition-colors hover:bg-accent"
+              >
+                <Menu
+                  className={`h-4 w-4 transition-all duration-300 ${
+                    open ? 'rotate-90 scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100'
+                  }`}
+                />
+                <X
+                  className={`absolute h-4 w-4 transition-all duration-300 ${
+                    open ? 'rotate-0 scale-100 opacity-100' : '-rotate-90 scale-0 opacity-0'
+                  }`}
+                />
+              </button>
+            </div>
+          </nav>
+
+          {/* Panel menu mobile */}
+          {open && (
+            <div
+              id="landing-mobile-nav"
+              className="animate-fade-up border-t border-border/70 px-2.5 pb-3 pt-2 md:hidden"
+              style={{ animationDuration: '220ms' }}
+            >
+              <div className="space-y-0.5">
+                {NAV_LINKS.map((link) => (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    onClick={() => setOpen(false)}
+                    className={`flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+                      active === link.href
+                        ? 'bg-card text-foreground shadow-sm shadow-black/5'
+                        : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground'
+                    }`}
+                  >
+                    {link.label}
+                    <ArrowRight className="h-3.5 w-3.5 opacity-40" />
+                  </a>
+                ))}
+              </div>
+              <Button
+                onClick={() => {
+                  setOpen(false)
+                  navigate('/chat')
+                }}
+                className="mt-2 h-10 w-full rounded-xl"
+              >
+                Mulai chatting gratis
+                <ArrowRight />
+              </Button>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </header>
   )
 }
@@ -564,59 +736,111 @@ function FAQ({ navigate }) {
   )
 }
 
-function Footer() {
+function Footer({ navigate }) {
+  const toTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
+
   return (
-    <footer className="border-t border-border">
-      <Reveal from="up" className="mx-auto max-w-7xl px-4 sm:px-6 py-10 sm:py-14">
-        <div className="mb-12 flex flex-col justify-between gap-10 md:flex-row">
-          <Reveal from="left" className="max-w-xs space-y-4">
+    <footer className="relative mt-4 overflow-hidden rounded-t-3xl border-x border-t border-border bg-card sm:mt-8">
+      {/* Flourish: dots halus di atas + glow lembut di bawah — menggemakan hero */}
+      <div
+        className="pointer-events-none absolute inset-0 bg-dots opacity-40 [mask-image:radial-gradient(ellipse_75%_65%_at_50%_0%,black,transparent)]"
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none absolute -bottom-28 left-1/2 h-64 w-[min(680px,100vw)] -translate-x-1/2 rounded-full bg-primary/5 blur-3xl"
+        aria-hidden="true"
+      />
+
+      <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
+        <div className="grid gap-10 lg:grid-cols-[1.7fr_repeat(3,1fr)] lg:gap-12">
+          {/* Brand */}
+          <Reveal from="up" className="max-w-sm space-y-5">
             <Logo />
             <p className="text-sm leading-relaxed text-muted-foreground">
-              Teman AI-mu yang serba cepat untuk jawaban, ide, dan semuanya.
+              Teman AI-mu yang serba cepat untuk jawaban, ide, dan semuanya. Gratis, tanpa daftar.
             </p>
+
+            <div className="flex flex-wrap gap-1.5">
+              {FOOTER_STACK.map((item) => (
+                <span
+                  key={item}
+                  className="rounded-full border border-border/70 bg-background/60 px-2.5 py-1 text-[11px] font-medium text-muted-foreground"
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <Button onClick={() => navigate('/chat')} size="sm" className="group h-9 rounded-full pl-4 pr-3.5">
+                Mulai chatting
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </Button>
+              <a
+                href="https://github.com/keyzakyy-dev"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-9 items-center gap-2 rounded-full border border-border bg-background px-3.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+              >
+                <Github className="h-4 w-4" />
+                GitHub
+              </a>
+            </div>
           </Reveal>
-          <Reveal from="right" delay={100} className="grid grid-cols-2 gap-10 sm:grid-cols-3">
-            <div className="space-y-3">
-              <p className="text-sm font-medium text-foreground">Produk</p>
-              {NAV_LINKS.map((link) => (
-                <a key={link.label} href={link.href} className="block text-sm text-muted-foreground transition-colors hover:text-foreground">
-                  {link.label}
-                </a>
-              ))}
-            </div>
-            <div className="space-y-3">
-              <p className="text-sm font-medium text-foreground">Perusahaan</p>
-              {['Ketentuan', 'Privasi', 'Kontak'].map((label) => (
-                <a key={label} href="#" className="block text-sm text-muted-foreground transition-colors hover:text-foreground">
-                  {label}
-                </a>
-              ))}
-            </div>
-            <div className="space-y-3">
-              <p className="text-sm font-medium text-foreground">Sumber Daya</p>
-              {['Dokumentasi OpenAI', 'Status', 'Riwayat Perubahan'].map((label) => (
-                <a key={label} href="#" className="block text-sm text-muted-foreground transition-colors hover:text-foreground">
-                  {label}
-                </a>
-              ))}
-            </div>
-          </Reveal>
+
+          {/* Kolom link */}
+          {FOOTER_COLUMNS.map((col, i) => (
+            <Reveal key={col.title} from="up" delay={80 + i * 80} className="space-y-4">
+              <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground/70">
+                {col.title}
+              </p>
+              <ul className="space-y-2.5">
+                {col.links.map((link) => (
+                  <li key={link.label}>
+                    <a
+                      href={link.href}
+                      className="group inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      <span
+                        className="h-1 w-1 shrink-0 rounded-full bg-border transition-colors group-hover:bg-foreground"
+                        aria-hidden="true"
+                      />
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+          ))}
         </div>
-        <div className="flex flex-col items-center justify-between gap-4 border-t border-border pt-8 sm:flex-row">
+        <div className="mt-12 h-px bg-gradient-to-r from-transparent via-border to-transparent" aria-hidden="true" />
+
+        <div className="flex flex-col items-center justify-between gap-4 pt-6 sm:flex-row">
           <p className="text-xs text-muted-foreground">© 2026 KeyzAI. Seluruh hak cipta dilindungi.</p>
-          <p className="text-xs text-muted-foreground">
-            oleh{' '}
-            <a
-              href="https://github.com/keyzakyy-dev"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="transition-colors hover:text-foreground"
+          <div className="flex items-center gap-3">
+            <p className="text-xs text-muted-foreground">
+              oleh{' '}
+              <a
+                href="https://github.com/keyzakyy-dev"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition-colors hover:text-foreground"
+              >
+                Keyzakyy
+              </a>
+            </p>
+            <span className="h-4 w-px bg-border" aria-hidden="true" />
+            <button
+              type="button"
+              onClick={toTop}
+              className="inline-flex items-center gap-1.5 rounded-full border border-border/70 bg-background px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
-              Keyzakyy
-            </a>
-          </p>
+              Ke atas
+              <ArrowUp className="h-3 w-3" />
+            </button>
+          </div>
         </div>
-      </Reveal>
+      </div>
     </footer>
   )
 }
@@ -642,7 +866,7 @@ export function LandingPage() {
         <HowItWorks navigate={navigate} />
         <FAQ navigate={navigate} />
       </main>
-      <Footer />
+      <Footer navigate={navigate} />
     </div>
   )
 }
