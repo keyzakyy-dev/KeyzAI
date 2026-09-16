@@ -46,20 +46,28 @@ try {
   assert.equal(res.status, 200, 'chat normal 200')
   assert.equal(sent[0].messages[0].role, 'system', 'system prompt disuntik di depan')
   assert.ok(
-    sent[0].messages[0].content.includes('keyzai-options'),
-    'kontrak blok opsi ada di system prompt'
+    sent[0].messages[0].content.includes('DILARANG'),
+    'sapaan (halo) dapat prompt tanpa kontrak kartu'
   )
   assert.equal(sent[0].messages.at(-1).content, 'halo', 'pesan user tidak hilang')
 
+  // --- permintaan ambigu tetap dapat kontrak kartu
+  await post({ message: 'aku mau mulai bisnis' })
+  assert.ok(
+    sent[1].messages[0].content.includes('ATURAN UTAMA') &&
+      sent[1].messages[0].content.includes('keyzai-options'),
+    'permintaan terbuka dapat kontrak blok opsi'
+  )
+
   await post({ message: 'hai', messages: [turn('user', 'hai')] })
   assert.deepEqual(
-    sent[1].messages.map((m) => m.role),
+    sent[2].messages.map((m) => m.role),
     ['system', 'user'],
     'transkrip client tetap dipakai setelah system prompt'
   )
 
   await post({ message: 'ringkas jadi judul', system: false })
-  assert.equal(sent[2].messages[0].role, 'user', 'system: false melewati injeksi (generate judul)')
+  assert.equal(sent[3].messages[0].role, 'user', 'system: false melewati injeksi (generate judul)')
 
   // --- model reasoning: content null tapi reasoning_content ada -> pakai reasoning
   globalThis.fetch = async () =>

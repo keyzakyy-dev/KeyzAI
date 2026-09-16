@@ -56,6 +56,25 @@ const OPTIONS_SYSTEM_PROMPT = [
   'Jangan tambah opsi "Lainnya" atau "Lewati" — frontend otomatis menyediakannya. Setelah pengguna menjawab kartu, langsung beri jawaban penuh tanpa kartu lagi. Jika ragu perlu kartu atau tidak: tidak perlu, jawab saja.',
 ].join('\n')
 
+// Prompt tanpa instruksi kartu untuk sapaan/chit-chat. Prompt saja tidak bisa
+// diandalkan — model tetap doyen menampilkan kartu di "halo", jadi ini penjaga
+// deterministik: pesan kecilan tidak disuntik kontrak kartu sama sekali.
+const PLAIN_PROMPT = [
+  'Kamu adalah KeyzAI. Jawab dengan Bahasa Indonesia yang natural.',
+  '',
+  'Pesan pengguna adalah sapaan atau obrolan ringan. Balas hangat dan singkat saja.',
+  'DILARANG menampilkan kartu pilihan (blok ```keyzai-options) dalam bentuk apa pun.',
+].join('\n')
+
+const GREETING_RE =
+  /^(halo+|hallo+|hai+|hi+|hello+|pagi|siang|sore|malam|selamat (pagi|siang|sore|malam)|apa+kabar|apa kabar|gimana|gmn|ada apa|lagi apa|assalamualaikum|salam|tes+|test+|kamu siapa|siapa kamu|bisa bantu apa)([!.,? ]*)$/i
+
+function isSmallTalk(message) {
+  const t = message.trim().toLowerCase()
+  if (t.length > 60) return false
+  return GREETING_RE.test(t)
+}
+
 export default {
   async fetch(request, env, ctx) {
     // CORS preflight
@@ -114,8 +133,10 @@ export default {
 
         // Instruksi kartu pilihan (keyzai-options) hanya untuk chat.
         // Panggilan non-chat (mis. generate judul) mengirim system: false.
+        // Sapaan/chit-chat pendek dapat prompt tanpa kartu (lihat PLAIN_PROMPT).
         if (system !== false) {
-          chatMessages = [{ role: 'system', content: OPTIONS_SYSTEM_PROMPT }, ...chatMessages]
+          const prompt = isSmallTalk(message) ? PLAIN_PROMPT : OPTIONS_SYSTEM_PROMPT
+          chatMessages = [{ role: 'system', content: prompt }, ...chatMessages]
         }
 
         if (!apiKey) {
