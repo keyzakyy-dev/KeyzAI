@@ -1,5 +1,6 @@
 import { Plus, MessageSquare, Trash2, Pin } from 'lucide-react'
 import { Button } from './ui/button'
+import logo from '../assets/logo.png'
 
 const GROUPS = ['Hari ini', 'Kemarin', '7 hari terakhir', 'Lebih lama']
 
@@ -43,7 +44,7 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
         )}
         {/* Brand */}
         <div className="flex h-14 flex-shrink-0 items-center px-4">
-          <span className="font-heading text-lg font-semibold tracking-tight text-foreground">KeyzAI</span>
+          <img src={logo} alt="KeyzAI" className="h-9 w-auto" />
         </div>
 
         {/* New Chat */}

@@ -5,6 +5,7 @@ import { useTheme } from '../lib/use-theme'
 import { usePageMeta, SITE_NAME, SITE_DESC, faqSchema, injectJsonLd } from '../lib/seo'
 import { MODELS } from '../lib/models'
 import { Reveal } from '../lib/reveal'
+import logo from '../assets/logo.png'
 import {
   Zap, ArrowRight, ArrowUp, Github, Sparkles, MessageSquare, MessageCircle, Code2, PenLine,
   ShieldCheck, BookOpen, Plus, Menu, X, Send, Brain, Rocket, Sun, Moon,
@@ -134,10 +135,7 @@ const FOOTER_STACK = ['Cloudflare Workers', 'Vercel', ...MODELS.map((m) => m.lab
 function Logo() {
   return (
     <div className="flex items-center gap-2.5">
-      <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary shadow-sm">
-        <Zap className="h-4 w-4 text-primary-foreground" />
-      </div>
-      <span className="font-heading text-base font-semibold tracking-tight text-foreground">KeyzAI</span>
+      <img src={logo} alt="KeyzAI" className="h-8 w-auto" />
     </div>
   )
 }
