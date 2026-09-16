@@ -63,7 +63,8 @@ export default {
       try {
         let body
         try {
-          body = await request.json()
+          const rawBody = await request.text()
+          body = JSON.parse(rawBody)
         } catch {
           return response(false, 'Bad request', 400, { error: 'Invalid JSON' }, corsHeaders(request, env))
         }
