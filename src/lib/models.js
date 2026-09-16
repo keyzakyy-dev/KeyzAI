@@ -1,6 +1,7 @@
 export const MODELS = [
-  { id: 'qwen3.8-flash', label: 'Qwen 3.8 Flash' },
-  { id: 'glm-5.3-flash', label: 'GLM 5.3 Flash' },
+  { id: 'deepseek/deepseek-v4-flash-free', label: 'DeepSeek V4 Flash' },
+  { id: 'tencent/hy3-free', label: 'Tencent HY3' },
+  { id: 'z-ai/glm-5.3-flash-free', label: 'GLM 5.3 Flash' },
 ]
 export const DEFAULT_MODEL = MODELS[0].id
 
