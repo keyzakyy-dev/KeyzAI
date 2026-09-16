@@ -4,6 +4,14 @@ import { Button } from './ui/button'
 import { Textarea } from './ui/textarea'
 import { MODELS } from '../lib/models'
 
+function FreeBadge() {
+  return (
+    <span className="rounded-full bg-emerald-500/10 px-1.5 text-[10px] font-semibold leading-relaxed text-emerald-600 dark:text-emerald-400">
+      Free
+    </span>
+  )
+}
+
 export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, model, onModelChange }) {
   const [message, setMessage] = useState('')
   const [modelOpen, setModelOpen] = useState(false)
@@ -64,56 +72,68 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
 
         <div className="flex items-center justify-between gap-3 px-3 pb-2.5">
           <div className="flex min-w-0 items-center gap-2">
-            {/* Model picker hanya muncul saat ada lebih dari satu model. */}
-            {model && onModelChange && MODELS.length > 1 && (
-              <div ref={modelBtnRef} className="relative">
-                <button
-                  type="button"
-                  onClick={() => setModelOpen((o) => !o)}
-                  aria-haspopup="listbox"
-                  aria-expanded={modelOpen}
-                  aria-label="Pilih model"
-                  className="inline-flex h-7 items-center gap-1.5 rounded-full border border-border bg-background px-2.5 text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+            {model && onModelChange &&
+              (MODELS.length > 1 ? (
+                <div ref={modelBtnRef} className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setModelOpen((o) => !o)}
+                    aria-haspopup="listbox"
+                    aria-expanded={modelOpen}
+                    aria-label="Pilih model"
+                    className="inline-flex h-7 items-center gap-1.5 rounded-full border border-border bg-background px-2.5 text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    <Sparkles className="h-3 w-3" />
+                    <span className="truncate">{currentModel.label}</span>
+                    <FreeBadge />
+                    <ChevronDown className={`h-3 w-3 transition-transform ${modelOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  {modelOpen && (
+                    <>
+                      <div className="fixed inset-0 z-40" onClick={() => setModelOpen(false)} />
+                      <ul
+                        role="listbox"
+                        className="absolute bottom-full left-0 z-50 mb-1.5 w-56 overflow-hidden rounded-lg border border-border bg-popover p-1 shadow-md"
+                      >
+                        {MODELS.map((m) => {
+                          const active = m.id === model
+                          return (
+                            <li key={m.id} role="option" aria-selected={active}>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  onModelChange(m.id)
+                                  setModelOpen(false)
+                                }}
+                                className={`flex w-full items-center justify-between gap-2 rounded-md px-2.5 py-1.5 text-left text-sm transition-colors hover:bg-accent ${
+                                  active ? 'text-foreground' : 'text-muted-foreground'
+                                }`}
+                              >
+                                <span className="min-w-0">
+                                  <span className="block truncate font-medium">{m.label}</span>
+                                  <span className="block truncate text-[11px] text-muted-foreground/70">{m.id}</span>
+                                </span>
+                                {active && <Check className="h-3.5 w-3.5 shrink-0" />}
+                              </button>
+                            </li>
+                          )
+                        })}
+                      </ul>
+                    </>
+                  )}
+                </div>
+              ) : (
+                // Hanya satu model: badge statis (bukan picker) — tetap menampilkan
+                // nama model + label gratis, tanpa dead-weight dropdown.
+                <div
+                  title={currentModel.id}
+                  className="inline-flex h-7 items-center gap-1.5 rounded-full border border-border bg-background px-2.5 text-[11px] font-medium text-muted-foreground"
                 >
                   <Sparkles className="h-3 w-3" />
                   <span className="truncate">{currentModel.label}</span>
-                  <ChevronDown className={`h-3 w-3 transition-transform ${modelOpen ? 'rotate-180' : ''}`} />
-                </button>
-                {modelOpen && (
-                  <>
-                    <div className="fixed inset-0 z-40" onClick={() => setModelOpen(false)} />
-                    <ul
-                      role="listbox"
-                      className="absolute bottom-full left-0 z-50 mb-1.5 w-56 overflow-hidden rounded-lg border border-border bg-popover p-1 shadow-md"
-                    >
-                      {MODELS.map((m) => {
-                        const active = m.id === model
-                        return (
-                          <li key={m.id} role="option" aria-selected={active}>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                onModelChange(m.id)
-                                setModelOpen(false)
-                              }}
-                              className={`flex w-full items-center justify-between gap-2 rounded-md px-2.5 py-1.5 text-left text-sm transition-colors hover:bg-accent ${
-                                active ? 'text-foreground' : 'text-muted-foreground'
-                              }`}
-                            >
-                              <span className="min-w-0">
-                                <span className="block truncate font-medium">{m.label}</span>
-                                <span className="block truncate text-[11px] text-muted-foreground/70">{m.id}</span>
-                              </span>
-                              {active && <Check className="h-3.5 w-3.5 shrink-0" />}
-                            </button>
-                          </li>
-                        )
-                      })}
-                    </ul>
-                  </>
-                )}
-              </div>
-            )}
+                  <FreeBadge />
+                </div>
+              ))}
             <span className="flex min-w-0 items-center gap-1.5 text-[11px] text-muted-foreground">
               {nearLimit ? (
                 <span className={`tabular-nums ${charCount > 1950 ? 'text-destructive' : ''}`}>
