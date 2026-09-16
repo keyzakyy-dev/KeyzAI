@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Pencil, RotateCcw, Sparkles } from 'lucide-react'
+import { Pencil, RotateCcw, Brain } from 'lucide-react'
 import { Markdown } from '../lib/markdown'
 import { CopyButton } from '../lib/copy-button'
 
@@ -18,7 +18,7 @@ function ThinkingIndicator() {
   }, [])
   return (
     <div className="flex items-center gap-2">
-      <Sparkles
+      <Brain
         className="animate-pulsing h-4 w-4 shrink-0 text-primary"
         style={{ animationDelay: `${i * 0.15}s` }}
       />
