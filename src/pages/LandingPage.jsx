@@ -8,12 +8,11 @@ import { Reveal } from '../lib/reveal'
 import logo from '../assets/logo.png'
 import {
   Zap, ArrowRight, ArrowUp, Github, Sparkles, MessageSquare, MessageCircle, Code2, PenLine,
-  ShieldCheck, BookOpen, Plus, Menu, X, Send, Brain, Rocket, Sun, Moon,
+  ShieldCheck, BookOpen, Plus, Menu, X, Send, Brain, Sun, Moon,
 } from 'lucide-react'
 
 const NAV_LINKS = [
   { label: 'Fitur', href: '#features' },
-  { label: 'Cara Kerja', href: '#how-it-works' },
   { label: 'FAQ', href: '#faq' },
 ]
 
@@ -62,27 +61,6 @@ const FEATURES = [
   },
 ]
 
-const STEPS = [
-  {
-    icon: Rocket,
-    step: 'Langkah 1',
-    title: 'Buka chat-nya',
-    desc: 'Sekali klik langsung masuk. Tanpa daftar, tanpa unduhan, tanpa kartu kredit.',
-  },
-  {
-    icon: MessageSquare,
-    step: 'Langkah 2',
-    title: 'Ajukan pertanyaan',
-    desc: 'Ketik apa saja — kode, ide, PR, atau hal yang terus kamu cari di Google.',
-  },
-  {
-    icon: Zap,
-    step: 'Langkah 3',
-    title: 'Dapat jawaban instan',
-    desc: 'Respons jelas dan akurat berkat AI canggih. Lanjut tanya sesukamu.',
-  },
-]
-
 const FAQS = [
   {
     q: 'KeyzAI benar-benar gratis?',
@@ -107,7 +85,6 @@ const FOOTER_COLUMNS = [
     title: 'Produk',
     links: [
       { label: 'Fitur', href: '#features' },
-      { label: 'Cara kerja', href: '#how-it-works' },
       { label: 'FAQ', href: '#faq' },
     ],
   },
@@ -467,10 +444,10 @@ function Hero({ navigate }) {
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </button>
               <a
-                href="#how-it-works"
+                href="#features"
                 className="inline-flex h-10 w-full sm:w-auto items-center justify-center gap-2 rounded-md border border-input bg-background px-6 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
               >
-                Lihat cara kerjanya
+                Lihat fitur-fitur
               </a>
             </div>
           </div>
@@ -480,25 +457,6 @@ function Hero({ navigate }) {
           </div>
         </div>
       </div>
-    </section>
-  )
-}
-
-function Stats() {
-  return (
-    <section className="border-y border-border">
-      <Reveal from="up" className="mx-auto max-w-7xl px-4 sm:px-6 py-10 sm:py-14">
-        <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-8 sm:gap-y-10 md:grid-cols-4">
-          {STATS.map((stat, i) => (
-            <Reveal key={stat.label} from="scale" delay={i * 90} className="space-y-1.5 text-center">
-              <p className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl md:text-4xl">
-                {stat.value}
-              </p>
-              <p className="text-xs text-muted-foreground sm:text-sm">{stat.label}</p>
-            </Reveal>
-          ))}
-        </div>
-      </Reveal>
     </section>
   )
 }
@@ -532,16 +490,12 @@ function FeatureCard({ icon: Icon, title, desc, span, prompt, onPrompt, children
   return <div className={className}>{content}</div>
 }
 
-function SkeletonBar({ className = '' }) {
-  return <div className={`h-2.5 rounded-full bg-muted ${className}`} />
-}
-
 function Features({ navigate }) {
   const onPrompt = (p) => navigate(`/chat?q=${encodeURIComponent(p)}`)
   return (
     <section id="features" className="scroll-mt-20 py-16 sm:py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <Reveal from="up" className="mx-auto mb-10 sm:mb-16 max-w-2xl space-y-4 text-center">
+        <Reveal from="up" className="mx-auto mb-8 sm:mb-12 max-w-2xl space-y-4 text-center">
           <span className="inline-block rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
             Fitur
           </span>
@@ -553,27 +507,20 @@ function Features({ navigate }) {
           </p>
         </Reveal>
 
+        <Reveal from="up" className="mx-auto mb-10 sm:mb-14 grid max-w-3xl grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-8 md:grid-cols-4">
+          {STATS.map((stat) => (
+            <div key={stat.label} className="space-y-1 text-center">
+              <p className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+                {stat.value}
+              </p>
+              <p className="text-xs text-muted-foreground sm:text-sm">{stat.label}</p>
+            </div>
+          ))}
+        </Reveal>
+
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-3">
           <Reveal from="tilt" delay={0} className="sm:col-span-2 md:col-span-2">
-            <FeatureCard {...FEATURES[0]} onPrompt={onPrompt}>
-              <div className="mt-6 space-y-3">
-                <Reveal from="right" delay={250} className="flex justify-end">
-                  <div className="rounded-lg bg-primary px-3 py-1.5 text-xs text-primary-foreground">
-                    Apa itu bunga berbunga?
-                  </div>
-                </Reveal>
-                <Reveal from="left" delay={450} className="flex gap-2.5">
-                  <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border border-border">
-                    <Sparkles className="h-3.5 w-3.5 text-muted-foreground" />
-                  </div>
-                  <div className="flex-1 space-y-2 pt-1.5">
-                    <SkeletonBar className="w-full" />
-                    <SkeletonBar className="w-5/6" />
-                    <SkeletonBar className="w-2/3" />
-                  </div>
-                </Reveal>
-              </div>
-            </FeatureCard>
+            <FeatureCard {...FEATURES[0]} onPrompt={onPrompt} />
           </Reveal>
 
           <Reveal from="tilt" delay={120}>
@@ -606,65 +553,9 @@ function Features({ navigate }) {
   )
 }
 
-function HowItWorks({ navigate }) {
-  return (
-    <section id="how-it-works" className="scroll-mt-20 border-y border-border py-16 sm:py-24 lg:py-32">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <Reveal from="up" className="mx-auto mb-12 sm:mb-16 max-w-2xl space-y-4 text-center">
-          <span className="inline-block rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
-            Cara Kerja
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-foreground md:text-5xl">
-            Jawaban dalam tiga langkah
-          </h2>
-          <p className="text-base sm:text-lg text-muted-foreground">
-            Dari nol sampai jawaban pertama dalam waktu kurang dari sepuluh detik.
-          </p>
-        </Reveal>
-
-        <div className="relative grid gap-10 sm:gap-12 md:grid-cols-3 md:gap-8">
-          <Reveal
-            from="mask"
-            delay={200}
-            duration={900}
-            className="absolute left-[16%] right-[16%] top-6 hidden h-px bg-border md:block"
-          />
-          {STEPS.map((item, i) => (
-            <Reveal key={item.step} from="up" delay={i * 160} className="relative space-y-4 text-center">
-              <div className="relative mx-auto w-fit">
-                <Reveal from="scale" delay={i * 160 + 80} className="flex h-12 w-12 items-center justify-center rounded-lg border border-border bg-card shadow-sm">
-                  <item.icon className="h-5 w-5 text-foreground" />
-                </Reveal>
-              </div>
-              <p className="text-xs font-medium text-muted-foreground">{item.step}</p>
-              <div className="space-y-1.5">
-                <h3 className="text-lg font-semibold tracking-tight text-foreground">{item.title}</h3>
-                <p className="mx-auto max-w-xs text-sm leading-relaxed text-muted-foreground">{item.desc}</p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-
-        <Reveal from="up" delay={400} className="mt-16 text-center">
-          <button
-            onClick={() => navigate('/chat')}
-            className="group inline-flex h-10 items-center justify-center gap-2 rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
-          >
-            Coba sekarang
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-          </button>
-        </Reveal>
-      </div>
-    </section>
-  )
-}
-
 function FAQ({ navigate }) {
   return (
     <section id="faq" className="relative scroll-mt-20 overflow-hidden py-16 sm:py-24 lg:py-32">
-      {/* Decorative glow */}
-      <div className="pointer-events-none absolute -right-24 top-1/4 h-80 w-80 rounded-full bg-primary/5 blur-3xl" />
-
       <div className="relative mx-auto grid max-w-7xl gap-10 sm:gap-14 px-4 sm:px-6 lg:grid-cols-[1fr,1.35fr] lg:gap-20">
         {/* Left: heading + support card */}
         <Reveal from="left" className="lg:sticky lg:top-28 lg:self-start">
@@ -682,7 +573,6 @@ function FAQ({ navigate }) {
           </Reveal>
 
           <Reveal from="up" delay={150} className="relative mt-10 overflow-hidden rounded-2xl border border-border bg-card p-6">
-            <div className="absolute inset-0 bg-dots opacity-50 [mask-image:radial-gradient(ellipse_60%_80%_at_50%_50%,black,transparent)]" />
             <div className="relative flex flex-col gap-4 sm:flex-row sm:items-start">
               <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg border border-border bg-muted">
                 <MessageCircle className="h-5 w-5 text-foreground" />
@@ -739,16 +629,6 @@ function Footer({ navigate }) {
 
   return (
     <footer className="relative mt-4 overflow-hidden rounded-t-3xl border-x border-t border-border bg-card sm:mt-8">
-      {/* Flourish: dots halus di atas + glow lembut di bawah — menggemakan hero */}
-      <div
-        className="pointer-events-none absolute inset-0 bg-dots opacity-40 [mask-image:radial-gradient(ellipse_75%_65%_at_50%_0%,black,transparent)]"
-        aria-hidden="true"
-      />
-      <div
-        className="pointer-events-none absolute -bottom-28 left-1/2 h-64 w-[min(680px,100vw)] -translate-x-1/2 rounded-full bg-primary/5 blur-3xl"
-        aria-hidden="true"
-      />
-
       <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
         <div className="grid gap-8 sm:grid-cols-2 sm:gap-10 lg:grid-cols-[1.7fr_repeat(3,1fr)] lg:gap-12">
           {/* Brand */}
@@ -859,9 +739,7 @@ export function LandingPage() {
       <Navbar navigate={navigate} theme={theme} toggleTheme={toggleTheme} />
       <main>
         <Hero navigate={navigate} />
-        <Stats />
         <Features navigate={navigate} />
-        <HowItWorks navigate={navigate} />
         <FAQ navigate={navigate} />
       </main>
       <Footer navigate={navigate} />
