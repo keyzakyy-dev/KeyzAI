@@ -64,9 +64,9 @@ export default {
         let body
         try {
           const rawBody = await request.text()
-          body = JSON.parse(rawBody)
-        } catch {
-          return response(false, 'Bad request', 400, { error: 'Invalid JSON' }, corsHeaders(request, env))
+          body = JSON.parse(rawBody.replace(/^\uFEFF/, ''))
+        } catch (e) {
+          return response(false, 'Bad request', 400, { error: `Invalid JSON: ${e.message}` }, corsHeaders(request, env))
         }
         const { message, model, stream, messages, system } = body
 
