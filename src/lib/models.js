@@ -1,12 +1,6 @@
 export const MODELS = [
   { id: 'dahono/auto', label: 'Auto' },
   { id: 'dahono/ai-chat', label: 'Dahono AI Chat' },
-  { id: 'dahono/deepseek-v4-pro', label: 'DeepSeek V4 Pro' },
-  { id: 'dahono/deepseek-v4-flash', label: 'DeepSeek V4 Flash' },
-  { id: 'dahono/glm-5.3', label: 'GLM 5.3' },
-  { id: 'dahono/glm-5.3-flash', label: 'GLM 5.3 Flash' },
-  { id: 'dahono/qwen3.8-max', label: 'Qwen 3.8 Max' },
-  { id: 'dahono/kimi-k3', label: 'Kimi K3' },
 ]
 export const DEFAULT_MODEL = MODELS[0].id
 
