@@ -1,6 +1,5 @@
 export const MODELS = [
-  { id: 'dahono/auto', label: 'Auto' },
-  { id: 'dahono/ai-chat', label: 'Dahono AI Chat' },
+  { id: 'atria/atria-dawn-preview', label: 'Atria Dawn Preview' },
 ]
 export const DEFAULT_MODEL = MODELS[0].id
 
