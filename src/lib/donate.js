@@ -13,12 +13,9 @@
  *   { type: 'QRIS', label: 'QRIS', value: qris }
  */
 export const DONATIONS = [
-  { type: 'Bank', label: 'BCA', value: '' },
-  { type: 'Bank', label: 'Mandiri', value: '' },
-  { type: 'E-wallet', label: 'GoPay', value: '' },
-  { type: 'E-wallet', label: 'OVO', value: '' },
-  { type: 'E-wallet', label: 'DANA', value: '' },
-  { type: 'QRIS', label: 'QRIS (semua bank & e-wallet)', value: '' },
+  { type: 'Bank', label: 'BRI', value: '418301050098530' },
+  { type: 'Bank', label: 'SeaBank', value: '901803379494' },
+  { type: 'E-wallet', label: 'DANA / GoPay / ShopeePay', value: '085166664226' },
 ]
 
 // Opsional: catatan tambahan di bawah daftar, mis. atas nama pemilik rekening.
