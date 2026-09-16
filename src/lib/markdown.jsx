@@ -5,6 +5,8 @@
 // strikethrough, hr.
 import React, { useMemo } from 'react'
 import { CopyButton } from './copy-button'
+import { OptionCard, OptionsPending } from '../components/OptionCard'
+import { optionsLangState, parseOptionsPayload } from './options'
 
 // Lookbehind unsupported in Safari < 16.4 — building at runtime with fallback
 // avoids a SyntaxError that would crash the whole app on parse.
@@ -201,7 +203,7 @@ function collectList(lines, start) {
   return { items, next: i }
 }
 
-function renderMarkdown(text) {
+function renderMarkdown(text, ctx = {}) {
   const lines = text.split('\n')
   const blocks = []
   let i = 0
@@ -210,7 +212,7 @@ function renderMarkdown(text) {
   while (i < lines.length) {
     const line = lines[i]
 
-    // Fenced code block
+    // Fenced code block — kecuali blok opsi interaktif dari model
     if (FENCE_RE.test(line)) {
       const lang = /^\s*```\s*([A-Za-z0-9+#._-]*)/.exec(line)?.[1] || ''
       const buf = []
@@ -220,7 +222,22 @@ function renderMarkdown(text) {
         i++
       }
       i++ // skip closing fence
-      blocks.push(<CodeBlock key={key++} code={buf.join('\n')} lang={lang} />)
+      const raw = buf.join('\n')
+
+      if (optionsLangState(lang)) {
+        const payload = parseOptionsPayload(raw)
+        if (payload) {
+          blocks.push(<OptionCard key={key++} payload={payload} messageId={ctx.messageId} />)
+        } else if (ctx.streaming) {
+          // JSON belum utuh saat streaming — tampilkan skeleton, bukan dump mentah
+          blocks.push(<OptionsPending key={key++} />)
+        } else {
+          blocks.push(<CodeBlock key={key++} code={raw} lang={lang} />)
+        }
+        continue
+      }
+
+      blocks.push(<CodeBlock key={key++} code={raw} lang={lang} />)
       continue
     }
 
@@ -338,7 +355,10 @@ function renderMarkdown(text) {
   return blocks
 }
 
-export function Markdown({ text = '', className = '' }) {
-  const blocks = useMemo(() => renderMarkdown(String(text)), [text])
+export function Markdown({ text = '', className = '', messageId = null, streaming = false }) {
+  const blocks = useMemo(
+    () => renderMarkdown(String(text), { messageId, streaming }),
+    [text, messageId, streaming]
+  )
   return <div className={`space-y-3 ${className}`}>{blocks}</div>
 }

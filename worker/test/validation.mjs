@@ -27,4 +27,42 @@ assert.equal(
   400,
   'max 40 messages'
 )
+// --- injeksi kontrak kartu pilihan ke payload upstream (fetch di-stub, tanpa network)
+const sent = []
+const realFetch = globalThis.fetch
+globalThis.fetch = async (_url, init) => {
+  sent.push(JSON.parse(init.body))
+  return new Response(
+    JSON.stringify({ choices: [{ message: { content: 'ok' } }], usage: { total_tokens: 1 } }),
+    { headers: { 'Content-Type': 'application/json' } }
+  )
+}
+
+try {
+  const post = async (body) =>
+    worker.fetch(new Request('http://x/api/chat', { method: 'POST', body: JSON.stringify(body) }), env)
+
+  const res = await post({ message: 'halo' })
+  assert.equal(res.status, 200, 'chat normal 200')
+  assert.equal(sent[0].messages[0].role, 'system', 'system prompt disuntik di depan')
+  assert.ok(
+    sent[0].messages[0].content.includes('keyzai-options'),
+    'kontrak blok opsi ada di system prompt'
+  )
+  assert.equal(sent[0].messages.at(-1).content, 'halo', 'pesan user tidak hilang')
+
+  await post({ message: 'hai', messages: [turn('user', 'hai')] })
+  assert.deepEqual(
+    sent[1].messages.map((m) => m.role),
+    ['system', 'user'],
+    'transkrip client tetap dipakai setelah system prompt'
+  )
+
+  await post({ message: 'ringkas jadi judul', system: false })
+  assert.equal(sent[2].messages[0].role, 'user', 'system: false melewati injeksi (generate judul)')
+} finally {
+  globalThis.fetch = realFetch
+}
+
 console.log('worker validation: OK')
+console.log('worker system prompt: OK')

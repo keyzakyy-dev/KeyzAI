@@ -29,12 +29,14 @@ function timeout(ms) {
   return typeof AbortSignal !== 'undefined' && AbortSignal.timeout ? AbortSignal.timeout(ms) : undefined
 }
 
-export async function sendMessage(message, model, history) {
+export async function sendMessage(message, model, history, options = {}) {
   const msg = validateMessage(message)
 
   const body = { message: msg }
   if (model) body.model = model
   if (history?.length) body.messages = history
+  // Worker menyuntik instruksi kartu pilihan untuk chat; panggilan lain (judul) opt-out.
+  if (options.system === false) body.system = false
 
   const response = await fetch(`${API_URL}/api/chat`, {
     method: 'POST',
@@ -72,7 +74,7 @@ export async function generateTitle(userText, aiText, model) {
     `Assistant: ${String(aiText).slice(0, 500)}`
 
   try {
-    const { message } = await sendMessage(prompt, model)
+    const { message } = await sendMessage(prompt, model, undefined, { system: false })
     const clean = String(message)
       .trim()
       .split('\n')[0]

@@ -81,7 +81,11 @@ export function ChatMessage({ role, content, timestamp, streaming, id, onEdit, e
           ) : streaming && !content ? (
             <ThinkingIndicator />
           ) : (
-            <Markdown text={streaming ? closeOpenFence(content) : content} />
+            <Markdown
+              text={streaming ? closeOpenFence(content) : content}
+              messageId={id}
+              streaming={streaming}
+            />
           )}
         </div>
 

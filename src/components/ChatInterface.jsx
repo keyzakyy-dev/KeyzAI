@@ -8,6 +8,7 @@ import { sendMessageStream, generateTitle } from '../api'
 import { Button } from './ui/button'
 import { ConfirmDialog } from './ui/confirm-dialog'
 import { RenameDialog } from './ui/rename-dialog'
+import { OptionsContext } from './OptionCard'
 import { useTheme } from '../lib/use-theme'
 import { applyPageMeta } from '../lib/seo'
 import { loadModel, saveModel } from '../lib/models'
@@ -482,6 +483,16 @@ export function ChatInterface() {
               </div>
             </div>
           ) : (
+            <OptionsContext.Provider
+              value={{
+                activeId:
+                  messages[messages.length - 1]?.role === 'assistant'
+                    ? messages[messages.length - 1].id
+                    : null,
+                loading,
+                onSelect: handleSend,
+              }}
+            >
             <div className="mx-auto w-full max-w-3xl flex-1 space-y-6 px-4 py-8">
               {messages.map((msg) => (
                 <ChatMessage
@@ -520,6 +531,7 @@ export function ChatInterface() {
                 </div>
               )}
             </div>
+            </OptionsContext.Provider>
           )}
           </div>
 
