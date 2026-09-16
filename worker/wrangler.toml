@@ -3,14 +3,14 @@ main = "src/index.js"
 compatibility_date = "2024-12-01"
 
 [vars]
-OPENAI_API_URL = "https://api.llmgateway.io/v1"
-OPENAI_MODEL = "atria/atria-dawn-preview"
+OPENAI_API_URL = "https://api.atria-asi.ai/v1"
+OPENAI_MODEL = "Atria-Dawn-Preview"
 ALLOWED_ORIGINS = "http://localhost:5173,https://keyz-ai.vercel.app"
 
 [env.production]
 name = "keyzai-worker-prod"
 
 [env.production.vars]
-OPENAI_API_URL = "https://api.llmgateway.io/v1"
-OPENAI_MODEL = "atria/atria-dawn-preview"
+OPENAI_API_URL = "https://api.atria-asi.ai/v1"
+OPENAI_MODEL = "Atria-Dawn-Preview"
 ALLOWED_ORIGINS = "http://localhost:5173,https://keyz-ai.vercel.app"

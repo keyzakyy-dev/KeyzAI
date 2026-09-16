@@ -69,7 +69,7 @@ export default {
 
         const apiKey = env.OPENAI_API_KEY
         const apiUrl = env.OPENAI_API_URL || 'https://api.openai.com/v1'
-        const ALLOWED_MODELS = ['atria/atria-dawn-preview']
+        const ALLOWED_MODELS = ['Atria-Dawn-Preview']
         if (model && !ALLOWED_MODELS.includes(model)) {
           return response(false, 'Unknown model', 400, { error: `Model tidak dikenal: ${model}` }, corsHeaders(request, env))
         }

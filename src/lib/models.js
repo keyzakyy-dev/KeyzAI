@@ -1,5 +1,5 @@
 export const MODELS = [
-  { id: 'atria/atria-dawn-preview', label: 'Atria Dawn Preview' },
+  { id: 'Atria-Dawn-Preview', label: 'Atria Dawn Preview' },
 ]
 export const DEFAULT_MODEL = MODELS[0].id
 
