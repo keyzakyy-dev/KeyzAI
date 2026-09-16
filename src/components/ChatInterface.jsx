@@ -8,6 +8,7 @@ import { sendMessageStream, generateTitle } from '../api'
 import { Button } from './ui/button'
 import { ConfirmDialog } from './ui/confirm-dialog'
 import { RenameDialog } from './ui/rename-dialog'
+import { AnnouncementDialog } from './AnnouncementDialog'
 import { OptionsContext } from './OptionCard'
 import { useTheme } from '../lib/use-theme'
 import { applyPageMeta } from '../lib/seo'
@@ -73,6 +74,24 @@ export function ChatInterface() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [renameOpen, setRenameOpen] = useState(false)
   const [model, setModel] = useState(loadModel)
+  // Announcement "sedang dalam pengembangan": sekali per sesi browser.
+  const [announceOpen, setAnnounceOpen] = useState(() => {
+    try {
+      return sessionStorage.getItem('keyzai-announced') !== '1'
+    } catch {
+      return false
+    }
+  })
+  const closeAnnounce = (open) => {
+    setAnnounceOpen(open)
+    if (!open) {
+      try {
+        sessionStorage.setItem('keyzai-announced', '1')
+      } catch {
+        // sessionStorage unavailable (private mode) — popup tidak akan ulang sesi ini
+      }
+    }
+  }
   const [toast, setToast] = useState(null)
   const scrollAreaRef = useRef(null)
   const abortRef = useRef(null)
@@ -604,6 +623,7 @@ export function ChatInterface() {
         value={currentConv?.title || ''}
         onSave={submitRename}
       />
+      <AnnouncementDialog open={announceOpen} onOpenChange={closeAnnounce} />
       <ConfirmDialog
         open={!!confirm}
         onOpenChange={(o) => !o && setConfirm(null)}
