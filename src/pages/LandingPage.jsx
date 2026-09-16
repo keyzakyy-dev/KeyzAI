@@ -17,10 +17,10 @@ const NAV_LINKS = [
 ]
 
 const STATS = [
-  { value: '<2s', label: 'Rata-rata waktu respons' },
-  { value: '1M+', label: 'Pertanyaan terjawab' },
-  { value: '100+', label: 'Bahasa didukung' },
   { value: 'Rp0', label: 'Biaya untuk memulai' },
+  { value: '0', label: 'Akun yang harus dibuat' },
+  { value: '24/7', label: 'Selalu bisa diakses' },
+  { value: 'Privat', label: 'Riwayat hanya di perangkatmu' },
 ]
 
 const FEATURES = [
@@ -76,7 +76,7 @@ const FAQS = [
   },
   {
     q: 'Data percakapanku aman?',
-    a: 'Pesanmu diproses untuk menghasilkan respons dan tidak dipakai untuk iklan atau dijual ke pihak ketiga. Chat-mu tetap antara kamu dan AI.',
+    a: 'Riwayat chat disimpan hanya di perangkatmu (browser), bukan di server kami. Pesan yang kamu kirim diteruskan ke model AI pihak ketiga untuk diproses menjadi respons — dan tidak kami jual ke siapa pun.',
   },
 ]
 
@@ -86,22 +86,6 @@ const FOOTER_COLUMNS = [
     links: [
       { label: 'Fitur', href: '#features' },
       { label: 'FAQ', href: '#faq' },
-    ],
-  },
-  {
-    title: 'Perusahaan',
-    links: [
-      { label: 'Ketentuan', href: '#' },
-      { label: 'Privasi', href: '#' },
-      { label: 'Kontak', href: '#' },
-    ],
-  },
-  {
-    title: 'Sumber daya',
-    links: [
-      { label: 'Dokumentasi OpenAI', href: '#' },
-      { label: 'Status', href: '#' },
-      { label: 'Riwayat perubahan', href: '#' },
     ],
   },
 ]
@@ -395,8 +379,8 @@ function ChatMock() {
           <Zap className="h-3.5 w-3.5 text-foreground" />
         </div>
         <div>
-          <p className="text-xs font-semibold leading-none text-foreground">&lt;2s</p>
-          <p className="mt-0.5 text-[10px] text-muted-foreground">waktu respons</p>
+          <p className="text-xs font-semibold leading-none text-foreground">Gratis</p>
+          <p className="mt-0.5 text-[10px] text-muted-foreground">selamanya</p>
         </div>
       </div>
       <div className="absolute -right-5 bottom-16 hidden animate-float-delayed items-center gap-2.5 rounded-lg border border-border bg-background/95 px-3 py-2 shadow-lg backdrop-blur lg:flex">
@@ -404,8 +388,8 @@ function ChatMock() {
           <Brain className="h-3.5 w-3.5 text-foreground" />
         </div>
         <div>
-          <p className="text-xs font-semibold leading-none text-foreground">100+ topik</p>
-          <p className="mt-0.5 text-[10px] text-muted-foreground">dikuasai mendalam</p>
+          <p className="text-xs font-semibold leading-none text-foreground">Tanpa daftar</p>
+          <p className="mt-0.5 text-[10px] text-muted-foreground">langsung mulai</p>
         </div>
       </div>
     </div>
@@ -630,7 +614,7 @@ function Footer({ navigate }) {
   return (
     <footer className="relative mt-4 overflow-hidden rounded-t-3xl border-x border-t border-border bg-card sm:mt-8">
       <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
-        <div className="grid gap-8 sm:grid-cols-2 sm:gap-10 lg:grid-cols-[1.7fr_repeat(3,1fr)] lg:gap-12">
+        <div className="grid gap-8 sm:grid-cols-2 sm:gap-10 lg:grid-cols-[1.7fr_1fr] lg:gap-12">
           {/* Brand */}
           <Reveal from="up" className="max-w-sm space-y-5 sm:col-span-2 lg:col-span-1 lg:max-w-sm">
             <Logo />

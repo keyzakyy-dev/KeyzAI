@@ -64,7 +64,8 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
 
         <div className="flex items-center justify-between gap-3 px-3 pb-2.5">
           <div className="flex min-w-0 items-center gap-2">
-            {model && onModelChange && (
+            {/* Model picker hanya muncul saat ada lebih dari satu model. */}
+            {model && onModelChange && MODELS.length > 1 && (
               <div ref={modelBtnRef} className="relative">
                 <button
                   type="button"

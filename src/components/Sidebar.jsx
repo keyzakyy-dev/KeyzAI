@@ -1,4 +1,4 @@
-import { Plus, MessageSquare, Trash2, Pin } from 'lucide-react'
+import { Plus, MessageSquare, Trash2, Pin, Download } from 'lucide-react'
 import { Button } from './ui/button'
 import logo from '../assets/logo.png'
 
@@ -17,7 +17,7 @@ function groupKey(ts) {
   return 'Lebih lama'
 }
 
-export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, onClear, open, onClose, collapsed, onDragStart }) {
+export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, onClear, onExport, open, onClose, collapsed, onDragStart }) {
   const sorted = [...conversations].sort(
     (a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || (b.createdAt || 0) - (a.createdAt || 0)
   )
@@ -119,11 +119,23 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
         </div>
 
         {/* Footer */}
-        <div className="border-t border-border p-2">
+        <div className="space-y-0.5 border-t border-border p-2">
+          {conversations.length > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onExport}
+              className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
+            >
+              <Download className="w-4 h-4" />
+              Ekspor semua percakapan
+            </Button>
+          )}
           <Button
             variant="ghost"
             size="sm"
             onClick={onClear}
+            disabled={conversations.length === 0}
             className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
           >
             <Trash2 className="w-4 h-4" />

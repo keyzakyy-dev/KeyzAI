@@ -135,7 +135,7 @@ export default {
               model: modelName,
               messages: chatMessages,
               temperature: 0.7,
-              max_tokens: Number(env.OPENAI_MAX_TOKENS) || 8192,
+              max_tokens: Number(env.OPENAI_MAX_TOKENS) || 16384,
               stream: true,
             }),
             signal: AbortSignal.timeout(120000),
@@ -167,7 +167,7 @@ export default {
             model: modelName,
             messages: chatMessages,
             temperature: 0.7,
-            max_tokens: Number(env.OPENAI_MAX_TOKENS) || 8192,
+            max_tokens: Number(env.OPENAI_MAX_TOKENS) || 16384,
           }),
           signal: AbortSignal.timeout(30000),
         })
@@ -179,7 +179,10 @@ export default {
         }
 
         const data = await openaiRes.json()
-        const aiMessage = data.choices?.[0]?.message?.content || 'No response'
+        // Model reasoning (Atria) bisa habiskan budget di reasoning_content sampai content
+        // kosong; jatuh ke reasoning daripada menampilkan pesan kosong.
+        const msg = data.choices?.[0]?.message
+        const aiMessage = msg?.content || msg?.reasoning_content || 'Tidak ada respons dari model.'
         const tokensUsed = data.usage?.total_tokens || 0
 
         return response(true, aiMessage, 200, {

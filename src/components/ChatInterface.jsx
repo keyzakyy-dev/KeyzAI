@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
 import { Sidebar } from './Sidebar'
-import { Sun, Moon, Menu, X, ArrowDown, PanelLeftClose, PanelLeftOpen, AlertCircle, RotateCcw, ChevronDown, Pin, Pencil, Trash2 } from 'lucide-react'
+import { Sun, Moon, Menu, X, ArrowDown, PanelLeftClose, PanelLeftOpen, AlertCircle, RotateCcw, ChevronDown, Pin, Pencil, Trash2, Download } from 'lucide-react'
 import { sendMessageStream, generateTitle } from '../api'
 import { Button } from './ui/button'
 import { ConfirmDialog } from './ui/confirm-dialog'
@@ -12,6 +12,7 @@ import { OptionsContext } from './OptionCard'
 import { useTheme } from '../lib/use-theme'
 import { applyPageMeta } from '../lib/seo'
 import { loadModel, saveModel } from '../lib/models'
+import { downloadConversation, downloadAll } from '../lib/backup'
 
 const SIDEBAR_MIN = 220
 const SIDEBAR_MAX = 420
@@ -72,11 +73,22 @@ export function ChatInterface() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [renameOpen, setRenameOpen] = useState(false)
   const [model, setModel] = useState(loadModel)
+  const [toast, setToast] = useState(null)
   const scrollAreaRef = useRef(null)
   const abortRef = useRef(null)
 
   const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
   const changeModel = (id) => { setModel(id); saveModel(id) }
+
+  // ToastUndo: penghapusan disimpan sementara, bisa dibatalkan dalam 6 detik.
+  const notify = (label, undo) => setToast({ label, undo })
+  useEffect(() => {
+    if (!toast) return
+    const t = setTimeout(() => setToast(null), 6000)
+    return () => clearTimeout(t)
+  }, [toast])
+
+  const handleExportAll = () => downloadAll(conversations)
 
   const startResize = (e) => {
     e.preventDefault()
@@ -147,7 +159,9 @@ export function ChatInterface() {
         JSON.stringify({ convs: conversations, activeId: currentConvId })
       )
     } catch {
-      // storage unavailable — conversations just won't persist
+      // localStorage penuh (quota) — riwayat baru tidak tersimpan. Ingatkan export
+      // sebagai jaring pengaman, bukan diam-diam menelan data.
+      setError('Penyimpanan penuh — riwayat baru tidak tersimpan. Ekspor percakapanmu lewat menu chat, lalu hapus yang lama.')
     }
   }, [conversations, currentConvId])
 
@@ -261,26 +275,33 @@ export function ChatInterface() {
         model,
         ctx
       )
-      const finalMessages = history.map((m) =>
-        m.id === aiMsg.id ? { ...m, content: text, streaming: false } : m
-      )
-      setMessages((prev) =>
-        prev.map((m) => (m.id === aiMsg.id ? { ...m, content: text, streaming: false } : m))
-      )
-      const fallbackTitle =
-        content.length > 30 ? content.slice(0, 30) + '...' : content
-      const isNewConversation = !conversations.some((c) => c.id === convId)
-      setConversations((prev) => {
-        const existing = prev.find((c) => c.id === convId)
-        if (existing) {
-          return prev.map((c) => (c.id === convId ? { ...c, messages: finalMessages } : c))
+      if (!text) {
+        // Model selesai tanpa output (mis. budget token habis di reasoning).
+        // Buang bubble kosong daripada meninggalkan pesan mati.
+        setMessages((prev) => prev.filter((m) => m.id !== aiMsg.id))
+        setError('Model tidak memberikan respons. Coba kirim ulang pertanyaannya.')
+      } else {
+        const finalMessages = history.map((m) =>
+          m.id === aiMsg.id ? { ...m, content: text, streaming: false } : m
+        )
+        setMessages((prev) =>
+          prev.map((m) => (m.id === aiMsg.id ? { ...m, content: text, streaming: false } : m))
+        )
+        const fallbackTitle =
+          content.length > 30 ? content.slice(0, 30) + '...' : content
+        const isNewConversation = !conversations.some((c) => c.id === convId)
+        setConversations((prev) => {
+          const existing = prev.find((c) => c.id === convId)
+          if (existing) {
+            return prev.map((c) => (c.id === convId ? { ...c, messages: finalMessages } : c))
+          }
+          return [...prev, { id: convId, title: fallbackTitle, titlePending: true, createdAt: Date.now(), messages: finalMessages }]
+        })
+        if (isNewConversation) {
+          generateTitle(content, text, model)
+            .then((t) => patchConv(convId, { title: t || fallbackTitle, titlePending: false }))
+            .catch(() => patchConv(convId, { title: fallbackTitle, titlePending: false }))
         }
-        return [...prev, { id: convId, title: fallbackTitle, titlePending: true, createdAt: Date.now(), messages: finalMessages }]
-      })
-      if (isNewConversation) {
-        generateTitle(content, text, model)
-          .then((t) => patchConv(convId, { title: t || fallbackTitle, titlePending: false }))
-          .catch(() => patchConv(convId, { title: fallbackTitle, titlePending: false }))
       }
     } catch (err) {
       console.error('Error:', err)
@@ -338,11 +359,17 @@ export function ChatInterface() {
       confirmLabel: 'Hapus',
       danger: true,
       onConfirm: () => {
+        const removed = conversations.filter((c) => c.id === convId)
         setConversations((prev) => prev.filter((c) => c.id !== convId))
         if (currentConvId === convId) {
           setCurrentConvId(null)
           setMessages([])
         }
+        notify(`"${conv?.title || 'Percakapan'}" dihapus`, () => {
+          setConversations((prev) => [...removed, ...prev])
+          setCurrentConvId(convId)
+          setMessages(removed[0]?.messages || [])
+        })
       },
     })
   }
@@ -355,10 +382,16 @@ export function ChatInterface() {
       confirmLabel: 'Hapus semua',
       danger: true,
       onConfirm: () => {
+        const snapshot = conversations
         setConversations([])
         setCurrentConvId(null)
         setMessages([])
         setError(null)
+        notify(`${snapshot.length} percakapan dihapus`, () => {
+          setConversations(snapshot)
+          setCurrentConvId(snapshot[0]?.id || null)
+          setMessages(snapshot[0]?.messages || [])
+        })
       },
     })
   }
@@ -372,6 +405,7 @@ export function ChatInterface() {
         onNew={handleNewChat}
         onDelete={handleDeleteConv}
         onClear={handleClearAll}
+        onExport={handleExportAll}
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         collapsed={collapsed}
@@ -430,6 +464,14 @@ export function ChatInterface() {
                         >
                           <Pencil className="h-3.5 w-3.5" />
                           Ganti nama
+                        </button>
+                        <button
+                          role="menuitem"
+                          onClick={() => { downloadConversation(currentConv); setMenuOpen(false) }}
+                          className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm text-foreground hover:bg-accent"
+                        >
+                          <Download className="h-3.5 w-3.5" />
+                          Ekspor percakapan
                         </button>
                         <div className="my-1 h-px bg-border" />
                         <button
@@ -571,6 +613,31 @@ export function ChatInterface() {
         danger={confirm?.danger}
         onConfirm={confirm?.onConfirm}
       />
+
+      {toast && (
+        <div className="pointer-events-none fixed inset-x-0 bottom-20 z-50 flex justify-center px-4 sm:bottom-24">
+          <div className="pointer-events-auto flex max-w-full items-center gap-3 rounded-full border border-border bg-popover px-4 py-2 shadow-lg animate-fade-up" style={{ animationDuration: '220ms' }}>
+            <p className="truncate text-sm text-foreground">{toast.label}</p>
+            {toast.undo && (
+              <button
+                type="button"
+                onClick={() => { toast.undo(); setToast(null) }}
+                className="shrink-0 text-sm font-medium text-primary hover:underline"
+              >
+                Urungkan
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => setToast(null)}
+              aria-label="Tutup notifikasi"
+              className="shrink-0 text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
