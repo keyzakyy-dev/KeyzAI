@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useReducer, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { chatReducer } from '../state/chat-reducer.js'
 import { loadState, saveState } from '../state/persistence.js'
 import { getActivePath } from '../state/tree.js'
@@ -19,35 +19,37 @@ export function useChatStore() {
   const lastErr = useRef(null)
   const hydrated = useRef(false)
 
-  // Hydrate dari D1 saat user login: server jadi sumber kebenaran.
-  // Tanpa token, localStorage tetap dipakai (mode sebelum integrasi auth).
-  useEffect(() => {
-    if (hydrated.current || !isAuthenticated()) return
+  // Hydrate dari D1: list → REPLACE_ALL; bila ada flag "fresh chat" (set tepat
+  // setelah login), tempatkan user di chat baru. Mengembalikan activeId baru
+  // (id chat baru) bila fresh, atau null.
+  const refreshHistory = useCallback(async () => {
+    if (hydrated.current) return null
     hydrated.current = true
-    let cancelled = false
-    ;(async () => {
-      try {
-        const convs = await fetchConversations()
-        if (cancelled || !Array.isArray(convs)) return
-        dispatch({ type: 'REPLACE_ALL', convs })
-      } catch {
-        // jaringan gagal → localStorage yang dipakai
-      }
-      let fresh = false
-      try {
-        fresh = sessionStorage.getItem(FRESH_CHAT_KEY) === '1'
-        if (fresh) sessionStorage.removeItem(FRESH_CHAT_KEY)
-      } catch {
-        // sessionStorage unavailable — abaikan flag
-      }
-      if (!cancelled && fresh) {
-        dispatch({ type: 'NEW_CHAT', convId: newId('conv') })
-      }
-    })()
-    return () => {
-      cancelled = true
+    try {
+      const convs = await fetchConversations()
+      if (Array.isArray(convs)) dispatch({ type: 'REPLACE_ALL', convs })
+    } catch {
+      // jaringan gagal → state lokal tetap dipakai
     }
-  }, [])
+    let fresh = false
+    try {
+      fresh = sessionStorage.getItem(FRESH_CHAT_KEY) === '1'
+      if (fresh) sessionStorage.removeItem(FRESH_CHAT_KEY)
+    } catch {
+      // sessionStorage unavailable — abaikan flag
+    }
+    if (fresh) {
+      const id = newId('conv')
+      dispatch({ type: 'NEW_CHAT', convId: id })
+      return id
+    }
+    return null
+  }, [dispatch])
+
+  // Auto-hydrate saat session sudah ada sejak mount (visitor yang sudah login).
+  useEffect(() => {
+    if (isAuthenticated()) refreshHistory()
+  }, [refreshHistory])
 
   // Persist ke localStorage (debounce) + sinkron ke D1 untuk aksi penting.
   useEffect(() => {
@@ -116,5 +118,5 @@ export function useChatStore() {
     [messages],
   )
 
-  return { state, dispatch, activeConv, messages, loading, persistError }
+  return { state, dispatch, activeConv, messages, loading, persistError, refreshHistory }
 }

@@ -8,6 +8,7 @@ import { Button } from './ui/button'
 import { ConfirmDialog } from './ui/confirm-dialog'
 import { RenameDialog } from './ui/rename-dialog'
 import { AnnouncementDialog } from './AnnouncementDialog'
+import { LoginDialog } from './LoginDialog'
 import { OptionsContext } from './OptionCard'
 import { useTheme } from '../lib/use-theme'
 import { applyPageMeta } from '../lib/seo'
@@ -23,7 +24,7 @@ import { newId } from '../state/ids.js'
 import { hasSiblings, navigateBranch, serializeConv } from '../state/tree.js'
 
 export function ChatInterface() {
-  const { state, dispatch, activeConv, messages, loading, persistError } = useChatStore()
+  const { state, dispatch, activeConv, messages, loading, persistError, refreshHistory } = useChatStore()
   const { send, stop } = useChatStream({ state, dispatch, loading })
   const { toast, notify, dismiss } = useToast()
   const { width: sidebarW, resizing, onDragStart } = useResizableSidebar()
@@ -57,10 +58,34 @@ export function ChatInterface() {
   const error = state.error || persistError
   const lastSent = state.lastSent
 
-  const { user, logout } = useAuth()
+  const { user, logout, loginWithGoogle } = useAuth()
 
   const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
   const changeModel = (id) => { setModel(id); saveModel(id) }
+
+  // Popup login: muncul saat user belum login mencoba mengirim pesan.
+  const [loginOpen, setLoginOpen] = useState(false)
+  const [loginLoading, setLoginLoading] = useState(false)
+  const [loginErr, setLoginErr] = useState(null)
+
+  const handleLoginToken = async (idToken) => {
+    setLoginErr(null)
+    setLoginLoading(true)
+    try {
+      await loginWithGoogle(idToken)
+      try {
+        sessionStorage.setItem('keyzai-fresh-chat', '1')
+      } catch {
+        // abaikan
+      }
+      await refreshHistory()
+      setLoginOpen(false)
+    } catch (e) {
+      setLoginErr(e.message || 'Login gagal')
+    } finally {
+      setLoginLoading(false)
+    }
+  }
 
   const handleLogout = () => {
     logout()
@@ -81,10 +106,16 @@ export function ChatInterface() {
   // ---------- aksi chat
   const handleSend = useCallback(
     (content) => {
-      if (loading) return
+      if (loading) return false
+      if (!user) {
+        setLoginErr(null)
+        setLoginOpen(true)
+        return false // kolom tetap menyimpan teks
+      }
       send({ content, mode: 'new', model })
+      return true
     },
-    [loading, send, model],
+    [loading, send, model, user],
   )
 
   const handleEditSave = useCallback(
@@ -546,6 +577,16 @@ export function ChatInterface() {
         onSave={submitRename}
       />
       <AnnouncementDialog open={announceOpen} onOpenChange={closeAnnounce} />
+      <LoginDialog
+        open={loginOpen}
+        onOpenChange={(o) => {
+          setLoginOpen(o)
+          if (!o) setLoginErr(null)
+        }}
+        onIdToken={handleLoginToken}
+        loading={loginLoading}
+        error={loginErr}
+      />
       <ConfirmDialog
         open={!!confirm}
         onOpenChange={(o) => !o && setConfirm(null)}

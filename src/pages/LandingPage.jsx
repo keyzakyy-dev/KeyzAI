@@ -6,11 +6,10 @@ import { usePageMeta, SITE_NAME, SITE_DESC, faqSchema, injectJsonLd } from '../l
 import { MODELS } from '../lib/models'
 import { Reveal } from '../lib/reveal'
 import { useAuth } from '../hooks/useAuth'
-import { GoogleSignInButton } from '../components/GoogleSignInButton'
 import logo from '../assets/logo.png'
 import {
   Zap, ArrowRight, ArrowUp, Github, Sparkles, MessageSquare, MessageCircle, Code2, PenLine,
-  ShieldCheck, BookOpen, Plus, Menu, X, Send, Brain, Sun, Moon, Loader2,
+  ShieldCheck, BookOpen, Plus, Menu, X, Send, Brain, Sun, Moon,
 } from 'lucide-react'
 
 const NAV_LINKS = [
@@ -226,7 +225,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
                 </Button>
               ) : (
                 <Button
-                  onClick={() => document.getElementById('hero-google-signin')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+                  onClick={() => navigate('/chat')}
                   className="group h-9 rounded-full pl-4 pr-3.5 shadow-sm"
                 >
                   Masuk
@@ -293,8 +292,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
               <Button
                 onClick={() => {
                   setOpen(false)
-                  if (user) navigate('/chat')
-                  else document.getElementById('hero-google-signin')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                  navigate('/chat')
                 }}
                 className="mt-2 h-10 w-full rounded-xl"
               >
@@ -411,24 +409,6 @@ function ChatMock() {
 }
 
 function Hero({ navigate }) {
-  const { loginWithGoogle, loading } = useAuth()
-  const [err, setErr] = useState(null)
-
-  const handleToken = async (idToken) => {
-    setErr(null)
-    try {
-      await loginWithGoogle(idToken)
-      try {
-        sessionStorage.setItem('keyzai-fresh-chat', '1')
-      } catch {
-        // abaikan jika sessionStorage tak tersedia
-      }
-      navigate('/chat')
-    } catch (e) {
-      setErr(e.message || 'Login gagal')
-    }
-  }
-
   return (
     <section className="relative overflow-hidden pb-16 pt-24 sm:pb-24 sm:pt-32 lg:pb-32 lg:pt-40">
       <div className="absolute inset-0 bg-dots [mask-image:radial-gradient(ellipse_65%_55%_at_50%_0%,black,transparent)]" />
@@ -452,25 +432,16 @@ function Hero({ navigate }) {
             </p>
 
             <div className="animate-fade-up space-y-3" style={{ animationDelay: '0.25s' }}>
-              <GoogleSignInButton
-                id="hero-google-signin"
-                onIdToken={handleToken}
-                disabled={loading}
-                onError={setErr}
-              />
-              {loading && (
-                <p className="flex items-center justify-center gap-2 text-xs text-muted-foreground sm:justify-start">
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  Memproses login…
-                </p>
-              )}
-              {err && (
-                <p className="text-xs text-destructive" role="alert">
-                  {err}
-                </p>
-              )}
+              <Button
+                onClick={() => navigate('/chat')}
+                size="lg"
+                className="group h-12 rounded-full pl-6 pr-5 text-base shadow-sm"
+              >
+                Mulai chat sekarang
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </Button>
               <p className="text-xs text-muted-foreground/70">
-                Masuk dengan Google untuk menyimpan riwayat percakapanmu.
+                Gratis. Masuk dengan Google saat mengirim pesan pertama — riwayat tersimpan otomatis.
               </p>
             </div>
           </div>
@@ -673,7 +644,7 @@ function Footer({ navigate }) {
             </div>
 
             <div className="flex flex-wrap items-center gap-2 pt-1">
-              <Button onClick={() => navigate('/')} size="sm" className="group h-9 rounded-full pl-4 pr-3.5">
+              <Button onClick={() => navigate('/chat')} size="sm" className="group h-9 rounded-full pl-4 pr-3.5">
                 Masuk dengan Google
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </Button>

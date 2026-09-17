@@ -36,8 +36,10 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
 
   const handleSend = () => {
     if (message.trim() && !loading) {
-      onSend(message)
-      setMessage('')
+      // onSend boleh mengembalikan false untuk menandakan pesan belum benar-benar
+      // terkirim (mis. muncul popup login) — teks dipertahankan di kolom.
+      const sent = onSend(message)
+      if (sent !== false) setMessage('')
     }
   }
 
