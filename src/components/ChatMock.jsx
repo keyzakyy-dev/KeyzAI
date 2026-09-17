@@ -105,7 +105,7 @@ export function ChatMock() {
             </div>
           </div>
 
-          {userLen === USER_TXT.length && (
+          {userText.length === USER_TXT.length && (
             <div className="flex gap-2.5">
               <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border border-border">
                 <Sparkles className="h-3.5 w-3.5 text-muted-foreground" />
