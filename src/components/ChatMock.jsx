@@ -140,15 +140,6 @@ export function ChatMock() {
             </div>
           )}
         </div>
-
-        <div className="px-5 pb-5">
-          <div className="flex items-center gap-3 rounded-lg border border-border bg-background px-3.5 py-2.5">
-            <span className="flex-1 text-sm text-muted-foreground">Ada yang bisa dibantu?</span>
-            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary">
-              <KeyMark className="h-3.5 w-3.5 text-primary-foreground" />
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   )
