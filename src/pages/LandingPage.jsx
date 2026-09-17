@@ -371,6 +371,8 @@ function Hero({ navigate }) {
               style={{ animationDelay: '0.1s' }}
             >
               Tanya apa saja.
+              <br />
+              Dapat jawabannya.
             </h1>
 
             <p className="animate-fade-up max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg" style={{ animationDelay: '0.2s' }}>
