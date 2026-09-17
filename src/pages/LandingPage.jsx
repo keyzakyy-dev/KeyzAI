@@ -313,7 +313,7 @@ function Hero({ navigate }) {
             </div>
           </div>
 
-          <div className="mx-auto w-full max-w-md">
+          <div className="mx-auto hidden w-full max-w-md md:block">
             <ChatMock />
           </div>
         </div>
