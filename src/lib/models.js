@@ -11,6 +11,16 @@ export function loadModel() {
   return DEFAULT_MODEL
 }
 
+// True bila user pernah memilih model eksplisit di perangkat ini (dipakai
+// untuk memutuskan apakah preferensi akun boleh meng-override default).
+export function isModelStored() {
+  try {
+    return localStorage.getItem('keyzai-model') != null
+  } catch {
+    return false
+  }
+}
+
 export function saveModel(id) {
   try { localStorage.setItem('keyzai-model', id) } catch {}
 }

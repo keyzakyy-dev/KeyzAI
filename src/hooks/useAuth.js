@@ -74,7 +74,14 @@ export function useAuth() {
     setUser(null)
   }, [])
 
-  return { user, loading, error, loginWithGoogle, logout }
+  // Perbarui user lokal setelah server mengubah data akun (mis. nama tampilan).
+  const updateUser = useCallback((next) => {
+    if (!next) return
+    setUser(next)
+    setSession(getToken(), next)
+  }, [])
+
+  return { user, loading, error, loginWithGoogle, logout, updateUser }
 }
 
 export { getToken } from '../lib/auth'

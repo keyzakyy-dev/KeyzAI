@@ -3,10 +3,12 @@
  * POST /api/chat            - relay ke OpenAI (butuh auth)
  * POST /api/auth/google     - login via Google ID token
  * GET  /api/auth/me         - cek session
+ * GET/PUT /api/preferences  - preferensi akun (butuh auth)
  * GET  /api/conversations   - list percakapan user
  * GET  /api/conversations/:id - detail pohon pesan
  * PUT  /api/conversations/:id - simpan/upsert percakapan
  * PATCH /api/conversations/:id - pin/rename
+ * DELETE /api/conversations   - hapus semua percakapan user
  * DELETE /api/conversations/:id
  */
 
@@ -18,6 +20,9 @@ import {
   saveConversation,
   patchConversation,
   deleteConversation,
+  getPreferences,
+  updatePreferences,
+  deleteAllConversations,
 } from './db.js'
 
 // If ALLOWED_ORIGINS is unset, all origins are allowed (backwards compatible).
@@ -181,6 +186,55 @@ export default {
       return response(true, 'OK', 200, { user: row }, corsHeaders(request, env))
     }
 
+    // ---------------- PREFERENSI AKUN (butuh auth)
+    // GET /api/preferences  -> { preferences, user }
+    // PUT /api/preferences  -> body { default_model?, sidebar_width?, display_name? }
+    if (path === '/api/preferences') {
+      const session = await sessionUser(request, env)
+      if (!session) return unauthorized(env, request)
+
+      if (request.method === 'GET') {
+        const data = await getPreferences(env.DB, session.uid)
+        if (!data) return unauthorized(env, request)
+        return response(true, 'OK', 200, data, corsHeaders(request, env))
+      }
+
+      if (request.method === 'PUT') {
+        let body
+        try {
+          body = await request.json()
+        } catch {
+          return response(false, 'Bad request', 400, { error: 'Invalid JSON' }, corsHeaders(request, env))
+        }
+        const patch = {}
+        if (body.default_model !== undefined) {
+          if (typeof body.default_model !== 'string' || !body.default_model.trim()) {
+            return response(false, 'Bad request', 400, { error: 'Model tidak valid' }, corsHeaders(request, env))
+          }
+          patch.default_model = body.default_model.trim().slice(0, 64)
+        }
+        if (body.sidebar_width !== undefined) {
+          const w = Number(body.sidebar_width)
+          if (!Number.isFinite(w)) {
+            return response(false, 'Bad request', 400, { error: 'Lebar sidebar tidak valid' }, corsHeaders(request, env))
+          }
+          patch.sidebar_width = w
+        }
+        if (body.display_name !== undefined) {
+          if (typeof body.display_name !== 'string') {
+            return response(false, 'Bad request', 400, { error: 'Nama tidak valid' }, corsHeaders(request, env))
+          }
+          patch.display_name = body.display_name
+        }
+        if (!Object.keys(patch).length) {
+          return response(false, 'Bad request', 400, { error: 'Tidak ada perubahan' }, corsHeaders(request, env))
+        }
+        const data = await updatePreferences(env.DB, session.uid, patch)
+        if (!data) return unauthorized(env, request)
+        return response(true, 'Saved', 200, data, corsHeaders(request, env))
+      }
+    }
+
     // ---------------- PERCAKAPAN (butuh auth)
     const convMatch = /^\/api\/conversations(?:\/([^/]+))?$/.exec(path)
     if (convMatch) {
@@ -193,6 +247,12 @@ export default {
       if (request.method === 'GET' && !convId) {
         const convs = await listConversations(db, session.uid)
         return response(true, 'OK', 200, { conversations: convs }, corsHeaders(request, env))
+      }
+
+      // DELETE /api/conversations — hapus SEMUA percakapan user (data & privasi)
+      if (request.method === 'DELETE' && !convId) {
+        const deleted = await deleteAllConversations(db, session.uid)
+        return response(true, 'Deleted', 200, { deleted }, corsHeaders(request, env))
       }
 
       if (convId) {

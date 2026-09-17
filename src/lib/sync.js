@@ -54,3 +54,30 @@ export async function removeConversation(id) {
     }),
   )
 }
+
+export async function deleteAllConversations() {
+  const data = await parse(
+    await authFetch(`${API_URL}/api/conversations`, {
+      method: 'DELETE',
+    }),
+  )
+  return data.deleted || 0
+}
+
+export async function fetchPreferences() {
+  const data = await parse(await authFetch(`${API_URL}/api/preferences`))
+  return data
+}
+
+// patch: { default_model?, sidebar_width?, display_name? }.
+// Mengembalikan { preferences, user } dari server.
+export async function savePreferences(patch) {
+  const data = await parse(
+    await authFetch(`${API_URL}/api/preferences`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(patch),
+    }),
+  )
+  return data
+}

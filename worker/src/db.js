@@ -132,3 +132,81 @@ export async function deleteConversation(db, userId, convId) {
     .run()
   return res.meta.changes > 0
 }
+
+// ---------------------------------------------------------------------------
+// Preferensi akun. Disimpan sebagai JSON di users.settings_json. Kolom nama
+// ikut dijaga: display_name kustom adalah override nama dari Google.
+// ---------------------------------------------------------------------------
+
+const PREF_DEFAULTS = { default_model: 'Atria-Dawn-Preview', sidebar_width: 256 }
+const SIDEBAR_MIN = 220
+const SIDEBAR_MAX = 420
+
+export function normalizePrefs(input = {}) {
+  const out = {}
+  const model = typeof input?.default_model === 'string' ? input.default_model.trim().slice(0, 64) : ''
+  out.default_model = model || PREF_DEFAULTS.default_model
+  const w = Number(input?.sidebar_width)
+  out.sidebar_width = Number.isFinite(w)
+    ? Math.min(SIDEBAR_MAX, Math.max(SIDEBAR_MIN, Math.round(w)))
+    : PREF_DEFAULTS.sidebar_width
+  return out
+}
+
+export async function getPreferences(db, userId) {
+  const row = await db
+    .prepare(
+      `SELECT id, google_sub, email, name, picture, settings_json, created_at
+       FROM users WHERE id = ?`,
+    )
+    .bind(userId)
+    .first()
+  if (!row) return null
+  let raw = {}
+  try {
+    raw = JSON.parse(row.settings_json || '{}')
+  } catch {
+    raw = {}
+  }
+  return {
+    preferences: normalizePrefs(raw),
+    user: { id: row.id, email: row.email, name: row.name, picture: row.picture },
+  }
+}
+
+// Merge patch ke preferensi tersimpan; bila ada display_name, update users.name
+// sekaligus (menjadi "nama tampilan" di seluruh klien). Mengembalikan hasil
+// getPreferences (row terbaru) atau null bila user tak ditemukan.
+export async function updatePreferences(db, userId, patch = {}) {
+  const current = await db
+    .prepare(`SELECT settings_json FROM users WHERE id = ?`)
+    .bind(userId)
+    .first()
+  if (!current) return null
+  let raw = {}
+  try {
+    raw = JSON.parse(current.settings_json || '{}')
+  } catch {
+    raw = {}
+  }
+  const next = normalizePrefs({ ...raw, ...patch })
+  await db
+    .prepare(`UPDATE users SET settings_json = ? WHERE id = ?`)
+    .bind(JSON.stringify(next), userId)
+    .run()
+  if (typeof patch.display_name === 'string') {
+    const name = patch.display_name.trim().slice(0, 40)
+    if (name) {
+      await db.prepare(`UPDATE users SET name = ? WHERE id = ?`).bind(name, userId).run()
+    }
+  }
+  return getPreferences(db, userId)
+}
+
+export async function deleteAllConversations(db, userId) {
+  const res = await db
+    .prepare(`DELETE FROM conversations WHERE user_id = ?`)
+    .bind(userId)
+    .run()
+  return res.meta.changes || 0
+}

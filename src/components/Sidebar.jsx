@@ -1,4 +1,4 @@
-import { Plus, MessageSquare, Trash2, Pin, Download, LogIn, LogOut } from 'lucide-react'
+import { Plus, MessageSquare, Trash2, Pin, Download, LogIn, Settings, ChevronRight } from 'lucide-react'
 import { Button } from './ui/button'
 import logo from '../assets/logo.png'
 
@@ -17,7 +17,7 @@ function groupKey(ts) {
   return 'Lebih lama'
 }
 
-export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, onClear, onExport, open, onClose, collapsed, onDragStart, user, onLogin, onLogout }) {
+export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, onClear, onExport, open, onClose, collapsed, onDragStart, user, onLogin, onOpenSettings }) {
   // Urut + grouping pakai aktivitas terakhir (updatedAt); fallback createdAt.
   const sortKey = (c) => c.updatedAt ?? c.createdAt ?? 0
   const sorted = [...conversations].sort(
@@ -132,7 +132,12 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
               Masuk
             </Button>
           ) : (
-            <div className="mb-1 flex w-full items-center gap-2 rounded-md px-2 py-1.5 hover:bg-accent/40">
+            <button
+              type="button"
+              onClick={onOpenSettings}
+              title="Preferensi akun"
+              className="mb-1 flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left transition-colors hover:bg-accent/40"
+            >
               <span className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-accent">
                 {user.picture ? (
                   <img src={user.picture} alt={user.name || 'Akun'} className="h-full w-full object-cover" referrerPolicy="no-referrer" />
@@ -142,19 +147,15 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
                   </span>
                 )}
               </span>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-foreground">{user.name || 'Pengguna'}</p>
-                {user.email && <p className="truncate text-[11px] text-muted-foreground">{user.email}</p>}
-              </div>
-              <button
-                type="button"
-                onClick={onLogout}
-                aria-label="Keluar"
-                className="rounded-sm p-1.5 text-muted-foreground transition-colors hover:text-destructive"
-              >
-                <LogOut className="h-4 w-4" />
-              </button>
-            </div>
+              <span className="flex min-w-0 flex-1 items-center gap-1.5">
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-medium text-foreground">{user.name || 'Pengguna'}</span>
+                  {user.email && <span className="block truncate text-[11px] text-muted-foreground">{user.email}</span>}
+                </span>
+                <Settings className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" />
+              </span>
+            </button>
           )}
           {conversations.length > 0 && (
             <Button

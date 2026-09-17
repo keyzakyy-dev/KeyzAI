@@ -9,19 +9,21 @@ import { ConfirmDialog } from './ui/confirm-dialog'
 import { RenameDialog } from './ui/rename-dialog'
 import { AnnouncementDialog } from './AnnouncementDialog'
 import { LoginDialog } from './LoginDialog'
+import { PreferencesDialog } from './PreferencesDialog'
 import { OptionsContext } from './OptionCard'
 import { useTheme } from '../lib/use-theme'
 import { applyPageMeta } from '../lib/seo'
-import { loadModel, saveModel } from '../lib/models'
+import { loadModel, saveModel, isModelStored } from '../lib/models'
 import { pickGreeting } from '../lib/greetings'
 import { downloadConversation, downloadAll } from '../lib/backup'
 import { useChatStore } from '../hooks/useChatStore'
 import { useChatStream } from '../hooks/useChatStream'
 import { useToast } from '../hooks/useToast'
 import { useResizableSidebar } from '../hooks/useResizableSidebar'
+import { usePreferences } from '../hooks/usePreferences'
 import { useAuth } from '../hooks/useAuth'
 import { isAuthenticated } from '../lib/auth'
-import { removeConversation } from '../lib/sync'
+import { removeConversation, deleteAllConversations } from '../lib/sync'
 import { newId } from '../state/ids.js'
 import { hasSiblings, navigateBranch, serializeConv } from '../state/tree.js'
 
@@ -29,7 +31,7 @@ export function ChatInterface() {
   const { state, dispatch, activeConv, messages, loading, persistError, refreshHistory, logoutReset } = useChatStore()
   const { send, stop } = useChatStream({ state, dispatch, loading })
   const { toast, notify, dismiss } = useToast()
-  const { width: sidebarW, resizing, onDragStart } = useResizableSidebar()
+  const { width: sidebarW, resizing, onDragStart, setWidth: setSidebarWidth, hasStoredWidth } = useResizableSidebar()
 
   const [theme, setTheme] = useTheme()
   const [model, setModel] = useState(loadModel)
@@ -39,6 +41,7 @@ export function ChatInterface() {
   const [editingId, setEditingId] = useState(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const [renameOpen, setRenameOpen] = useState(false)
+  const [prefsOpen, setPrefsOpen] = useState(false)
   // Arah buka dropdown opsi chat: default kanan (seperti dulu); dipilih ulang
   // tiap menu dibuka berdasar posisi tombol agar tidak keluar viewport saat
   // judul chat pendek (tombol dekat tepi kiri).
@@ -73,7 +76,24 @@ export function ChatInterface() {
   const currentTitle = activeConv?.title
   const error = state.error || persistError
 
-  const { user, logout, loginWithGoogle } = useAuth()
+  const { user, logout, loginWithGoogle, updateUser } = useAuth()
+
+  // ---------------------------------------------------------------
+  // Preferensi akun: sumber kebenaran di server; cache lokal untuk offline.
+  // Saat preferensi server pertama dimuat, terapkan default (model & lebar
+  // sidebar) hanya untuk perangkat yang belum pernah menyetel secara lokal.
+  const applyPrefsDefaults = (p) => {
+    if (!isModelStored()) {
+      saveModel(p.default_model)
+      setModel(p.default_model)
+    }
+    if (!hasStoredWidth()) {
+      setSidebarWidth(p.sidebar_width)
+    }
+  }
+  const { prefs, saving, error: prefsError, refresh: refreshPrefs, update: updatePrefs, saveDisplayName, reset: resetPrefs } =
+    usePreferences({ onHydrated: applyPrefsDefaults })
+  // ---------------------------------------------------------------
 
   // ---------------------------------------------------------------
   // Sapaan halaman kosong: berganti setiap "Chat baru", stabil saat mengetik.
@@ -105,6 +125,7 @@ export function ChatInterface() {
     setLoginLoading(true)
     try {
       await loginWithGoogle(idToken)
+      refreshPrefs()
       try {
         sessionStorage.setItem('keyzai-fresh-chat', '1')
       } catch {
@@ -127,6 +148,7 @@ export function ChatInterface() {
   const handleLogout = () => {
     logout()
     logoutReset()
+    resetPrefs()
     navigate('/', { replace: true })
   }
 
@@ -234,6 +256,21 @@ export function ChatInterface() {
   }
 
   const handleExportAll = () => downloadAll(state.convs.map(serializeConv))
+
+  // ---------- preferensi akun
+  const handlePrefsSaveDisplayName = async (rawName) => {
+    const nextUser = await saveDisplayName(rawName)
+    if (nextUser) updateUser(nextUser)
+    return nextUser
+  }
+
+  const handlePrefsUpdate = (patch) => updatePrefs(patch)
+
+  const handlePrefsDeleteAll = async () => {
+    await deleteAllConversations()
+    dispatch({ type: 'CLEAR_ALL' })
+    notify('Semua percakapan dihapus')
+  }
 
   const handleDeleteConv = (convId) => {
     const conv = state.convs.find((c) => c.id === convId)
@@ -400,7 +437,7 @@ export function ChatInterface() {
         onDragStart={onDragStart}
         user={user}
         onLogin={() => { setLoginErr(null); setLoginOpen(true) }}
-        onLogout={handleLogout}
+        onOpenSettings={() => setPrefsOpen(true)}
       />
       <main className={`flex min-w-0 flex-1 flex-col ${collapsed || resizing ? '' : 'transition-[margin] duration-300'} ${collapsed ? '' : 'lg:ml-[var(--sidebar-w)]'}`}>
         <header className="relative z-20 flex h-14 flex-shrink-0 items-center justify-between bg-background/80 px-4 backdrop-blur-sm sm:px-6">
@@ -589,6 +626,19 @@ export function ChatInterface() {
         onOpenChange={setRenameOpen}
         value={activeConv?.title || ''}
         onSave={submitRename}
+      />
+      <PreferencesDialog
+        open={prefsOpen}
+        onOpenChange={setPrefsOpen}
+        user={user}
+        prefs={prefs}
+        saving={saving}
+        error={prefsError}
+        onSaveDisplayName={handlePrefsSaveDisplayName}
+        onUpdatePrefs={handlePrefsUpdate}
+        onDeleteAll={handlePrefsDeleteAll}
+        onExportAll={handleExportAll}
+        onLogout={handleLogout}
       />
       <AnnouncementDialog open={announceOpen} onOpenChange={closeAnnounce} />
       <LoginDialog

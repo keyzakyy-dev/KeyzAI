@@ -19,6 +19,24 @@ export function useResizableSidebar() {
   const [width, setWidth] = useState(initialWidth)
   const [resizing, setResizing] = useState(false)
 
+  const storeWidth = useCallback((w) => {
+    try {
+      localStorage.setItem(STORAGE_KEY, String(w))
+    } catch {
+      // storage unavailable — width just won't persist
+    }
+  }, [])
+
+  // Set lebar dari luar (mis. preferensi akun untuk perangkat baru) + simpan lokal.
+  const applyWidth = useCallback(
+    (w) => {
+      const v = Math.min(SIDEBAR_MAX, Math.max(SIDEBAR_MIN, w))
+      setWidth(v)
+      storeWidth(v)
+    },
+    [storeWidth],
+  )
+
   const onDragStart = useCallback(
     (e) => {
       e.preventDefault()
@@ -36,17 +54,23 @@ export function useResizableSidebar() {
         document.body.style.userSelect = ''
         document.body.style.cursor = ''
         setResizing(false)
-        try {
-          localStorage.setItem(STORAGE_KEY, String(w))
-        } catch {
-          // storage unavailable — width just won't persist
-        }
+        storeWidth(w)
       }
       document.addEventListener('pointermove', onMove)
       document.addEventListener('pointerup', onUp)
     },
-    [width],
+    [width, storeWidth],
   )
 
-  return { width, resizing, onDragStart }
+  // True bila perangkat ini punya lebar sidebar tersimpan (pengguna pernah
+  // drag). Preferensi akun hanya boleh memilih lebar "perangkat baru".
+  const hasStoredWidth = useCallback(() => {
+    try {
+      return localStorage.getItem(STORAGE_KEY) != null
+    } catch {
+      return false
+    }
+  }, [])
+
+  return { width, resizing, onDragStart, setWidth: applyWidth, hasStoredWidth }
 }
