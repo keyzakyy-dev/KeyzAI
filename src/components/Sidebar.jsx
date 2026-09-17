@@ -1,4 +1,4 @@
-import { Plus, MessageSquare, Trash2, Pin, Download, LogIn, Settings, ChevronRight } from 'lucide-react'
+import { Plus, MessageSquare, Pin, LogIn, Settings, ChevronRight } from 'lucide-react'
 import { Button } from './ui/button'
 import logo from '../assets/logo.png'
 
@@ -17,7 +17,7 @@ function groupKey(ts) {
   return 'Lebih lama'
 }
 
-export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, onClear, onExport, open, onClose, collapsed, onDragStart, user, onLogin, onOpenSettings }) {
+export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, open, onClose, collapsed, onDragStart, user, onLogin, onOpenSettings }) {
   // Urut + grouping pakai aktivitas terakhir (updatedAt); fallback createdAt.
   const sortKey = (c) => c.updatedAt ?? c.createdAt ?? 0
   const sorted = [...conversations].sort(
@@ -157,27 +157,6 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
               </span>
             </button>
           )}
-          {conversations.length > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onExport}
-              className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
-            >
-              <Download className="w-4 h-4" />
-              Ekspor semua percakapan
-            </Button>
-          )}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClear}
-            disabled={conversations.length === 0}
-            className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
-          >
-            <Trash2 className="w-4 h-4" />
-            Bersihkan semua percakapan
-          </Button>
         </div>
       </aside>
 

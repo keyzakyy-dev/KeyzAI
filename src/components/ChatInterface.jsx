@@ -290,24 +290,6 @@ export function ChatInterface() {
     })
   }
 
-  const handleClearAll = () => {
-    if (state.convs.length === 0) return
-    setConfirm({
-      title: 'Hapus semua percakapan?',
-      description: 'Semua percakapan akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.',
-      confirmLabel: 'Hapus semua',
-      danger: true,
-      onConfirm: () => {
-        const snapshot = stateRef.current.convs
-        dispatch({ type: 'CLEAR_ALL' })
-        snapshot.forEach((c) => removeConversation(c.id).catch(() => {}))
-        notify(`${snapshot.length} percakapan dihapus`, () => {
-          dispatch({ type: 'RESTORE', convs: snapshot, activeId: snapshot[0]?.id || null })
-        })
-      },
-    })
-  }
-
   // ---------- scroll
   const scrollToBottom = () => {
     const el = scrollAreaRef.current
@@ -429,8 +411,6 @@ export function ChatInterface() {
         onSelect={handleSelectConv}
         onNew={handleNewChat}
         onDelete={handleDeleteConv}
-        onClear={handleClearAll}
-        onExport={handleExportAll}
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         collapsed={collapsed}
