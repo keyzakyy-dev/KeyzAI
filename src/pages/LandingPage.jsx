@@ -371,13 +371,10 @@ function Hero({ navigate }) {
               style={{ animationDelay: '0.1s' }}
             >
               Tanya apa saja.
-              <br />
-              Pahami semuanya.
             </h1>
 
             <p className="animate-fade-up max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg" style={{ animationDelay: '0.2s' }}>
-              KeyzAI adalah teman AI-mu yang serba cepat. Brainstorm ide, tulis kode,
-              pelajari topik baru, dan dapat jawaban dalam hitungan detik.
+              Jawaban AI cepat, rapi, dan gratis.
             </p>
 
             <div className="animate-fade-up space-y-3" style={{ animationDelay: '0.25s' }}>
@@ -386,11 +383,11 @@ function Hero({ navigate }) {
                 size="lg"
                 className="group h-12 rounded-full pl-6 pr-5 text-base shadow-sm"
               >
-                Mulai chat sekarang
+                Mulai chat
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </Button>
               <p className="text-xs text-muted-foreground/70">
-                Gratis. Masuk dengan Google saat mengirim pesan pertama — riwayat tersimpan otomatis.
+                Gratis. Masuk dengan Google.
               </p>
             </div>
           </div>
