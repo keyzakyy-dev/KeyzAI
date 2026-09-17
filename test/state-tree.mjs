@@ -80,6 +80,17 @@ const mid = detachSubtree(dirty, 'u9')
 assert.equal(mid.rootId, null, 'root terhapus')
 assert.equal(getActivePath(mid).length, 0, 'pohon jadi kosong')
 
+// ---------- context: konten melebihi batas worker dipotong, bukan ditolak
+const huge = 'x'.repeat(40000)
+const longConv = newConversation('cL')
+const lu = newMessage({ id: 'lu', role: 'user', content: 'tanya', timestamp: 1 })
+const la = newMessage({ id: 'la', role: 'assistant', content: huge, timestamp: 2, parentId: 'lu' })
+const longAttached = attachMessage(attachMessage(longConv, lu), la)
+const sanitized = getContextFromAnchor(longAttached, 'la', 20)
+assert.equal(sanitized[1].content.length, 32000, 'jawaban 40k dipotong ke 32000')
+assert.ok(sanitized[1].content.endsWith('[…dipotong…]'), 'tanda potong disertakan')
+assert.ok(getActivePath(longAttached)[1].content.length === 40000, 'pesan asli di pohon tidak diubah')
+
 // ---------- serialize (export)
 const ex = serializeConv(attachMessage(newConversation('c3', { title: 'ekspor' }), user))
 assert.ok(Array.isArray(ex.messages), 'messages kembali jadi array')

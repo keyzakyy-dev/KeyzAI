@@ -75,6 +75,22 @@ function isSmallTalk(message) {
   return GREETING_RE.test(t)
 }
 
+// Alasan penolakan eksplisit (bukan boolean generik) supaya masalah di sisi
+// client mudah dilacak dari response saja.
+function invalidMessages(messages) {
+  if (messages.length > 40) return 'Invalid messages: too many (max 40)'
+  if (messages[messages.length - 1]?.role !== 'user') return 'Invalid messages: last message must be from user'
+  for (let i = 0; i < messages.length; i++) {
+    const m = messages[i]
+    if (!m) return `Invalid messages: empty entry at ${i}`
+    if (m.role !== 'user' && m.role !== 'assistant') return `Invalid messages: bad role at ${i}`
+    if (typeof m.content !== 'string') return `Invalid messages: content must be string at ${i}`
+    const max = m.role === 'user' ? 2000 : 32000
+    if (m.content.length > max) return `Invalid messages: ${m.role} content too long at ${i}`
+  }
+  return null
+}
+
 export default {
   async fetch(request, env, ctx) {
     // CORS preflight
@@ -115,18 +131,9 @@ export default {
         // ponytail: cap 40 msg; user 2000 char, assistant 32000 (batas max_tokens); upgrade = summarisasi turn lama
         let chatMessages = [{ role: 'user', content: message }]
         if (Array.isArray(messages) && messages.length > 0) {
-          const ok =
-            messages.length <= 40 &&
-            messages[messages.length - 1]?.role === 'user' &&
-            messages.every(
-              (m) =>
-                m &&
-                (m.role === 'user' || m.role === 'assistant') &&
-                typeof m.content === 'string' &&
-                m.content.length <= (m.role === 'user' ? 2000 : 32000)
-            )
-          if (!ok) {
-            return response(false, 'Invalid messages', 400, { error: 'Invalid messages' }, corsHeaders(request, env))
+          const reason = invalidMessages(messages)
+          if (reason) {
+            return response(false, 'Invalid messages', 400, { error: reason }, corsHeaders(request, env))
           }
           chatMessages = messages
         }

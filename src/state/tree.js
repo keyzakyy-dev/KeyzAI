@@ -19,6 +19,11 @@ export const MSG_STATE = {
 const ACTIVE_ROLES = ['user', 'assistant']
 const MAX_TREE_WALK = 500
 
+// Batas sama dengan worker: user 2000, assistant 32000. Jawaban panjang
+// (max_tokens 16384 bisa tembus 32k char) dipotong di sini, bukan ditolak.
+const ROLE_LIMITS = { user: 2000, assistant: 32000 }
+const CUT_MARK = '\n\n[…dipotong…]'
+
 export function newMessage({ id, role, content = '', timestamp, parentId = null, state }) {
   if (!ACTIVE_ROLES.includes(role)) throw new Error(`Invalid role: ${role}`)
   return {
@@ -90,13 +95,22 @@ export function getActivePath(conv) {
 
 // Konteks untuk API: pesan dari anchor ke root (_termasuk_ anchor), maks `limit`
 // pesan terakhir. Hook pengiriman menambahkan pesan user baru bila perlu.
+// Konten yang melebihi batas worker dipotong (penolakan 400 "Invalid messages"
+// tidak boleh terjadi hanya karena satu jawaban panang di riwayat).
 export function getContextFromAnchor(conv, anchorId, limit = 20) {
   const messages = conv?.messages
   if (!messages || !anchorId) return []
   return walkToRoot(messages, anchorId)
     .filter((m) => ACTIVE_ROLES.includes(m.role))
     .slice(-limit)
-    .map((m) => ({ role: m.role, content: m.content }))
+    .map((m) => {
+      const max = ROLE_LIMITS[m.role]
+      const content = typeof m.content === 'string' ? m.content : ''
+      if (content.length > max) {
+        return { role: m.role, content: content.slice(0, Math.max(0, max - CUT_MARK.length)) + CUT_MARK }
+      }
+      return { role: m.role, content }
+    })
 }
 
 // Pasang pesan ke pohon: link parent ← child, set root bila root pertama,

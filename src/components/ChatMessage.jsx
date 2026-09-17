@@ -81,6 +81,7 @@ export function ChatMessage({ role, content, timestamp, streaming, aborted = fal
               ref={taRef}
               autoFocus
               value={draft}
+              maxLength={2000}
               onChange={(e) => setDraft(e.target.value)}
               onKeyDown={handleKeyDown}
               rows={1}
