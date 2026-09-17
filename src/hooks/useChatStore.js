@@ -7,7 +7,7 @@ import { isAuthenticated } from '../lib/auth.js'
 import { newId } from '../state/ids.js'
 
 const STORAGE_FULL_MSG =
-  'Penyimpanan penuh — riwayat baru tidak tersimpan. Ekspor percakapanmu lewat menu chat, lalu hapus yang lama.'
+  'Penyimpanan penuh, riwayat baru tidak tersimpan. Ekspor percakapanmu lewat menu chat, lalu hapus yang lama.'
 
 // Set oleh landing page tepat setelah login berhasil. Saat init, store menempatkan
 // user di chat baru meskipun punya riwayat — riwayat tetap di sidebar.

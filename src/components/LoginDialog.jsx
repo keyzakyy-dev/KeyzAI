@@ -48,7 +48,7 @@ export function LoginDialog({ open, onOpenChange, onIdToken, loading = false, er
                 Masuk untuk mulai chat
               </Dialog.Title>
               <Dialog.Description className="text-sm leading-relaxed text-muted-foreground">
-                Pesanmu menunggu — masuk dulu supaya percakapanmu tidak hilang.
+                Pesanmu menunggu. Masuk dulu supaya percakapanmu tidak hilang.
               </Dialog.Description>
             </div>
           </div>

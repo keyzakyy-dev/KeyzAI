@@ -26,7 +26,7 @@ const FEATURES = [
   {
     icon: ChatBubbleIcon,
     title: 'Tanya apa saja',
-    desc: 'Dari fakta singkat sampai pertanyaan mendalam — dapat jawaban tepat dan rapi dalam hitungan detik.',
+    desc: 'Dari fakta singkat sampai pertanyaan mendalam, dapat jawaban yang tepat dan rapi dalam hitungan detik.',
     prompt: 'Apa itu bunga berbunga, dijelaskan dengan sederhana?',
   },
   {
@@ -63,11 +63,11 @@ const FEATURES = [
 const FAQS = [
   {
     q: 'KeyzAI benar-benar gratis?',
-    a: 'Iya. KeyzAI sepenuhnya gratis — tanpa langganan, tanpa biaya tersembunyi, tanpa kartu kredit. Masuk dan mulai bertanya.',
+    a: 'Iya. KeyzAI sepenuhnya gratis, tanpa langganan, tanpa biaya tersembunyi, tanpa kartu kredit. Masuk dan mulai bertanya.',
   },
   {
     q: 'Harus bikin akun dulu?',
-    a: 'Kamu masuk sekali dengan akun Google — tidak perlu bikin password baru. Ini agar riwayat percakapanmu tersimpan dan bisa kamu lanjutkan dari perangkat mana pun.',
+    a: 'Kamu masuk sekali dengan akun Google, tanpa perlu bikin password baru. Ini agar riwayat percakapanmu tersimpan dan bisa kamu lanjutkan dari perangkat mana pun.',
   },
   {
     q: 'Boleh tanya apa saja?',
@@ -75,7 +75,7 @@ const FAQS = [
   },
   {
     q: 'Data percakapanku aman?',
-    a: 'Riwayat tersimpan di akunmu dan hanya bisa diakses setelah login. Pesan yang kamu kirim diteruskan ke model AI pihak ketiga untuk diproses menjadi respons — dan tidak kami jual ke siapa pun.',
+    a: 'Riwayat tersimpan di akunmu dan hanya bisa diakses setelah login. Pesan yang kamu kirim diteruskan ke model AI pihak ketiga untuk diproses menjadi respons, dan tidak kami jual ke siapa pun.',
   },
 ]
 
@@ -348,7 +348,7 @@ function Features({ navigate }) {
             Untuk semua hal, satu tempat
           </h2>
           <p className="text-sm sm:text-base text-muted-foreground">
-            Berpikir, menciptakan, dan belajar lebih cepat — dalam satu antarmuka yang rapi.
+            Berpikir, menciptakan, dan belajar lebih cepat dalam satu antarmuka yang rapi.
           </p>
         </Reveal>
 

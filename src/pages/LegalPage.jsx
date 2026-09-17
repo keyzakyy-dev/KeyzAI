@@ -84,7 +84,7 @@ const TERMS = {
     {
       h: 'Isi dan jawaban AI',
       p: [
-        'Kamu tetap pemilik isi yang kamu buat. Jawaban AI bisa salah — jangan jadikan satu-satunya dasar keputusan penting (medis, hukum, keuangan).',
+        'Kamu tetap pemilik isi yang kamu buat. Jawaban AI bisa salah, jangan jadikan satu-satunya dasar keputusan penting (medis, hukum, keuangan).',
         'Kami tidak menjamin ketersediaan atau akurasi model pihak ketiga.',
       ],
     },
