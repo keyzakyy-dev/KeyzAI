@@ -29,6 +29,16 @@ function setMessage(state, convId, msgId, fn) {
   })
 }
 
+// Sentuh `updatedAt`: sinyal bahwa isi percakapan berubah nyata sehingga
+// sinkronisasi D1 (yang memakai sig id:updatedAt) tahu harus tersimpan.
+function touch(state, convId) {
+  return patchConv(state, convId, (c) => ({ ...c, updatedAt: Date.now() }))
+}
+
+function patchConvTouch(state, convId, fn) {
+  return patchConv(state, convId, (c) => ({ ...fn(c), updatedAt: Date.now() }))
+}
+
 // Pengiriman gagal → judul skeleton berhenti pulsa, pakai fallback permanen.
 function finalizeTitle(c) {
   if (!c.titlePending) return c
@@ -95,10 +105,14 @@ export function chatReducer(state, action) {
       }))
 
     case 'STREAM_DONE':
-      return setMessage(state, action.convId, action.msgId, (m) => {
+      // turn selesai biasa: konten final + updatedAt di-touch agar sync D1
+      // ikut menyimpan jawaban lengkap (bukan stub kosong saat START_SEND).
+      return patchConvTouch(state, action.convId, (c) => {
+        const m = c.messages[action.msgId]
+        if (!m) return c
         const next = { ...m, state: MSG_STATE.DONE }
         if (typeof action.content === 'string' && action.content) next.content = action.content
-        return next
+        return { ...c, messages: { ...c.messages, [action.msgId]: next } }
       })
 
     case 'STREAM_EMPTY': {
@@ -107,7 +121,9 @@ export function chatReducer(state, action) {
       const conv = state.convs.find((c) => c.id === action.convId)
       const convs = conv
         ? state.convs.map((c) =>
-            c.id === action.convId ? finalizeTitle(detachSubtree(c, action.msgId)) : c,
+            c.id === action.convId
+              ? { ...finalizeTitle(detachSubtree(c, action.msgId)), updatedAt: Date.now() }
+              : c,
           )
         : state.convs
       return { ...state, convs, error: NO_OUTPUT_ERROR }
@@ -117,15 +133,18 @@ export function chatReducer(state, action) {
       // Dihentikan sebelum token pertama → buang bubble kosong.
       if (!action.streamed) {
         return {
-          ...patchConv(state, action.convId, (c) => finalizeTitle(detachSubtree(c, action.msgId))),
+          ...patchConvTouch(state, action.convId, (c) => finalizeTitle(detachSubtree(c, action.msgId))),
           error: null,
         }
       }
       // Sudah ada konten → simpan jawaban parsial, tandai 'aborted'.
-      return setMessage(state, action.convId, action.msgId, (m) => ({
-        ...m,
-        state: MSG_STATE.ABORTED,
-      }))
+      return touch(
+        setMessage(state, action.convId, action.msgId, (m) => ({
+          ...m,
+          state: MSG_STATE.ABORTED,
+        })),
+        action.convId,
+      )
     }
 
     case 'STREAM_ERROR': {
@@ -133,13 +152,16 @@ export function chatReducer(state, action) {
       if (!action.streamed) {
         // gagal sebelum konten: buang bubble, simpan lastSent untuk retry
         return {
-          ...patchConv(state, action.convId, (c) => finalizeTitle(detachSubtree(c, action.msgId))),
+          ...patchConvTouch(state, action.convId, (c) => finalizeTitle(detachSubtree(c, action.msgId))),
           error,
         }
       }
       // gagal di tengah stream: konten parsial tetap tampak + state error
       return {
-        ...setMessage(state, action.convId, action.msgId, (m) => ({ ...m, state: MSG_STATE.ERROR })),
+        ...touch(
+          setMessage(state, action.convId, action.msgId, (m) => ({ ...m, state: MSG_STATE.ERROR })),
+          action.convId,
+        ),
         error,
       }
     }
@@ -151,7 +173,7 @@ export function chatReducer(state, action) {
       return { ...state, error: null }
 
     case 'SET_TITLE':
-      return patchConv(state, action.convId, (c) => ({
+      return patchConvTouch(state, action.convId, (c) => ({
         ...c,
         title: action.title || c.title,
         titlePending: !!action.titlePending,
@@ -160,10 +182,10 @@ export function chatReducer(state, action) {
       }))
 
     case 'PIN':
-      return patchConv(state, action.convId, (c) => ({ ...c, pinned: !!action.pinned }))
+      return patchConvTouch(state, action.convId, (c) => ({ ...c, pinned: !!action.pinned }))
 
     case 'RENAME':
-      return patchConv(state, action.convId, (c) => ({
+      return patchConvTouch(state, action.convId, (c) => ({
         ...c,
         title: action.title || c.title,
         titlePending: false,

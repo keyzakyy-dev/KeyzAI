@@ -19,6 +19,7 @@ import { useChatStream } from '../hooks/useChatStream'
 import { useToast } from '../hooks/useToast'
 import { useResizableSidebar } from '../hooks/useResizableSidebar'
 import { useAuth } from '../hooks/useAuth'
+import { isAuthenticated } from '../lib/auth'
 import { removeConversation } from '../lib/sync'
 import { newId } from '../state/ids.js'
 import { hasSiblings, navigateBranch, serializeConv } from '../state/tree.js'
@@ -56,7 +57,6 @@ export function ChatInterface() {
 
   const currentTitle = activeConv?.title
   const error = state.error || persistError
-  const lastSent = state.lastSent
 
   const { user, logout, loginWithGoogle } = useAuth()
 
@@ -166,18 +166,18 @@ export function ChatInterface() {
     setRenameOpen(false)
   }
 
+  // "Chat baru" selalu berpindah ke area kosong tanpa menghapus percakapan
+  // lama (mereka tetap di sidebar) — jadi tidak butuh konfirmasi.
   const handleNewChat = () => {
-    if (loading) return
-    if (messages.length === 0) {
-      startNewChat()
-      return
-    }
-    setConfirm({
-      title: 'Mulai chat baru?',
-      description: 'Pesan saat ini di chat ini akan dibuang.',
-      confirmLabel: 'Chat baru',
-      onConfirm: startNewChat,
-    })
+    startNewChat()
+  }
+
+  // Retry setelah error = generate ulang jawaban dari pesan user terakhir
+  // (sibling) — tidak menambah bubble user duplikat seperti "kirim ulang".
+  const handleRetry = () => {
+    const lastUser = [...messages].reverse().find((m) => m.role === 'user')
+    if (!lastUser) return
+    send({ mode: 'regenerate', regenerateFromId: lastUser.id, model })
   }
 
   const handleSelectConv = (convId) => {
@@ -302,7 +302,10 @@ export function ChatInterface() {
   }, [searchParams, setSearchParams])
 
   // URL → store
+  // Hanya saat ada session: anonim tidak boleh menciptakan activeId hantu
+  // dari deep-link /chat/:convId (state-nya memang kosong bersih).
   useEffect(() => {
+    if (!isAuthenticated()) return
     if (!convIdParam || state.activeId === convIdParam) return
     urlLeads.current = true
     const exists = state.convs.some((c) => c.id === convIdParam)
@@ -313,7 +316,9 @@ export function ChatInterface() {
   // store → URL
   // Selama ?q= belum dikonsumsi, biarkan auto-send yang menentukan URL —
   // jangan dialihkan ke percakapan yang kebetulan tersimpan di store.
+  // Guard auth: saat logout, jangan lompat balik ke /chat/:id.
   useEffect(() => {
+    if (!isAuthenticated()) return
     if (urlLeads.current) {
       urlLeads.current = false
       return
@@ -551,17 +556,15 @@ export function ChatInterface() {
                   </div>
                   <div className="min-w-0 space-y-2.5">
                     <p className="text-[15px] leading-relaxed text-foreground">{error}</p>
-                    {lastSent && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleSend(lastSent)}
-                        className="gap-1.5"
-                      >
-                        <RotateCcw className="h-3.5 w-3.5" />
-                        Coba lagi
-                      </Button>
-                    )}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleRetry}
+                      className="gap-1.5"
+                    >
+                      <RotateCcw className="h-3.5 w-3.5" />
+                      Coba lagi
+                    </Button>
                   </div>
                 </div>
               )}
@@ -602,7 +605,12 @@ export function ChatInterface() {
         open={loginOpen}
         onOpenChange={(o) => {
           setLoginOpen(o)
-          if (!o) setLoginErr(null)
+          if (!o) {
+            setLoginErr(null)
+            // popup ditutup tanpa login → buang pending total, jangan
+            // terlanjur terkirim di login berikutnya.
+            pendingRef.current = null
+          }
         }}
         onIdToken={handleLoginToken}
         loading={loginLoading}

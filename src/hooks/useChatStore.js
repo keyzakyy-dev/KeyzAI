@@ -23,16 +23,32 @@ export function useChatStore() {
   const [persistError, setPersistError] = useState(null)
   const lastErr = useRef(null)
   const hydrated = useRef(false)
+  // id → sig terakhir yang sudah sukses disimpan ke D1 (id:updatedAt).
+  const lastSynced = useRef(new Map())
 
   // Hydrate dari D1: list → REPLACE_ALL; bila ada flag "fresh chat" (set tepat
   // setelah login), tempatkan user di chat baru. Mengembalikan activeId baru
   // (id chat baru) bila fresh, atau null.
+  // Setelah hidrasi, data server dianggap sudah tersinkron: seed sig per-id
+  // supaya REPLACE_ALL tidak langsung di-upload balik tanpa perubahan.
+  const syncSig = (c) => `${c.id}:${c.updatedAt || c.createdAt || 0}`
+  const seedSynced = (convs) => {
+    const m = new Map()
+    for (const c of convs) {
+      if (c?.id) m.set(c.id, syncSig(c))
+    }
+    lastSynced.current = m
+  }
+
   const refreshHistory = useCallback(async () => {
     if (hydrated.current) return null
     hydrated.current = true
     try {
       const convs = await fetchConversations()
-      if (Array.isArray(convs)) dispatch({ type: 'REPLACE_ALL', convs })
+      if (Array.isArray(convs)) {
+        seedSynced(convs)
+        dispatch({ type: 'REPLACE_ALL', convs })
+      }
     } catch {
       // jaringan gagal → state lokal tetap dipakai
     }
@@ -60,6 +76,7 @@ export function useChatStore() {
   // dan siapkan hidrasi ulang untuk login berikutnya.
   const logoutReset = useCallback(() => {
     hydrated.current = false
+    lastSynced.current = new Map()
     dispatch({ type: 'CLEAR_ALL' })
     dispatch({ type: 'NEW_CHAT', convId: newId('conv') })
     clearState()
@@ -104,20 +121,26 @@ export function useChatStore() {
       })
   }, [state.convs, state.activeId])
 
-  // Sinkron ke server hanya untuk aksi yang mengubah data persisten.
-  const lastSynced = useRef('')
+  // Sinkron ke server: SEMUA percakapan yang berubah `updatedAt` (turn selesai,
+  // pin, rename, judul) disimpan — bukan hanya yang aktif. Debounce supaya
+  // tidak banjir saat stream delta; sig per-id mencegah upload ulang data sama.
   useEffect(() => {
     if (!isAuthenticated()) return
-    const active = state.convs.find((c) => c.id === state.activeId)
-    if (!active) return
-    const sig = `${active.id}:${active.updatedAt || active.createdAt}`
-    if (sig === lastSynced.current) return
-    lastSynced.current = sig
-    saveConversation(active).catch(() => {
-      // konflik/jaringan: retry ringan, tidak blok UI
-      lastSynced.current = ''
-    })
-  }, [state.convs, state.activeId])
+    if (!hydrated.current) return // server masih sumber kebenaran sampai hidrasi
+    const t = setTimeout(() => {
+      for (const conv of state.convs) {
+        if (!conv?.id) continue
+        const sig = syncSig(conv)
+        if (lastSynced.current.get(conv.id) === sig) continue
+        lastSynced.current.set(conv.id, sig)
+        saveConversation(conv).catch(() => {
+          // gagal: buka lagi supaya perubahan berikutnya memicu retry
+          if (lastSynced.current.get(conv.id) === sig) lastSynced.current.delete(conv.id)
+        })
+      }
+    }, 600)
+    return () => clearTimeout(t)
+  }, [state.convs])
 
   const activeConv = useMemo(
     () => state.convs.find((c) => c.id === state.activeId) || null,
