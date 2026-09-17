@@ -1,4 +1,4 @@
-import { PlusIcon, ChatBubbleIcon, DrawingPinFilledIcon, TrashIcon, EnterIcon, GearIcon, ChevronRightIcon } from '@radix-ui/react-icons'
+import { PlusIcon, ChatBubbleIcon, DrawingPinFilledIcon, TrashIcon, PersonIcon, GearIcon, ChevronRightIcon } from '@radix-ui/react-icons'
 
 import { Button } from './ui/button'
 import logo from '../assets/logo.png'
@@ -124,14 +124,23 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
         {/* Footer */}
         <div className="space-y-0.5 border-t border-border p-2">
           {!user ? (
-            <Button
-              variant="outline"
+            <button
+              type="button"
               onClick={onLogin}
-              className="mb-1 w-full justify-start gap-2 text-foreground hover:bg-accent"
+              title="Masuk untuk menyimpan riwayat"
+              className="mb-1 flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left transition-colors hover:bg-accent/40"
             >
-              <EnterIcon className="h-4 w-4" />
-              Masuk
-            </Button>
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-dashed border-border text-muted-foreground">
+                <PersonIcon className="h-3.5 w-3.5" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-medium text-foreground">Masuk</span>
+                <span className="block truncate text-[11px] text-muted-foreground">
+                  Riwayat belum tersimpan
+                </span>
+              </span>
+              <ChevronRightIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" />
+            </button>
           ) : (
             <button
               type="button"
