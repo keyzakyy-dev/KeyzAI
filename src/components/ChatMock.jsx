@@ -83,12 +83,7 @@ export function ChatMock() {
             <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/30" />
             <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/30" />
           </div>
-          <div className="flex items-center gap-2">
-            <div className="flex h-5 w-5 items-center justify-center rounded-md bg-primary">
-              <Zap className="h-3 w-3 text-primary-foreground" />
-            </div>
-            <span className="text-xs font-semibold text-foreground">KeyzAI</span>
-          </div>
+          <span className="flex-1" aria-hidden="true" />
           <span className="w-12" aria-hidden="true" />
         </div>
 
