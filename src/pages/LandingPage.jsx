@@ -9,7 +9,7 @@ import { useAuth } from '../hooks/useAuth'
 import logo from '../assets/logo.png'
 import {
   Zap, ArrowRight, ArrowUp, Github, Sparkles, MessageSquare, MessageCircle, Code2, PenLine,
-  ShieldCheck, BookOpen, Plus, Menu, X, Send, Brain, Sun, Moon,
+  ShieldCheck, BookOpen, Plus, Menu, X, Send, Sun, Moon,
 } from 'lucide-react'
 
 const NAV_LINKS = [
@@ -307,26 +307,9 @@ function Navbar({ navigate, theme, toggleTheme }) {
   )
 }
 
-function TypingDots() {
-  return (
-    <div className="flex items-center gap-1 px-3.5 py-2.5">
-      {[0, 1, 2].map((i) => (
-        <span
-          key={i}
-          className="h-1.5 w-1.5 rounded-full bg-muted-foreground animate-typing-dot"
-          style={{ animationDelay: `${i * 0.15}s` }}
-        />
-      ))}
-    </div>
-  )
-}
-
 function ChatMock() {
   return (
     <div className="relative animate-fade-up" style={{ animationDelay: '0.3s' }}>
-      <div className="absolute -top-10 -right-6 hidden h-32 w-40 rounded-full bg-foreground/5 blur-3xl sm:block" />
-      <div className="absolute -bottom-10 -left-6 hidden h-32 w-40 rounded-full bg-foreground/5 blur-3xl sm:block" />
-
       <div className="relative overflow-hidden rounded-xl border border-border bg-card shadow-lg shadow-foreground/5">
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
           <div className="flex items-center gap-1.5">
@@ -340,10 +323,8 @@ function ChatMock() {
             </div>
             <span className="text-xs font-semibold text-foreground">KeyzAI</span>
           </div>
-          <span className="flex items-center gap-1.5 text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            Online
-          </span>
+          {/* penyeimbang agar logo tetap di tengah setelah badge Online dihilangkan */}
+          <span className="w-12" aria-hidden="true" />
         </div>
 
         <div className="space-y-4 p-5">
@@ -361,19 +342,6 @@ function ChatMock() {
               gambar dan angka. Partikel kuantum juga begitu, sampai kamu melihatnya!
             </div>
           </div>
-          <div className="flex justify-end">
-            <div className="max-w-[80%] rounded-lg bg-primary px-3.5 py-2 text-sm text-primary-foreground">
-              Ringkas dalam satu baris
-            </div>
-          </div>
-          <div className="flex gap-2.5">
-            <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border border-border">
-              <Sparkles className="h-3.5 w-3.5 text-muted-foreground" />
-            </div>
-            <div className="rounded-lg border border-border">
-              <TypingDots />
-            </div>
-          </div>
         </div>
 
         <div className="px-5 pb-5">
@@ -383,25 +351,6 @@ function ChatMock() {
               <Send className="h-3.5 w-3.5 text-primary-foreground" />
             </div>
           </div>
-        </div>
-      </div>
-
-      <div className="absolute -left-6 top-20 hidden animate-float items-center gap-2.5 rounded-lg border border-border bg-background/95 px-3 py-2 shadow-lg backdrop-blur lg:flex">
-        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-muted">
-          <Zap className="h-3.5 w-3.5 text-foreground" />
-        </div>
-        <div>
-          <p className="text-xs font-semibold leading-none text-foreground">Gratis</p>
-          <p className="mt-0.5 text-[10px] text-muted-foreground">selamanya</p>
-        </div>
-      </div>
-      <div className="absolute -right-5 bottom-16 hidden animate-float-delayed items-center gap-2.5 rounded-lg border border-border bg-background/95 px-3 py-2 shadow-lg backdrop-blur lg:flex">
-        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-muted">
-          <Brain className="h-3.5 w-3.5 text-foreground" />
-        </div>
-        <div>
-          <p className="text-xs font-semibold leading-none text-foreground">Riwayat tersimpan</p>
-          <p className="mt-0.5 text-[10px] text-muted-foreground">lintas perangkat</p>
         </div>
       </div>
     </div>
