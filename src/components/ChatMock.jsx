@@ -149,10 +149,6 @@ export function ChatMock() {
           </div>
         </div>
       </div>
-
-      <p className="mt-3 text-center text-xs text-muted-foreground">
-        Edit atau buat ulang jawaban — setiap versi tersimpan sebagai cabang, riwayat tidak pernah hilang.
-      </p>
     </div>
   )
 }
