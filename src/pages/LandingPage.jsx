@@ -314,17 +314,21 @@ function Hero({ navigate }) {
               Jawaban AI cepat, rapi, dan gratis.
             </p>
 
-            <div className="animate-fade-up space-y-3" style={{ animationDelay: '0.25s' }}>
-              <Button
+            <div className="animate-fade-up space-y-2.5" style={{ animationDelay: '0.25s' }}>
+              <button
+                type="button"
                 onClick={() => navigate('/chat')}
-                size="lg"
-                className="group h-12 rounded-full pl-6 pr-5 text-base shadow-sm"
+                className="group flex w-full max-w-md items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 text-left shadow-sm transition-colors hover:border-foreground/40"
               >
-                Mulai chat
-                <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-              </Button>
-              <p className="text-xs text-muted-foreground/70">
-                Gratis. Masuk dengan Google.
+                <span className="flex-1 truncate text-sm text-muted-foreground transition-colors group-hover:text-foreground sm:text-base">
+                  Ketik pertanyaanmu di sini…
+                </span>
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground transition-transform group-hover:scale-105">
+                  <ArrowUpIcon className="h-4 w-4" />
+                </span>
+              </button>
+              <p className="pl-1 text-xs text-muted-foreground/70">
+                Gratis. Tinggal masuk dengan Google.
               </p>
             </div>
           </div>
