@@ -317,7 +317,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
 
 function Hero({ navigate }) {
   return (
-    <section className="relative overflow-hidden pb-16 pt-24 sm:pb-24 sm:pt-32 lg:pb-32 lg:pt-40">
+    <section className="relative overflow-hidden pb-10 pt-24 sm:pb-14 sm:pt-32 lg:pb-16 lg:pt-36">
       <div className="absolute inset-0 bg-dots [mask-image:radial-gradient(ellipse_65%_55%_at_50%_0%,black,transparent)]" />
       <div className="absolute left-1/2 top-0 h-56 w-[min(520px,100vw)] -translate-x-1/2 rounded-full bg-foreground/5 blur-[100px] sm:h-72 sm:w-[700px] sm:blur-[120px]" />
 
@@ -392,7 +392,7 @@ function FeatureCard({ icon: Icon, title, desc, prompt, onPrompt }) {
 function Features({ navigate }) {
   const onPrompt = (p) => navigate(`/chat?q=${encodeURIComponent(p)}`)
   return (
-    <section id="features" className="scroll-mt-20 py-16 sm:py-24 lg:py-32">
+    <section id="features" className="scroll-mt-20 py-10 sm:py-14 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <Reveal from="up" className="mx-auto mb-8 sm:mb-12 max-w-2xl space-y-4 text-center">
           <span className="inline-block rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
@@ -431,7 +431,7 @@ function Features({ navigate }) {
 
 function FAQ({ navigate }) {
   return (
-    <section id="faq" className="relative scroll-mt-20 overflow-hidden py-16 sm:py-24 lg:py-32">
+    <section id="faq" className="relative scroll-mt-20 overflow-hidden py-10 sm:py-14 lg:py-16">
       <div className="relative mx-auto grid max-w-7xl gap-10 sm:gap-14 px-4 sm:px-6 lg:grid-cols-[1fr,1.35fr] lg:gap-20">
         {/* Left: heading + support card */}
         <Reveal from="left" className="lg:sticky lg:top-28 lg:self-start">
