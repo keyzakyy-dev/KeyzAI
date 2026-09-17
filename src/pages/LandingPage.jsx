@@ -9,7 +9,7 @@ import { useAuth } from '../hooks/useAuth'
 import logo from '../assets/logo.png'
 import {
   Zap, ArrowRight, ArrowUp, Github, Sparkles, MessageSquare, MessageCircle, Code2, PenLine,
-  ShieldCheck, BookOpen, Plus, Menu, X, Send, Sun, Moon,
+  ShieldCheck, BookOpen, GraduationCap, Plus, Menu, X, Send, Sun, Moon,
 } from 'lucide-react'
 
 const NAV_LINKS = [
@@ -29,36 +29,36 @@ const FEATURES = [
     icon: MessageSquare,
     title: 'Tanya apa saja',
     desc: 'Dari fakta singkat sampai pertanyaan mendalam — dapat jawaban tepat dan rapi dalam hitungan detik.',
-    span: 'sm:col-span-2 md:col-span-2',
     prompt: 'Apa itu bunga berbunga, dijelaskan dengan sederhana?',
   },
   {
     icon: PenLine,
     title: 'Menulis lebih cepat',
     desc: 'Draf email, esai, dan konten dengan AI yang mengikuti gaya tulisanmu.',
-    span: '',
     prompt: 'Tulis email follow-up yang ramah ke klien yang menghilang.',
   },
   {
     icon: Code2,
     title: 'Debug kode',
     desc: 'Tempel snippet, langsung dapat perbaikan, penjelasan, dan optimasi.',
-    span: '',
-    code: true,
     prompt: 'Kenapa ini error "cannot read property of undefined"?',
   },
   {
     icon: BookOpen,
     title: 'Pelajari topik baru',
     desc: 'Pecah topik rumit menjadi penjelasan sederhana yang mudah dipahami.',
-    span: '',
     prompt: 'Jelaskan cara kerja neural network untuk pemula.',
+  },
+  {
+    icon: GraduationCap,
+    title: 'Bantu belajar',
+    desc: 'Langkah demi langkah untuk soal dan konsep yang bikin mentok.',
+    prompt: 'Bantu aku pahami persamaan kuadrat dari nol.',
   },
   {
     icon: ShieldCheck,
     title: 'Privat & aman',
     desc: 'Percakapanmu milikmu. Tanpa pelacakan, tanpa jual data.',
-    span: '',
   },
 ]
 
@@ -403,7 +403,7 @@ function Hero({ navigate }) {
   )
 }
 
-function FeatureCard({ icon: Icon, title, desc, span, prompt, onPrompt, children }) {
+function FeatureCard({ icon: Icon, title, desc, prompt, onPrompt }) {
   const content = (
     <div className="relative">
       <div className="mb-4 inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-muted">
@@ -411,7 +411,6 @@ function FeatureCard({ icon: Icon, title, desc, span, prompt, onPrompt, children
       </div>
       <h3 className="mb-1.5 text-base sm:text-lg font-semibold tracking-tight text-foreground">{title}</h3>
       <p className="text-sm leading-relaxed text-muted-foreground">{desc}</p>
-      {children}
       {prompt && (
         <span className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-foreground">
           Coba <ArrowRight className="h-3 w-3" />
@@ -420,7 +419,7 @@ function FeatureCard({ icon: Icon, title, desc, span, prompt, onPrompt, children
     </div>
   )
 
-  const className = `group relative flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card p-4 sm:p-6 text-left transition-colors hover:bg-accent/40 ${span}`
+  const className = `group relative flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card p-4 sm:p-6 text-left transition-colors hover:bg-accent/40`
 
   if (prompt && onPrompt) {
     return (
@@ -461,34 +460,11 @@ function Features({ navigate }) {
         </Reveal>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-3">
-          <Reveal from="tilt" delay={0} className="sm:col-span-2 md:col-span-2">
-            <FeatureCard {...FEATURES[0]} onPrompt={onPrompt} />
-          </Reveal>
-
-          <Reveal from="tilt" delay={120}>
-            <FeatureCard {...FEATURES[1]} onPrompt={onPrompt} />
-          </Reveal>
-
-          <Reveal from="tilt" delay={200}>
-            <FeatureCard {...FEATURES[2]} onPrompt={onPrompt}>
-              <pre className="mt-4 overflow-x-auto rounded-lg border border-border bg-muted/50 p-3.5 font-mono text-xs leading-relaxed">
-                <code>
-                  <span className="text-rose-600 dark:text-rose-400">const</span> <span className="text-blue-600 dark:text-blue-400">total</span> = (price, tax) =&gt; {'{'}{'\n'}
-                  {'  '}<span className="text-muted-foreground">// AI: pajak harusnya dikali, bukan ditambah</span>{'\n'}
-                  {'  '}<span className="text-emerald-600 dark:text-emerald-400">return</span> price + price * tax;{'\n'}
-                  {'}'};
-                </code>
-              </pre>
-            </FeatureCard>
-          </Reveal>
-
-          <Reveal from="tilt" delay={280}>
-            <FeatureCard {...FEATURES[3]} onPrompt={onPrompt} />
-          </Reveal>
-
-          <Reveal from="tilt" delay={360}>
-            <FeatureCard {...FEATURES[4]} onPrompt={onPrompt} />
-          </Reveal>
+          {FEATURES.map((f, i) => (
+            <Reveal key={f.title} from="tilt" delay={i * 90} className="h-full">
+              <FeatureCard {...f} onPrompt={onPrompt} />
+            </Reveal>
+          ))}
         </div>
       </div>
     </section>
