@@ -2,7 +2,7 @@ import { useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { chatReducer } from '../state/chat-reducer.js'
 import { loadState, saveState } from '../state/persistence.js'
 import { getActivePath } from '../state/tree.js'
-import { fetchConversations, saveConversation } from '../lib/sync.js'
+import { fetchConversations, fetchConversation, saveConversation } from '../lib/sync.js'
 import { isAuthenticated } from '../lib/auth.js'
 
 const STORAGE_FULL_MSG =
@@ -45,6 +45,33 @@ export function useChatStore() {
     }, 300)
     return () => clearTimeout(t)
   }, [state])
+
+  // List dari D1 hanya metadata (tanpa pohon pesan). Saat percakapan server
+  // dibuka dan belum punya isi, ambil detail lengkapnya. Conv lokal baru punya
+  // messages langsung setelah START_SEND, jadi tak terpancing fetch.
+  const loadingFull = useRef('')
+  useEffect(() => {
+    if (!isAuthenticated()) return
+    if (!state.activeId) return
+    const conv = state.convs.find((c) => c.id === state.activeId)
+    if (!conv) return
+    const hasMsgs = conv.messages && typeof conv.messages === 'object' && Object.keys(conv.messages).length > 0
+    if (hasMsgs) return
+    const key = `full:${conv.id}:${conv.updatedAt || conv.createdAt || ''}`
+    if (loadingFull.current === key) return
+    loadingFull.current = key
+    fetchConversation(conv.id)
+      .then((full) => {
+        if (loadingFull.current !== key) return
+        loadingFull.current = ''
+        if (full?.messages && Object.keys(full.messages).length > 0) {
+          dispatch({ type: 'MERGE_CONV', conv: full })
+        }
+      })
+      .catch(() => {
+        if (loadingFull.current === key) loadingFull.current = ''
+      })
+  }, [state.convs, state.activeId])
 
   // Sinkron ke server hanya untuk aksi yang mengubah data persisten.
   const lastSynced = useRef('')

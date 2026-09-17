@@ -44,6 +44,15 @@ export function chatReducer(state, action) {
     case 'SELECT_CHAT':
       return { ...state, activeId: action.convId, error: null }
 
+    // Muat detail percakapan dari server (list hanya metadata tanpa pohon pesan).
+    case 'MERGE_CONV':
+      if (!action.conv || !action.conv.id) return state
+      return patchConv(state, action.conv.id, (c) =>
+        action.conv.messages && typeof action.conv.messages === 'object'
+          ? { ...c, ...action.conv }
+          : c,
+      )
+
     case 'START_SEND': {
       // userMsg + aiMsg dibuat di hook (ID deterministik untuk test), reducer
       // hanya menempelkannya ke pohon. Conv dibuat optimis: pengguna lihat
