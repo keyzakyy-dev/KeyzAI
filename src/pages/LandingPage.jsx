@@ -340,52 +340,21 @@ function Hero({ navigate }) {
   )
 }
 
-function FeatureCard({ icon: Icon, title, desc, prompt, onPrompt }) {
-  const content = (
-    <div className="relative">
-      <div className="mb-4 inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-muted">
-        <Icon className="h-4 w-4 text-foreground" />
-      </div>
-      <h3 className="mb-1.5 text-base sm:text-lg font-semibold tracking-tight text-foreground">{title}</h3>
-      <p className="text-sm leading-relaxed text-muted-foreground">{desc}</p>
-      {prompt && (
-        <span className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-foreground">
-          Coba <ArrowRight className="h-3 w-3" />
-        </span>
-      )}
-    </div>
-  )
-
-  const className = `group relative flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card p-4 sm:p-6 text-left transition-colors hover:bg-accent/40`
-
-  if (prompt && onPrompt) {
-    return (
-      <button type="button" onClick={() => onPrompt(prompt)} className={className}>
-        {content}
-      </button>
-    )
-  }
-  return <div className={className}>{content}</div>
-}
-
 function Features({ navigate }) {
   const onPrompt = (p) => navigate(`/chat?q=${encodeURIComponent(p)}`)
   return (
     <section id="features" className="scroll-mt-20 py-10 sm:py-14 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <Reveal from="up" className="mx-auto mb-8 sm:mb-12 max-w-2xl space-y-4 text-center">
-          <span className="inline-block rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
-            Fitur
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-foreground md:text-5xl">
-            Satu AI, kemungkinan tanpa batas
+        <Reveal from="up" className="mx-auto mb-8 sm:mb-10 max-w-2xl space-y-4 text-center">
+          <h2 className="text-2xl font-bold tracking-tighter text-foreground sm:text-3xl">
+            Untuk semua hal, satu tempat
           </h2>
-          <p className="text-base sm:text-lg text-muted-foreground">
-            Semua yang kamu butuhkan untuk berpikir, menciptakan, dan belajar lebih cepat — dalam satu antarmuka yang rapi.
+          <p className="text-sm sm:text-base text-muted-foreground">
+            Berpikir, menciptakan, dan belajar lebih cepat — dalam satu antarmuka yang rapi.
           </p>
         </Reveal>
 
-        <Reveal from="up" className="mx-auto mb-10 sm:mb-14 grid max-w-3xl grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-8 md:grid-cols-4">
+        <Reveal from="up" className="mx-auto mb-10 grid max-w-3xl grid-cols-2 gap-x-4 gap-y-8 sm:mb-14 md:grid-cols-4">
           {STATS.map((stat) => (
             <div key={stat.label} className="space-y-1 text-center">
               <p className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
@@ -396,13 +365,38 @@ function Features({ navigate }) {
           ))}
         </Reveal>
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-3">
-          {FEATURES.map((f, i) => (
-            <Reveal key={f.title} from="tilt" delay={i * 90} className="h-full">
-              <FeatureCard {...f} onPrompt={onPrompt} />
-            </Reveal>
-          ))}
-        </div>
+        <Reveal from="up" className="mx-auto max-w-4xl border-b border-border">
+          {FEATURES.map((f) => {
+            const Icon = f.icon
+            const inner = (
+              <>
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-border bg-muted">
+                  <Icon className="h-4 w-4 text-foreground" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-semibold text-foreground sm:text-base">{f.title}</span>
+                  <span className="mt-0.5 block text-xs leading-relaxed text-muted-foreground sm:text-sm">
+                    {f.desc}
+                  </span>
+                </span>
+                {f.prompt && (
+                  <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:opacity-100" />
+                )}
+              </>
+            )
+            const rowCls =
+              'group -mx-2 flex w-full items-center gap-4 rounded-lg px-2 py-4 text-left transition-colors hover:bg-accent/40 sm:gap-5 sm:py-5'
+            return f.prompt ? (
+              <button key={f.title} type="button" onClick={() => onPrompt(f.prompt)} className={`border-t border-border ${rowCls}`}>
+                {inner}
+              </button>
+            ) : (
+              <div key={f.title} className={`border-t border-border ${rowCls}`}>
+                {inner}
+              </div>
+            )
+          })}
+        </Reveal>
       </div>
     </section>
   )
