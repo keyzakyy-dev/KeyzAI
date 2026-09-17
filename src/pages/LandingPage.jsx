@@ -279,7 +279,6 @@ function Navbar({ navigate, theme, toggleTheme }) {
 function Hero({ navigate }) {
   return (
     <section className="relative overflow-hidden pb-10 pt-24 sm:pb-14 sm:pt-32 lg:pb-16 lg:pt-36">
-      <div className="absolute inset-0 bg-dots [mask-image:radial-gradient(ellipse_65%_55%_at_50%_0%,black,transparent)]" />
       <div className="absolute left-1/2 top-0 h-56 w-[min(520px,100vw)] -translate-x-1/2 rounded-full bg-foreground/5 blur-[100px] sm:h-72 sm:w-[700px] sm:blur-[120px]" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
