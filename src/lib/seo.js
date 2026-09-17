@@ -28,7 +28,7 @@ function upsertLink(rel, href) {
 
 export function applyPageMeta({ title, description = SITE_DESC, path = '/' }) {
   const canonical = new URL(path, SITE_URL).toString()
-  const fullTitle = title ? `${title} — ${SITE_NAME}` : SITE_NAME
+  const fullTitle = title && title !== SITE_NAME ? `${title} · ${SITE_NAME}` : SITE_NAME
 
   document.title = fullTitle
   upsertMeta('name', 'description', description)
