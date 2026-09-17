@@ -1,4 +1,4 @@
-import { Plus, MessageSquare, Pin, LogIn, Settings, ChevronRight } from 'lucide-react'
+import { Plus, MessageSquare, Pin, Trash2, LogIn, Settings, ChevronRight } from 'lucide-react'
 import { Button } from './ui/button'
 import logo from '../assets/logo.png'
 
