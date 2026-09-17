@@ -21,7 +21,9 @@ function loadGsi() {
   return gsiPromise
 }
 
-const CLIENT_ID = import.meta.env?.VITE_GOOGLE_CLIENT_ID || ''
+const CLIENT_ID =
+  import.meta.env?.VITE_GOOGLE_CLIENT_ID ||
+  '227191802214-klcplrl89607it7obq9ne3ren73o9th9.apps.googleusercontent.com'
 
 /**
  * Tombol "Masuk dengan Google" (Google Identity Services).
