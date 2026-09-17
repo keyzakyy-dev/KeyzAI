@@ -1,6 +1,6 @@
 ﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { Sun, Moon, Menu, X, ArrowDown, PanelLeftClose, PanelLeftOpen, AlertCircle, RotateCcw, ChevronDown, Pin, Pencil, Trash2, Download, LogOut } from 'lucide-react'
+import { Sun, Moon, Menu, X, ArrowDown, PanelLeftClose, PanelLeftOpen, AlertCircle, RotateCcw, ChevronDown, Pin, Pencil, Trash2, Download } from 'lucide-react'
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
 import { Sidebar } from './Sidebar'
@@ -38,7 +38,6 @@ export function ChatInterface() {
   const [atBottom, setAtBottom] = useState(true)
   const [editingId, setEditingId] = useState(null)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [renameOpen, setRenameOpen] = useState(false)
   // Arah buka dropdown opsi chat: default kanan (seperti dulu); dipilih ulang
   // tiap menu dibuka berdasar posisi tombol agar tidak keluar viewport saat
@@ -127,7 +126,6 @@ export function ChatInterface() {
 
   const handleLogout = () => {
     logout()
-    setUserMenuOpen(false)
     logoutReset()
     navigate('/', { replace: true })
   }
@@ -490,49 +488,6 @@ export function ChatInterface() {
             <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Ganti tema">
               {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
-            {user && (
-              <div className="relative flex-shrink-0">
-                <button
-                  type="button"
-                  onClick={() => setUserMenuOpen((o) => !o)}
-                  aria-label="Menu pengguna"
-                  aria-haspopup="menu"
-                  aria-expanded={userMenuOpen}
-                  className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-border bg-accent"
-                >
-                  {user.picture ? (
-                    <img src={user.picture} alt={user.name || 'Akun'} className="h-full w-full object-cover" referrerPolicy="no-referrer" />
-                  ) : (
-                    <span className="text-xs font-medium text-foreground">
-                      {(user.name || user.email || '?').charAt(0).toUpperCase()}
-                    </span>
-                  )}
-                </button>
-                {userMenuOpen && (
-                  <>
-                    <div className="fixed inset-0 z-40" onClick={() => setUserMenuOpen(false)} />
-                    <div
-                      role="menu"
-                      className="absolute right-0 top-full z-50 mt-1 w-56 overflow-hidden rounded-lg border border-border bg-popover p-1 shadow-md"
-                      onClick={() => setUserMenuOpen(false)}
-                    >
-                      <div className="border-b border-border px-2.5 py-2">
-                        <p className="truncate text-sm font-medium text-foreground">{user.name || 'Pengguna'}</p>
-                        {user.email && <p className="truncate text-[11px] text-muted-foreground">{user.email}</p>}
-                      </div>
-                      <button
-                        role="menuitem"
-                        onClick={handleLogout}
-                        className="mt-1 flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm text-destructive hover:bg-destructive/10"
-                      >
-                        <LogOut className="h-3.5 w-3.5" />
-                        Keluar
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
             <Button
               variant="ghost"
               size="icon"
