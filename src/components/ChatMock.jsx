@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { Zap, Sparkles, ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react'
+import { ChevronLeftIcon, ChevronRightIcon, RotateCounterClockwiseIcon } from '@radix-ui/react-icons'
+import { KeyMark } from '../lib/key-mark'
 
 const USER_TXT = 'Bikinin caption singkat buat foto kopi pagi'
 const ANSWERS = [
@@ -103,7 +104,7 @@ export function ChatMock() {
           {userText.length === USER_TXT.length && (
             <div className="flex gap-2.5">
               <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border border-border">
-                <Sparkles className="h-3.5 w-3.5 text-muted-foreground" />
+                <KeyMark className="h-3.5 w-3.5 text-muted-foreground" />
               </div>
               <div className="max-w-[85%] space-y-2">
                 <div
@@ -125,12 +126,12 @@ export function ChatMock() {
                 {answerDone && (
                   <div className="flex items-center justify-center gap-1 text-[11px] text-muted-foreground animate-fade-up">
                     <span className="inline-flex items-center gap-0.5 rounded-full border border-border bg-background px-1 py-0.5">
-                      <ChevronLeft className={`h-3 w-3 ${branch === 0 ? 'opacity-30' : ''}`} />
+                      <ChevronLeftIcon className={`h-3 w-3 ${branch === 0 ? 'opacity-30' : ''}`} />
                       <span className="font-medium tabular-nums">{branch + 1} / 2</span>
-                      <ChevronRight className="h-3 w-3" />
+                      <ChevronRightIcon className="h-3 w-3" />
                     </span>
                     <span className="inline-flex items-center gap-1 rounded-full border border-border bg-background px-1.5 py-0.5">
-                      <RotateCcw className="h-2.5 w-2.5" />
+                      <RotateCounterClockwiseIcon className="h-2.5 w-2.5" />
                       buat ulang
                     </span>
                   </div>
@@ -144,7 +145,7 @@ export function ChatMock() {
           <div className="flex items-center gap-3 rounded-lg border border-border bg-background px-3.5 py-2.5">
             <span className="flex-1 text-sm text-muted-foreground">Ada yang bisa dibantu?</span>
             <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary">
-              <Zap className="h-3.5 w-3.5 text-primary-foreground" />
+              <KeyMark className="h-3.5 w-3.5 text-primary-foreground" />
             </div>
           </div>
         </div>

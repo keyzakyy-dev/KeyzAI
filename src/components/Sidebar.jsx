@@ -1,4 +1,5 @@
-import { Plus, MessageSquare, Pin, Trash2, LogIn, Settings, ChevronRight } from 'lucide-react'
+import { PlusIcon, ChatBubbleIcon, DrawingPinFilledIcon, TrashIcon, EnterIcon, GearIcon, ChevronRightIcon } from '@radix-ui/react-icons'
+
 import { Button } from './ui/button'
 import logo from '../assets/logo.png'
 
@@ -57,7 +58,7 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
             className="h-8 w-full justify-start gap-2 px-3 font-medium text-muted-foreground hover:text-foreground"
           >
             <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border/70 bg-foreground/5">
-              <Plus />
+              <PlusIcon />
             </span>
             Chat baru
           </Button>
@@ -68,7 +69,7 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
           {conversations.length === 0 ? (
             <div className="flex flex-col items-center px-3 pt-12 text-center">
               <div className="flex h-11 w-11 items-center justify-center rounded-full border border-dashed border-border">
-                <MessageSquare className="h-4 w-4 text-muted-foreground/50" />
+                <ChatBubbleIcon className="h-4 w-4 text-muted-foreground/50" />
               </div>
               <p className="mt-3 text-sm font-medium text-muted-foreground">Belum ada percakapan</p>
               <p className="mt-1 text-xs leading-relaxed text-muted-foreground/60">
@@ -95,9 +96,9 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
                         title={conv.title || undefined}
                       >
                         {conv.pinned ? (
-                          <Pin className="h-3.5 w-3.5 shrink-0 fill-primary/90" />
+                          <DrawingPinFilledIcon className="h-3.5 w-3.5 shrink-0 fill-primary/90" />
                         ) : (
-                          <MessageSquare className="h-3.5 w-3.5 shrink-0 opacity-50" />
+                          <ChatBubbleIcon className="h-3.5 w-3.5 shrink-0 opacity-50" />
                         )}
                         {conv.titlePending ? (
                           <span className="my-1 block h-3 w-24 animate-pulse rounded-full bg-muted-foreground/20" />
@@ -110,7 +111,7 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
                         className="rounded-sm p-1.5 text-muted-foreground opacity-100 transition-opacity hover:text-destructive focus-visible:opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
                         aria-label="Hapus percakapan"
                       >
-                        <Trash2 className="h-3.5 w-3.5" />
+                        <TrashIcon className="h-3.5 w-3.5" />
                       </button>
                     </div>
                   ))}
@@ -128,7 +129,7 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
               onClick={onLogin}
               className="mb-1 w-full justify-start gap-2 text-foreground hover:bg-accent"
             >
-              <LogIn className="h-4 w-4" />
+              <EnterIcon className="h-4 w-4" />
               Masuk
             </Button>
           ) : (
@@ -152,8 +153,8 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
                   <span className="block truncate text-sm font-medium text-foreground">{user.name || 'Pengguna'}</span>
                   {user.email && <span className="block truncate text-[11px] text-muted-foreground">{user.email}</span>}
                 </span>
-                <Settings className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" />
+                <GearIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                <ChevronRightIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" />
               </span>
             </button>
           )}

@@ -1,5 +1,6 @@
 import * as Dialog from '@radix-ui/react-dialog'
-import { Rocket, X, ArrowRight } from 'lucide-react'
+import { RocketIcon, Cross2Icon, ArrowRightIcon } from '@radix-ui/react-icons'
+
 import { CopyButton } from '../lib/copy-button'
 import { visibleDonations, DONATION_NOTE } from '../lib/donate'
 
@@ -25,13 +26,13 @@ export function AnnouncementDialog({ open, onOpenChange }) {
                 aria-label="Tutup"
                 className="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
               >
-                <X className="h-4 w-4" />
+                <Cross2Icon className="h-4 w-4" />
               </button>
             </Dialog.Close>
 
             <div className="relative flex items-start gap-4">
               <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-border bg-background text-foreground">
-                <Rocket className="h-6 w-6" />
+                <RocketIcon className="h-6 w-6" />
               </span>
               <div className="min-w-0 space-y-2 pr-8">
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-2.5 py-0.5 text-[11px] font-medium text-muted-foreground">
@@ -106,7 +107,7 @@ export function AnnouncementDialog({ open, onOpenChange }) {
                 className="group inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
               >
                 Lanjut chat
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </button>
             </Dialog.Close>
           </div>

@@ -1,20 +1,21 @@
 import * as Dialog from '@radix-ui/react-dialog'
-import { Loader2, LogIn, History, MonitorSmartphone, Wallet, X } from 'lucide-react'
+import { ReloadIcon, EnterIcon, CounterClockwiseClockIcon, DesktopIcon, BadgeIcon, Cross2Icon } from '@radix-ui/react-icons'
+
 import { GoogleSignInButton } from './GoogleSignInButton'
 
 const BENEFITS = [
   {
-    icon: History,
+    icon: CounterClockwiseClockIcon,
     title: 'Riwayat tersimpan',
     desc: 'Percakapan disimpan aman di akunmu.',
   },
   {
-    icon: MonitorSmartphone,
+    icon: DesktopIcon,
     title: 'Lanjut di mana saja',
     desc: 'Akses dari perangkat mana pun, kapan pun.',
   },
   {
-    icon: Wallet,
+    icon: BadgeIcon,
     title: 'Gratis selamanya',
     desc: 'Tanpa biaya, tanpa kartu kredit.',
   },
@@ -35,13 +36,13 @@ export function LoginDialog({ open, onOpenChange, onIdToken, loading = false, er
                 aria-label="Tutup"
                 className="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
               >
-                <X className="h-4 w-4" />
+                <Cross2Icon className="h-4 w-4" />
               </button>
             </Dialog.Close>
 
             <div className="relative space-y-2 pr-8">
               <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-border bg-background text-foreground">
-                <LogIn className="h-6 w-6" />
+                <EnterIcon className="h-6 w-6" />
               </span>
               <Dialog.Title className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
                 Masuk untuk mulai chat
@@ -80,7 +81,7 @@ export function LoginDialog({ open, onOpenChange, onIdToken, loading = false, er
               <GoogleSignInButton onIdToken={onIdToken} disabled={loading} onError={() => {}} />
               {loading && (
                 <p className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <ReloadIcon className="h-3.5 w-3.5 animate-spin" />
                   Memproses login…
                 </p>
               )}

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
-import { ArrowUp, Square, ChevronDown, Check, Sparkles } from 'lucide-react'
+import { ArrowUpIcon, StopIcon, ChevronDownIcon, CheckIcon } from '@radix-ui/react-icons'
+import { KeyMark } from '../lib/key-mark'
 import { Button } from './ui/button'
 import { Textarea } from './ui/textarea'
 import { MODELS } from '../lib/models'
@@ -85,10 +86,10 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
                     aria-label="Pilih model"
                     className="inline-flex h-7 items-center gap-1.5 rounded-full border border-border bg-background px-2.5 text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground"
                   >
-                    <Sparkles className="h-3 w-3" />
+                    <KeyMark className="h-3 w-3" />
                     <span className="truncate">{currentModel.label}</span>
                     <FreeBadge />
-                    <ChevronDown className={`h-3 w-3 transition-transform ${modelOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDownIcon className={`h-3 w-3 transition-transform ${modelOpen ? 'rotate-180' : ''}`} />
                   </button>
                   {modelOpen && (
                     <>
@@ -115,7 +116,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
                                   <span className="block truncate font-medium">{m.label}</span>
                                   <span className="block truncate text-[11px] text-muted-foreground/70">{m.id}</span>
                                 </span>
-                                {active && <Check className="h-3.5 w-3.5 shrink-0" />}
+                                {active && <CheckIcon className="h-3.5 w-3.5 shrink-0" />}
                               </button>
                             </li>
                           )
@@ -131,7 +132,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
                   title={currentModel.id}
                   className="inline-flex h-7 items-center gap-1.5 rounded-full border border-border bg-background px-2.5 text-[11px] font-medium text-muted-foreground"
                 >
-                  <Sparkles className="h-3 w-3" />
+                  <KeyMark className="h-3 w-3" />
                   <span className="truncate">{currentModel.label}</span>
                   <FreeBadge />
                 </div>
@@ -161,7 +162,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
               className="h-8 w-8 flex-shrink-0 rounded-full"
               aria-label="Hentikan generasi"
             >
-              <Square className="h-3 w-3 fill-current" />
+              <StopIcon className="h-3 w-3 fill-current" />
             </Button>
           ) : (
             <Button
@@ -171,7 +172,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
               className="h-8 w-8 flex-shrink-0 rounded-full"
               aria-label="Kirim pesan"
             >
-              <ArrowUp className="h-4 w-4" />
+              <ArrowUpIcon className="h-4 w-4" />
             </Button>
           )}
         </div>

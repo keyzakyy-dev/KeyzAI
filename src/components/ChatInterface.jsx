@@ -1,6 +1,7 @@
 ﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { Sun, Moon, Menu, X, ArrowDown, PanelLeftClose, PanelLeftOpen, AlertCircle, RotateCcw, ChevronDown, Pin, Pencil, Trash2, Download } from 'lucide-react'
+import { SunIcon, MoonIcon, HamburgerMenuIcon, Cross2Icon, ArrowDownIcon, CaretLeftIcon, CaretRightIcon, CrossCircledIcon, RotateCounterClockwiseIcon, ChevronDownIcon, DrawingPinFilledIcon, Pencil1Icon, TrashIcon, DownloadIcon } from '@radix-ui/react-icons'
+
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
 import { Sidebar } from './Sidebar'
@@ -429,7 +430,7 @@ export function ChatInterface() {
               onClick={() => setCollapsed((c) => !c)}
               aria-label={collapsed ? 'Tampilkan sidebar' : 'Sembunyikan sidebar'}
             >
-              {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+              {collapsed ? <CaretRightIcon className="h-4 w-4" /> : <CaretLeftIcon className="h-4 w-4" />}
             </Button>
             {activeConv || messages.length > 0 ? (
               <div className="flex min-w-0 items-center gap-0.5">
@@ -447,7 +448,7 @@ export function ChatInterface() {
                     aria-haspopup="menu"
                     aria-expanded={menuOpen}
                   >
-                    <ChevronDown className="h-3.5 w-3.5" />
+                    <ChevronDownIcon className="h-3.5 w-3.5" />
                   </Button>
                   {menuOpen && (
                     <>
@@ -464,7 +465,7 @@ export function ChatInterface() {
                           onClick={togglePin}
                           className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm text-foreground hover:bg-accent"
                         >
-                          <Pin className={`h-3.5 w-3.5 ${activeConv.pinned ? 'fill-current' : ''}`} />
+                          <DrawingPinFilledIcon className={`h-3.5 w-3.5 ${activeConv.pinned ? 'fill-current' : ''}`} />
                           {activeConv.pinned ? 'Lepas sematan' : 'Sematkan'}
                         </button>
                         <button
@@ -472,7 +473,7 @@ export function ChatInterface() {
                           onClick={() => setRenameOpen(true)}
                           className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm text-foreground hover:bg-accent"
                         >
-                          <Pencil className="h-3.5 w-3.5" />
+                          <Pencil1Icon className="h-3.5 w-3.5" />
                           Ganti nama
                         </button>
                         <button
@@ -480,7 +481,7 @@ export function ChatInterface() {
                           onClick={handleExportConv}
                           className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm text-foreground hover:bg-accent"
                         >
-                          <Download className="h-3.5 w-3.5" />
+                          <DownloadIcon className="h-3.5 w-3.5" />
                           Ekspor percakapan
                         </button>
                         <div className="my-1 h-px bg-border" />
@@ -489,7 +490,7 @@ export function ChatInterface() {
                           onClick={() => handleDeleteConv(activeConv.id)}
                           className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm text-destructive hover:bg-destructive/10"
                         >
-                          <Trash2 className="h-3.5 w-3.5" />
+                          <TrashIcon className="h-3.5 w-3.5" />
                           Hapus
                         </button>
                       </div>
@@ -503,7 +504,7 @@ export function ChatInterface() {
 
           <div className="flex flex-shrink-0 items-center gap-1.5">
             <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Ganti tema">
-              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {theme === 'dark' ? <SunIcon className="h-4 w-4" /> : <MoonIcon className="h-4 w-4" />}
             </Button>
             <Button
               variant="ghost"
@@ -512,7 +513,7 @@ export function ChatInterface() {
               onClick={() => setSidebarOpen(!sidebarOpen)}
               aria-label="Buka/tutup sidebar"
             >
-              {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+              {sidebarOpen ? <Cross2Icon className="h-4 w-4" /> : <HamburgerMenuIcon className="h-4 w-4" />}
             </Button>
           </div>
         </header>
@@ -559,7 +560,7 @@ export function ChatInterface() {
               {error && (
                 <div className="flex gap-3">
                   <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-destructive/40 bg-destructive/10">
-                    <AlertCircle className="h-3.5 w-3.5 text-destructive" />
+                    <CrossCircledIcon className="h-3.5 w-3.5 text-destructive" />
                   </div>
                   <div className="min-w-0 space-y-2.5">
                     <p className="text-[15px] leading-relaxed text-foreground">{error}</p>
@@ -569,7 +570,7 @@ export function ChatInterface() {
                       onClick={handleRetry}
                       className="gap-1.5"
                     >
-                      <RotateCcw className="h-3.5 w-3.5" />
+                      <RotateCounterClockwiseIcon className="h-3.5 w-3.5" />
                       Coba lagi
                     </Button>
                   </div>
@@ -589,7 +590,7 @@ export function ChatInterface() {
               aria-label="Gulir ke bawah"
               className="absolute bottom-4 left-1/2 z-10 flex h-9 w-9 -translate-x-1/2 items-center justify-center rounded-full border border-border bg-background text-foreground shadow-lg transition-colors hover:bg-accent"
             >
-              <ArrowDown className="h-4 w-4" />
+              <ArrowDownIcon className="h-4 w-4" />
             </button>
           )}
         </div>
@@ -665,7 +666,7 @@ export function ChatInterface() {
               aria-label="Tutup notifikasi"
               className="shrink-0 text-muted-foreground transition-colors hover:text-foreground"
             >
-              <X className="h-3.5 w-3.5" />
+              <Cross2Icon className="h-3.5 w-3.5" />
             </button>
           </div>
         </div>

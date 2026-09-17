@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { usePageMeta } from '../lib/seo'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRightIcon } from '@radix-ui/react-icons'
+
 import logo from '../assets/logo.png'
 
 const UPDATED = '17 September 2026'
@@ -114,7 +115,7 @@ function LegalLayout({ doc, other }) {
             className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             Kembali ke chat
-            <ArrowRight className="h-3.5 w-3.5" />
+            <ArrowRightIcon className="h-3.5 w-3.5" />
           </Link>
         </div>
       </header>

@@ -7,10 +7,8 @@ import { Reveal } from '../lib/reveal'
 import { useAuth } from '../hooks/useAuth'
 import logo from '../assets/logo.png'
 import { ChatMock } from '../components/ChatMock'
-import {
-  ArrowRight, ArrowUp, Github, MessageSquare, Code2, PenLine,
-  ShieldCheck, BookOpen, GraduationCap, Plus, Menu, X, Sun, Moon,
-} from 'lucide-react'
+import { ArrowRightIcon, ArrowUpIcon, GitHubLogoIcon, ChatBubbleIcon, CodeIcon, Pencil2Icon, LockClosedIcon, ReaderIcon, QuestionMarkIcon, PlusIcon, HamburgerMenuIcon, Cross2Icon, SunIcon, MoonIcon } from '@radix-ui/react-icons'
+
 
 const NAV_LINKS = [
   { label: 'Fitur', href: '#features' },
@@ -26,37 +24,37 @@ const STATS = [
 
 const FEATURES = [
   {
-    icon: MessageSquare,
+    icon: ChatBubbleIcon,
     title: 'Tanya apa saja',
     desc: 'Dari fakta singkat sampai pertanyaan mendalam — dapat jawaban tepat dan rapi dalam hitungan detik.',
     prompt: 'Apa itu bunga berbunga, dijelaskan dengan sederhana?',
   },
   {
-    icon: PenLine,
+    icon: Pencil2Icon,
     title: 'Menulis lebih cepat',
     desc: 'Draf email, esai, dan konten dengan AI yang mengikuti gaya tulisanmu.',
     prompt: 'Tulis email follow-up yang ramah ke klien yang menghilang.',
   },
   {
-    icon: Code2,
+    icon: CodeIcon,
     title: 'Debug kode',
     desc: 'Tempel snippet, langsung dapat perbaikan, penjelasan, dan optimasi.',
     prompt: 'Kenapa ini error "cannot read property of undefined"?',
   },
   {
-    icon: BookOpen,
+    icon: ReaderIcon,
     title: 'Pelajari topik baru',
     desc: 'Pecah topik rumit menjadi penjelasan sederhana yang mudah dipahami.',
     prompt: 'Jelaskan cara kerja neural network untuk pemula.',
   },
   {
-    icon: GraduationCap,
+    icon: QuestionMarkIcon,
     title: 'Bantu belajar',
     desc: 'Langkah demi langkah untuk soal dan konsep yang bikin mentok.',
     prompt: 'Bantu aku pahami persamaan kuadrat dari nol.',
   },
   {
-    icon: ShieldCheck,
+    icon: LockClosedIcon,
     title: 'Privat & aman',
     desc: 'Percakapanmu milikmu. Tanpa pelacakan, tanpa jual data.',
   },
@@ -202,13 +200,13 @@ function Navbar({ navigate, theme, toggleTheme }) {
                 aria-label="Ganti tema"
                 className="flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
               >
-                {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                {theme === 'dark' ? <SunIcon className="h-4 w-4" /> : <MoonIcon className="h-4 w-4" />}
               </button>
               <span className="mx-0.5 h-5 w-px bg-border" aria-hidden="true" />
               {user ? (
                 <Button onClick={() => navigate('/chat')} className="group h-9 rounded-full pl-4 pr-3.5 shadow-sm">
                   Buka chat
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                  <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </Button>
               ) : (
                 <Button
@@ -216,7 +214,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
                   className="group h-9 rounded-full pl-4 pr-3.5 shadow-sm"
                 >
                   Masuk
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                  <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </Button>
               )}
             </div>
@@ -228,7 +226,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
                 aria-label="Ganti tema"
                 className="flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
               >
-                {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                {theme === 'dark' ? <SunIcon className="h-4 w-4" /> : <MoonIcon className="h-4 w-4" />}
               </button>
               <button
                 type="button"
@@ -238,12 +236,12 @@ function Navbar({ navigate, theme, toggleTheme }) {
                 aria-controls="landing-mobile-nav"
                 className="relative flex h-9 w-9 items-center justify-center rounded-full border border-border/70 bg-card text-foreground transition-colors hover:bg-accent"
               >
-                <Menu
+                <HamburgerMenuIcon
                   className={`h-4 w-4 transition-all duration-300 ${
                     open ? 'rotate-90 scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100'
                   }`}
                 />
-                <X
+                <Cross2Icon
                   className={`absolute h-4 w-4 transition-all duration-300 ${
                     open ? 'rotate-0 scale-100 opacity-100' : '-rotate-90 scale-0 opacity-0'
                   }`}
@@ -272,7 +270,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
                     }`}
                   >
                     {link.label}
-                    <ArrowRight className="h-3.5 w-3.5 opacity-40" />
+                    <ArrowRightIcon className="h-3.5 w-3.5 opacity-40" />
                   </a>
                 ))}
               </div>
@@ -284,7 +282,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
                 className="mt-2 h-10 w-full rounded-xl"
               >
                 {user ? 'Buka chat' : 'Masuk dengan Google'}
-                <ArrowRight />
+                <ArrowRightIcon />
               </Button>
             </div>
           )}
@@ -323,7 +321,7 @@ function Hero({ navigate }) {
                 className="group h-12 rounded-full pl-6 pr-5 text-base shadow-sm"
               >
                 Mulai chat
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </Button>
               <p className="text-xs text-muted-foreground/70">
                 Gratis. Masuk dengan Google.
@@ -380,7 +378,7 @@ function Features({ navigate }) {
                   </span>
                 </span>
                 {f.prompt && (
-                  <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:opacity-100" />
+                  <ArrowRightIcon className="h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:opacity-100" />
                 )}
               </>
             )
@@ -417,7 +415,7 @@ function FAQ({ navigate }) {
             <details key={item.q} className="group">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 transition-colors hover:text-foreground [&::-webkit-details-marker]:hidden">
                 <span className="text-sm font-medium text-foreground">{item.q}</span>
-                <Plus className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-300 group-open:rotate-45" />
+                <PlusIcon className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-300 group-open:rotate-45" />
               </summary>
               <p className="pb-4 pr-8 text-sm leading-relaxed text-muted-foreground">{item.a}</p>
             </details>
@@ -432,7 +430,7 @@ function FAQ({ navigate }) {
             className="group inline-flex items-center gap-1 font-medium text-foreground underline-offset-4 hover:underline"
           >
             Tanya saja
-            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+            <ArrowRightIcon className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
           </button>
         </p>
       </div>
@@ -476,12 +474,12 @@ function Footer() {
             rel="noopener noreferrer"
             className={linkCls}
           >
-            <Github className="h-3.5 w-3.5" />
+            <GitHubLogoIcon className="h-3.5 w-3.5" />
             GitHub
           </a>
           <button type="button" onClick={toTop} className={linkCls}>
             Ke atas
-            <ArrowUp className="h-3 w-3" />
+            <ArrowUpIcon className="h-3 w-3" />
           </button>
         </nav>
       </div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
-import { Download, Loader2, Settings, Trash2, LogOut, X, Check } from 'lucide-react'
+import { DownloadIcon, ReloadIcon, GearIcon, TrashIcon, ExitIcon, Cross2Icon, CheckIcon } from '@radix-ui/react-icons'
+
 import { Button } from './ui/button'
 import { ConfirmDialog } from './ui/confirm-dialog'
 import { MODELS, DEFAULT_MODEL } from '../lib/models'
@@ -100,12 +101,12 @@ export function PreferencesDialog({
                   aria-label="Tutup"
                   className="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                 >
-                  <X className="h-4 w-4" />
+                  <Cross2Icon className="h-4 w-4" />
                 </button>
               </Dialog.Close>
               <div className="relative space-y-2 pr-8">
                 <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-border bg-background text-foreground">
-                  <Settings className="h-6 w-6" />
+                  <GearIcon className="h-6 w-6" />
                 </span>
                 <Dialog.Title className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
                   Preferensi akun
@@ -158,7 +159,7 @@ export function PreferencesDialog({
                         disabled={!nameDirty || !nameValid || saving}
                         className="shrink-0"
                       >
-                        {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                        {saving ? <ReloadIcon className="h-4 w-4 animate-spin" /> : <CheckIcon className="h-4 w-4" />}
                         Simpan
                       </Button>
                     </div>
@@ -188,7 +189,7 @@ export function PreferencesDialog({
                           } disabled:opacity-60`}
                         >
                           <span className="font-medium">{m.label}</span>
-                          {m.id === model && <Check className="h-4 w-4 text-primary" />}
+                          {m.id === model && <CheckIcon className="h-4 w-4 text-primary" />}
                         </button>
                       ))}
                     </div>
@@ -227,7 +228,7 @@ export function PreferencesDialog({
                   <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Data & privasi</h3>
 
                   <Button variant="outline" className="w-full justify-start gap-2" onClick={onExportAll}>
-                    <Download className="h-4 w-4" />
+                    <DownloadIcon className="h-4 w-4" />
                     Ekspor semua percakapan
                   </Button>
 
@@ -236,7 +237,7 @@ export function PreferencesDialog({
                     className="w-full justify-start gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive"
                     onClick={() => { setDeleteError(null); setDeleteConfirm(true) }}
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <TrashIcon className="h-4 w-4" />
                     Hapus semua percakapan
                   </Button>
                   {deleteDone && <p className="text-xs text-primary">Semua percakapan dihapus.</p>}
@@ -249,7 +250,7 @@ export function PreferencesDialog({
                     className="w-full justify-start gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive"
                     onClick={onLogout}
                   >
-                    <LogOut className="h-4 w-4" />
+                    <ExitIcon className="h-4 w-4" />
                     Keluar
                   </Button>
                 </section>

@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
-import { Check, ChevronLeft, ChevronRight, Pencil, X } from 'lucide-react'
+import { CheckIcon, ChevronLeftIcon, ChevronRightIcon, Pencil1Icon, Cross2Icon } from '@radix-ui/react-icons'
+
 import { Button } from './ui/button'
 import { formatAnswers, SKIP_LABEL } from '../lib/options'
 
@@ -108,7 +109,7 @@ export function OptionCard({ payload, messageId }) {
                 aria-label="Pertanyaan sebelumnya"
                 className={NAV_BTN}
               >
-                <ChevronLeft className="h-3.5 w-3.5" />
+                <ChevronLeftIcon className="h-3.5 w-3.5" />
               </button>
               <span className="tabular-nums text-[11px] text-muted-foreground">
                 {index + 1} dari {total}
@@ -120,7 +121,7 @@ export function OptionCard({ payload, messageId }) {
                 aria-label="Pertanyaan berikutnya"
                 className={NAV_BTN}
               >
-                <ChevronRight className="h-3.5 w-3.5" />
+                <ChevronRightIcon className="h-3.5 w-3.5" />
               </button>
             </>
           )}
@@ -130,7 +131,7 @@ export function OptionCard({ payload, messageId }) {
             aria-label="Tutup pilihan"
             className={NAV_BTN}
           >
-            <X className="h-3.5 w-3.5" />
+            <Cross2Icon className="h-3.5 w-3.5" />
           </button>
         </div>
       </div>
@@ -162,7 +163,7 @@ export function OptionCard({ payload, messageId }) {
                   </span>
                 )}
               </span>
-              {selected && <Check className="h-4 w-4 flex-shrink-0" />}
+              {selected && <CheckIcon className="h-4 w-4 flex-shrink-0" />}
             </button>
           )
         })}
@@ -177,7 +178,7 @@ export function OptionCard({ payload, messageId }) {
                 if (value) commit(value)
               }}
             >
-              <Pencil className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" />
+              <Pencil1Icon className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" />
               <input
                 ref={inputRef}
                 value={draft}
@@ -207,7 +208,7 @@ export function OptionCard({ payload, messageId }) {
                   active ? 'text-muted-foreground hover:text-foreground' : 'cursor-default text-muted-foreground/60'
                 }`}
               >
-                <Pencil className="h-3.5 w-3.5 flex-shrink-0" />
+                <Pencil1Icon className="h-3.5 w-3.5 flex-shrink-0" />
                 Lainnya
               </button>
               {multi && picked.length > 0 && (
