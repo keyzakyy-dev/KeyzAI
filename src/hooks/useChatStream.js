@@ -17,10 +17,12 @@ export function useChatStream({ state, dispatch, loading }) {
   const busyRef = useRef(null) // AbortController untuk generasi yang berjalan
 
   const send = useCallback(
-    async ({ content, mode = 'new', editTargetId = null, regenerateFromId = null, model } = {}) => {
+    async ({ content, mode = 'new', editTargetId = null, regenerateFromId = null, model, convId: convIdArg } = {}) => {
       if (busyRef.current) return // generasi lain sedang jalan
 
-      const convId = state.activeId || newId('conv')
+      // convId bisa ditentukan pemanggil (mis. auto-send ?q= butuh chat baru
+      // yang belum ada di store); jika tidak, lanjutkan percakapan aktif.
+      const convId = convIdArg || state.activeId || newId('conv')
       const conv = state.convs.find((c) => c.id === convId) || null
       const now = Math.floor(Date.now() / 1000)
 

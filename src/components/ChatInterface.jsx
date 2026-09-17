@@ -1,5 +1,5 @@
 ﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { Sun, Moon, Menu, X, ArrowDown, PanelLeftClose, PanelLeftOpen, AlertCircle, RotateCcw, ChevronDown, Pin, Pencil, Trash2, Download } from 'lucide-react'
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
@@ -209,25 +209,59 @@ export function ChatInterface() {
   useEffect(() => {
     applyPageMeta({
       title: currentTitle || 'Chat baru',
-      path: '/chat',
+      path: state.activeId ? `/chat/${state.activeId}` : '/chat',
     })
-  }, [currentTitle])
+  }, [currentTitle, state.activeId])
 
-  // ---------- auto-send dari query string (?q=…)
+  // ---------- URL percakapan: /chat/:convId mencerminkan percakapan aktif.
+  // Sinkron dua arah: buka/deep-link/back-forward → store; aksi app → URL.
+  // `urlLeads` mencegah loop: saat URL yang memimpin, store→URL skip satu putaran.
+  const { convId: convIdParam } = useParams()
+  const navigate = useNavigate()
+  const urlLeads = useRef(false)
+
+  // auto-send dari query string (?q=…), dipasang paling awal supaya efek URL
+  // lain tidak sempat mengalihkan URL sebelum percakapan baru tercipta.
   const [searchParams, setSearchParams] = useSearchParams()
   const autoSentRef = useRef(false)
-  const sendRef = useRef(handleSend)
+  const sendRef = useRef(send)
   useEffect(() => {
-    sendRef.current = handleSend
-  }, [handleSend])
+    sendRef.current = send
+  }, [send])
   useEffect(() => {
     const q = searchParams.get('q')
-    if (q && !autoSentRef.current) {
-      autoSentRef.current = true
-      setSearchParams({}, { replace: true })
-      sendRef.current(q)
-    }
+    if (!q || autoSentRef.current) return
+    autoSentRef.current = true
+    setSearchParams({}, { replace: true })
+    sendRef.current({ content: q, mode: 'new', model, convId: newId('conv') })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, setSearchParams])
+
+  // URL → store
+  useEffect(() => {
+    if (!convIdParam || state.activeId === convIdParam) return
+    urlLeads.current = true
+    const exists = state.convs.some((c) => c.id === convIdParam)
+    dispatch({ type: exists ? 'SELECT_CHAT' : 'NEW_CHAT', convId: convIdParam })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [convIdParam])
+
+  // store → URL
+  // Selama ?q= belum dikonsumsi, biarkan auto-send yang menentukan URL —
+  // jangan dialihkan ke percakapan yang kebetulan tersimpan di store.
+  useEffect(() => {
+    if (urlLeads.current) {
+      urlLeads.current = false
+      return
+    }
+    if (searchParams.get('q')) return
+    if (state.activeId && state.activeId !== convIdParam) {
+      navigate(`/chat/${state.activeId}`, { replace: true })
+    } else if (!state.activeId && convIdParam) {
+      navigate('/chat', { replace: true })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.activeId])
 
   // ---------- state turunan untuk render
   // Panah navigasi cabang hanya tampil jika pesan punya sibling.
