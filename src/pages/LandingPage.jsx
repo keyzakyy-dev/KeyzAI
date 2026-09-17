@@ -8,7 +8,7 @@ import { useAuth } from '../hooks/useAuth'
 import logo from '../assets/logo.png'
 import { ChatMock } from '../components/ChatMock'
 import {
-  ArrowRight, ArrowUp, Github, MessageSquare, MessageCircle, Code2, PenLine,
+  ArrowRight, ArrowUp, Github, MessageSquare, Code2, PenLine,
   ShieldCheck, BookOpen, GraduationCap, Plus, Menu, X, Sun, Moon,
 } from 'lucide-react'
 
@@ -410,70 +410,37 @@ function Features({ navigate }) {
 
 function FAQ({ navigate }) {
   return (
-    <section id="faq" className="relative scroll-mt-20 overflow-hidden py-10 sm:py-14 lg:py-16">
-      <div className="relative mx-auto grid max-w-7xl gap-10 sm:gap-14 px-4 sm:px-6 lg:grid-cols-[1fr,1.35fr] lg:gap-20">
-        {/* Left: heading + support card */}
-        <Reveal from="left" className="lg:sticky lg:top-28 lg:self-start">
-          <Reveal from="up" className="space-y-4">
-            <span className="inline-block rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
-              FAQ
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-foreground md:text-5xl">
-              Pertanyaan yang sering diajukan
-            </h2>
-            <p className="max-w-md text-base sm:text-lg text-muted-foreground">
-              Semua yang perlu kamu tahu soal KeyzAI. Nggak nemu jawabannya? Tanya saja —
-              AI-nya selalu siap bantu.
-            </p>
-          </Reveal>
-
-          <Reveal from="up" delay={150} className="relative mt-10 overflow-hidden rounded-2xl border border-border bg-card p-6">
-            <div className="relative flex flex-col gap-4 sm:flex-row sm:items-start">
-              <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg border border-border bg-muted">
-                <MessageCircle className="h-5 w-5 text-foreground" />
-              </div>
-              <div className="space-y-3">
-                <div>
-                  <h3 className="font-heading text-base font-semibold tracking-tight text-foreground">
-                    Masih ada pertanyaan?
-                  </h3>
-                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                    Dapat jawaban instan dari AI — tanpa antre, tanpa tiket, aktif 24/7.
-                  </p>
-                </div>
-                <Button onClick={() => navigate('/chat')} size="sm">
-                  Mulai chat
-                  <ArrowRight />
-                </Button>
-              </div>
-            </div>
-          </Reveal>
+    <section id="faq" className="scroll-mt-20 py-10 sm:py-14 lg:py-16">
+      <div className="mx-auto max-w-2xl px-4 sm:px-6">
+        <Reveal from="up" className="mb-8 text-center sm:mb-10">
+          <h2 className="text-2xl font-bold tracking-tighter text-foreground sm:text-3xl">
+            Pertanyaan yang sering diajukan
+          </h2>
         </Reveal>
 
-        {/* Right: accordion */}
-        <div className="space-y-3">
-          {FAQS.map((item, i) => (
-            <Reveal key={item.q} from="right" delay={i * 90} as="div">
-              <details
-                className="group overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 open:border-primary/30 open:shadow-md"
-              >
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 sm:gap-4 p-4 sm:p-5 transition-colors hover:bg-accent/40 [&::-webkit-details-marker]:hidden">
-                  <span className="font-heading text-sm font-semibold text-foreground md:text-base">
-                    {item.q}
-                  </span>
-                  <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border border-border bg-muted transition-all duration-300 group-open:rotate-45 group-open:border-primary/40 group-open:bg-primary group-open:text-primary-foreground">
-                    <Plus className="h-3.5 w-3.5" />
-                  </span>
-                </summary>
-
-                <div className="px-4 sm:px-5 pb-4 sm:pb-5">
-                  <div className="h-px bg-border" />
-                  <p className="pt-4 text-sm leading-relaxed text-muted-foreground">{item.a}</p>
-                </div>
-              </details>
-            </Reveal>
+        <Reveal from="up" className="divide-y divide-border border-y border-border">
+          {FAQS.map((item) => (
+            <details key={item.q} className="group">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 transition-colors hover:text-foreground [&::-webkit-details-marker]:hidden">
+                <span className="text-sm font-medium text-foreground">{item.q}</span>
+                <Plus className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-300 group-open:rotate-45" />
+              </summary>
+              <p className="pb-4 pr-8 text-sm leading-relaxed text-muted-foreground">{item.a}</p>
+            </details>
           ))}
-        </div>
+        </Reveal>
+
+        <p className="mt-8 text-center text-sm text-muted-foreground">
+          Nggak nemu jawabannya?{' '}
+          <button
+            type="button"
+            onClick={() => navigate('/chat')}
+            className="group inline-flex items-center gap-1 font-medium text-foreground underline-offset-4 hover:underline"
+          >
+            Tanya saja
+            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+          </button>
+        </p>
       </div>
     </section>
   )
