@@ -156,7 +156,7 @@ export default {
         }, corsHeaders(request, env))
       } catch (e) {
         console.error('Google auth error:', e.message)
-        return response(false, 'Auth failed', 401, { error: 'Login gagal: token Google tidak valid' }, corsHeaders(request, env))
+        return response(false, 'Auth failed', 401, { error: 'Login gagal: token Google tidak valid', details: e.message }, corsHeaders(request, env))
       }
     }
 

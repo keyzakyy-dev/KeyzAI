@@ -55,6 +55,7 @@ export function useAuth() {
       })
       const data = await res.json()
       if (!data.success || !data.token) {
+        if (data.details) throw new Error(`${data.error || 'Login gagal'} (${data.details})`)
         throw new Error(data.error || 'Login gagal')
       }
       setSession(data.token, data.user)
