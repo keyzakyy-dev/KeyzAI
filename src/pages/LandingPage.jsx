@@ -3,7 +3,6 @@ import { useNavigate, Link } from 'react-router-dom'
 import { Button } from '../components/ui/button'
 import { useTheme } from '../lib/use-theme'
 import { usePageMeta, SITE_NAME, SITE_DESC, faqSchema, injectJsonLd } from '../lib/seo'
-import { MODELS } from '../lib/models'
 import { Reveal } from '../lib/reveal'
 import { useAuth } from '../hooks/useAuth'
 import logo from '../assets/logo.png'
@@ -81,26 +80,6 @@ const FAQS = [
     a: 'Riwayat tersimpan di akunmu dan hanya bisa diakses setelah login. Pesan yang kamu kirim diteruskan ke model AI pihak ketiga untuk diproses menjadi respons — dan tidak kami jual ke siapa pun.',
   },
 ]
-
-const FOOTER_COLUMNS = [
-  {
-    title: 'Produk',
-    links: [
-      { label: 'Fitur', href: '#features' },
-      { label: 'FAQ', href: '#faq' },
-    ],
-  },
-  {
-    title: 'Legal',
-    links: [
-      { label: 'Kebijakan Privasi', href: '/privacy' },
-      { label: 'Syarat & Ketentuan', href: '/terms' },
-    ],
-  },
-]
-
-// Badge stack diambil dari data model agar tidak pernah basi saat model ditambah/diganti.
-const FOOTER_STACK = ['Cloudflare Workers', 'Vercel', ...MODELS.map((m) => m.label)]
 
 function Logo() {
   return (
@@ -500,108 +479,50 @@ function FAQ({ navigate }) {
   )
 }
 
-function Footer({ navigate }) {
+function Footer() {
   const toTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
+  const linkCls =
+    'inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground'
 
   return (
-    <footer className="relative mt-4 overflow-hidden rounded-t-3xl border-x border-t border-border bg-card sm:mt-8">
-      <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
-        <div className="grid gap-8 sm:grid-cols-2 sm:gap-10 lg:grid-cols-[1.7fr_1fr] lg:gap-12">
-          {/* Brand */}
-          <Reveal from="up" className="max-w-sm space-y-5 sm:col-span-2 lg:col-span-1 lg:max-w-sm">
-            <Logo />
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              Teman AI-mu yang serba cepat untuk jawaban, ide, dan semuanya. Gratis, masuk dengan Google.
-            </p>
-
-            <div className="flex flex-wrap gap-1.5">
-              {FOOTER_STACK.map((item) => (
-                <span
-                  key={item}
-                  className="rounded-full border border-border/70 bg-background/60 px-2.5 py-1 text-[11px] font-medium text-muted-foreground"
-                >
-                  {item}
-                </span>
-              ))}
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2 pt-1">
-              <Button onClick={() => navigate('/chat')} size="sm" className="group h-9 rounded-full pl-4 pr-3.5">
-                Masuk dengan Google
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-              </Button>
-              <a
-                href="https://github.com/keyzakyy-dev"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex h-9 items-center gap-2 rounded-full border border-border bg-background px-3.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-              >
-                <Github className="h-4 w-4" />
-                GitHub
-              </a>
-            </div>
-          </Reveal>
-
-          {/* Kolom link */}
-          {FOOTER_COLUMNS.map((col, i) => (
-            <Reveal key={col.title} from="up" delay={80 + i * 80} className="space-y-4">
-              <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground/70">
-                {col.title}
-              </p>
-              <ul className="space-y-2.5">
-                {col.links.map((link) => {
-                  const cls =
-                    'group inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground'
-                  const dot = (
-                    <span className="h-1 w-1 shrink-0 rounded-full bg-border transition-colors group-hover:bg-foreground" aria-hidden="true" />
-                  )
-                  return (
-                    <li key={link.label}>
-                      {link.href.startsWith('/') ? (
-                        <Link to={link.href} className={cls}>
-                          {dot}
-                          {link.label}
-                        </Link>
-                      ) : (
-                        <a href={link.href} className={cls}>
-                          {dot}
-                          {link.label}
-                        </a>
-                      )}
-                    </li>
-                  )
-                })}
-              </ul>
-            </Reveal>
-          ))}
-        </div>
-        <div className="mt-12 h-px bg-border" aria-hidden="true" />
-
-        <div className="flex flex-col items-center justify-between gap-4 pt-6 sm:flex-row">
-          <p className="text-xs text-muted-foreground">© 2026 KeyzAI. Seluruh hak cipta dilindungi.</p>
-          <div className="flex items-center gap-3">
-            <p className="text-xs text-muted-foreground">
-              oleh{' '}
-              <a
-                href="https://github.com/keyzakyy-dev"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="transition-colors hover:text-foreground"
-              >
-                Keyzakyy
-              </a>
-            </p>
-            <span className="h-4 w-px bg-border" aria-hidden="true" />
-            <button
-              type="button"
-              onClick={toTop}
-              className="inline-flex items-center gap-1.5 rounded-full border border-border/70 bg-background px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+    <footer className="border-t border-border">
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-5 sm:px-6">
+        <div className="flex items-center gap-3">
+          <img src={logo} alt="KeyzAI" className="h-6 w-auto" />
+          <p className="text-xs text-muted-foreground">
+            © 2026 KeyzAI · oleh{' '}
+            <a
+              href="https://github.com/keyzakyy-dev"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-foreground"
             >
-              Ke atas
-              <ArrowUp className="h-3 w-3" />
-            </button>
-          </div>
+              Keyzakyy
+            </a>
+          </p>
         </div>
+
+        <nav className="flex flex-wrap items-center gap-x-5 gap-y-2">
+          <Link to="/privacy" className={linkCls}>
+            Kebijakan Privasi
+          </Link>
+          <Link to="/terms" className={linkCls}>
+            Syarat &amp; Ketentuan
+          </Link>
+          <a
+            href="https://github.com/keyzakyy-dev"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={linkCls}
+          >
+            <Github className="h-3.5 w-3.5" />
+            GitHub
+          </a>
+          <button type="button" onClick={toTop} className={linkCls}>
+            Ke atas
+            <ArrowUp className="h-3 w-3" />
+          </button>
+        </nav>
       </div>
     </footer>
   )
@@ -626,7 +547,7 @@ export function LandingPage() {
         <Features navigate={navigate} />
         <FAQ navigate={navigate} />
       </main>
-      <Footer navigate={navigate} />
+      <Footer />
     </div>
   )
 }
