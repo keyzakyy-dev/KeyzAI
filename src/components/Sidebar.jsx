@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { PlusIcon, ChatBubbleIcon, DrawingPinFilledIcon, TrashIcon, PersonIcon, GearIcon, ChevronRightIcon } from '@radix-ui/react-icons'
 
 import { Button } from './ui/button'
@@ -47,7 +48,9 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
         )}
         {/* Brand */}
         <div className="flex h-14 flex-shrink-0 items-center px-4">
-          <img src={logo} alt="KeyzAI" className="h-9 w-auto" />
+          <Link to="/" aria-label="Kembali ke beranda" className="rounded-xl transition-opacity hover:opacity-80">
+            <img src={logo} alt="KeyzAI" className="h-9 w-auto" />
+          </Link>
         </div>
 
         {/* New Chat */}
