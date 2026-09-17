@@ -136,6 +136,16 @@ export default {
       return new Response(null, { headers: corsHeaders(request, env) })
     }
 
+    // ---------------- DEBUG ENV (cek keberadaan env, tanpa bocorkan nilai)
+    if (request.method === 'GET' && path === '/api/debug/env') {
+      return response(true, 'OK', 200, {
+        hasGoogleClientId: !!env.GOOGLE_CLIENT_ID,
+        hasSessionSecret: !!env.SESSION_SECRET,
+        hasApiKey: !!env.OPENAI_API_KEY,
+        dbBound: !!env.DB,
+      }, corsHeaders(request, env))
+    }
+
     // ---------------- AUTH (publik)
     // POST /api/auth/google { idToken }
     if (request.method === 'POST' && path === '/api/auth/google') {
