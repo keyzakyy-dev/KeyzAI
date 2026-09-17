@@ -13,6 +13,7 @@ import { OptionsContext } from './OptionCard'
 import { useTheme } from '../lib/use-theme'
 import { applyPageMeta } from '../lib/seo'
 import { loadModel, saveModel } from '../lib/models'
+import { pickGreeting } from '../lib/greetings'
 import { downloadConversation, downloadAll } from '../lib/backup'
 import { useChatStore } from '../hooks/useChatStore'
 import { useChatStream } from '../hooks/useChatStream'
@@ -59,6 +60,19 @@ export function ChatInterface() {
   const error = state.error || persistError
 
   const { user, logout, loginWithGoogle } = useAuth()
+
+  // ---------------------------------------------------------------
+  // Sapaan halaman kosong: berganti setiap "Chat baru", stabil saat mengetik.
+  const lastGreeting = useRef(null)
+  const [greeting, setGreeting] = useState(() =>
+    pickGreeting({ previous: lastGreeting.current, name: user?.name }),
+  )
+  const nextGreeting = () => {
+    const g = pickGreeting({ previous: lastGreeting.current, name: user?.name })
+    lastGreeting.current = g
+    setGreeting(g)
+  }
+  // ---------------------------------------------------------------
 
   const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
   const changeModel = (id) => { setModel(id); saveModel(id) }
@@ -159,6 +173,7 @@ export function ChatInterface() {
 
   // ---------- percakapan
   const startNewChat = () => {
+    nextGreeting()
     dispatch({ type: 'NEW_CHAT', convId: newId('conv') })
     setSidebarOpen(false)
     setEditingId(null)
@@ -521,7 +536,7 @@ export function ChatInterface() {
             <div className="flex flex-1 items-center justify-center px-4 py-8 sm:py-12">
               <div className="w-full max-w-2xl space-y-4">
                 <h1 className="text-center font-serif text-2xl font-medium tracking-tight text-foreground sm:text-3xl md:text-4xl">
-                  Ada yang bisa dibantu?
+                  {greeting}
                 </h1>
 
                 <ChatInput onSend={handleSend} loading={loading} model={model} onModelChange={changeModel} />
