@@ -1,6 +1,5 @@
 ﻿import { useEffect, useRef, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { Button } from '../components/ui/button'
 import { useTheme } from '../lib/use-theme'
 import { usePageMeta, SITE_NAME, SITE_DESC, faqSchema, injectJsonLd } from '../lib/seo'
 import { Reveal } from '../lib/reveal'
@@ -146,14 +145,23 @@ function Navbar({ navigate, theme, toggleTheme }) {
   }, [])
 
   const linkClass = (href) =>
-    `rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ${
+    `text-sm font-medium transition-colors ${
       active === href
-        ? 'bg-card text-foreground shadow-sm shadow-black/5'
+        ? 'text-foreground underline decoration-2 underline-offset-8'
         : 'text-muted-foreground hover:text-foreground'
     }`
 
+  const ctaClass =
+    'inline-flex h-8 items-center gap-1.5 rounded-lg bg-primary px-3.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90'
+
   return (
-    <header className="fixed inset-x-0 top-0 z-50">
+    <header
+      className={`fixed inset-x-0 top-0 z-50 border-b transition-colors duration-300 ${
+        scrolled || open
+          ? 'border-border/70 bg-background/95 backdrop-blur'
+          : 'border-transparent'
+      }`}
+    >
       {/* Hairline progress baca */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[2px] overflow-hidden" aria-hidden="true">
         <div
@@ -162,132 +170,108 @@ function Navbar({ navigate, theme, toggleTheme }) {
         />
       </div>
 
-      <div className="mx-auto max-w-7xl px-3 sm:px-6">
-        <div
-          className={`mt-2 overflow-hidden rounded-2xl border transition-all duration-300 sm:mt-3 ${
-            scrolled
-              ? 'border-border bg-background/85 shadow-xl shadow-black/5 backdrop-blur-xl dark:shadow-black/40'
-              : 'border-border/60 bg-background/60 backdrop-blur-md'
-          }`}
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
+        <button
+          type="button"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          aria-label="Kembali ke atas"
+          className="shrink-0 rounded-xl transition-opacity hover:opacity-80"
         >
-          <nav className="flex h-14 items-center justify-between gap-2 px-2.5 sm:h-[60px] sm:px-3">
-            <button
-              type="button"
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              aria-label="Kembali ke atas"
-              className="shrink-0 rounded-xl transition-opacity hover:opacity-80"
+          <Logo />
+        </button>
+
+        {/* Desktop */}
+        <div className="hidden items-center gap-7 md:flex">
+          {NAV_LINKS.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              className={linkClass(link.href)}
+              aria-current={active === link.href ? 'true' : undefined}
             >
-              <Logo />
-            </button>
+              {link.label}
+            </a>
+          ))}
+        </div>
+        <div className="hidden shrink-0 items-center gap-2 md:flex">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label="Ganti tema"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          >
+            {theme === 'dark' ? <SunIcon className="h-4 w-4" /> : <MoonIcon className="h-4 w-4" />}
+          </button>
+          <button type="button" onClick={() => navigate('/chat')} className={ctaClass}>
+            {user ? 'Buka chat' : 'Masuk'}
+          </button>
+        </div>
 
-            {/* Segmented links (desktop) */}
-            <div className="hidden items-center gap-0.5 rounded-full border border-border/70 bg-muted/40 p-1 md:flex">
-              {NAV_LINKS.map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  className={linkClass(link.href)}
-                  aria-current={active === link.href ? 'true' : undefined}
-                >
-                  {link.label}
-                </a>
-              ))}
-            </div>
-            <div className="hidden shrink-0 items-center gap-1.5 md:flex">
-              <button
-                type="button"
-                onClick={toggleTheme}
-                aria-label="Ganti tema"
-                className="flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-              >
-                {theme === 'dark' ? <SunIcon className="h-4 w-4" /> : <MoonIcon className="h-4 w-4" />}
-              </button>
-              <span className="mx-0.5 h-5 w-px bg-border" aria-hidden="true" />
-              {user ? (
-                <Button onClick={() => navigate('/chat')} className="group h-9 rounded-full pl-4 pr-3.5 shadow-sm">
-                  Buka chat
-                  <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                </Button>
-              ) : (
-                <Button
-                  onClick={() => navigate('/chat')}
-                  className="group h-9 rounded-full pl-4 pr-3.5 shadow-sm"
-                >
-                  Masuk
-                  <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                </Button>
-              )}
-            </div>
-
-            <div className="flex shrink-0 items-center gap-1.5 md:hidden">
-              <button
-                type="button"
-                onClick={toggleTheme}
-                aria-label="Ganti tema"
-                className="flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-              >
-                {theme === 'dark' ? <SunIcon className="h-4 w-4" /> : <MoonIcon className="h-4 w-4" />}
-              </button>
-              <button
-                type="button"
-                onClick={() => setOpen((o) => !o)}
-                aria-label={open ? 'Tutup menu' : 'Buka menu'}
-                aria-expanded={open}
-                aria-controls="landing-mobile-nav"
-                className="relative flex h-9 w-9 items-center justify-center rounded-full border border-border/70 bg-card text-foreground transition-colors hover:bg-accent"
-              >
-                <HamburgerMenuIcon
-                  className={`h-4 w-4 transition-all duration-300 ${
-                    open ? 'rotate-90 scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100'
-                  }`}
-                />
-                <Cross2Icon
-                  className={`absolute h-4 w-4 transition-all duration-300 ${
-                    open ? 'rotate-0 scale-100 opacity-100' : '-rotate-90 scale-0 opacity-0'
-                  }`}
-                />
-              </button>
-            </div>
-          </nav>
-
-          {/* Panel menu mobile */}
-          {open && (
-            <div
-              id="landing-mobile-nav"
-              className="animate-fade-up border-t border-border/70 px-2.5 pb-3 pt-2 md:hidden"
-              style={{ animationDuration: '220ms' }}
-            >
-              <div className="space-y-0.5">
-                {NAV_LINKS.map((link) => (
-                  <a
-                    key={link.label}
-                    href={link.href}
-                    onClick={() => setOpen(false)}
-                    className={`flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
-                      active === link.href
-                        ? 'bg-card text-foreground shadow-sm shadow-black/5'
-                        : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground'
-                    }`}
-                  >
-                    {link.label}
-                    <ArrowRightIcon className="h-3.5 w-3.5 opacity-40" />
-                  </a>
-                ))}
-              </div>
-              <Button
-                onClick={() => {
-                  setOpen(false)
-                  navigate('/chat')
-                }}
-                className="mt-2 h-10 w-full rounded-xl"
-              >
-                {user ? 'Buka chat' : 'Masuk dengan Google'}
-                <ArrowRightIcon />
-              </Button>
-            </div>
-          )}
+        {/* Mobile */}
+        <div className="flex shrink-0 items-center gap-1 md:hidden">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label="Ganti tema"
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          >
+            {theme === 'dark' ? <SunIcon className="h-4 w-4" /> : <MoonIcon className="h-4 w-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => setOpen((o) => !o)}
+            aria-label={open ? 'Tutup menu' : 'Buka menu'}
+            aria-expanded={open}
+            aria-controls="landing-mobile-nav"
+            className="relative flex h-9 w-9 items-center justify-center rounded-lg text-foreground transition-colors hover:bg-accent"
+          >
+            <HamburgerMenuIcon
+              className={`h-4 w-4 transition-all duration-300 ${
+                open ? 'rotate-90 scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100'
+              }`}
+            />
+            <Cross2Icon
+              className={`absolute h-4 w-4 transition-all duration-300 ${
+                open ? 'rotate-0 scale-100 opacity-100' : '-rotate-90 scale-0 opacity-0'
+              }`}
+            />
+          </button>
         </div>
       </div>
+
+      {/* Panel menu mobile */}
+      {open && (
+        <div
+          id="landing-mobile-nav"
+          className="animate-fade-up border-t border-border/70 bg-background md:hidden"
+          style={{ animationDuration: '220ms' }}
+        >
+          <nav className="mx-auto max-w-7xl px-4 py-2">
+            {NAV_LINKS.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                onClick={() => setOpen(false)}
+                className={`block border-b border-border/40 py-3 text-sm font-medium last:border-b-0 transition-colors ${
+                  active === link.href ? 'text-foreground' : 'text-muted-foreground'
+                }`}
+              >
+                {link.label}
+              </a>
+            ))}
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false)
+                navigate('/chat')
+              }}
+              className="my-3 h-10 w-full rounded-lg bg-primary text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            >
+              {user ? 'Buka chat' : 'Masuk dengan Google'}
+            </button>
+          </nav>
+        </div>
+      )}
     </header>
   )
 }
