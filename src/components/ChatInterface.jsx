@@ -1,10 +1,9 @@
-﻿import { useState, useRef, useEffect } from 'react'
+﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { Sun, Moon, Menu, X, ArrowDown, PanelLeftClose, PanelLeftOpen, AlertCircle, RotateCcw, ChevronDown, Pin, Pencil, Trash2, Download } from 'lucide-react'
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
 import { Sidebar } from './Sidebar'
-import { Sun, Moon, Menu, X, ArrowDown, PanelLeftClose, PanelLeftOpen, AlertCircle, RotateCcw, ChevronDown, Pin, Pencil, Trash2, Download } from 'lucide-react'
-import { sendMessageStream, generateTitle } from '../api'
 import { Button } from './ui/button'
 import { ConfirmDialog } from './ui/confirm-dialog'
 import { RenameDialog } from './ui/rename-dialog'
@@ -14,66 +13,28 @@ import { useTheme } from '../lib/use-theme'
 import { applyPageMeta } from '../lib/seo'
 import { loadModel, saveModel } from '../lib/models'
 import { downloadConversation, downloadAll } from '../lib/backup'
-
-const SIDEBAR_MIN = 220
-const SIDEBAR_MAX = 420
-
-function initialSidebarW() {
-  try {
-    const n = Number(localStorage.getItem('keyzai-sidebar-w'))
-    if (n >= SIDEBAR_MIN && n <= SIDEBAR_MAX) return n
-  } catch {
-    // storage unavailable — default width
-  }
-  return 256
-}
-
-function loadState() {
-  try {
-    const raw = localStorage.getItem('keyzai-state')
-    if (!raw) return { convs: [], activeId: null }
-    const parsed = JSON.parse(raw)
-    const convs = Array.isArray(parsed.convs)
-      ? parsed.convs.filter((c) => c && c.id && Array.isArray(c.messages))
-      : []
-    const activeId = convs.some((c) => c.id === parsed.activeId) ? parsed.activeId : null
-    return { convs, activeId }
-  } catch {
-    return { convs: [], activeId: null }
-  }
-}
+import { useChatStore } from '../hooks/useChatStore'
+import { useChatStream } from '../hooks/useChatStream'
+import { useToast } from '../hooks/useToast'
+import { useResizableSidebar } from '../hooks/useResizableSidebar'
+import { newId } from '../state/ids.js'
+import { hasSiblings, navigateBranch, serializeConv } from '../state/tree.js'
 
 export function ChatInterface() {
-  const [initialState] = useState(() => {
-    const s = loadState()
-    // Self-heal: any conversation left with null title gets a fallback from its first user msg.
-    s.convs = s.convs.map((c) => {
-      if (c.title) return { ...c, titlePending: false }
-      const first = c.messages.find((m) => m.role === 'user')?.content || ''
-      const fb = first.length > 30 ? first.slice(0, 30) + '...' : first
-      return { ...c, title: fb || 'Chat', titlePending: false }
-    })
-    return s
-  })
-  const [conversations, setConversations] = useState(initialState.convs)
-  const [currentConvId, setCurrentConvId] = useState(initialState.activeId)
-  const [messages, setMessages] = useState(
-    () => initialState.convs.find((c) => c.id === initialState.activeId)?.messages || []
-  )
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const { state, dispatch, activeConv, messages, loading, persistError } = useChatStore()
+  const { send, stop } = useChatStream({ state, dispatch, loading })
+  const { toast, notify, dismiss } = useToast()
+  const { width: sidebarW, resizing, onDragStart } = useResizableSidebar()
+
   const [theme, setTheme] = useTheme()
+  const [model, setModel] = useState(loadModel)
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [lastSent, setLastSent] = useState(null)
-  const [confirm, setConfirm] = useState(null)
-  const [atBottom, setAtBottom] = useState(true)
   const [collapsed, setCollapsed] = useState(false)
-  const [sidebarW, setSidebarW] = useState(initialSidebarW)
-  const [resizing, setResizing] = useState(false)
+  const [atBottom, setAtBottom] = useState(true)
   const [editingId, setEditingId] = useState(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const [renameOpen, setRenameOpen] = useState(false)
-  const [model, setModel] = useState(loadModel)
+  const [confirm, setConfirm] = useState(null)
   // Announcement "sedang dalam pengembangan": sekali per sesi browser.
   const [announceOpen, setAnnounceOpen] = useState(() => {
     try {
@@ -82,6 +43,20 @@ export function ChatInterface() {
       return false
     }
   })
+
+  const scrollAreaRef = useRef(null)
+  const stateRef = useRef(state)
+  useEffect(() => {
+    stateRef.current = state
+  }, [state])
+
+  const currentTitle = activeConv?.title
+  const error = state.error || persistError
+  const lastSent = state.lastSent
+
+  const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
+  const changeModel = (id) => { setModel(id); saveModel(id) }
+
   const closeAnnounce = (open) => {
     setAnnounceOpen(open)
     if (!open) {
@@ -92,103 +67,47 @@ export function ChatInterface() {
       }
     }
   }
-  const [toast, setToast] = useState(null)
-  const scrollAreaRef = useRef(null)
-  const abortRef = useRef(null)
 
-  const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
-  const changeModel = (id) => { setModel(id); saveModel(id) }
+  // ---------- aksi chat
+  const handleSend = useCallback(
+    (content) => {
+      if (loading) return
+      send({ content, mode: 'new', model })
+    },
+    [loading, send, model],
+  )
 
-  // ToastUndo: penghapusan disimpan sementara, bisa dibatalkan dalam 6 detik.
-  const notify = (label, undo) => setToast({ label, undo })
-  useEffect(() => {
-    if (!toast) return
-    const t = setTimeout(() => setToast(null), 6000)
-    return () => clearTimeout(t)
-  }, [toast])
+  const handleEditSave = useCallback(
+    (msgId, content) => {
+      if (loading) return
+      send({ content, mode: 'edit', editTargetId: msgId, model })
+    },
+    [loading, send, model],
+  )
 
-  const handleExportAll = () => downloadAll(conversations)
+  // Regenerate: AI baru sebagai sibling jawaban lama — riwayat tetap ada
+  // dan bisa diakses lewat panah cabang di ChatMessage.
+  const handleRegenerate = useCallback(
+    (aiMsgId) => {
+      if (loading) return
+      const ai = activeConv?.messages?.[aiMsgId]
+      const userId = ai?.parentId
+      if (!userId || activeConv.messages[userId]?.role !== 'user') return
+      send({ mode: 'regenerate', regenerateFromId: userId, model })
+    },
+    [loading, activeConv, send, model],
+  )
 
-  const startResize = (e) => {
-    e.preventDefault()
-    setResizing(true)
-    document.body.style.userSelect = 'none'
-    document.body.style.cursor = 'col-resize'
-    let w = sidebarW
-    const onMove = (ev) => {
-      w = Math.min(SIDEBAR_MAX, Math.max(SIDEBAR_MIN, ev.clientX))
-      setSidebarW(w)
-    }
-    const onUp = () => {
-      document.removeEventListener('pointermove', onMove)
-      document.removeEventListener('pointerup', onUp)
-      document.body.style.userSelect = ''
-      document.body.style.cursor = ''
-      setResizing(false)
-      try {
-        localStorage.setItem('keyzai-sidebar-w', String(w))
-      } catch {
-        // storage unavailable — width just won't persist
-      }
-    }
-    document.addEventListener('pointermove', onMove)
-    document.addEventListener('pointerup', onUp)
-  }
+  const handleNavigateBranch = useCallback(
+    (msgId, dir) => {
+      dispatch({ type: 'NAVIGATE_BRANCH', convId: activeConv?.id, msgId, dir })
+    },
+    [dispatch, activeConv],
+  )
 
-  const scrollToBottom = () => {
-    const el = scrollAreaRef.current
-    // scrollTo container langsung — scrollIntoView ikut menggulung window (bug mobile)
-    if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
-  }
-
-  const handleScroll = () => {
-    const el = scrollAreaRef.current
-    if (!el) return
-    setAtBottom(el.scrollHeight - el.scrollTop - el.clientHeight < 150)
-  }
-
-  useEffect(() => {
-    if (atBottom) scrollToBottom()
-  }, [messages, loading, atBottom])
-
-  const currentConv = conversations.find((c) => c.id === currentConvId)
-  const currentTitle = currentConv?.title
-
-  const togglePin = () => {
-    if (!currentConv) return
-    patchConv(currentConv.id, { pinned: !currentConv.pinned })
-  }
-
-  const submitRename = (title) => {
-    if (!currentConvId) return
-    patchConv(currentConvId, { title, titlePending: false })
-  }
-
-  useEffect(() => {
-    applyPageMeta({
-      title: currentTitle || 'Chat baru',
-      path: '/chat',
-    })
-  }, [currentTitle])
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(
-        'keyzai-state',
-        JSON.stringify({ convs: conversations, activeId: currentConvId })
-      )
-    } catch {
-      // localStorage penuh (quota) — riwayat baru tidak tersimpan. Ingatkan export
-      // sebagai jaring pengaman, bukan diam-diam menelan data.
-      setError('Penyimpanan penuh — riwayat baru tidak tersimpan. Ekspor percakapanmu lewat menu chat, lalu hapus yang lama.')
-    }
-  }, [conversations, currentConvId])
-
+  // ---------- percakapan
   const startNewChat = () => {
-    const newConvId = `conv_${Date.now()}`
-    setCurrentConvId(newConvId)
-    setMessages([])
-    setError(null)
+    dispatch({ type: 'NEW_CHAT', convId: newId('conv') })
     setSidebarOpen(false)
     setEditingId(null)
     setMenuOpen(false)
@@ -210,216 +129,135 @@ export function ChatInterface() {
   }
 
   const handleSelectConv = (convId) => {
-    setCurrentConvId(convId)
-    const conv = conversations.find((c) => c.id === convId)
-    setMessages(conv?.messages || [])
-    setError(null)
+    dispatch({ type: 'SELECT_CHAT', convId })
     setSidebarOpen(false)
     setEditingId(null)
   }
 
-  const patchConv = (id, patch) =>
-    setConversations((prev) => prev.map((c) => (c.id === id ? { ...c, ...patch } : c)))
+  const togglePin = () => {
+    if (!activeConv) return
+    dispatch({ type: 'PIN', convId: activeConv.id, pinned: !activeConv.pinned })
+  }
+
+  const submitRename = (title) => {
+    if (!activeConv) return
+    dispatch({ type: 'RENAME', convId: activeConv.id, title })
+  }
 
   const startEdit = (msgId) => {
     if (loading) return
     setEditingId(msgId)
   }
 
-  const runSend = async (content, editTargetId = null, regenerateIndex = null) => {
-    if (loading) return
-    setError(null)
-    setLastSent(content)
-    setAtBottom(true)
-    const convId = currentConvId || `conv_${Date.now()}`
-    if (convId !== currentConvId) setCurrentConvId(convId)
-    const now = Math.floor(Date.now() / 1000)
-    const userMsg = {
-      id: `msg_${Date.now()}`,
-      role: 'user',
-      content,
-      timestamp: now,
-    }
-    const aiMsg = {
-      id: `msg_${Date.now() + 1}`,
-      role: 'assistant',
-      content: '',
-      timestamp: now,
-      streaming: true,
-    }
-
-    const isEdit = editTargetId != null
-    let history
-    if (regenerateIndex != null) {
-      // regenerate: keep messages up to (incl.) the user question, re-ask with a fresh AI bubble
-      history = [...messages.slice(0, regenerateIndex + 1), aiMsg]
-    } else if (isEdit) {
-      // replace the edited message and drop everything after it
-      const base = [...messages]
-      const idx = base.findIndex((m) => m.id === editTargetId)
-      if (idx !== -1) {
-        base.splice(idx, 1, { ...userMsg, id: editTargetId })
-        history = [...base, aiMsg]
-      } else {
-        history = [...messages, userMsg, aiMsg]
-      }
-    } else {
-      history = [...messages, userMsg, aiMsg]
-    }
-    setMessages(history)
-    if (isEdit) setEditingId(null)
-    setLoading(true)
-
-    const controller = new AbortController()
-    abortRef.current = controller
-    let streamed = false
-
-    // konteks utk model: max 20 turn terakhir, diurut s.d. pesan user terkini
-    const ctx = history
-      .slice(0, -1)
-      .filter((m) => (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string')
-      .slice(-20)
-      .map((m) => ({ role: m.role, content: m.content }))
-
-    try {
-      const text = await sendMessageStream(
-        content,
-        (partial) => {
-          streamed = true
-          setMessages((prev) =>
-            prev.map((m) => (m.id === aiMsg.id ? { ...m, content: partial } : m))
-          )
-        },
-        controller.signal,
-        model,
-        ctx
-      )
-      if (!text) {
-        // Model selesai tanpa output (mis. budget token habis di reasoning).
-        // Buang bubble kosong daripada meninggalkan pesan mati.
-        setMessages((prev) => prev.filter((m) => m.id !== aiMsg.id))
-        setError('Model tidak memberikan respons. Coba kirim ulang pertanyaannya.')
-      } else {
-        const finalMessages = history.map((m) =>
-          m.id === aiMsg.id ? { ...m, content: text, streaming: false } : m
-        )
-        setMessages((prev) =>
-          prev.map((m) => (m.id === aiMsg.id ? { ...m, content: text, streaming: false } : m))
-        )
-        const fallbackTitle =
-          content.length > 30 ? content.slice(0, 30) + '...' : content
-        const isNewConversation = !conversations.some((c) => c.id === convId)
-        setConversations((prev) => {
-          const existing = prev.find((c) => c.id === convId)
-          if (existing) {
-            return prev.map((c) => (c.id === convId ? { ...c, messages: finalMessages } : c))
-          }
-          return [...prev, { id: convId, title: fallbackTitle, titlePending: true, createdAt: Date.now(), messages: finalMessages }]
-        })
-        if (isNewConversation) {
-          generateTitle(content, text, model)
-            .then((t) => patchConv(convId, { title: t || fallbackTitle, titlePending: false }))
-            .catch(() => patchConv(convId, { title: fallbackTitle, titlePending: false }))
-        }
-      }
-    } catch (err) {
-      console.error('Error:', err)
-      const aborted = err.name === 'AbortError'
-      if (!aborted) setError(err.message || 'Gagal mengirim pesan')
-      if (aborted && !streamed) {
-        // stopped before any token arrived — drop the empty bubble
-        setMessages((prev) => prev.filter((m) => m.id !== aiMsg.id))
-      } else {
-        setMessages((prev) =>
-          prev.map((m) => (m.id === aiMsg.id ? { ...m, streaming: false } : m))
-        )
-      }
-    } finally {
-      abortRef.current = null
-      setLoading(false)
-    }
+  const handleExportConv = () => {
+    if (activeConv) downloadConversation(serializeConv(activeConv))
   }
 
-  const handleSend = (content) => runSend(content, null)
-
-  const handleEditSave = (msgId, content) => runSend(content, msgId)
-
-  const handleRegenerate = (aiMsgId) => {
-    if (loading) return
-    const idx = messages.findIndex((m) => m.id === aiMsgId)
-    if (idx < 1) return
-    let userIdx = idx - 1
-    while (userIdx >= 0 && messages[userIdx].role !== 'user') userIdx--
-    if (userIdx < 0) return
-    runSend(messages[userIdx].content, null, userIdx)
-  }
-
-  const handleStop = () => {
-    abortRef.current?.abort()
-  }
-
-  const [searchParams, setSearchParams] = useSearchParams()
-  const autoSentRef = useRef(false)
-  useEffect(() => {
-    const q = searchParams.get('q')
-    if (q && !autoSentRef.current) {
-      autoSentRef.current = true
-      setSearchParams({}, { replace: true })
-      handleSend(q)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams])
+  const handleExportAll = () => downloadAll(state.convs.map(serializeConv))
 
   const handleDeleteConv = (convId) => {
-    const conv = conversations.find((c) => c.id === convId)
+    const conv = state.convs.find((c) => c.id === convId)
     setConfirm({
       title: 'Hapus percakapan ini?',
       description: `"${conv?.title || 'Percakapan ini'}" akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.`,
       confirmLabel: 'Hapus',
       danger: true,
       onConfirm: () => {
-        const removed = conversations.filter((c) => c.id === convId)
-        setConversations((prev) => prev.filter((c) => c.id !== convId))
-        if (currentConvId === convId) {
-          setCurrentConvId(null)
-          setMessages([])
-        }
+        const removed = stateRef.current.convs.filter((c) => c.id === convId)
+        dispatch({ type: 'DELETE_CONV', convId })
         notify(`"${conv?.title || 'Percakapan'}" dihapus`, () => {
-          setConversations((prev) => [...removed, ...prev])
-          setCurrentConvId(convId)
-          setMessages(removed[0]?.messages || [])
+          dispatch({ type: 'RESTORE', convs: removed, activeId: convId })
         })
       },
     })
   }
 
   const handleClearAll = () => {
-    if (conversations.length === 0) return
+    if (state.convs.length === 0) return
     setConfirm({
       title: 'Hapus semua percakapan?',
       description: 'Semua percakapan akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.',
       confirmLabel: 'Hapus semua',
       danger: true,
       onConfirm: () => {
-        const snapshot = conversations
-        setConversations([])
-        setCurrentConvId(null)
-        setMessages([])
-        setError(null)
+        const snapshot = stateRef.current.convs
+        dispatch({ type: 'CLEAR_ALL' })
         notify(`${snapshot.length} percakapan dihapus`, () => {
-          setConversations(snapshot)
-          setCurrentConvId(snapshot[0]?.id || null)
-          setMessages(snapshot[0]?.messages || [])
+          dispatch({ type: 'RESTORE', convs: snapshot, activeId: snapshot[0]?.id || null })
         })
       },
     })
   }
 
+  // ---------- scroll
+  const scrollToBottom = () => {
+    const el = scrollAreaRef.current
+    // scrollTo container langsung — scrollIntoView ikut menggulung window (bug mobile)
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+  }
+
+  const handleScroll = () => {
+    const el = scrollAreaRef.current
+    if (!el) return
+    setAtBottom(el.scrollHeight - el.scrollTop - el.clientHeight < 150)
+  }
+
+  useEffect(() => {
+    if (atBottom) scrollToBottom()
+  }, [messages, loading, atBottom])
+
+  useEffect(() => {
+    applyPageMeta({
+      title: currentTitle || 'Chat baru',
+      path: '/chat',
+    })
+  }, [currentTitle])
+
+  // ---------- auto-send dari query string (?q=…)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const autoSentRef = useRef(false)
+  const sendRef = useRef(handleSend)
+  useEffect(() => {
+    sendRef.current = handleSend
+  }, [handleSend])
+  useEffect(() => {
+    const q = searchParams.get('q')
+    if (q && !autoSentRef.current) {
+      autoSentRef.current = true
+      setSearchParams({}, { replace: true })
+      sendRef.current(q)
+    }
+  }, [searchParams, setSearchParams])
+
+  // ---------- state turunan untuk render
+  // Panah navigasi cabang hanya tampil jika pesan punya sibling.
+  const navStates = useMemo(
+    () =>
+      messages.map((m) => {
+        if (!hasSiblings(activeConv, m.id)) return { prev: false, next: false }
+        return {
+          prev: navigateBranch(activeConv, m.id, 'prev') !== null,
+          next: navigateBranch(activeConv, m.id, 'next') !== null,
+        }
+      }),
+    [messages, activeConv],
+  )
+
+  const lastMessage = messages[messages.length - 1]
+  const optionsValue = useMemo(
+    () => ({
+      activeId: lastMessage?.role === 'assistant' ? lastMessage.id : null,
+      loading,
+      onSelect: handleSend,
+    }),
+    [lastMessage, loading, handleSend],
+  )
+
   return (
     <div className="flex h-dvh bg-background text-foreground" style={{ '--sidebar-w': `${sidebarW}px` }}>
       <Sidebar
-        conversations={conversations}
-        currentId={currentConvId}
+        conversations={state.convs}
+        currentId={state.activeId}
         onSelect={handleSelectConv}
         onNew={handleNewChat}
         onDelete={handleDeleteConv}
@@ -428,7 +266,7 @@ export function ChatInterface() {
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         collapsed={collapsed}
-        onDragStart={startResize}
+        onDragStart={onDragStart}
       />
       <main className={`flex min-w-0 flex-1 flex-col ${collapsed || resizing ? '' : 'transition-[margin] duration-300'} ${collapsed ? '' : 'lg:ml-[var(--sidebar-w)]'}`}>
         <header className="relative z-20 flex h-14 flex-shrink-0 items-center justify-between bg-background/80 px-4 backdrop-blur-sm sm:px-6">
@@ -442,12 +280,12 @@ export function ChatInterface() {
             >
               {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
             </Button>
-            {currentConv || messages.length > 0 ? (
+            {activeConv || messages.length > 0 ? (
               <div className="flex min-w-0 items-center gap-0.5">
                 <p className="min-w-0 truncate text-sm font-medium text-foreground">
                   {currentTitle || 'Chat baru'}
                 </p>
-                {currentConv && (
+                {activeConv && (
                 <div className="relative flex-shrink-0">
                   <Button
                     variant="ghost"
@@ -473,8 +311,8 @@ export function ChatInterface() {
                           onClick={togglePin}
                           className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm text-foreground hover:bg-accent"
                         >
-                          <Pin className={`h-3.5 w-3.5 ${currentConv.pinned ? 'fill-current' : ''}`} />
-                          {currentConv.pinned ? 'Lepas sematan' : 'Sematkan'}
+                          <Pin className={`h-3.5 w-3.5 ${activeConv.pinned ? 'fill-current' : ''}`} />
+                          {activeConv.pinned ? 'Lepas sematan' : 'Sematkan'}
                         </button>
                         <button
                           role="menuitem"
@@ -486,7 +324,7 @@ export function ChatInterface() {
                         </button>
                         <button
                           role="menuitem"
-                          onClick={() => { downloadConversation(currentConv); setMenuOpen(false) }}
+                          onClick={handleExportConv}
                           className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm text-foreground hover:bg-accent"
                         >
                           <Download className="h-3.5 w-3.5" />
@@ -495,7 +333,7 @@ export function ChatInterface() {
                         <div className="my-1 h-px bg-border" />
                         <button
                           role="menuitem"
-                          onClick={() => handleDeleteConv(currentConvId)}
+                          onClick={() => handleDeleteConv(activeConv.id)}
                           className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm text-destructive hover:bg-destructive/10"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
@@ -544,30 +382,25 @@ export function ChatInterface() {
               </div>
             </div>
           ) : (
-            <OptionsContext.Provider
-              value={{
-                activeId:
-                  messages[messages.length - 1]?.role === 'assistant'
-                    ? messages[messages.length - 1].id
-                    : null,
-                loading,
-                onSelect: handleSend,
-              }}
-            >
+            <OptionsContext.Provider value={optionsValue}>
             <div className="mx-auto w-full max-w-3xl flex-1 space-y-6 px-4 py-8">
-              {messages.map((msg) => (
+              {messages.map((msg, i) => (
                 <ChatMessage
                   key={msg.id}
                   id={msg.id}
                   role={msg.role}
                   content={msg.content}
                   timestamp={msg.timestamp}
-                  streaming={msg.streaming}
+                  streaming={msg.state === 'streaming'}
+                  aborted={msg.state === 'aborted'}
                   onEdit={startEdit}
                   editing={msg.id === editingId}
                   onEditSave={handleEditSave}
                   onEditCancel={() => setEditingId(null)}
                   onRegenerate={handleRegenerate}
+                  canPrev={navStates[i]?.prev}
+                  canNext={navStates[i]?.next}
+                  onNavigate={handleNavigateBranch}
                 />
               ))}
               {error && (
@@ -612,7 +445,7 @@ export function ChatInterface() {
 
         {messages.length > 0 && (
           <div className="flex-shrink-0 bg-background p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-            <ChatInput onSend={handleSend} loading={loading} onStop={handleStop} showDisclaimer model={model} onModelChange={changeModel} />
+            <ChatInput onSend={handleSend} loading={loading} onStop={stop} showDisclaimer model={model} onModelChange={changeModel} />
           </div>
         )}
       </main>
@@ -620,7 +453,7 @@ export function ChatInterface() {
       <RenameDialog
         open={renameOpen}
         onOpenChange={setRenameOpen}
-        value={currentConv?.title || ''}
+        value={activeConv?.title || ''}
         onSave={submitRename}
       />
       <AnnouncementDialog open={announceOpen} onOpenChange={closeAnnounce} />
@@ -641,7 +474,7 @@ export function ChatInterface() {
             {toast.undo && (
               <button
                 type="button"
-                onClick={() => { toast.undo(); setToast(null) }}
+                onClick={() => { toast.undo(); dismiss() }}
                 className="shrink-0 text-sm font-medium text-primary hover:underline"
               >
                 Urungkan
@@ -649,7 +482,7 @@ export function ChatInterface() {
             )}
             <button
               type="button"
-              onClick={() => setToast(null)}
+              onClick={dismiss}
               aria-label="Tutup notifikasi"
               className="shrink-0 text-muted-foreground transition-colors hover:text-foreground"
             >

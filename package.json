@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node test/state-tree.mjs && node test/chat-reducer.mjs && node test/chat-flow.mjs && node test/options.mjs && node worker/test/validation.mjs"
   },
   "keywords": [
     "chatbot",

@@ -18,12 +18,14 @@ function groupKey(ts) {
 }
 
 export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, onClear, onExport, open, onClose, collapsed, onDragStart }) {
+  // Urut + grouping pakai aktivitas terakhir (updatedAt); fallback createdAt.
+  const sortKey = (c) => c.updatedAt ?? c.createdAt ?? 0
   const sorted = [...conversations].sort(
-    (a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || (b.createdAt || 0) - (a.createdAt || 0)
+    (a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || sortKey(b) - sortKey(a)
   )
   const grouped = GROUPS.map((label) => ({
     label,
-    items: sorted.filter((c) => groupKey(c.createdAt) === label),
+    items: sorted.filter((c) => groupKey(sortKey(c)) === label),
   })).filter((g) => g.items.length > 0)
 
   return (

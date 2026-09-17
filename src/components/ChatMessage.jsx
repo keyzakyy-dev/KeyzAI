@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Pencil, RotateCcw, Brain } from 'lucide-react'
+import { Pencil, RotateCcw, Brain, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Markdown } from '../lib/markdown'
 import { CopyButton } from '../lib/copy-button'
 
@@ -33,7 +33,7 @@ function ThinkingIndicator() {
   )
 }
 
-export function ChatMessage({ role, content, timestamp, streaming, id, onEdit, editing = false, onEditSave, onEditCancel, onRegenerate }) {
+export function ChatMessage({ role, content, timestamp, streaming, aborted = false, id, onEdit, editing = false, onEditSave, onEditCancel, onRegenerate, canPrev = false, canNext = false, onNavigate }) {
   const isUser = role === 'user'
   const time = timestamp
     ? new Date(timestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -122,6 +122,31 @@ export function ChatMessage({ role, content, timestamp, streaming, id, onEdit, e
         ) : (
           !streaming && (
             <div className={`flex items-center gap-1 px-1 ${isUser ? 'justify-end' : ''}`}>
+              {(canPrev || canNext) && (
+                <div className="flex items-center gap-0.5">
+                  <button
+                    type="button"
+                    onClick={() => onNavigate?.(id, 'prev')}
+                    disabled={!canPrev}
+                    aria-label="Versi sebelumnya"
+                    className="rounded p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-30 disabled:hover:bg-transparent"
+                  >
+                    <ChevronLeft className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onNavigate?.(id, 'next')}
+                    disabled={!canNext}
+                    aria-label="Versi berikutnya"
+                    className="rounded p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-30 disabled:hover:bg-transparent"
+                  >
+                    <ChevronRight className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              )}
+              {aborted && (
+                <span className="text-[11px] italic text-muted-foreground">Dihentikan</span>
+              )}
               {time && <p className="text-[11px] text-muted-foreground">{time}</p>}
               {isUser && onEdit && (
                 <button
