@@ -418,6 +418,11 @@ function Hero({ navigate }) {
     setErr(null)
     try {
       await loginWithGoogle(idToken)
+      try {
+        sessionStorage.setItem('keyzai-fresh-chat', '1')
+      } catch {
+        // abaikan jika sessionStorage tak tersedia
+      }
       navigate('/chat')
     } catch (e) {
       setErr(e.message || 'Login gagal')

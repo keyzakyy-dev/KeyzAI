@@ -4,9 +4,14 @@ import { loadState, saveState } from '../state/persistence.js'
 import { getActivePath } from '../state/tree.js'
 import { fetchConversations, fetchConversation, saveConversation } from '../lib/sync.js'
 import { isAuthenticated } from '../lib/auth.js'
+import { newId } from '../state/ids.js'
 
 const STORAGE_FULL_MSG =
   'Penyimpanan penuh — riwayat baru tidak tersimpan. Ekspor percakapanmu lewat menu chat, lalu hapus yang lama.'
+
+// Set oleh landing page tepat setelah login berhasil. Saat init, store menempatkan
+// user di chat baru meskipun punya riwayat — riwayat tetap di sidebar.
+const FRESH_CHAT_KEY = 'keyzai-fresh-chat'
 
 export function useChatStore() {
   const [state, dispatch] = useReducer(chatReducer, undefined, loadState)
@@ -27,6 +32,16 @@ export function useChatStore() {
         dispatch({ type: 'REPLACE_ALL', convs })
       } catch {
         // jaringan gagal → localStorage yang dipakai
+      }
+      let fresh = false
+      try {
+        fresh = sessionStorage.getItem(FRESH_CHAT_KEY) === '1'
+        if (fresh) sessionStorage.removeItem(FRESH_CHAT_KEY)
+      } catch {
+        // sessionStorage unavailable — abaikan flag
+      }
+      if (!cancelled && fresh) {
+        dispatch({ type: 'NEW_CHAT', convId: newId('conv') })
       }
     })()
     return () => {
