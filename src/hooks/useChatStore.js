@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { chatReducer } from '../state/chat-reducer.js'
-import { loadState, saveState } from '../state/persistence.js'
+import { freshState, loadState, saveState, clearState } from '../state/persistence.js'
 import { getActivePath } from '../state/tree.js'
 import { fetchConversations, fetchConversation, saveConversation } from '../lib/sync.js'
 import { isAuthenticated } from '../lib/auth.js'
@@ -14,7 +14,12 @@ const STORAGE_FULL_MSG =
 const FRESH_CHAT_KEY = 'keyzai-fresh-chat'
 
 export function useChatStore() {
-  const [state, dispatch] = useReducer(chatReducer, undefined, loadState)
+  // Riwayat lokal (localStorage) HANYA valid selama ada session. Tanpa token
+  // (belum login / sudah logout / sesi kedaluwarsa) tampilan dimulai bersih —
+  // riwayat milik akun tidak boleh tampil ke pengguna anonim.
+  const [state, dispatch] = useReducer(chatReducer, undefined, () =>
+    isAuthenticated() ? loadState() : freshState(),
+  )
   const [persistError, setPersistError] = useState(null)
   const lastErr = useRef(null)
   const hydrated = useRef(false)
@@ -50,6 +55,15 @@ export function useChatStore() {
   useEffect(() => {
     if (isAuthenticated()) refreshHistory()
   }, [refreshHistory])
+
+  // Logout (atau sesi berakhir): kosongkan tampilan + localStorage sekaligus,
+  // dan siapkan hidrasi ulang untuk login berikutnya.
+  const logoutReset = useCallback(() => {
+    hydrated.current = false
+    dispatch({ type: 'CLEAR_ALL' })
+    dispatch({ type: 'NEW_CHAT', convId: newId('conv') })
+    clearState()
+  }, [dispatch])
 
   // Persist ke localStorage (debounce) + sinkron ke D1 untuk aksi penting.
   useEffect(() => {
@@ -118,5 +132,5 @@ export function useChatStore() {
     [messages],
   )
 
-  return { state, dispatch, activeConv, messages, loading, persistError, refreshHistory }
+  return { state, dispatch, activeConv, messages, loading, persistError, refreshHistory, logoutReset }
 }

@@ -162,3 +162,13 @@ export function saveState(state, storage) {
     return err
   }
 }
+
+// Hapus data percakapan lokal (dipakai saat logout supaya riwayat akun
+// tidak tertinggal di perangkat / tampil ke pengguna anonim).
+export function clearState(storage) {
+  try {
+    ;(storage || localStorage).removeItem(STATE_KEY)
+  } catch {
+    // abaikan — storage tidak tersedia (private mode)
+  }
+}

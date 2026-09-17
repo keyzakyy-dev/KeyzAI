@@ -24,7 +24,7 @@ import { newId } from '../state/ids.js'
 import { hasSiblings, navigateBranch, serializeConv } from '../state/tree.js'
 
 export function ChatInterface() {
-  const { state, dispatch, activeConv, messages, loading, persistError, refreshHistory } = useChatStore()
+  const { state, dispatch, activeConv, messages, loading, persistError, refreshHistory, logoutReset } = useChatStore()
   const { send, stop } = useChatStream({ state, dispatch, loading })
   const { toast, notify, dismiss } = useToast()
   const { width: sidebarW, resizing, onDragStart } = useResizableSidebar()
@@ -68,6 +68,10 @@ export function ChatInterface() {
   const [loginLoading, setLoginLoading] = useState(false)
   const [loginErr, setLoginErr] = useState(null)
 
+  // Isi yang "ditunda" sampai login selesai (mis. prompt ?q= dari halaman
+  // fitur). Teks yang diketik user mengikuti jalur ChatInput (tidak di-snatch).
+  const pendingRef = useRef(null)
+
   const handleLoginToken = async (idToken) => {
     setLoginErr(null)
     setLoginLoading(true)
@@ -78,8 +82,13 @@ export function ChatInterface() {
       } catch {
         // abaikan
       }
-      await refreshHistory()
+      const freshId = (await refreshHistory()) || null
+      const pending = pendingRef.current
+      pendingRef.current = null
       setLoginOpen(false)
+      if (pending) {
+        sendRef.current?.({ content: pending, mode: 'new', model, convId: freshId || undefined })
+      }
     } catch (e) {
       setLoginErr(e.message || 'Login gagal')
     } finally {
@@ -89,6 +98,8 @@ export function ChatInterface() {
 
   const handleLogout = () => {
     logout()
+    setUserMenuOpen(false)
+    logoutReset()
     navigate('/', { replace: true })
   }
 
@@ -271,11 +282,21 @@ export function ChatInterface() {
   useEffect(() => {
     sendRef.current = send
   }, [send])
+  const userRef = useRef(user)
+  useEffect(() => {
+    userRef.current = user
+  }, [user])
   useEffect(() => {
     const q = searchParams.get('q')
     if (!q || autoSentRef.current) return
     autoSentRef.current = true
     setSearchParams({}, { replace: true })
+    if (!userRef.current) {
+      // Belum login? Prompt fitur jadi "pending" dan popup login yang muncul.
+      pendingRef.current = q
+      setLoginOpen(true)
+      return
+    }
     sendRef.current({ content: q, mode: 'new', model, convId: newId('conv') })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, setSearchParams])
