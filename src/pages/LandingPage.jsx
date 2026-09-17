@@ -365,7 +365,7 @@ function Features({ navigate }) {
           ))}
         </Reveal>
 
-        <Reveal from="up" className="mx-auto max-w-4xl border-b border-border">
+        <Reveal from="up" className="mx-auto grid max-w-5xl gap-x-10 md:grid-cols-2">
           {FEATURES.map((f) => {
             const Icon = f.icon
             const inner = (
@@ -385,13 +385,13 @@ function Features({ navigate }) {
               </>
             )
             const rowCls =
-              'group -mx-2 flex w-full items-center gap-4 rounded-lg px-2 py-4 text-left transition-colors hover:bg-accent/40 sm:gap-5 sm:py-5'
+              'group -mx-2 flex w-full items-center gap-4 rounded-lg border-t border-border px-2 py-4 text-left transition-colors hover:bg-accent/40 sm:gap-5'
             return f.prompt ? (
-              <button key={f.title} type="button" onClick={() => onPrompt(f.prompt)} className={`border-t border-border ${rowCls}`}>
+              <button key={f.title} type="button" onClick={() => onPrompt(f.prompt)} className={rowCls}>
                 {inner}
               </button>
             ) : (
-              <div key={f.title} className={`border-t border-border ${rowCls}`}>
+              <div key={f.title} className={rowCls}>
                 {inner}
               </div>
             )
