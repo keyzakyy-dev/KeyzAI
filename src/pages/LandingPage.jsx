@@ -327,9 +327,6 @@ function Hero({ navigate }) {
                   <ArrowUpIcon className="h-4 w-4" />
                 </span>
               </button>
-              <p className="pl-1 text-xs text-muted-foreground/70">
-                Gratis. Tinggal masuk dengan Google.
-              </p>
             </div>
           </div>
 
