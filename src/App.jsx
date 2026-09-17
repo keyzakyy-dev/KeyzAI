@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { LandingPage } from './pages/LandingPage'
 import { ChatInterface } from './components/ChatInterface'
 import { ErrorBoundary } from './components/error-boundary'
+import { PrivacyPage, TermsPage } from './pages/LegalPage'
 
 // /chat terbuka untuk semua — login (Google) diminta lewat popup saat user
 // mencoba mengirim pesan tanpa session.
@@ -13,6 +14,8 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/chat" element={<ChatInterface />} />
           <Route path="/chat/:convId" element={<ChatInterface />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
           <Route path="*" element={<LandingPage />} />
         </Routes>
       </Router>
