@@ -3,165 +3,96 @@
 ## Prerequisites
 
 - GitHub account + repo pushed
-- Cloudflare account (free)
+- Cloudflare account (free, needs D1)
 - Vercel account (free)
-- OpenAI API key (paid account)
+- LLM API key (OpenAI-compatible, e.g. Atria)
+- Google OAuth 2.0 Client ID (Web) — authorized origins:
+  `http://localhost:5173`, your Vercel domain
 
-## Step 1: Deploy Worker to Cloudflare
+## Step 1: Cloudflare Worker + D1
 
-### 1.1 Set API Key Secret
+### 1.1 Create D1 database (first time only)
 
 ```bash
 cd worker
-npm install  # if not done yet
-wrangler login  # authenticate with Cloudflare
-wrangler secret put OPENAI_API_KEY
-# Paste your OpenAI key and press Ctrl+D twice
+npm install
+wrangler login
+npx wrangler d1 create keyzai-db
 ```
+Copy the returned `database_id` into `wrangler.toml` (both `[[d1_databases]]`
+and `[env.production.d1_databases]`).
 
-### 1.2 Deploy
+### 1.2 Set secrets (not committed, not vars)
 
 ```bash
-wrangler deploy
+wrangler secret put OPENAI_API_KEY --env production
+wrangler secret put SESSION_SECRET --env production
+```
+`SESSION_SECRET`: any long random string (signs session JWTs).
+`GOOGLE_CLIENT_ID`, `OPENAI_API_URL`, `OPENAI_MODEL`, `ALLOWED_ORIGINS`
+live in `wrangler.toml` `[vars]` — update `ALLOWED_ORIGINS` with your
+production origin before deploying.
+
+### 1.3 Apply migrations & deploy
+
+```bash
+npx wrangler d1 migrations apply keyzai-db --remote
+npx wrangler deploy --env production
 ```
 
 Output example:
 ```
-✓ Uploaded keyzai-worker (1.23 sec)
-✓ Published keyzai-worker
-  https://keyzai-worker.your-account.workers.dev
+✓ Deployed keyzai-worker-prod
+  https://keyzai-worker-prod.<account>.workers.dev
 ```
 
-**Copy Worker URL** (e.g., `https://keyzai-worker.your-account.workers.dev`)
-
-### 1.3 Test Worker
-
+**Copy Worker URL.** Smoke test (expect 401 without auth):
 ```bash
-curl -X POST https://keyzai-worker.your-account.workers.dev/api/chat \
-  -H "Content-Type: application/json" \
-  -d '{"message":"Hello","model":"gpt-3.5-turbo"}'
+curl -X POST https://keyzai-worker-prod.<account>.workers.dev/api/chat \
+  -H "Content-Type: application/json" -d '{"message":"Hello"}'
+# {"success":false,"error":"Unauthorized"}
 ```
 
-Expect: `{"success":true,"message":"...","model":"gpt-3.5-turbo","tokensUsed":...}`
+## Step 2: Frontend → Vercel
 
-## Step 2: Deploy Frontend to Vercel
-
-### 2.1 Connect Repo
-
-1. Go to https://vercel.com
-2. Click "Add New..." → "Project"
-3. Select GitHub repo
-4. Framework: Vite
-5. Root Directory: ./
-
-### 2.2 Set Environment Variable
-
-In Vercel project settings → Environment Variables:
-- Name: `VITE_WORKER_URL`
-- Value: Your Worker URL (from Step 1.2)
-- Environments: Production, Preview, Development
-
-### 2.3 Deploy
-
-Click "Deploy". Vercel auto-deploys on git push after this.
-
-Output example:
-```
-✓ Deployed to https://keyzai.vercel.app
-```
+1. Vercel → "Add New..." → "Project" → select GitHub repo
+2. Framework: Vite, Root Directory: ./
+3. Environment Variables:
+   - `VITE_WORKER_URL` = Worker URL from Step 1.3
+   - `VITE_GOOGLE_CLIENT_ID` = your Google client ID
+4. Deploy (auto-deploys on push afterwards)
 
 ## Step 3: Test Live
 
-1. Visit your Vercel URL
-2. Type test message
-3. Send
-4. Verify AI response
+1. Visit Vercel URL → landing page loads, login button visible
+2. Sign in with Google → chat opens
+3. Send a message → streaming answer appears, title auto-generated
+4. Refresh / login on second device → history synced
 
-## Troubleshooting Deployment
+## Troubleshooting
 
-### Worker deploy fails: "wrangler: command not found"
-```bash
-npm install -g wrangler
-wrangler deploy
-```
-
-### Worker responds with CORS error
-Check Worker code has CORS headers. Should see:
-```
-Access-Control-Allow-Origin: *
-```
-
-### Frontend can't reach Worker
-1. Verify `VITE_WORKER_URL` in Vercel env
-2. Rebuild + redeploy Vercel (`git push`)
-3. Check browser Network tab for actual request URL
-
-### OpenAI API error (401, 429)
-- 401: API key wrong or expired
-- 429: Rate limited. Upgrade OpenAI account or add retry logic
-
-### Timeout on chat send
-- OpenAI slow. Check API status at https://status.openai.com
-- Increase timeout in worker/src/index.js if needed
-
-## Monitoring
-
-### Cloudflare Worker Analytics
-1. https://dash.cloudflare.com
-2. Workers → keyzai-worker → Analytics
-3. Monitor requests, errors, latency
-
-### Vercel Logs
-1. https://vercel.com/dashboard
-2. Select project
-3. Deployments → Logs tab
-4. View build + runtime errors
-
-### OpenAI Usage
-1. https://platform.openai.com/account/usage/overview
-2. Monitor API calls, tokens, costs
+| Symptom | Fix |
+|---|---|
+| CORS error | Add origin to `ALLOWED_ORIGINS` in `wrangler.toml`, redeploy |
+| 401 on /api/chat | Session expired → re-login; check `SESSION_SECRET` set |
+| No login button | `VITE_GOOGLE_CLIENT_ID` missing in Vercel env |
+| Google login fails | Origin not authorized in Google Cloud Console |
+| 502/401 upstream | `OPENAI_API_KEY` wrong/expired, check `OPENAI_API_URL` |
+| D1 errors | `npx wrangler d1 migrations apply keyzai-db --remote` |
+| Env check | `GET /api/debug/env` (booleans only, never values) |
 
 ## Updates & Maintenance
 
-### Update Worker Code
 ```bash
-cd worker
-# Edit src/index.js
-wrangler deploy
-```
-
-### Update Frontend
-```bash
-# Edit src files
-git add .
-git commit -m "Update UI"
-git push  # Auto-deploys on Vercel
-```
-
-### Update Dependencies
-```bash
-# Frontend
-npm update
-npm run build
-git push
-
 # Worker
-cd worker
-npm update
-wrangler deploy
+cd worker && npx wrangler deploy --env production
+
+# Frontend
+git push  # auto-deploys on Vercel
 ```
 
-## Rollback
-
-### Worker Rollback
-```bash
-wrangler rollback --version <version_id>
-# Find version_id from Cloudflare dashboard
-```
-
-### Frontend Rollback
-In Vercel dashboard → Deployments → Select previous → Redeploy
+Rollback: Worker → Cloudflare dashboard Versions; Vercel → previous deployment.
 
 ---
 
-**Last updated:** 2026-09-13
+**Last updated:** 2026-09-17

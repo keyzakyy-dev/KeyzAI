@@ -4,11 +4,11 @@
 
 **Project Name:** KeyzAI
 
-**Objective:** Build production-ready web chatbot with OpenAI-compatible API. Modern UI using shadcn/ui.
+**Objective:** Production-ready AI chat web app: streaming chat with message-tree
+history (edit/regenerate branches), Google login, and cross-device cloud sync.
+Modern UI using shadcn/ui.
 
-**Scope:** MVP with core chat functionality.
-
-**Timeline:** 1-2 days development + testing
+**Status:** Implemented (v2)
 
 ---
 
@@ -17,33 +17,41 @@
 | Requirement | Detail |
 |---|---|
 | Target Users | Developers, researchers, general public |
-| Use Case | Quick AI interaction without friction |
-| Success Metric | Chat end-to-end, <2s response, zero crashes |
-| Budget | $0 frontend (Vercel free), $0 backend (Cloudflare free) |
+| Use Case | Daily AI interaction with full conversation history |
+| Success Metric | Chat end-to-end, streaming <2s first token, zero crashes |
+| Budget | $0 hosting (Vercel free + Cloudflare free incl. D1) |
 | Brand | KeyzAI — premium, sleek, professional |
 
 ---
 
 ## 3. FUNCTIONAL REQUIREMENTS
 
-### 3.1 Chat Interface
-- Input textarea (shadcn/ui), max 2000 chars
-- Send button (disabled during loading)
-- Messages: user right-aligned, AI left-aligned
-- Timestamps, avatars (User/AI icons)
-- Clear chat button
-- Loading spinner + "Thinking..."
-- Error alert + retry button
-- Mobile responsive
+### 3.1 Chat
+- Streaming answers (SSE relay), stop button, partial save on abort
+- Message tree: edit user message or regenerate AI answer → new branch,
+  sibling navigation (`<`/`>`), active path rendered
+- Interactive option cards: model may emit a `keyzai-options` fenced JSON block
+  rendered as a card (1 question, 2–4 options, multiple optional); strict
+  prompt rules keep it out of normal answers; greetings get a plain prompt
+- Empty-response recovery: bubble removed, retry offered
+- AI-generated titles (skeleton pulse while pending, fallback excerpt)
 
-### 3.2 API Relay (Worker)
-- Endpoint: `POST /api/chat`
-- Request: `{message, model}`
-- Response: `{success, message, model, tokensUsed}` or `{success: false, error, code}`
+### 3.2 History & Sync
+- Multi-conversation sidebar: new, pin, rename, delete (undo), export/import JSON backup
+- localStorage always (offline cache); D1 sync (debounced, sig-based) when signed in
+- Anon visitors: no account data shown; login via Google popup on first send
 
-### 3.3 Configuration
-- Frontend: VITE_WORKER_URL in .env
-- Worker: OPENAI_API_KEY (secret), OPENAI_API_URL, OPENAI_MODEL
+### 3.3 Account
+- Google sign-in (ID token → worker-issued session JWT)
+- Preferences: default model, sidebar width, display name (cloud-synced)
+
+### 3.4 API Relay (Worker)
+- `POST /api/chat` — relay, auth required, `stream` + `messages` transcript support
+- Auth: `POST /api/auth/google`, `GET /api/auth/me`
+- Conversations CRUD + `DELETE all` (data & privacy)
+- Preferences GET/PUT
+- Validation: message ≤2000, transcript ≤40 (user 2000 / assistant 32000 chars)
+- Timeouts: 30s non-stream, 120s stream
 
 ---
 
@@ -52,169 +60,83 @@
 ### 4.1 Tech Stack
 | Layer | Technology | Reason |
 |---|---|---|
-| Frontend | React 18+ | Hooks, declarative |
+| Frontend | React 18 | Hooks, declarative |
 | Build | Vite | Fast, optimized |
-| UI | shadcn/ui | Modern, accessible |
-| Styling | Tailwind CSS | shadcn/ui uses it |
+| UI | shadcn/ui (Radix) | Modern, accessible |
+| Styling | Tailwind CSS | Utility-first |
+| State | useReducer + pure tree model | Testable without side effects |
 | Backend | Cloudflare Worker | Edge, free tier |
+| DB | Cloudflare D1 | Free SQLite, same account |
+| Auth | Google OIDC + signed session JWT | No user passwords stored |
+| LLM | OpenAI-compatible API (Atria) | Swap via env |
 | Icons | Lucide React | Modern icons |
-| Deploy FE | Vercel/Netlify | Free, auto |
-| Deploy BE | Cloudflare | Free, 100k req/day |
+| Deploy FE | Vercel | Free, auto |
+| Deploy BE | Cloudflare | Free |
 
-### 4.2 Browser Support
-Chrome/Edge 90+, Firefox 88+, Safari 14+, Mobile
+### 4.2 Performance
+- Page load <2s, first token <2s (streaming), render <100ms
 
-### 4.3 Performance
-- Page load: <2s
-- Send-to-response: <30s
-- Render: <100ms
+### 4.3 Security
+- LLM key: Cloudflare secret only
+- Session JWT signed with `SESSION_SECRET`; data queries scoped to session `uid`
+- CORS allowlist (`ALLOWED_ORIGINS`)
+- Input validation at worker boundary; no internal error leaks
 
-### 4.4 Security
-- API key: never in frontend
-- CORS: Worker sets headers
-- Input: validate, no XSS
-- Errors: no internal leaks
-
----
-
-## 5. NON-FUNCTIONAL REQUIREMENTS
-
-### 5.1 Scalability
-- 100k requests/day (Cloudflare free)
-- Stateless design
-
-### 5.2 Reliability
-- Graceful errors
-- 30s timeout
-- Retry logic
-
-### 5.3 Maintainability
-- Organized components
-- Clear naming
-- Comments for logic
-- Env externalized
-
-### 5.4 UI/UX
-- Consistent spacing
-- WCAG 2.1 AA accessible
-- Smooth animations
-- Professional branding
+### 4.4 Maintainability
+- Pure state logic (`src/state/`, worker validation) covered by assert-based tests (`npm test`)
+- Env externalized (`wrangler.toml` vars + secrets, frontend `.env`)
 
 ---
 
-## 6. DATA STRUCTURE
+## 5. DATA MODEL
 
-### 6.1 Message Object
-```javascript
-{
-  id: "msg_123",
-  role: "user" | "assistant",
-  content: "Text",
-  timestamp: 1694596401,
-  loading: false,
-  error: null
-}
+### 5.1 Message Tree
 ```
-
-### 6.2 Flow
+message:      { id, role, content, timestamp, parentId, children: [id], state }
+conversation: { id, title, titlePending, createdAt, updatedAt, pinned,
+                rootId, activeLeafId, messages: { [id]: message } }
 ```
-User Input → React → POST /api/chat → Worker
-Worker → OpenAI API → Response → Frontend → Render
-```
+Rendered conversation = root → `activeLeafId` path. Whole tree stored as JSON
+in D1 (`messages_json`); relational columns (title, pinned, timestamps) for list queries.
+
+### 5.2 D1 Schema
+- `users(id, google_sub UNIQUE, email, name, picture, settings_json, created_at)`
+- `conversations(id, user_id, title, title_pending, created_at, updated_at, pinned, root_id, active_leaf_id, messages_json)` + index `(user_id, updated_at DESC)`
+- Migrations: `worker/migrations/0001_init.sql`, `0002_preferences.sql`
+
+### 5.3 Sync
+- Local: debounced localStorage save (quota error surfaced as toast)
+- Cloud: per-conversation signature `id:updatedAt`; changed sigs upserted after debounce; hydration seeds signatures to avoid re-upload loop
 
 ---
 
-## 7. PROJECT PHASES
+## 6. SUCCESS CRITERIA
 
-### PHASE 1: SETUP (1-2 hours)
-- Init Vite + React
-- Install shadcn/ui
-- Init Cloudflare Worker
-- Folder structure
-- Test locally
-
-### PHASE 2: FRONTEND UI (2-3 hours)
-- ChatInterface.jsx (state)
-- ChatMessage.jsx (display)
-- ChatInput.jsx (input + send)
-- App.jsx (integration)
-- Tailwind + shadcn/ui styling
-
-### PHASE 3: WORKER (1-2 hours)
-- POST /api/chat endpoint
-- CORS handling
-- Input validation
-- OpenAI relay
-- Error handling
-- 30s timeout
-
-### PHASE 4: INTEGRATION (1-2 hours)
-- api.js wrapper
-- Connect React to Worker
-- Real API testing
-- Error scenarios
-
-### PHASE 5: DEPLOYMENT (1-2 hours)
-- Deploy Worker
-- Set Cloudflare secrets
-- Deploy Frontend
-- Set env vars
-- Live test
-
-### PHASE 6: TESTING & DOCS (1-2 hours)
-- Manual tests
-- README.md
-- .env.example files
-- Code cleanup
+- [x] Streaming chat works (stop, partial save, empty recovery)
+- [x] Branching history (edit/regenerate) persists across devices
+- [x] Google login + session lifecycle (401 → re-login)
+- [x] Conversations + preferences sync (D1)
+- [x] Option cards parse/render; greeting guard prevents false cards
+- [x] Preferences (model, sidebar width, display name)
+- [x] Backup export/import
+- [x] `npm test` green (tree, reducer, flow, options, prefs, worker validation)
+- [x] Deployed (Vercel + Cloudflare) with CORS allowlist
 
 ---
 
-## 8. DESIGN SPECS
-
-### Colors (shadcn/ui defaults)
-- Primary: #3b82f6 (Blue)
-- Secondary: #8b5cf6 (Purple)
-- Muted: #f3f4f6 (Light gray)
-- Foreground: #1f2937 (Dark)
-- Background: #ffffff (White)
-- Destructive: #ef4444 (Red)
-
-### Typography
-- H1: 2xl, bold
-- Body: sm, regular
-- Caption: xs, muted
-
----
-
-## 9. SUCCESS CRITERIA
-
-- [ ] Frontend renders
-- [ ] shadcn/ui styled
-- [ ] Chat input sends
-- [ ] Worker calls OpenAI
-- [ ] AI response displays
-- [ ] Error handling works
-- [ ] All phases done
-- [ ] Deployed (live URLs)
-- [ ] README complete
-- [ ] All tests pass
-- [ ] No console errors
-- [ ] Professional appearance
-
----
-
-## 10. RISKS & MITIGATION
+## 7. RISKS & MITIGATION
 
 | Risk | Impact | Fix |
 |---|---|---|
-| API key exposed | Breach | Never commit .env, use Cloudflare secrets |
-| CORS errors | Broken | Worker sets CORS headers |
-| Timeout | Poor UX | Show loading, reasonable timeout |
-| Rate limit | Blocked | Monitor, add later |
-| Deploy fails | Down | Test local, follow guide |
+| LLM key exposed | Breach | Cloudflare secret only |
+| CORS misconfig | Broken | `ALLOWED_ORIGINS` allowlist |
+| Upstream drop mid-stream | Truncated answer | Partial save + error state (upgrade: SSE error event) |
+| Reasoning budget eats output | Empty answer | Empty-bubble removal + retry message |
+| localStorage quota | New chats lost | Quota error toast + export backup |
+| D1 sync conflict (2 devices) | Last-write-wins | Acceptable now; upgrade: per-merge revision check |
 
 ---
 
-**Version:** 2.0  
-**Status:** Ready for Development  
-**Created:** 2026-09-13
+**Version:** 2.1
+**Status:** Implemented
+**Updated:** 2026-09-17
