@@ -5,10 +5,12 @@ import { useTheme } from '../lib/use-theme'
 import { usePageMeta, SITE_NAME, SITE_DESC, faqSchema, injectJsonLd } from '../lib/seo'
 import { MODELS } from '../lib/models'
 import { Reveal } from '../lib/reveal'
+import { useAuth } from '../hooks/useAuth'
+import { GoogleSignInButton } from '../components/GoogleSignInButton'
 import logo from '../assets/logo.png'
 import {
   Zap, ArrowRight, ArrowUp, Github, Sparkles, MessageSquare, MessageCircle, Code2, PenLine,
-  ShieldCheck, BookOpen, Plus, Menu, X, Send, Brain, Sun, Moon,
+  ShieldCheck, BookOpen, Plus, Menu, X, Send, Brain, Sun, Moon, Loader2,
 } from 'lucide-react'
 
 const NAV_LINKS = [
@@ -18,9 +20,9 @@ const NAV_LINKS = [
 
 const STATS = [
   { value: 'Rp0', label: 'Biaya untuk memulai' },
-  { value: '0', label: 'Akun yang harus dibuat' },
+  { value: '1 klik', label: 'Masuk dengan Google' },
   { value: '24/7', label: 'Selalu bisa diakses' },
-  { value: 'Privat', label: 'Riwayat hanya di perangkatmu' },
+  { value: 'Tersinkron', label: 'Riwayat di semua perangkat' },
 ]
 
 const FEATURES = [
@@ -64,11 +66,11 @@ const FEATURES = [
 const FAQS = [
   {
     q: 'KeyzAI benar-benar gratis?',
-    a: 'Iya. KeyzAI sepenuhnya gratis — tanpa langganan, tanpa biaya tersembunyi, tanpa kartu kredit. Buka chat dan mulai bertanya.',
+    a: 'Iya. KeyzAI sepenuhnya gratis — tanpa langganan, tanpa biaya tersembunyi, tanpa kartu kredit. Masuk dan mulai bertanya.',
   },
   {
     q: 'Harus bikin akun dulu?',
-    a: 'Tidak perlu. Tanpa daftar, tanpa email, tanpa password. Klik "Mulai Chatting" dan kamu langsung ngobrol dengan AI dalam hitungan detik.',
+    a: 'Kamu masuk sekali dengan akun Google — tidak perlu bikin password baru. Ini agar riwayat percakapanmu tersimpan dan bisa kamu lanjutkan dari perangkat mana pun.',
   },
   {
     q: 'Boleh tanya apa saja?',
@@ -76,7 +78,7 @@ const FAQS = [
   },
   {
     q: 'Data percakapanku aman?',
-    a: 'Riwayat chat disimpan hanya di perangkatmu (browser), bukan di server kami. Pesan yang kamu kirim diteruskan ke model AI pihak ketiga untuk diproses menjadi respons — dan tidak kami jual ke siapa pun.',
+    a: 'Riwayat tersimpan di akunmu dan hanya bisa diakses setelah login. Pesan yang kamu kirim diteruskan ke model AI pihak ketiga untuk diproses menjadi respons — dan tidak kami jual ke siapa pun.',
   },
 ]
 
@@ -102,6 +104,7 @@ function Logo() {
 }
 
 function Navbar({ navigate, theme, toggleTheme }) {
+  const { user } = useAuth()
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [active, setActive] = useState('')
@@ -216,10 +219,20 @@ function Navbar({ navigate, theme, toggleTheme }) {
                 {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </button>
               <span className="mx-0.5 h-5 w-px bg-border" aria-hidden="true" />
-              <Button onClick={() => navigate('/chat')} className="group h-9 rounded-full pl-4 pr-3.5 shadow-sm">
-                Mulai chatting
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-              </Button>
+              {user ? (
+                <Button onClick={() => navigate('/chat')} className="group h-9 rounded-full pl-4 pr-3.5 shadow-sm">
+                  Buka chat
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => document.getElementById('hero-google-signin')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+                  className="group h-9 rounded-full pl-4 pr-3.5 shadow-sm"
+                >
+                  Masuk
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                </Button>
+              )}
             </div>
 
             <div className="flex shrink-0 items-center gap-1.5 md:hidden">
@@ -280,11 +293,12 @@ function Navbar({ navigate, theme, toggleTheme }) {
               <Button
                 onClick={() => {
                   setOpen(false)
-                  navigate('/chat')
+                  if (user) navigate('/chat')
+                  else document.getElementById('hero-google-signin')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
                 }}
                 className="mt-2 h-10 w-full rounded-xl"
               >
-                Mulai chatting gratis
+                {user ? 'Buka chat' : 'Masuk dengan Google'}
                 <ArrowRight />
               </Button>
             </div>
@@ -388,8 +402,8 @@ function ChatMock() {
           <Brain className="h-3.5 w-3.5 text-foreground" />
         </div>
         <div>
-          <p className="text-xs font-semibold leading-none text-foreground">Tanpa daftar</p>
-          <p className="mt-0.5 text-[10px] text-muted-foreground">langsung mulai</p>
+          <p className="text-xs font-semibold leading-none text-foreground">Riwayat tersimpan</p>
+          <p className="mt-0.5 text-[10px] text-muted-foreground">lintas perangkat</p>
         </div>
       </div>
     </div>
@@ -397,6 +411,19 @@ function ChatMock() {
 }
 
 function Hero({ navigate }) {
+  const { loginWithGoogle, loading } = useAuth()
+  const [err, setErr] = useState(null)
+
+  const handleToken = async (idToken) => {
+    setErr(null)
+    try {
+      await loginWithGoogle(idToken)
+      navigate('/chat')
+    } catch (e) {
+      setErr(e.message || 'Login gagal')
+    }
+  }
+
   return (
     <section className="relative overflow-hidden pb-16 pt-24 sm:pb-24 sm:pt-32 lg:pb-32 lg:pt-40">
       <div className="absolute inset-0 bg-dots [mask-image:radial-gradient(ellipse_65%_55%_at_50%_0%,black,transparent)]" />
@@ -419,20 +446,27 @@ function Hero({ navigate }) {
               pelajari topik baru, dan dapat jawaban dalam hitungan detik.
             </p>
 
-            <div className="animate-fade-up flex flex-col gap-3 sm:flex-row" style={{ animationDelay: '0.25s' }}>
-              <button
-                onClick={() => navigate('/chat')}
-                className="group inline-flex h-10 w-full sm:w-auto items-center justify-center gap-2 rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
-              >
-                Mulai chatting gratis
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-              </button>
-              <a
-                href="#features"
-                className="inline-flex h-10 w-full sm:w-auto items-center justify-center gap-2 rounded-md border border-input bg-background px-6 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
-              >
-                Lihat fitur-fitur
-              </a>
+            <div className="animate-fade-up space-y-3" style={{ animationDelay: '0.25s' }}>
+              <GoogleSignInButton
+                id="hero-google-signin"
+                onIdToken={handleToken}
+                disabled={loading}
+                onError={setErr}
+              />
+              {loading && (
+                <p className="flex items-center justify-center gap-2 text-xs text-muted-foreground sm:justify-start">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  Memproses login…
+                </p>
+              )}
+              {err && (
+                <p className="text-xs text-destructive" role="alert">
+                  {err}
+                </p>
+              )}
+              <p className="text-xs text-muted-foreground/70">
+                Masuk dengan Google untuk menyimpan riwayat percakapanmu.
+              </p>
             </div>
           </div>
 
@@ -619,7 +653,7 @@ function Footer({ navigate }) {
           <Reveal from="up" className="max-w-sm space-y-5 sm:col-span-2 lg:col-span-1 lg:max-w-sm">
             <Logo />
             <p className="text-sm leading-relaxed text-muted-foreground">
-              Teman AI-mu yang serba cepat untuk jawaban, ide, dan semuanya. Gratis, tanpa daftar.
+              Teman AI-mu yang serba cepat untuk jawaban, ide, dan semuanya. Gratis, masuk dengan Google.
             </p>
 
             <div className="flex flex-wrap gap-1.5">
@@ -634,8 +668,8 @@ function Footer({ navigate }) {
             </div>
 
             <div className="flex flex-wrap items-center gap-2 pt-1">
-              <Button onClick={() => navigate('/chat')} size="sm" className="group h-9 rounded-full pl-4 pr-3.5">
-                Mulai chatting
+              <Button onClick={() => navigate('/')} size="sm" className="group h-9 rounded-full pl-4 pr-3.5">
+                Masuk dengan Google
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </Button>
               <a

@@ -1,0 +1,56 @@
+/**
+ * Sinkronisasi percakapan ke backend (D1). Server-authoritative setelah login:
+ * - loadConversations: hydrate store dari D1 saat login
+ * - saveConversation: upsert pohon utuh setelah turn selesai / pin / rename
+ *
+ * Format tree (messages sebagai peta) diteruskan apa adanya; worker menyimpan
+ * JSON-nya utuh supaya cabang edit/regenerate selamat.
+ */
+
+import { authFetch } from './auth'
+
+const API_URL = import.meta.env?.VITE_WORKER_URL || 'https://keyzai-worker-prod.2406007.workers.dev'
+
+async function parse(res) {
+  const data = await res.json()
+  if (!data.success) throw new Error(data.error || 'Permintaan gagal')
+  return data
+}
+
+export async function fetchConversations() {
+  const data = await parse(await authFetch(`${API_URL}/api/conversations`))
+  return data.conversations || []
+}
+
+export async function fetchConversation(id) {
+  const data = await parse(await authFetch(`${API_URL}/api/conversations/${encodeURIComponent(id)}`))
+  return data.conversation || null
+}
+
+export async function saveConversation(conv) {
+  await parse(
+    await authFetch(`${API_URL}/api/conversations/${encodeURIComponent(conv.id)}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(conv),
+    }),
+  )
+}
+
+export async function patchConversation(id, patch) {
+  await parse(
+    await authFetch(`${API_URL}/api/conversations/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(patch),
+    }),
+  )
+}
+
+export async function removeConversation(id) {
+  await parse(
+    await authFetch(`${API_URL}/api/conversations/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+    }),
+  )
+}

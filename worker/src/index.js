@@ -1,7 +1,24 @@
 /**
- * Cloudflare Worker - OpenAI API Relay
- * POST /api/chat - relay messages to OpenAI
+ * Cloudflare Worker - KeyzAI backend
+ * POST /api/chat            - relay ke OpenAI (butuh auth)
+ * POST /api/auth/google     - login via Google ID token
+ * GET  /api/auth/me         - cek session
+ * GET  /api/conversations   - list percakapan user
+ * GET  /api/conversations/:id - detail pohon pesan
+ * PUT  /api/conversations/:id - simpan/upsert percakapan
+ * PATCH /api/conversations/:id - pin/rename
+ * DELETE /api/conversations/:id
  */
+
+import { verifyGoogleIdToken, signSession, verifySession } from './crypto.js'
+import {
+  upsertUser,
+  listConversations,
+  getConversation,
+  saveConversation,
+  patchConversation,
+  deleteConversation,
+} from './db.js'
 
 // If ALLOWED_ORIGINS is unset, all origins are allowed (backwards compatible).
 // When set (comma-separated), only listed origins get CORS headers.
@@ -15,11 +32,29 @@ function corsHeaders(request, env) {
   if (allowed.length === 0 || (origin && allowed.includes(origin))) {
     return {
       'Access-Control-Allow-Origin': origin || '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Allow-Credentials': 'true',
     }
   }
   return {}
+}
+
+// Ambil userId dari Authorization: Bearer <session jwt>.
+// Mengembalikan { uid } atau null.
+async function sessionUser(request, env) {
+  const auth = request.headers.get('Authorization') || ''
+  const m = /^Bearer\s+(.+)$/i.exec(auth.trim())
+  if (!m) return null
+  const payload = await verifySession(m[1], env.SESSION_SECRET)
+  return payload && typeof payload.uid === 'string' ? { uid: payload.uid } : null
+}
+
+function unauthorized(env, request) {
+  return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), {
+    status: 401,
+    headers: { ...corsHeaders(request, env), 'Content-Type': 'application/json' },
+  })
 }
 
 // Instruksi untuk "kartu pilihan" interaktif. Model hanya perlu menulis fenced block
@@ -93,13 +128,113 @@ function invalidMessages(messages) {
 
 export default {
   async fetch(request, env, ctx) {
+    const url = new URL(request.url)
+    const path = url.pathname
+
     // CORS preflight
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: corsHeaders(request, env) })
     }
 
+    // ---------------- AUTH (publik)
+    // POST /api/auth/google { idToken }
+    if (request.method === 'POST' && path === '/api/auth/google') {
+      let body
+      try {
+        body = await request.json()
+      } catch {
+        return response(false, 'Bad request', 400, { error: 'Invalid JSON' }, corsHeaders(request, env))
+      }
+      try {
+        const profile = await verifyGoogleIdToken(body.idToken, env.GOOGLE_CLIENT_ID)
+        const user = await upsertUser(env.DB, profile)
+        const session = await signSession(user.id, env.SESSION_SECRET)
+        return response(true, 'Login success', 200, {
+          token: session.token,
+          expiresAt: session.exp,
+          user: { id: user.id, email: user.email, name: user.name, picture: user.picture },
+        }, corsHeaders(request, env))
+      } catch (e) {
+        console.error('Google auth error:', e.message)
+        return response(false, 'Auth failed', 401, { error: 'Login gagal: token Google tidak valid' }, corsHeaders(request, env))
+      }
+    }
+
+    // GET /api/auth/me
+    if (request.method === 'GET' && path === '/api/auth/me') {
+      const session = await sessionUser(request, env)
+      if (!session) return unauthorized(env, request)
+      const row = await env.DB.prepare('SELECT id, email, name, picture FROM users WHERE id = ?')
+        .bind(session.uid)
+        .first()
+      if (!row) return unauthorized(env, request)
+      return response(true, 'OK', 200, { user: row }, corsHeaders(request, env))
+    }
+
+    // ---------------- PERCAKAPAN (butuh auth)
+    const convMatch = /^\/api\/conversations(?:\/([^/]+))?$/.exec(path)
+    if (convMatch) {
+      const session = await sessionUser(request, env)
+      if (!session) return unauthorized(env, request)
+      const convId = convMatch[1] || null
+      const db = env.DB
+
+      // GET /api/conversations — list ringan (tanpa messages_json)
+      if (request.method === 'GET' && !convId) {
+        const convs = await listConversations(db, session.uid)
+        return response(true, 'OK', 200, { conversations: convs }, corsHeaders(request, env))
+      }
+
+      if (convId) {
+        // GET /api/conversations/:id — pohon pesan utuh
+        if (request.method === 'GET') {
+          const conv = await getConversation(db, session.uid, convId)
+          if (!conv) return response(false, 'Not found', 404, { error: 'Percakapan tidak ditemukan' }, corsHeaders(request, env))
+          return response(true, 'OK', 200, { conversation: conv }, corsHeaders(request, env))
+        }
+
+        // PUT /api/conversations/:id — upsert penuh
+        if (request.method === 'PUT') {
+          let body
+          try {
+            body = await request.json()
+          } catch {
+            return response(false, 'Bad request', 400, { error: 'Invalid JSON' }, corsHeaders(request, env))
+          }
+          if (!body?.id || body.id !== convId) {
+            return response(false, 'Bad request', 400, { error: 'ID tidak cocok' }, corsHeaders(request, env))
+          }
+          await saveConversation(db, session.uid, body)
+          return response(true, 'Saved', 200, {}, corsHeaders(request, env))
+        }
+
+        // PATCH /api/conversations/:id — pin/rename
+        if (request.method === 'PATCH') {
+          let body
+          try {
+            body = await request.json()
+          } catch {
+            return response(false, 'Bad request', 400, { error: 'Invalid JSON' }, corsHeaders(request, env))
+          }
+          const ok = await patchConversation(db, session.uid, convId, body)
+          return response(true, ok ? 'Patched' : 'No changes', 200, { updated: ok }, corsHeaders(request, env))
+        }
+
+        // DELETE /api/conversations/:id
+        if (request.method === 'DELETE') {
+          const ok = await deleteConversation(db, session.uid, convId)
+          if (!ok) return response(false, 'Not found', 404, { error: 'Percakapan tidak ditemukan' }, corsHeaders(request, env))
+          return response(true, 'Deleted', 200, {}, corsHeaders(request, env))
+        }
+      }
+    }
+
+    // ---------------- CHAT (butuh auth)
     // POST /api/chat
-    if (request.method === 'POST' && new URL(request.url).pathname === '/api/chat') {
+    if (request.method === 'POST' && path === '/api/chat') {
+      const session = await sessionUser(request, env)
+      if (!session) return unauthorized(env, request)
+
       try {
         let body
         try {

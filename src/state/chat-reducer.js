@@ -184,6 +184,20 @@ export function chatReducer(state, action) {
         error: null,
       }
 
+    // Hydrate dari backend (D1) saat login: ganti seluruh state lokal.
+    // dipakai useChatStore setelah fetchConversations sukses.
+    case 'REPLACE_ALL': {
+      const convs = Array.isArray(action.convs)
+        ? action.convs.filter((c) => c && c.id && c.messages && typeof c.messages === 'object')
+        : []
+      const activeId = convs.some((c) => c.id === state.activeId)
+        ? state.activeId
+        : convs.length
+          ? convs[0].id
+          : null
+      return { ...state, convs, activeId, error: null }
+    }
+
     default:
       return state
   }

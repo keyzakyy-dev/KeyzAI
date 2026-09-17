@@ -2,7 +2,9 @@
  * API client for chat endpoint
  */
 
-const API_URL = import.meta.env?.VITE_WORKER_URL || 'http://localhost:8787'
+import { authFetch } from './lib/auth'
+
+const API_URL = import.meta.env?.VITE_WORKER_URL || 'https://keyzai-worker-prod.2406007.workers.dev'
 
 function validateMessage(message) {
   if (!message || typeof message !== 'string' || message.trim().length === 0) {
@@ -38,7 +40,7 @@ export async function sendMessage(message, model, history, options = {}) {
   // Worker menyuntik instruksi kartu pilihan untuk chat; panggilan lain (judul) opt-out.
   if (options.system === false) body.system = false
 
-  const response = await fetch(`${API_URL}/api/chat`, {
+  const response = await authFetch(`${API_URL}/api/chat`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -111,7 +113,7 @@ export async function sendMessageStream(message, onDelta, signal, model, history
   }
 
   try {
-    const response = await fetch(`${API_URL}/api/chat`, {
+    const response = await authFetch(`${API_URL}/api/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

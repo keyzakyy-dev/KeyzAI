@@ -1,10 +1,19 @@
 // Self-check validasi konteks worker: node worker/test/validation.mjs
 import assert from 'node:assert/strict'
 import worker from '../src/index.js'
+import { signSession } from '../src/crypto.js'
 
-const env = { OPENAI_API_KEY: 'sk-test' }
-const chat = async (body) => {
-  const req = new Request('http://x/api/chat', { method: 'POST', body: JSON.stringify(body) })
+const SESSION_SECRET = 'test-session-secret'
+const env = { OPENAI_API_KEY: 'sk-test', SESSION_SECRET, DB: null }
+const session = await signSession('test-uid', SESSION_SECRET)
+const auth = { Authorization: `Bearer ${session.token}` }
+
+const chat = async (body, headers = {}) => {
+  const req = new Request('http://x/api/chat', {
+    method: 'POST',
+    headers: { ...auth, 'Content-Type': 'application/json', ...headers },
+    body: JSON.stringify(body),
+  })
   return (await worker.fetch(req, env)).status
 }
 
@@ -27,6 +36,8 @@ assert.equal(
   400,
   'max 40 messages'
 )
+// --- tanpa token -> 401
+assert.equal((await worker.fetch(new Request('http://x/api/chat', { method: 'POST', body: JSON.stringify({ message: 'hai' }) }), env)).status, 401, 'tanpa auth -> 401')
 // --- injeksi kontrak kartu pilihan ke payload upstream (fetch di-stub, tanpa network)
 const sent = []
 const realFetch = globalThis.fetch
@@ -39,8 +50,15 @@ globalThis.fetch = async (_url, init) => {
 }
 
 try {
-  const post = async (body) =>
-    worker.fetch(new Request('http://x/api/chat', { method: 'POST', body: JSON.stringify(body) }), env)
+  const post = async (body, headers = {}) =>
+    worker.fetch(
+      new Request('http://x/api/chat', {
+        method: 'POST',
+        headers: { ...auth, 'Content-Type': 'application/json', ...headers },
+        body: JSON.stringify(body),
+      }),
+      env,
+    )
 
   const res = await post({ message: 'halo' })
   assert.equal(res.status, 200, 'chat normal 200')

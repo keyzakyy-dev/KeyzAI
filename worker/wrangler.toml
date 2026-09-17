@@ -2,6 +2,11 @@ name = "keyzai-worker"
 main = "src/index.js"
 compatibility_date = "2024-12-01"
 
+[[d1_databases]]
+binding = "DB"
+database_name = "keyzai-db"
+database_id = "3c6cb512-1933-48d4-99a0-a3267483a66c"
+
 [vars]
 OPENAI_API_URL = "https://api.atria-asi.ai/v1"
 OPENAI_MODEL = "Atria-Dawn-Preview"
@@ -9,6 +14,11 @@ ALLOWED_ORIGINS = "http://localhost:5173,https://keyz-ai.vercel.app"
 
 [env.production]
 name = "keyzai-worker-prod"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "keyzai-db"
+database_id = "3c6cb512-1933-48d4-99a0-a3267483a66c"
 
 [env.production.vars]
 OPENAI_API_URL = "https://api.atria-asi.ai/v1"
