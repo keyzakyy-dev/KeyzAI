@@ -181,7 +181,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[2px] overflow-hidden" aria-hidden="true">
         <div
           ref={progressRef}
-          className="h-full w-full origin-left scale-x-0 bg-gradient-to-r from-primary via-primary/70 to-primary/0"
+          className="h-full w-full origin-left scale-x-0 bg-primary"
         />
       </div>
 
@@ -575,7 +575,7 @@ function Footer({ navigate }) {
             </Reveal>
           ))}
         </div>
-        <div className="mt-12 h-px bg-gradient-to-r from-transparent via-border to-transparent" aria-hidden="true" />
+        <div className="mt-12 h-px bg-border" aria-hidden="true" />
 
         <div className="flex flex-col items-center justify-between gap-4 pt-6 sm:flex-row">
           <p className="text-xs text-muted-foreground">© 2026 KeyzAI. Seluruh hak cipta dilindungi.</p>
