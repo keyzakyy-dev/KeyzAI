@@ -278,7 +278,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
 
 function Hero({ navigate }) {
   return (
-    <section className="relative overflow-hidden pb-10 pt-24 sm:pb-14 sm:pt-32 lg:pb-16 lg:pt-36">
+    <section className="relative overflow-hidden pb-12 pt-24 sm:pb-14 sm:pt-32 lg:pb-16 lg:pt-36">
       <div className="absolute left-1/2 top-0 h-56 w-[min(520px,100vw)] -translate-x-1/2 rounded-full bg-foreground/5 blur-[100px] sm:h-72 sm:w-[700px] sm:blur-[120px]" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
@@ -323,9 +323,10 @@ function Hero({ navigate }) {
 }
 
 function Features({ navigate }) {
+  const [showAll, setShowAll] = useState(false)
   const onPrompt = (p) => navigate(`/chat?q=${encodeURIComponent(p)}`)
   return (
-    <section id="features" className="scroll-mt-20 py-10 sm:py-14 lg:py-16">
+    <section id="features" className="scroll-mt-20 py-12 sm:py-14 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <Reveal from="up" className="mx-auto mb-8 sm:mb-10 max-w-2xl space-y-4 text-center">
           <h2 className="text-2xl font-bold tracking-tighter text-foreground sm:text-3xl">
@@ -336,7 +337,7 @@ function Features({ navigate }) {
           </p>
         </Reveal>
 
-        <Reveal from="up" className="mx-auto mb-10 grid max-w-3xl grid-cols-2 gap-x-4 gap-y-8 sm:mb-14 md:grid-cols-4">
+        <Reveal from="up" className="mx-auto mb-10 hidden max-w-3xl grid-cols-2 gap-x-4 gap-y-8 sm:mb-14 md:grid md:grid-cols-4">
           {STATS.map((stat) => (
             <div key={stat.label} className="space-y-1 text-center">
               <p className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
@@ -348,7 +349,7 @@ function Features({ navigate }) {
         </Reveal>
 
         <Reveal from="up" className="mx-auto grid max-w-5xl gap-x-10 md:grid-cols-2">
-          {FEATURES.map((f) => {
+          {FEATURES.map((f, i) => {
             const Icon = f.icon
             const inner = (
               <>
@@ -366,8 +367,10 @@ function Features({ navigate }) {
                 )}
               </>
             )
-            const rowCls =
-              'group -mx-2 flex w-full items-center gap-4 rounded-lg border-t border-border px-2 py-4 text-left transition-colors hover:bg-accent/40 sm:gap-5'
+            const collapsed = i >= 3 && !showAll
+            const rowCls = `group -mx-2 flex w-full items-center gap-4 rounded-lg border-t border-border px-2 py-4 text-left transition-colors hover:bg-accent/40 sm:gap-5 ${
+              collapsed ? 'hidden md:flex' : ''
+            }`
             return f.prompt ? (
               <button key={f.title} type="button" onClick={() => onPrompt(f.prompt)} className={rowCls}>
                 {inner}
@@ -379,6 +382,15 @@ function Features({ navigate }) {
             )
           })}
         </Reveal>
+
+        <button
+          type="button"
+          onClick={() => setShowAll((s) => !s)}
+          className="mx-auto mt-6 flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground md:hidden"
+        >
+          {showAll ? 'Sembunyikan' : 'Lihat fitur lainnya'}
+          <PlusIcon className={`h-4 w-4 transition-transform duration-300 ${showAll ? 'rotate-45' : ''}`} />
+        </button>
       </div>
     </section>
   )
@@ -386,7 +398,7 @@ function Features({ navigate }) {
 
 function FAQ({ navigate }) {
   return (
-    <section id="faq" className="scroll-mt-20 py-10 sm:py-14 lg:py-16">
+    <section id="faq" className="scroll-mt-20 py-12 sm:py-14 lg:py-16">
       <div className="mx-auto max-w-2xl px-4 sm:px-6">
         <Reveal from="up" className="mb-8 text-center sm:mb-10">
           <h2 className="text-2xl font-bold tracking-tighter text-foreground sm:text-3xl">
