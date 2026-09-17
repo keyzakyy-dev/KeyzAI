@@ -217,15 +217,14 @@ export function chatReducer(state, action) {
 
     // Hydrate dari backend (D1) saat login: ganti seluruh state lokal.
     // dipakai useChatStore setelah fetchConversations sukses.
+    // Jangan auto-select percakapan apa pun: hanya pertahankan activeId bila
+    // masih ada di daftar, selain itu tetap di area kosong (chat baru) —
+    // refresh saat chat baru kosong tidak boleh masuk ke riwayat orang lain.
     case 'REPLACE_ALL': {
       const convs = Array.isArray(action.convs)
         ? action.convs.filter((c) => c && c.id && c.messages && typeof c.messages === 'object')
         : []
-      const activeId = convs.some((c) => c.id === state.activeId)
-        ? state.activeId
-        : convs.length
-          ? convs[0].id
-          : null
+      const activeId = convs.some((c) => c.id === state.activeId) ? state.activeId : null
       return { ...state, convs, activeId, error: null }
     }
 

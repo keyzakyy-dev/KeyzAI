@@ -127,6 +127,21 @@ assert.equal(state.activeId, 'c1')
 state = chatReducer(state, { type: 'CLEAR_ALL' })
 assert.deepEqual({ convs: state.convs, activeId: state.activeId, error: state.error }, { convs: [], activeId: null, error: null })
 
+// ---------- REPLACE_ALL
+// Jangan auto-select percakapan saat activeId tak ada di daftar (refresh
+// saat di chat baru kosong harus tetap kosong, bukan loncat ke riwayat).
+const phony = { v: 3, convs: [snapshot[0]], activeId: 'fik-tidak-ada', error: null, lastSent: null }
+state = chatReducer(phony, { type: 'REPLACE_ALL', convs: [snapshot[0]] })
+assert.equal(state.activeId, null, 'REPLACE_ALL tidak memilih conv secara otomatis')
+assert.equal(state.convs.length, 1)
+// Tapi tetap pertahankan activeId bila masih valid di daftar baru.
+state = chatReducer({ ...phony, activeId: 'c1' }, { type: 'REPLACE_ALL', convs: [snapshot[0]] })
+assert.equal(state.activeId, 'c1', 'activeId valid dipertahankan')
+// Data malformed difilter.
+state = chatReducer(phony, { type: 'REPLACE_ALL', convs: [null, { id: 'x' }, { id: 'y', messages: {} }] })
+assert.equal(state.convs.length, 1, 'conv malformed difilter')
+assert.equal(state.convs[0].id, 'y')
+
 // ---------- aksi asing tidak mengubah state
 const frozen = state
 state = chatReducer(state, { type: 'UNKNOWN' })
