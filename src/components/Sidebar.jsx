@@ -67,13 +67,10 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
         {/* Conversations */}
         <div className="flex-1 overflow-y-auto px-2 pb-3">
           {conversations.length === 0 ? (
-            <div className="flex flex-col items-center px-3 pt-12 text-center">
-              <div className="flex h-11 w-11 items-center justify-center rounded-full border border-dashed border-border">
-                <ChatBubbleIcon className="h-4 w-4 text-muted-foreground/50" />
-              </div>
-              <p className="mt-3 text-sm font-medium text-muted-foreground">Belum ada percakapan</p>
+            <div className="px-3 pt-10 text-center">
+              <p className="text-sm font-medium text-muted-foreground">Belum ada percakapan</p>
               <p className="mt-1 text-xs leading-relaxed text-muted-foreground/60">
-                Chat-mu akan muncul di sini
+                Mulai lewat “Chat baru” di atas.
               </p>
             </div>
           ) : (
