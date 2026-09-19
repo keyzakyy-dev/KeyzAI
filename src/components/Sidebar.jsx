@@ -79,26 +79,26 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
           ) : (
             grouped.map((g) => (
               <div key={g.label} className="mt-4">
-                <p className="px-3 pb-1.5 text-[11px] font-normal text-muted-foreground">{g.label}</p>
+                <p className="px-3 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/80">{g.label}</p>
                 <div className="space-y-0.5">
                   {g.items.map((conv) => (
                     <div
                       key={conv.id}
                       className={`group flex items-center gap-1 rounded-md pr-1 text-sm transition-colors ${
                         currentId === conv.id
-                          ? 'bg-accent/60 text-foreground'
+                          ? 'bg-accent/70 text-foreground'
                           : 'text-muted-foreground hover:bg-accent/40 hover:text-foreground'
                       }`}
                     >
                       <button
                         onClick={() => onSelect(conv.id)}
-                        className="flex min-w-0 flex-1 items-center gap-2 px-3 py-1.5 text-left"
+                        className="flex min-w-0 flex-1 items-center gap-2.5 px-3 py-1.5 text-left"
                         title={conv.title || undefined}
                       >
                         {conv.pinned ? (
-                          <Pin className="h-3.5 w-3.5 shrink-0 fill-primary/90" />
+                          <Pin className="h-3 w-3 shrink-0 fill-primary/90" />
                         ) : (
-                          <MessageSquare className="h-3.5 w-3.5 shrink-0 opacity-50" />
+                          <MessageSquare className="h-3 w-3 shrink-0 opacity-35" />
                         )}
                         {conv.titlePending ? (
                           <span className="my-1 block h-3 w-24 animate-pulse rounded-full bg-muted-foreground/20" />
@@ -108,7 +108,7 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
                       </button>
                       <button
                         onClick={() => onDelete(conv.id)}
-                        className="rounded-sm p-1.5 text-muted-foreground opacity-100 transition-opacity hover:text-destructive focus-visible:opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
+                        className="rounded-md p-1 text-muted-foreground opacity-100 transition-opacity hover:text-destructive focus-visible:opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
                         aria-label="Hapus percakapan"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
