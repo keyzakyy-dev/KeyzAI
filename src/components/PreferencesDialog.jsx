@@ -283,15 +283,21 @@ export function PreferencesDialog({
                       <span>Hari ini</span>
                     </div>
                   </div>
-                  <div className="rounded-lg border border-border bg-card px-4 py-5 text-center">
-                    <p className="text-3xl font-semibold tabular-nums text-foreground">
-                      ± {usage.estTokens.toLocaleString('id-ID')}
-                    </p>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      token terpakai
-                      <span className="ml-1 text-xs">(estimasi, ±4 karakter/token)</span>
-                    </p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="rounded-lg border border-border bg-card px-4 py-5 text-center">
+                      <p className="text-2xl font-semibold tabular-nums text-foreground">
+                        ± {usage.todayTokens.toLocaleString('id-ID')}
+                      </p>
+                      <p className="mt-1 text-sm text-muted-foreground">Token hari ini</p>
+                    </div>
+                    <div className="rounded-lg border border-border bg-card px-4 py-5 text-center">
+                      <p className="text-2xl font-semibold tabular-nums text-foreground">
+                        ± {usage.estTokens.toLocaleString('id-ID')}
+                      </p>
+                      <p className="mt-1 text-sm text-muted-foreground">Token total</p>
+                    </div>
                   </div>
+                  <p className="text-center text-xs text-muted-foreground/70">estimasi, ±4 karakter/token</p>
                 </section>
               )}
 

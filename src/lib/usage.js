@@ -23,6 +23,7 @@ export function computeUsage(convs = []) {
 
   return {
     estTokens: Math.round(chars / 4),
+    todayTokens: Math.round(days.at(-1).chars / 4),
     days: days.map((d) => ({
       date: d.key * DAY + new Date(d.key * DAY).getTimezoneOffset() * 60000,
       tokens: Math.round(d.chars / 4),

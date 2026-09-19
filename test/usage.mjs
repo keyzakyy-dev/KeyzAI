@@ -24,6 +24,7 @@ const convs = [
 
 const u = computeUsage(convs)
 assert.equal(u.estTokens, Math.round(texts.join('').length / 4))
+assert.equal(u.todayTokens, Math.round((texts[0].length + texts[1].length) / 4))
 
 // chart token harian: hanya hari ini terisi (pesan lain 30 hari lalu)
 assert.equal(u.days.length, 14)
