@@ -14,7 +14,7 @@ const THINKING_WORDS = ['Berpikir…', 'Menelusuri…', 'Menulis…', 'Memoles�
 function ThinkingIndicator() {
   const [i, setI] = useState(0)
   useEffect(() => {
-    const t = setInterval(() => setI((v) => (v + 1) % THINKING_WORDS.length), 1100)
+    const t = setInterval(() => setI((v) => (v + 1) % THINKING_WORDS.length), 2400)
     return () => clearInterval(t)
   }, [])
   return (
@@ -26,7 +26,6 @@ function ThinkingIndicator() {
       <div
         key={i}
         className="font-serif text-foreground thinking-fade"
-        style={{ animationDuration: '400ms' }}
       >
         {THINKING_WORDS[i]}
       </div>

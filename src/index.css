@@ -91,17 +91,29 @@
   background-size: 22px 22px;
 }
 
-/* Thinking indicator: fade the cycling word in */
+/* Thinking indicator: fade the cycling word in + sweeping shimmer band */
 @keyframes thinking-fade {
   0% { opacity: 0; transform: translateY(4px); }
   100% { opacity: 1; transform: translateY(0); }
 }
+@keyframes thinking-shimmer {
+  to { background-position: -200% 0; }
+}
 .thinking-fade {
-  animation: thinking-fade 0.4s ease-out both;
+  background-image: linear-gradient(90deg,
+    hsl(var(--foreground) / 0.5) 30%,
+    hsl(var(--primary)) 50%,
+    hsl(var(--foreground) / 0.5) 70%);
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: thinking-fade 0.4s ease-out both, thinking-shimmer 1.8s linear infinite;
 }
 @media (prefers-reduced-motion: reduce) {
   .thinking-fade {
     animation: none;
+    color: hsl(var(--foreground));
   }
 }
 
