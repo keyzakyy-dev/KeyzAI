@@ -6,24 +6,24 @@
   /* Light: abu batu (stone) — netral hangat, saturasi rendah. */
   :root {
     color-scheme: light;
-    --background: 60 5% 98%;
+    --background: 60 5% 94%;
     --foreground: 26 9% 16%;
-    --card: 60 5% 99%;
+    --card: 60 5% 96%;
     --card-foreground: 26 9% 16%;
-    --popover: 60 5% 99%;
+    --popover: 60 5% 96%;
     --popover-foreground: 26 9% 16%;
     --primary: 24 7% 18%;
-    --primary-foreground: 60 5% 98%;
-    --secondary: 46 6% 92%;
+    --primary-foreground: 60 5% 96%;
+    --secondary: 46 6% 88%;
     --secondary-foreground: 26 9% 16%;
-    --muted: 46 6% 92%;
-    --muted-foreground: 32 4% 44%;
-    --accent: 46 7% 89%;
+    --muted: 46 6% 88%;
+    --muted-foreground: 32 4% 42%;
+    --accent: 46 7% 85%;
     --accent-foreground: 26 9% 16%;
     --destructive: 4 72% 44%;
-    --destructive-foreground: 60 5% 98%;
-    --border: 46 6% 85%;
-    --input: 46 6% 85%;
+    --destructive-foreground: 60 5% 96%;
+    --border: 46 6% 80%;
+    --input: 46 6% 80%;
     --ring: 26 7% 38%;
     --radius: 0.5rem;
   }
