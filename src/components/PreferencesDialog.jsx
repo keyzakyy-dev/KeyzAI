@@ -79,6 +79,8 @@ export function PreferencesDialog({
   const [deleteError, setDeleteError] = useState(null)
   const [activeTab, setActiveTab] = useState('account')
   const usage = computeUsage(conversations)
+  const maxDay = Math.max(...usage.days.map((d) => d.count), 1)
+  const todayStart = usage.days.at(-1).date
 
   const commitName = async () => {
     if (!nameDirty || !nameValid || saving) return
@@ -258,10 +260,22 @@ export function PreferencesDialog({
 
               {activeTab === 'usage' && (
                 <section className="space-y-3">
-                  <p className="text-sm text-foreground">
-                    Statistik lokal percakapanmu.
-                    <span className="ml-1.5 text-xs text-muted-foreground">token bersifat estimasi (±4 karakter)</span>
-                  </p>
+                  <div className="rounded-lg border border-border bg-card p-3">
+                    <p className="pb-2 text-[11px] text-muted-foreground">Pesan dalam 14 hari terakhir</p>
+                    <div className="flex h-16 items-end gap-1">
+                      {usage.days.map((d) => {
+                        const day = new Date(d.date)
+                        return (
+                          <div
+                            key={d.date}
+                            title={`${d.count} pesan · ${day.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}`}
+                            className={`flex-1 rounded-sm transition-all ${d.date === todayStart ? 'bg-primary/70' : 'bg-primary/20'}`}
+                            style={{ height: d.count ? `${Math.max(8, (d.count / maxDay) * 100)}%` : '2px' }}
+                          />
+                        )
+                      })}
+                    </div>
+                  </div>
                   <div className="grid grid-cols-2 gap-2">
                     <Stat value={usage.conversations} label="Percakapan" />
                     <Stat value={usage.messages} label="Pesan" />

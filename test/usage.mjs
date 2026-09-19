@@ -30,8 +30,19 @@ assert.equal(u.week, 2) // hanya pesan minggu ini
 assert.equal(u.aiWords, 5 + 4)
 assert.equal(u.estTokens, Math.round(('halo dunia'.length + 'hai! apa kabar hari ini'.length + 'lama'.length + 'juga lama sekali jawabannya'.length) / 4))
 
+// chart 14 hari: totalnya = jumlah pesan bertimestamp, hari ini berisi 2
+assert.equal(u.days.length, 14)
+assert.equal(u.days.at(-1).count, 2)
+assert.equal(u.days.reduce((s, d) => s + d.count, 0), 2)
+const today = new Date(u.days.at(-1).date)
+const nowD = new Date()
+assert.ok(today.toDateString() === nowD.toDateString(), `baris terakhir bukan hari ini: ${today}`)
+
 // kosong / rusak tidak melempar
-assert.deepEqual(computeUsage([]), { conversations: 0, messages: 0, user: 0, ai: 0, aiWords: 0, week: 0, estTokens: 0 })
+const e = computeUsage([])
+assert.equal(e.messages, 0)
+assert.equal(e.days.length, 14)
+assert.ok(e.days.every((d) => d.count === 0))
 computeUsage([null, { messages: { x: null } }, { messages: { x: { role: 'user' } } }])
 
 console.log('usage: OK')
