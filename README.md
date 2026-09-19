@@ -23,7 +23,7 @@ Modern AI chat interface with streaming, message-tree history, Google login, and
 - **Frontend:** React 18, Vite, Tailwind CSS, Radix UI, Lucide icons, React Router
 - **Backend:** Cloudflare Worker (serverless) + Cloudflare D1 (SQLite)
 - **Auth:** Google Identity Services → worker-signed session JWT
-- **LLM:** OpenAI-compatible relay (default: `Atria-Dawn-Preview` via `api.atria-asi.ai`)
+- **LLM:** OpenAI-compatible relay (default: `qwen3.8-flash` via `api.b.ai`)
 - **Deploy:** Vercel (frontend), Cloudflare (backend)
 
 ## Quick Start
@@ -90,7 +90,7 @@ All `/api/chat` and `/api/conversations*` / `/api/preferences` routes require
 ```json
 {
   "message": "What is React?",
-  "model": "Atria-Dawn-Preview",
+  "model": "qwen3.8-flash",
   "stream": true,
   "messages": [{ "role": "user", "content": "..." }],
   "system": false

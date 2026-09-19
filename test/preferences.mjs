@@ -13,8 +13,8 @@ assert.equal(p.default_model, PREF_DEFAULTS.default_model)
 assert.equal(p.sidebar_width, PREF_DEFAULTS.sidebar_width)
 
 // model valid dipertahankan; model tak dikenal jatuh ke default
-p = normalizePrefs({ default_model: 'Atria-Dawn-Preview' })
-assert.equal(p.default_model, 'Atria-Dawn-Preview')
+p = normalizePrefs({ default_model: 'qwen3.8-flash' })
+assert.equal(p.default_model, 'qwen3.8-flash')
 p = normalizePrefs({ default_model: 'gpt-42' })
 assert.equal(p.default_model, PREF_DEFAULTS.default_model)
 
@@ -29,7 +29,7 @@ p = normalizePrefs({ sidebar_width: 'abc' })
 assert.equal(p.sidebar_width, PREF_DEFAULTS.sidebar_width)
 
 // merge parsial mempertahankan nilai lain
-p = normalizePrefs({ ...PREF_DEFAULTS, default_model: 'Atria-Dawn-Preview' })
+p = normalizePrefs({ ...PREF_DEFAULTS, default_model: 'qwen3.8-flash' })
 assert.equal(p.sidebar_width, PREF_DEFAULTS.sidebar_width)
 
 // nama tampilan

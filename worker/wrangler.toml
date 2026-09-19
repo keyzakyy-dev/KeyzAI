@@ -9,8 +9,8 @@ database_id = "3c6cb512-1933-48d4-99a0-a3267483a66c"
 
 [vars]
 GOOGLE_CLIENT_ID = "227191802214-klcplrl89607it7obq9ne3ren73o9th9.apps.googleusercontent.com"
-OPENAI_API_URL = "https://api.atria-asi.ai/v1"
-OPENAI_MODEL = "Atria-Dawn-Preview"
+OPENAI_API_URL = "https://api.b.ai/v1"
+OPENAI_MODEL = "qwen3.8-flash"
 ALLOWED_ORIGINS = "http://localhost:5173,https://keyz-ai.vercel.app"
 
 [env.production]
@@ -23,6 +23,6 @@ database_id = "3c6cb512-1933-48d4-99a0-a3267483a66c"
 
 [env.production.vars]
 GOOGLE_CLIENT_ID = "227191802214-klcplrl89607it7obq9ne3ren73o9th9.apps.googleusercontent.com"
-OPENAI_API_URL = "https://api.atria-asi.ai/v1"
-OPENAI_MODEL = "Atria-Dawn-Preview"
+OPENAI_API_URL = "https://api.b.ai/v1"
+OPENAI_MODEL = "qwen3.8-flash"
 ALLOWED_ORIGINS = "http://localhost:5173,https://keyz-ai.vercel.app"

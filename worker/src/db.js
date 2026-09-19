@@ -138,7 +138,7 @@ export async function deleteConversation(db, userId, convId) {
 // ikut dijaga: display_name kustom adalah override nama dari Google.
 // ---------------------------------------------------------------------------
 
-const PREF_DEFAULTS = { default_model: 'Atria-Dawn-Preview', sidebar_width: 256 }
+const PREF_DEFAULTS = { default_model: 'qwen3.8-flash', sidebar_width: 256 }
 const SIDEBAR_MIN = 220
 const SIDEBAR_MAX = 420
 
