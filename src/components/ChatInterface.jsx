@@ -43,21 +43,6 @@ export function ChatInterface() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [renameOpen, setRenameOpen] = useState(false)
   const [prefsOpen, setPrefsOpen] = useState(false)
-  // Arah buka dropdown opsi chat: default kanan (seperti dulu); dipilih ulang
-  // tiap menu dibuka berdasar posisi tombol agar tidak keluar viewport saat
-  // judul chat pendek (tombol dekat tepi kiri).
-  const menuAnchorRef = useRef(null)
-  const [menuSide, setMenuSide] = useState('right')
-  useEffect(() => {
-    if (!menuOpen) return
-    const el = menuAnchorRef.current
-    if (!el) return
-    const MENU_W = 192
-    const r = el.getBoundingClientRect()
-    if (r.right - MENU_W < 0) setMenuSide('left')
-    else if (r.left + MENU_W > window.innerWidth) setMenuSide('right')
-    else setMenuSide('right')
-  }, [menuOpen])
   const [confirm, setConfirm] = useState(null)
   // Announcement "sedang dalam pengembangan": sekali per sesi browser.
   const [announceOpen, setAnnounceOpen] = useState(() => {
@@ -433,12 +418,12 @@ export function ChatInterface() {
               {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
             </Button>
             {activeConv || messages.length > 0 ? (
-              <div className="flex min-w-0 items-center gap-0.5">
+              <div className="relative flex min-w-0 items-center gap-0.5">
                 <p className="min-w-0 truncate text-sm font-medium text-foreground">
                   {currentTitle || 'Chat baru'}
                 </p>
                 {activeConv && (
-                <div ref={menuAnchorRef} className="relative flex-shrink-0">
+                <div className="flex-shrink-0">
                   <Button
                     variant="ghost"
                     size="icon"
@@ -455,9 +440,7 @@ export function ChatInterface() {
                       <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
                       <div
                         role="menu"
-                        className={`absolute top-full z-50 mt-1 w-48 max-w-[calc(100vw-1rem)] overflow-hidden rounded-lg border border-border bg-popover p-1 shadow-md ${
-                          menuSide === 'left' ? 'left-0' : 'right-0'
-                        }`}
+                        className="absolute top-full left-0 z-50 mt-1 w-48 max-w-[calc(100vw-2rem)] overflow-hidden rounded-lg border border-border bg-popover p-1 shadow-md"
                         onClick={() => setMenuOpen(false)}
                       >
                         <button
