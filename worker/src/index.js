@@ -324,13 +324,21 @@ export default {
           return response(false, 'Message too long', 400, { error: 'Max 2000 chars' }, corsHeaders(request, env))
         }
 
-        const apiKey = env.OPENAI_API_KEY
-        const apiUrl = env.OPENAI_API_URL || 'https://api.openai.com/v1'
-        const ALLOWED_MODELS = ['qwen3.8-flash', 'deepseek-v4-flash']
+        // Routing per model: model -> { url, key } provider.
+        // Key di env (secret): OPENAI_API_KEY (b.ai), ATRIA_API_KEY (atria).
+        const providers = {
+          bai: { url: env.OPENAI_API_URL || 'https://api.openai.com/v1', key: env.OPENAI_API_KEY },
+          atria: { url: 'https://api.atria-asi.ai/v1', key: env.ATRIA_API_KEY },
+        }
+        const ALLOWED_MODELS = ['qwen3.8-flash', 'deepseek-v4-flash', 'Atria-Dawn-Preview']
+        const MODEL_PROVIDER = { 'qwen3.8-flash': 'bai', 'deepseek-v4-flash': 'bai', 'Atria-Dawn-Preview': 'atria' }
         if (model && !ALLOWED_MODELS.includes(model)) {
           return response(false, 'Unknown model', 400, { error: `Model tidak dikenal: ${model}` }, corsHeaders(request, env))
         }
         const modelName = model || env.OPENAI_MODEL || ALLOWED_MODELS[0]
+        const provider = providers[MODEL_PROVIDER[modelName]] || providers.bai
+        const apiKey = provider.key
+        const apiUrl = provider.url
 
         // Konteks: `messages` = transkrip penuh (termasuk pesan user terbaru) dari client.
         // ponytail: cap 40 msg; user 2000 char, assistant 32000 (batas max_tokens); upgrade = summarisasi turn lama
@@ -352,7 +360,7 @@ export default {
         }
 
         if (!apiKey) {
-          return response(false, 'API key not configured', 500, { error: 'Server error: OPENAI_API_KEY secret is not set' }, corsHeaders(request, env))
+          return response(false, 'API key not configured', 500, { error: `Server error: API key for ${modelName} is not set` }, corsHeaders(request, env))
         }
 
         // Streaming: relay upstream SSE body as-is
