@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { ArrowUp, Square, ChevronDown, Check, CornerDownLeft, ArrowBigUp } from 'lucide-react'
+import { ArrowUp, Square, ChevronDown, Check } from 'lucide-react'
 import { KeyMark } from '../lib/key-mark'
 import { Button } from './ui/button'
 import { Textarea } from './ui/textarea'
@@ -137,18 +137,9 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
                 </div>
               ))}
             <span className="flex min-w-0 items-center gap-1.5 text-[11px] text-muted-foreground">
-              {nearLimit ? (
+              {nearLimit && (
                 <span className={`tabular-nums ${charCount > 1950 ? 'text-destructive' : ''}`}>
                   {charCount}/{maxChars}
-                </span>
-              ) : (
-                <span className="hidden items-center gap-1.5 lg:flex">
-                  <CornerDownLeft className="h-3 w-3 text-foreground/60" />
-                  <span>kirim</span>
-                  <span className="opacity-40">·</span>
-                  <ArrowBigUp className="h-3 w-3 text-foreground/60" />
-                  <CornerDownLeft className="h-3 w-3 text-foreground/60" />
-                  <span>baris baru</span>
                 </span>
               )}
             </span>
