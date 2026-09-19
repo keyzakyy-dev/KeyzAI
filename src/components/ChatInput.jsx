@@ -6,12 +6,7 @@ import { Textarea } from './ui/textarea'
 import { MODELS } from '../lib/models'
 
 function FreeBadge() {
-  return (
-    <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-1.5 py-px text-[9px] font-semibold uppercase tracking-wider text-emerald-600 ring-1 ring-inset ring-emerald-500/30 dark:text-emerald-400 dark:ring-emerald-400/30">
-      <span className="h-1 w-1 rounded-full bg-emerald-500 dark:bg-emerald-400" />
-      Free
-    </span>
-  )
+  return <span className="text-[10px] font-medium text-emerald-600/90 dark:text-emerald-400/90">Free</span>
 }
 
 export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, model, onModelChange }) {
