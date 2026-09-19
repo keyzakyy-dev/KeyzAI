@@ -78,7 +78,7 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
             </div>
           ) : (
             grouped.map((g) => (
-              <div key={g.label} className="mt-4 first:mt-0">
+              <div key={g.label} className="mt-4">
                 <p className="px-3 pb-1.5 text-[11px] font-normal text-muted-foreground">{g.label}</p>
                 <div className="space-y-0.5">
                   {g.items.map((conv) => (
