@@ -18,15 +18,6 @@ const TABS = [
   { id: 'data', label: 'Data' },
 ]
 
-function Stat({ value, label }) {
-  return (
-    <div className="rounded-lg border border-border bg-card px-3 py-2.5">
-      <p className="text-lg font-semibold leading-tight tabular-nums text-foreground">{value}</p>
-      <p className="text-[11px] text-muted-foreground">{label}</p>
-    </div>
-  )
-}
-
 // Dialog preferensi akun: info akun, model default, lebar sidebar default,
 // dan aksi data (ekspor / hapus semua / keluar). Nilai dikirim ke server
 // (D1) sehingga sinkron lintas perangkat.
@@ -79,8 +70,6 @@ export function PreferencesDialog({
   const [deleteError, setDeleteError] = useState(null)
   const [activeTab, setActiveTab] = useState('account')
   const usage = computeUsage(conversations)
-  const maxDay = Math.max(...usage.days.map((d) => d.count), 1)
-  const todayStart = usage.days.at(-1).date
 
   const commitName = async () => {
     if (!nameDirty || !nameValid || saving) return
@@ -259,33 +248,14 @@ export function PreferencesDialog({
               )}
 
               {activeTab === 'usage' && (
-                <section className="space-y-3">
-                  <div className="rounded-lg border border-border bg-card p-3">
-                    <p className="pb-2 text-[11px] text-muted-foreground">Pesan dalam 14 hari terakhir</p>
-                    <div className="flex h-16 items-end gap-1">
-                      {usage.days.map((d) => {
-                        const day = new Date(d.date)
-                        return (
-                          <div
-                            key={d.date}
-                            title={`${d.count} pesan · ${day.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}`}
-                            className={`flex-1 rounded-sm transition-all ${d.date === todayStart ? 'bg-primary/70' : 'bg-primary/20'}`}
-                            style={{ height: d.count ? `${Math.max(8, (d.count / maxDay) * 100)}%` : '2px' }}
-                          />
-                        )
-                      })}
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Stat value={usage.conversations} label="Percakapan" />
-                    <Stat value={usage.messages} label="Pesan" />
-                    <Stat value={usage.ai} label="Balasan AI" />
-                    <Stat value={usage.week} label="Aktivitas 7 hari" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Stat value={usage.aiWords.toLocaleString('id-ID')} label="Kata dihasilkan AI" />
-                    <Stat value={`± ${usage.estTokens.toLocaleString('id-ID')}`} label="Token (estimasi)" />
-                  </div>
+                <section className="rounded-lg border border-border bg-card px-4 py-5 text-center">
+                  <p className="text-3xl font-semibold tabular-nums text-foreground">
+                    ± {usage.estTokens.toLocaleString('id-ID')}
+                  </p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    token terpakai
+                    <span className="ml-1 text-xs">(estimasi, ±4 karakter/token)</span>
+                  </p>
                 </section>
               )}
 
