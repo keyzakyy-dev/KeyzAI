@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, lazy, Suspense } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { Download, LoaderCircle, Trash2, LogOut, X, Check } from 'lucide-react'
 
@@ -7,6 +7,9 @@ import { ConfirmDialog } from './ui/confirm-dialog'
 import { MODELS, DEFAULT_MODEL } from '../lib/models'
 import { normalizeDisplayName, isValidDisplayName } from '../lib/preferences'
 import { computeUsage } from '../lib/usage'
+
+// recharts cukup besar — dimuat saat tab Pemakaian pertama kali dibuka
+const TokenChart = lazy(() => import('./token-chart'))
 
 const SIDEBAR_MIN = 220
 const SIDEBAR_MAX = 420
@@ -70,7 +73,6 @@ export function PreferencesDialog({
   const [deleteError, setDeleteError] = useState(null)
   const [activeTab, setActiveTab] = useState('account')
   const usage = computeUsage(conversations)
-  const maxDay = Math.max(...usage.days.map((d) => d.tokens), 1)
   const todayStart = usage.days.at(-1).date
 
   const commitName = async () => {
@@ -252,36 +254,13 @@ export function PreferencesDialog({
               {activeTab === 'usage' && (
                 <section className="space-y-3">
                   <div className="rounded-lg border border-border bg-card p-4">
-                    <div className="flex items-baseline justify-between pb-3">
+                    <div className="flex items-baseline justify-between pb-2">
                       <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Token per hari</p>
                       <p className="text-[11px] text-muted-foreground/70">14 hari terakhir</p>
                     </div>
-                    <div className="flex h-24 items-end gap-1.5 border-b border-border/60 pb-px">
-                      {usage.days.map((d) => {
-                        const day = new Date(d.date)
-                        const isToday = d.date === todayStart
-                        return (
-                          <div
-                            key={d.date}
-                            className="group/bar flex h-full flex-1 items-end"
-                            title={`${d.tokens.toLocaleString('id-ID')} token · ${day.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}`}
-                          >
-                            <div
-                              className={`w-full rounded-t-md transition-all group-hover/bar:brightness-125 ${
-                                isToday
-                                  ? 'bg-gradient-to-t from-primary/60 to-primary'
-                                  : 'bg-gradient-to-t from-primary/15 to-primary/35'
-                              }`}
-                              style={{ height: d.tokens ? `${Math.max(6, (d.tokens / maxDay) * 100)}%` : '2px' }}
-                            />
-                          </div>
-                        )
-                      })}
-                    </div>
-                    <div className="mt-1.5 flex justify-between text-[9px] text-muted-foreground/60">
-                      <span>{new Date(usage.days[0].date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
-                      <span>Hari ini</span>
-                    </div>
+                    <Suspense fallback={<div className="h-36" />}>
+                      <TokenChart days={usage.days} todayStart={todayStart} />
+                    </Suspense>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="rounded-lg border border-border bg-card px-4 py-5 text-center">
