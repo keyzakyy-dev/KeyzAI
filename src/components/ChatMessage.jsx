@@ -33,11 +33,13 @@ function ThinkingIndicator() {
   )
 }
 
-export function ChatMessage({ role, content, timestamp, streaming, aborted = false, id, onEdit, editing = false, onEditSave, onEditCancel, onRegenerate, canPrev = false, canNext = false, onNavigate }) {
+export function ChatMessage({ role, content, timestamp, streaming, aborted = false, id, genMs, onEdit, editing = false, onEditSave, onEditCancel, onRegenerate, canPrev = false, canNext = false, onNavigate }) {
   const isUser = role === 'user'
   const time = timestamp
     ? new Date(timestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     : null
+  const words = !isUser && !streaming && content ? content.trim().split(/\s+/).length : 0
+  const secs = genMs ? Math.max(1, Math.round(genMs / 1000)) : null
 
   const [draft, setDraft] = useState(content)
   const taRef = useRef(null)
@@ -148,7 +150,14 @@ export function ChatMessage({ role, content, timestamp, streaming, aborted = fal
               {aborted && (
                 <span className="text-[11px] italic text-muted-foreground">Dihentikan</span>
               )}
-              {time && <p className="text-[11px] text-muted-foreground">{time}</p>}
+              {time && (
+                <p className="text-[11px] text-muted-foreground">
+                  {time}
+                  {!isUser && words > 0 && secs != null && (
+                    <span className="opacity-60"> · {words} kata · {secs}s</span>
+                  )}
+                </p>
+              )}
               {isUser && onEdit && (
                 <button
                   type="button"

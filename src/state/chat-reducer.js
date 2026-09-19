@@ -112,6 +112,7 @@ export function chatReducer(state, action) {
         if (!m) return c
         const next = { ...m, state: MSG_STATE.DONE }
         if (typeof action.content === 'string' && action.content) next.content = action.content
+        if (typeof action.genMs === 'number') next.genMs = action.genMs
         return { ...c, messages: { ...c.messages, [action.msgId]: next } }
       })
 

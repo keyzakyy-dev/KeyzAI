@@ -87,6 +87,7 @@ export function useChatStream({ state, dispatch, loading }) {
       const controller = new AbortController()
       busyRef.current = controller
       let streamed = false
+      const startedAt = Date.now()
 
       try {
         const text = await sendMessageStream(
@@ -106,7 +107,7 @@ export function useChatStream({ state, dispatch, loading }) {
           return
         }
 
-        dispatch({ type: 'STREAM_DONE', convId, msgId: aiMsg.id, content: text })
+        dispatch({ type: 'STREAM_DONE', convId, msgId: aiMsg.id, content: text, genMs: Date.now() - startedAt })
 
         // Judul hanya untuk percakapan baru — yang lama sudah punya judul.
         if (wasNewConversation) {

@@ -545,6 +545,7 @@ export function ChatInterface() {
                   role={msg.role}
                   content={msg.content}
                   timestamp={msg.timestamp}
+                  genMs={msg.genMs}
                   streaming={msg.state === 'streaming'}
                   aborted={msg.state === 'aborted'}
                   onEdit={startEdit}
