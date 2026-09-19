@@ -143,10 +143,10 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
                 </span>
               ) : (
                 <span className="hidden items-center gap-1.5 lg:flex">
-                  <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-sans text-foreground">↵</kbd>
+                  <kbd className="font-sans text-foreground/60">↵</kbd>
                   <span>kirim</span>
                   <span className="opacity-40">·</span>
-                  <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-sans text-foreground">⇧↵</kbd>
+                  <kbd className="font-sans text-foreground/60">⇧↵</kbd>
                   <span>baris baru</span>
                 </span>
               )}
