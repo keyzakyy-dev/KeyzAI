@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { ArrowUp, Square, ChevronDown, Check } from 'lucide-react'
+import { ArrowUp, Square, ChevronDown, Check, CornerDownLeft, ArrowBigUp } from 'lucide-react'
 import { KeyMark } from '../lib/key-mark'
 import { Button } from './ui/button'
 import { Textarea } from './ui/textarea'
@@ -143,10 +143,11 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
                 </span>
               ) : (
                 <span className="hidden items-center gap-1.5 lg:flex">
-                  <kbd className="font-sans text-foreground/60">↵</kbd>
+                  <CornerDownLeft className="h-3 w-3 text-foreground/60" />
                   <span>kirim</span>
                   <span className="opacity-40">·</span>
-                  <kbd className="font-sans text-foreground/60">⇧↵</kbd>
+                  <ArrowBigUp className="h-3 w-3 text-foreground/60" />
+                  <CornerDownLeft className="h-3 w-3 text-foreground/60" />
                   <span>baris baru</span>
                 </span>
               )}
