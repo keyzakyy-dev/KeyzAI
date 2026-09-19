@@ -15,12 +15,13 @@ export function pickGreeting({ previous = null, name = '', hour = new Date().get
   const time = timePart(hour)
   const pool = []
 
-  if (name) {
+  const firstName = String(name).trim().split(/\s+/)[0]
+  if (firstName) {
     pool.push(
-      `Halo ${name}, ada yang bisa kubantu?`,
-      `Halo ${name}, mau bahas apa hari ini?`,
-      `Halo ${name}, apa yang sedang kamu pikirkan?`,
-      `Selamat ${time}, ${name}. Ada yang bisa dibantu?`,
+      `Halo ${firstName}, ada yang bisa kubantu?`,
+      `Halo ${firstName}, mau bahas apa hari ini?`,
+      `Halo ${firstName}, apa yang sedang kamu pikirkan?`,
+      `Selamat ${time}, ${firstName}. Ada yang bisa dibantu?`,
     )
   }
 
