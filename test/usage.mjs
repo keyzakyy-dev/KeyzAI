@@ -24,10 +24,19 @@ const convs = [
 
 const u = computeUsage(convs)
 assert.equal(u.estTokens, Math.round(texts.join('').length / 4))
-assert.deepEqual(Object.keys(u), ['estTokens'])
+
+// chart token harian: hanya hari ini terisi (pesan lain 30 hari lalu)
+assert.equal(u.days.length, 14)
+assert.equal(u.days.at(-1).tokens, Math.round((texts[0].length + texts[1].length) / 4))
+assert.ok(u.days.slice(0, 13).every((d) => d.tokens === 0))
+const today = new Date(u.days.at(-1).date)
+assert.ok(today.toDateString() === new Date().toDateString(), `baris terakhir bukan hari ini: ${today}`)
 
 // kosong / rusak tidak melempar
-assert.deepEqual(computeUsage([]), { estTokens: 0 })
+const e = computeUsage([])
+assert.equal(e.estTokens, 0)
+assert.equal(e.days.length, 14)
+assert.ok(e.days.every((d) => d.tokens === 0))
 computeUsage([null, { messages: { x: null } }, { messages: { x: { role: 'user' } } }])
 
 console.log('usage: OK')
