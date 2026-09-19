@@ -4,7 +4,7 @@ import { useTheme } from '../lib/use-theme'
 import { usePageMeta, SITE_NAME, SITE_DESC, faqSchema, injectJsonLd } from '../lib/seo'
 import { Reveal } from '../lib/reveal'
 import { useAuth } from '../hooks/useAuth'
-import logo from '../assets/logo.png'
+import { LogoImg } from '../lib/logo-img'
 import { ChatMock } from '../components/ChatMock'
 import { ArrowRight, ArrowUp, MessageSquare, Code, Pencil, Lock, BookOpen, CircleHelp, Plus, Menu, X, Sun, Moon } from 'lucide-react'
 
@@ -86,7 +86,7 @@ const FAQS = [
 function Logo() {
   return (
     <div className="flex items-center gap-2.5">
-      <img src={logo} alt="KeyzAI" className="h-8 w-auto" />
+      <LogoImg className="h-8 w-auto" />
     </div>
   )
 }
@@ -407,7 +407,7 @@ function Footer() {
     <footer className="border-t border-border">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-5 sm:px-6">
         <div className="flex items-center gap-3">
-          <img src={logo} alt="KeyzAI" className="h-6 w-auto" />
+          <LogoImg className="h-6 w-auto" />
           <p className="text-xs text-muted-foreground">
             © 2026 KeyzAI · oleh{' '}
             <a

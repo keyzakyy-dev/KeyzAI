@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { Plus, MessageSquare, Pin, Trash2, User, Settings, ChevronRight } from 'lucide-react'
 
 import { Button } from './ui/button'
-import logo from '../assets/logo.png'
+import { LogoImg } from '../lib/logo-img'
 
 const GROUPS = ['Hari ini', 'Kemarin', '7 hari terakhir', 'Lebih lama']
 
@@ -49,7 +49,7 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
         {/* Brand */}
         <div className="flex h-14 flex-shrink-0 items-center px-4">
           <Link to="/" aria-label="Kembali ke beranda" className="rounded-xl transition-opacity hover:opacity-80">
-            <img src={logo} alt="KeyzAI" className="h-9 w-auto" />
+            <LogoImg className="h-9 w-auto" />
           </Link>
         </div>
 

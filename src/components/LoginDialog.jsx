@@ -1,7 +1,7 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import { X } from 'lucide-react'
 import { GoogleSignInButton } from './GoogleSignInButton'
-import logo from '../assets/logo.png'
+import { LogoImg } from '../lib/logo-img'
 
 // Popup login yang muncul saat user mencoba mengirim pesan tanpa session.
 // Disengaja tanpa "benefit list": satu tujuan, satu tombol, langsung bisa.
@@ -22,7 +22,7 @@ export function LoginDialog({ open, onOpenChange, onIdToken, loading = false, er
           </Dialog.Close>
 
           <div className="space-y-1.5 pr-8">
-            <img src={logo} alt="KeyzAI" className="h-7 w-auto" />
+            <LogoImg className="h-7 w-auto" />
             <Dialog.Title className="pt-1 text-xl font-bold tracking-tight text-foreground">
               Simpan chat-mu
             </Dialog.Title>

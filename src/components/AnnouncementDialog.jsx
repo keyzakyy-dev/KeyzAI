@@ -3,7 +3,7 @@ import { X } from 'lucide-react'
 
 import { CopyButton } from '../lib/copy-button'
 import { visibleDonations, DONATION_NOTE } from '../lib/donate'
-import logo from '../assets/logo.png'
+import { LogoImg } from '../lib/logo-img'
 
 /**
  * Announcement + ajakan dukungan/donasi. Muncul sekali per sesi browser
@@ -28,7 +28,7 @@ export function AnnouncementDialog({ open, onOpenChange }) {
           </Dialog.Close>
 
           <div className="space-y-1.5 pr-8">
-            <img src={logo} alt="KeyzAI" className="h-7 w-auto" />
+            <LogoImg className="h-7 w-auto" />
             <Dialog.Title className="pt-1 text-xl font-bold tracking-tight text-foreground">
               Suka KeyzAI?
             </Dialog.Title>

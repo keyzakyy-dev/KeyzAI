@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { usePageMeta } from '../lib/seo'
 import { ArrowRight } from 'lucide-react'
 
-import logo from '../assets/logo.png'
+import { LogoImg } from '../lib/logo-img'
 
 const UPDATED = '17 September 2026'
 
@@ -108,7 +108,7 @@ function LegalLayout({ doc, other }) {
       <header className="border-b border-border">
         <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4 sm:px-6">
           <Link to="/" aria-label="Kembali ke beranda" className="rounded-xl transition-opacity hover:opacity-80">
-            <img src={logo} alt="KeyzAI" className="h-8 w-auto" />
+            <LogoImg className="h-8 w-auto" />
           </Link>
           <Link
             to="/chat"
