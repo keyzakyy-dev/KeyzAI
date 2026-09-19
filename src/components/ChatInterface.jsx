@@ -599,6 +599,7 @@ export function ChatInterface() {
         prefs={prefs}
         saving={saving}
         error={prefsError}
+        conversations={state.convs}
         onSaveDisplayName={handlePrefsSaveDisplayName}
         onUpdatePrefs={handlePrefsUpdate}
         onDeleteAll={handlePrefsDeleteAll}

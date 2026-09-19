@@ -6,6 +6,7 @@ import { Button } from './ui/button'
 import { ConfirmDialog } from './ui/confirm-dialog'
 import { MODELS, DEFAULT_MODEL } from '../lib/models'
 import { normalizeDisplayName, isValidDisplayName } from '../lib/preferences'
+import { computeUsage } from '../lib/usage'
 
 const SIDEBAR_MIN = 220
 const SIDEBAR_MAX = 420
@@ -13,8 +14,18 @@ const SIDEBAR_MAX = 420
 const TABS = [
   { id: 'account', label: 'Akun' },
   { id: 'prefs', label: 'Preferensi' },
+  { id: 'usage', label: 'Pemakaian' },
   { id: 'data', label: 'Data' },
 ]
+
+function Stat({ value, label }) {
+  return (
+    <div className="rounded-lg border border-border bg-card px-3 py-2.5">
+      <p className="text-lg font-semibold leading-tight tabular-nums text-foreground">{value}</p>
+      <p className="text-[11px] text-muted-foreground">{label}</p>
+    </div>
+  )
+}
 
 // Dialog preferensi akun: info akun, model default, lebar sidebar default,
 // dan aksi data (ekspor / hapus semua / keluar). Nilai dikirim ke server
@@ -26,6 +37,7 @@ export function PreferencesDialog({
   prefs,
   saving,
   error,
+  conversations = [],
   onSaveDisplayName,
   onUpdatePrefs,
   onDeleteAll,
@@ -66,6 +78,7 @@ export function PreferencesDialog({
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState(null)
   const [activeTab, setActiveTab] = useState('account')
+  const usage = computeUsage(conversations)
 
   const commitName = async () => {
     if (!nameDirty || !nameValid || saving) return
@@ -240,6 +253,25 @@ export function PreferencesDialog({
                       {error}
                     </p>
                   )}
+                </section>
+              )}
+
+              {activeTab === 'usage' && (
+                <section className="space-y-3">
+                  <p className="text-sm text-foreground">
+                    Statistik lokal percakapanmu.
+                    <span className="ml-1.5 text-xs text-muted-foreground">token bersifat estimasi (±4 karakter)</span>
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Stat value={usage.conversations} label="Percakapan" />
+                    <Stat value={usage.messages} label="Pesan" />
+                    <Stat value={usage.ai} label="Balasan AI" />
+                    <Stat value={usage.week} label="Aktivitas 7 hari" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Stat value={usage.aiWords.toLocaleString('id-ID')} label="Kata dihasilkan AI" />
+                    <Stat value={`± ${usage.estTokens.toLocaleString('id-ID')}`} label="Token (estimasi)" />
+                  </div>
                 </section>
               )}
 
