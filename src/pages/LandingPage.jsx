@@ -428,6 +428,9 @@ function Footer() {
           <Link to="/terms" className={linkCls}>
             Syarat &amp; Ketentuan
           </Link>
+          <Link to="/changelog" className={linkCls}>
+            Changelog
+          </Link>
           <a
             href="https://github.com/keyzakyy-dev"
             target="_blank"
