@@ -115,9 +115,6 @@ export function PreferencesDialog({
                 <Dialog.Title className="text-xl font-bold tracking-tight text-foreground">
                   Preferensi akun
                 </Dialog.Title>
-                <Dialog.Description className="text-sm leading-relaxed text-muted-foreground">
-                  Tersimpan di akunmu, ikut saat masuk di perangkat lain.
-                </Dialog.Description>
               </div>
 
               {/* Tabs */}
