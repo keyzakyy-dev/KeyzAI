@@ -6,7 +6,16 @@ import { Reveal } from '../lib/reveal'
 import { useAuth } from '../hooks/useAuth'
 import logo from '../assets/logo.png'
 import { ChatMock } from '../components/ChatMock'
-import { ArrowRightIcon, ArrowUpIcon, GitHubLogoIcon, ChatBubbleIcon, CodeIcon, Pencil2Icon, LockClosedIcon, ReaderIcon, QuestionMarkIcon, PlusIcon, HamburgerMenuIcon, Cross2Icon, SunIcon, MoonIcon } from '@radix-ui/react-icons'
+import { ArrowRight, ArrowUp, MessageSquare, Code, Pencil, Lock, BookOpen, CircleHelp, Plus, Menu, X, Sun, Moon } from 'lucide-react'
+
+function GithubMark({ className, ...props }) {
+  return (
+    <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" className={className} {...props}>
+      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z" />
+    </svg>
+  )
+}
+
 
 
 const NAV_LINKS = [
@@ -23,37 +32,37 @@ const STATS = [
 
 const FEATURES = [
   {
-    icon: ChatBubbleIcon,
+    icon: MessageSquare,
     title: 'Tanya apa saja',
     desc: 'Dari fakta singkat sampai pertanyaan mendalam, dapat jawaban yang tepat dan rapi dalam hitungan detik.',
     prompt: 'Apa itu bunga berbunga, dijelaskan dengan sederhana?',
   },
   {
-    icon: Pencil2Icon,
+    icon: Pencil,
     title: 'Menulis lebih cepat',
     desc: 'Draf email, esai, dan konten dengan AI yang mengikuti gaya tulisanmu.',
     prompt: 'Tulis email follow-up yang ramah ke klien yang menghilang.',
   },
   {
-    icon: CodeIcon,
+    icon: Code,
     title: 'Debug kode',
     desc: 'Tempel snippet, langsung dapat perbaikan, penjelasan, dan optimasi.',
     prompt: 'Kenapa ini error "cannot read property of undefined"?',
   },
   {
-    icon: ReaderIcon,
+    icon: BookOpen,
     title: 'Pelajari topik baru',
     desc: 'Pecah topik rumit menjadi penjelasan sederhana yang mudah dipahami.',
     prompt: 'Jelaskan cara kerja neural network untuk pemula.',
   },
   {
-    icon: QuestionMarkIcon,
+    icon: CircleHelp,
     title: 'Bantu belajar',
     desc: 'Langkah demi langkah untuk soal dan konsep yang bikin mentok.',
     prompt: 'Bantu aku pahami persamaan kuadrat dari nol.',
   },
   {
-    icon: LockClosedIcon,
+    icon: Lock,
     title: 'Privat & aman',
     desc: 'Percakapanmu milikmu. Tanpa pelacakan, tanpa jual data.',
   },
@@ -200,7 +209,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
             aria-label="Ganti tema"
             className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           >
-            {theme === 'dark' ? <SunIcon className="h-4 w-4" /> : <MoonIcon className="h-4 w-4" />}
+            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
           <button type="button" onClick={() => navigate('/chat')} className={ctaClass}>
             {user ? 'Buka chat' : 'Masuk'}
@@ -215,7 +224,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
             aria-label="Ganti tema"
             className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           >
-            {theme === 'dark' ? <SunIcon className="h-4 w-4" /> : <MoonIcon className="h-4 w-4" />}
+            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
           <button
             type="button"
@@ -225,12 +234,12 @@ function Navbar({ navigate, theme, toggleTheme }) {
             aria-controls="landing-mobile-nav"
             className="relative flex h-9 w-9 items-center justify-center rounded-lg text-foreground transition-colors hover:bg-accent"
           >
-            <HamburgerMenuIcon
+            <Menu
               className={`h-4 w-4 transition-all duration-300 ${
                 open ? 'rotate-90 scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100'
               }`}
             />
-            <Cross2Icon
+            <X
               className={`absolute h-4 w-4 transition-all duration-300 ${
                 open ? 'rotate-0 scale-100 opacity-100' : '-rotate-90 scale-0 opacity-0'
               }`}
@@ -307,7 +316,7 @@ function Hero({ navigate }) {
                   Ketik pertanyaanmu di sini…
                 </span>
                 <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground transition-transform group-hover:scale-105">
-                  <ArrowUpIcon className="h-4 w-4" />
+                  <ArrowUp className="h-4 w-4" />
                 </span>
               </button>
             </div>
@@ -363,7 +372,7 @@ function Features({ navigate }) {
                   </span>
                 </span>
                 {f.prompt && (
-                  <ArrowRightIcon className="h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:opacity-100" />
+                  <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:opacity-100" />
                 )}
               </>
             )
@@ -389,7 +398,7 @@ function Features({ navigate }) {
           className="mx-auto mt-6 flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground md:hidden"
         >
           {showAll ? 'Sembunyikan' : 'Lihat fitur lainnya'}
-          <PlusIcon className={`h-4 w-4 transition-transform duration-300 ${showAll ? 'rotate-45' : ''}`} />
+          <Plus className={`h-4 w-4 transition-transform duration-300 ${showAll ? 'rotate-45' : ''}`} />
         </button>
       </div>
     </section>
@@ -411,7 +420,7 @@ function FAQ({ navigate }) {
             <details key={item.q} className="group">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 transition-colors hover:text-foreground [&::-webkit-details-marker]:hidden">
                 <span className="text-sm font-medium text-foreground">{item.q}</span>
-                <PlusIcon className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-300 group-open:rotate-45" />
+                <Plus className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-300 group-open:rotate-45" />
               </summary>
               <p className="pb-4 pr-8 text-sm leading-relaxed text-muted-foreground">{item.a}</p>
             </details>
@@ -426,7 +435,7 @@ function FAQ({ navigate }) {
             className="group inline-flex items-center gap-1 font-medium text-foreground underline-offset-4 hover:underline"
           >
             Tanya saja
-            <ArrowRightIcon className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
           </button>
         </p>
       </div>
@@ -470,12 +479,12 @@ function Footer() {
             rel="noopener noreferrer"
             className={linkCls}
           >
-            <GitHubLogoIcon className="h-3.5 w-3.5" />
+            <GithubMark className="h-3.5 w-3.5" />
             GitHub
           </a>
           <button type="button" onClick={toTop} className={linkCls}>
             Ke atas
-            <ArrowUpIcon className="h-3 w-3" />
+            <ArrowUp className="h-3 w-3" />
           </button>
         </nav>
       </div>

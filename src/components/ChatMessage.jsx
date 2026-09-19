@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Pencil1Icon, RotateCounterClockwiseIcon, ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons'
+import { Pencil, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react'
 import { KeyMark } from '../lib/key-mark'
 import { Markdown } from '../lib/markdown'
 import { CopyButton } from '../lib/copy-button'
@@ -133,7 +133,7 @@ export function ChatMessage({ role, content, timestamp, streaming, aborted = fal
                     aria-label="Versi sebelumnya"
                     className="rounded p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-30 disabled:hover:bg-transparent"
                   >
-                    <ChevronLeftIcon className="h-3.5 w-3.5" />
+                    <ChevronLeft className="h-3.5 w-3.5" />
                   </button>
                   <button
                     type="button"
@@ -142,7 +142,7 @@ export function ChatMessage({ role, content, timestamp, streaming, aborted = fal
                     aria-label="Versi berikutnya"
                     className="rounded p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-30 disabled:hover:bg-transparent"
                   >
-                    <ChevronRightIcon className="h-3.5 w-3.5" />
+                    <ChevronRight className="h-3.5 w-3.5" />
                   </button>
                 </div>
               )}
@@ -157,7 +157,7 @@ export function ChatMessage({ role, content, timestamp, streaming, aborted = fal
                   aria-label="Edit pesan"
                   className="flex items-center gap-1 rounded p-1 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                 >
-                  <Pencil1Icon className="h-3.5 w-3.5" />
+                  <Pencil className="h-3.5 w-3.5" />
                 </button>
               )}
               {!isUser && onRegenerate && (
@@ -168,7 +168,7 @@ export function ChatMessage({ role, content, timestamp, streaming, aborted = fal
                   title="Buat ulang"
                   className="flex items-center gap-1 rounded p-1 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                 >
-                  <RotateCounterClockwiseIcon className="h-3.5 w-3.5" />
+                  <RotateCcw className="h-3.5 w-3.5" />
                 </button>
               )}
               <CopyButton text={content} />

@@ -1,5 +1,5 @@
 import * as Dialog from '@radix-ui/react-dialog'
-import { Cross2Icon } from '@radix-ui/react-icons'
+import { X } from 'lucide-react'
 
 import { CopyButton } from '../lib/copy-button'
 import { visibleDonations, DONATION_NOTE } from '../lib/donate'
@@ -23,7 +23,7 @@ export function AnnouncementDialog({ open, onOpenChange }) {
               aria-label="Tutup"
               className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
             >
-              <Cross2Icon className="h-4 w-4" />
+              <X className="h-4 w-4" />
             </button>
           </Dialog.Close>
 

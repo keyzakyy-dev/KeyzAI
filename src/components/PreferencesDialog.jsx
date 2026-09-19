@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
-import { DownloadIcon, ReloadIcon, TrashIcon, ExitIcon, Cross2Icon, CheckIcon } from '@radix-ui/react-icons'
+import { Download, LoaderCircle, Trash2, LogOut, X, Check } from 'lucide-react'
 
 import { Button } from './ui/button'
 import { ConfirmDialog } from './ui/confirm-dialog'
@@ -101,7 +101,7 @@ export function PreferencesDialog({
                   aria-label="Tutup"
                   className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                 >
-                  <Cross2Icon className="h-4 w-4" />
+                  <X className="h-4 w-4" />
                 </button>
               </Dialog.Close>
               <div className="space-y-1.5 pr-8">
@@ -154,7 +154,7 @@ export function PreferencesDialog({
                     disabled={!nameDirty || !nameValid || saving}
                     className="h-9 shrink-0 rounded-lg px-3.5"
                   >
-                    {saving ? <ReloadIcon className="h-4 w-4 animate-spin" /> : nameSaved ? <CheckIcon className="h-4 w-4" /> : null}
+                    {saving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : nameSaved ? <Check className="h-4 w-4" /> : null}
                     Simpan
                   </Button>
                 </div>
@@ -184,7 +184,7 @@ export function PreferencesDialog({
                       }`}
                     >
                       <span className="font-medium">{m.label}</span>
-                      {m.id === model && <CheckIcon className="h-4 w-4 text-primary" />}
+                      {m.id === model && <Check className="h-4 w-4 text-primary" />}
                     </button>
                   ))}
                 </div>
@@ -230,7 +230,7 @@ export function PreferencesDialog({
                   onClick={onExportAll}
                   className="flex w-full items-center gap-2.5 rounded-md px-1 py-2 text-left text-sm text-foreground transition-colors hover:bg-accent/40"
                 >
-                  <DownloadIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <Download className="h-4 w-4 shrink-0 text-muted-foreground" />
                   Ekspor semua percakapan
                 </button>
 
@@ -239,7 +239,7 @@ export function PreferencesDialog({
                   onClick={() => { setDeleteError(null); setDeleteConfirm(true) }}
                   className="flex w-full items-center gap-2.5 rounded-md px-1 py-2 text-left text-sm text-destructive transition-colors hover:bg-destructive/10"
                 >
-                  <TrashIcon className="h-4 w-4 shrink-0" />
+                  <Trash2 className="h-4 w-4 shrink-0" />
                   Hapus semua percakapan
                 </button>
                 {deleteDone && <p className="px-1 text-xs text-primary">Semua percakapan dihapus.</p>}
@@ -250,7 +250,7 @@ export function PreferencesDialog({
                   onClick={onLogout}
                   className="flex w-full items-center gap-2.5 rounded-md px-1 py-2 text-left text-sm text-muted-foreground transition-colors hover:bg-accent/40 hover:text-foreground"
                 >
-                  <ExitIcon className="h-4 w-4 shrink-0" />
+                  <LogOut className="h-4 w-4 shrink-0" />
                   Keluar
                 </button>
               </section>

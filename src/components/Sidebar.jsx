@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { PlusIcon, ChatBubbleIcon, DrawingPinFilledIcon, TrashIcon, PersonIcon, GearIcon, ChevronRightIcon } from '@radix-ui/react-icons'
+import { Plus, MessageSquare, Pin, Trash2, User, Settings, ChevronRight } from 'lucide-react'
 
 import { Button } from './ui/button'
 import logo from '../assets/logo.png'
@@ -61,7 +61,7 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
             className="h-8 w-full justify-start gap-2 px-3 font-medium text-muted-foreground hover:text-foreground"
           >
             <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border/70 bg-foreground/5">
-              <PlusIcon />
+              <Plus />
             </span>
             Chat baru
           </Button>
@@ -96,9 +96,9 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
                         title={conv.title || undefined}
                       >
                         {conv.pinned ? (
-                          <DrawingPinFilledIcon className="h-3.5 w-3.5 shrink-0 fill-primary/90" />
+                          <Pin className="h-3.5 w-3.5 shrink-0 fill-primary/90" />
                         ) : (
-                          <ChatBubbleIcon className="h-3.5 w-3.5 shrink-0 opacity-50" />
+                          <MessageSquare className="h-3.5 w-3.5 shrink-0 opacity-50" />
                         )}
                         {conv.titlePending ? (
                           <span className="my-1 block h-3 w-24 animate-pulse rounded-full bg-muted-foreground/20" />
@@ -111,7 +111,7 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
                         className="rounded-sm p-1.5 text-muted-foreground opacity-100 transition-opacity hover:text-destructive focus-visible:opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
                         aria-label="Hapus percakapan"
                       >
-                        <TrashIcon className="h-3.5 w-3.5" />
+                        <Trash2 className="h-3.5 w-3.5" />
                       </button>
                     </div>
                   ))}
@@ -131,7 +131,7 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
               className="mb-1 flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left transition-colors hover:bg-accent/40"
             >
               <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-dashed border-border text-muted-foreground">
-                <PersonIcon className="h-3.5 w-3.5" />
+                <User className="h-3.5 w-3.5" />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-medium text-foreground">Masuk</span>
@@ -139,7 +139,7 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
                   Riwayat belum tersimpan
                 </span>
               </span>
-              <ChevronRightIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" />
+              <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" />
             </button>
           ) : (
             <button
@@ -162,8 +162,8 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
                   <span className="block truncate text-sm font-medium text-foreground">{user.name || 'Pengguna'}</span>
                   {user.email && <span className="block truncate text-[11px] text-muted-foreground">{user.email}</span>}
                 </span>
-                <GearIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                <ChevronRightIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" />
+                <Settings className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" />
               </span>
             </button>
           )}

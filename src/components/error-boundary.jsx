@@ -1,5 +1,5 @@
 import React from 'react'
-import { ExclamationTriangleIcon } from '@radix-ui/react-icons'
+import { TriangleAlert } from 'lucide-react'
 
 import { Button } from './ui/button'
 
@@ -22,7 +22,7 @@ export class ErrorBoundary extends React.Component {
       return (
         <div className="flex min-h-dvh flex-col items-center justify-center gap-5 bg-background p-6 text-center">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-muted">
-            <ExclamationTriangleIcon className="h-6 w-6 text-destructive" />
+            <TriangleAlert className="h-6 w-6 text-destructive" />
           </div>
           <div className="space-y-1.5">
             <h1 className="text-lg font-semibold tracking-tight text-foreground">Terjadi kesalahan</h1>

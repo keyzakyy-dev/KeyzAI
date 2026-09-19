@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ChevronLeftIcon, ChevronRightIcon, RotateCounterClockwiseIcon } from '@radix-ui/react-icons'
+import { ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react'
 import { KeyMark } from '../lib/key-mark'
 
 const USER_TXT = 'Bikinin caption singkat buat foto kopi pagi'
@@ -126,12 +126,12 @@ export function ChatMock() {
                 {answerDone && (
                   <div className="flex items-center justify-center gap-1 text-[11px] text-muted-foreground animate-fade-up">
                     <span className="inline-flex items-center gap-0.5 rounded-full border border-border bg-background px-1 py-0.5">
-                      <ChevronLeftIcon className={`h-3 w-3 ${branch === 0 ? 'opacity-30' : ''}`} />
+                      <ChevronLeft className={`h-3 w-3 ${branch === 0 ? 'opacity-30' : ''}`} />
                       <span className="font-medium tabular-nums">{branch + 1} / 2</span>
-                      <ChevronRightIcon className="h-3 w-3" />
+                      <ChevronRight className="h-3 w-3" />
                     </span>
                     <span className="inline-flex items-center gap-1 rounded-full border border-border bg-background px-1.5 py-0.5">
-                      <RotateCounterClockwiseIcon className="h-2.5 w-2.5" />
+                      <RotateCcw className="h-2.5 w-2.5" />
                       buat ulang
                     </span>
                   </div>

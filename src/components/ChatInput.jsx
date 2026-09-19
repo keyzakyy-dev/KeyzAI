@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { ArrowUpIcon, StopIcon, ChevronDownIcon, CheckIcon } from '@radix-ui/react-icons'
+import { ArrowUp, Square, ChevronDown, Check } from 'lucide-react'
 import { KeyMark } from '../lib/key-mark'
 import { Button } from './ui/button'
 import { Textarea } from './ui/textarea'
@@ -89,7 +89,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
                     <KeyMark className="h-3 w-3" />
                     <span className="truncate">{currentModel.label}</span>
                     {currentModel.free && <FreeBadge />}
-                    <ChevronDownIcon className={`h-3 w-3 transition-transform ${modelOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`h-3 w-3 transition-transform ${modelOpen ? 'rotate-180' : ''}`} />
                   </button>
                   {modelOpen && (
                     <>
@@ -119,7 +119,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
                                   </span>
                                   <span className="block truncate text-[11px] text-muted-foreground/70">{m.id}</span>
                                 </span>
-                                {active && <CheckIcon className="h-3.5 w-3.5 shrink-0" />}
+                                {active && <Check className="h-3.5 w-3.5 shrink-0" />}
                               </button>
                             </li>
                           )
@@ -165,7 +165,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
               className="h-8 w-8 flex-shrink-0 rounded-full"
               aria-label="Hentikan generasi"
             >
-              <StopIcon className="h-3 w-3 fill-current" />
+              <Square className="h-3 w-3 fill-current" />
             </Button>
           ) : (
             <Button
@@ -175,7 +175,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
               className="h-8 w-8 flex-shrink-0 rounded-full"
               aria-label="Kirim pesan"
             >
-              <ArrowUpIcon className="h-4 w-4" />
+              <ArrowUp className="h-4 w-4" />
             </Button>
           )}
         </div>
