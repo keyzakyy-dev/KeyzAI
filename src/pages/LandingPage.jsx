@@ -18,10 +18,6 @@ function GithubMark({ className, ...props }) {
 
 
 
-const NAV_LINKS = [
-  { label: 'Fitur', href: '#features' },
-  { label: 'FAQ', href: '#faq' },
-]
 
 const STATS = [
   { value: 'Rp0', label: 'Biaya untuk memulai' },
@@ -99,7 +95,6 @@ function Navbar({ navigate, theme, toggleTheme }) {
   const { user } = useAuth()
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [active, setActive] = useState('')
   const progressRef = useRef(null)
 
   // Satu listener untuk semua: status scroll, progress baca, dan scroll-spy.
@@ -114,15 +109,6 @@ function Navbar({ navigate, theme, toggleTheme }) {
         const ratio = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0
         progressRef.current.style.transform = `scaleX(${ratio})`
       }
-
-      // scroll-spy: section terakhir yang sudah melewati garis 140px dari atas viewport
-      const line = window.scrollY + 140
-      let current = ''
-      for (const link of NAV_LINKS) {
-        const el = document.getElementById(link.href.slice(1))
-        if (el && el.getBoundingClientRect().top + window.scrollY <= line) current = link.href
-      }
-      setActive(current)
     }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
@@ -152,13 +138,6 @@ function Navbar({ navigate, theme, toggleTheme }) {
     mq.addEventListener?.('change', onChange)
     return () => mq.removeEventListener?.('change', onChange)
   }, [])
-
-  const linkClass = (href) =>
-    `text-sm font-medium transition-colors ${
-      active === href
-        ? 'text-foreground underline decoration-2 underline-offset-8'
-        : 'text-muted-foreground hover:text-foreground'
-    }`
 
   const ctaClass =
     'inline-flex h-8 items-center gap-1.5 rounded-lg bg-primary px-3.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90'
@@ -190,18 +169,6 @@ function Navbar({ navigate, theme, toggleTheme }) {
         </button>
 
         {/* Desktop */}
-        <div className="hidden items-center gap-7 md:flex">
-          {NAV_LINKS.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              className={linkClass(link.href)}
-              aria-current={active === link.href ? 'true' : undefined}
-            >
-              {link.label}
-            </a>
-          ))}
-        </div>
         <div className="hidden shrink-0 items-center gap-2 md:flex">
           <button
             type="button"
@@ -256,18 +223,6 @@ function Navbar({ navigate, theme, toggleTheme }) {
           style={{ animationDuration: '220ms' }}
         >
           <nav className="mx-auto max-w-7xl px-4 py-2">
-            {NAV_LINKS.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                onClick={() => setOpen(false)}
-                className={`block border-b border-border/40 py-3 text-sm font-medium last:border-b-0 transition-colors ${
-                  active === link.href ? 'text-foreground' : 'text-muted-foreground'
-                }`}
-              >
-                {link.label}
-              </a>
-            ))}
             <button
               type="button"
               onClick={() => {
