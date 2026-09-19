@@ -276,7 +276,6 @@ export function PreferencesDialog({
                       <p className="mt-1 text-sm text-muted-foreground">Token total</p>
                     </div>
                   </div>
-                  <p className="text-center text-xs text-muted-foreground/70">estimasi, ±4 karakter/token</p>
                 </section>
               )}
 
