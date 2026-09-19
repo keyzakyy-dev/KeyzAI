@@ -88,7 +88,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
                   >
                     <KeyMark className="h-3 w-3" />
                     <span className="truncate">{currentModel.label}</span>
-                    <FreeBadge />
+                    {currentModel.free && <FreeBadge />}
                     <ChevronDownIcon className={`h-3 w-3 transition-transform ${modelOpen ? 'rotate-180' : ''}`} />
                   </button>
                   {modelOpen && (
@@ -113,7 +113,10 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
                                 }`}
                               >
                                 <span className="min-w-0">
-                                  <span className="block truncate font-medium">{m.label}</span>
+                                  <span className="flex items-center gap-1.5">
+                                    <span className="truncate font-medium">{m.label}</span>
+                                    {m.free && <FreeBadge />}
+                                  </span>
                                   <span className="block truncate text-[11px] text-muted-foreground/70">{m.id}</span>
                                 </span>
                                 {active && <CheckIcon className="h-3.5 w-3.5 shrink-0" />}
@@ -134,7 +137,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
                 >
                   <KeyMark className="h-3 w-3" />
                   <span className="truncate">{currentModel.label}</span>
-                  <FreeBadge />
+                  {currentModel.free && <FreeBadge />}
                 </div>
               ))}
             <span className="flex min-w-0 items-center gap-1.5 text-[11px] text-muted-foreground">
