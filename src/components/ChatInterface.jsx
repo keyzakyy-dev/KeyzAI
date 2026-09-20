@@ -1,5 +1,5 @@
 ﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams, useLocation } from 'react-router-dom'
 import { Sun, Moon, Menu, X, ArrowDown, ChevronLeft, ChevronRight, CircleX, RotateCcw, ChevronDown, Pin, Pencil, Trash2, Download } from 'lucide-react'
 
 import { ChatMessage } from './ChatMessage'
@@ -18,6 +18,7 @@ import { loadModel, saveModel, isModelStored } from '../lib/models'
 import { pickGreeting } from '../lib/greetings'
 import { downloadConversation, downloadAll } from '../lib/backup'
 import { useChatStore } from '../hooks/useChatStore'
+import { usePrdHistory } from '../hooks/usePrdHistory'
 import { useChatStream } from '../hooks/useChatStream'
 import { useToast } from '../hooks/useToast'
 import { useResizableSidebar } from '../hooks/useResizableSidebar'
@@ -30,6 +31,7 @@ import { hasSiblings, navigateBranch, serializeConv } from '../state/tree.js'
 
 export function ChatInterface() {
   const { state, dispatch, activeConv, messages, loading, persistError, refreshHistory, logoutReset } = useChatStore()
+  const { history: prdItems, remove: removePrd } = usePrdHistory()
   const { send, stop } = useChatStream({ state, dispatch, loading })
   const { toast, notify, dismiss } = useToast()
   const { width: sidebarW, resizing, onDragStart, setWidth: setSidebarWidth, hasStoredWidth } = useResizableSidebar()
@@ -61,6 +63,9 @@ export function ChatInterface() {
 
   const currentTitle = activeConv?.title
   const error = state.error || persistError
+
+  // Sorot PRD aktif bila sidebar dipakai di rute /prd-builder/:projectId.
+  const currentPrdId = useLocation().pathname.match(/^\/prd-builder\/(.+)$/)?.[1] || null
 
   const { user, logout, loginWithGoogle, updateUser } = useAuth()
 
@@ -276,6 +281,26 @@ export function ChatInterface() {
     })
   }
 
+  // ---------- riwayat PRD (dipakai sidebar, pola sama dengan percakapan)
+  const handleSelectPrd = (projectId) => {
+    navigate(`/prd-builder/${projectId}`)
+    setSidebarOpen(false)
+  }
+
+  const handleDeletePrd = (projectId) => {
+    const meta = prdItems.find((m) => m.id === projectId)
+    setConfirm({
+      title: 'Hapus PRD ini?',
+      description: `"${meta?.projectName || 'PRD tanpa judul'}" akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.`,
+      confirmLabel: 'Hapus',
+      danger: true,
+      onConfirm: () => {
+        removePrd(projectId)
+        notify(`"${meta?.projectName || 'PRD'}" dihapus`)
+      },
+    })
+  }
+
   // ---------- scroll
   const scrollToBottom = () => {
     const el = scrollAreaRef.current
@@ -397,6 +422,10 @@ export function ChatInterface() {
         onSelect={handleSelectConv}
         onNew={handleNewChat}
         onDelete={handleDeleteConv}
+        prdItems={prdItems}
+        currentPrdId={currentPrdId}
+        onSelectPrd={handleSelectPrd}
+        onDeletePrd={handleDeletePrd}
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         collapsed={collapsed}

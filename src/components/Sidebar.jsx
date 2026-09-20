@@ -19,7 +19,7 @@ function groupKey(ts) {
   return 'Lebih lama'
 }
 
-export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, open, onClose, collapsed, onDragStart, user, onLogin, onOpenSettings }) {
+export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, prdItems, currentPrdId, onSelectPrd, onDeletePrd, open, onClose, collapsed, onDragStart, user, onLogin, onOpenSettings }) {
   // Urut + grouping pakai aktivitas terakhir (updatedAt); fallback createdAt.
   const sortKey = (c) => c.updatedAt ?? c.createdAt ?? 0
   const sorted = [...conversations].sort(
@@ -28,6 +28,13 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
   const grouped = GROUPS.map((label) => ({
     label,
     items: sorted.filter((c) => groupKey(sortKey(c)) === label),
+  })).filter((g) => g.items.length > 0)
+
+  // Riwayat PRD: urut + grouping sama seperti conversations.
+  const sortedPrd = [...(prdItems || [])].sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0))
+  const groupedPrd = GROUPS.map((label) => ({
+    label,
+    items: sortedPrd.filter((m) => groupKey(m.updatedAt || m.createdAt) === label),
   })).filter((g) => g.items.length > 0)
 
   return (
@@ -82,9 +89,9 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
           </Button>
         </div>
 
-        {/* Conversations */}
+        {/* Conversations + Riwayat PRD */}
         <div className="flex-1 overflow-y-auto px-2 pb-3">
-          {conversations.length === 0 ? (
+          {conversations.length === 0 && sortedPrd.length === 0 ? (
             <div className="px-3 pt-10 text-center">
               <p className="text-sm font-medium text-muted-foreground">Belum ada percakapan</p>
               <p className="mt-1 text-xs leading-relaxed text-muted-foreground/60">
@@ -92,47 +99,95 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
               </p>
             </div>
           ) : (
-            grouped.map((g) => (
-              <div key={g.label} className="mt-4">
-                <p className="px-3 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/80">{g.label}</p>
-                <div className="space-y-0.5">
-                  {g.items.map((conv) => (
-                    <div
-                      key={conv.id}
-                      className={`group flex items-center gap-1 rounded-md pr-1 text-sm transition-colors ${
-                        currentId === conv.id
-                          ? 'bg-accent/70 text-foreground'
-                          : 'text-muted-foreground hover:bg-accent/40 hover:text-foreground'
-                      }`}
-                    >
-                      <button
-                        onClick={() => onSelect(conv.id)}
-                        className="flex min-w-0 flex-1 items-center gap-2.5 px-3 py-1.5 text-left"
-                        title={conv.title || undefined}
+            <>
+              {grouped.map((g) => (
+                <div key={g.label} className="mt-4">
+                  <p className="px-3 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/80">{g.label}</p>
+                  <div className="space-y-0.5">
+                    {g.items.map((conv) => (
+                      <div
+                        key={conv.id}
+                        className={`group flex items-center gap-1 rounded-md pr-1 text-sm transition-colors ${
+                          currentId === conv.id
+                            ? 'bg-accent/70 text-foreground'
+                            : 'text-muted-foreground hover:bg-accent/40 hover:text-foreground'
+                        }`}
                       >
-                        {conv.pinned ? (
-                          <Pin className="h-3 w-3 shrink-0 fill-primary/90" />
-                        ) : (
-                          <MessageSquare className="h-3 w-3 shrink-0 opacity-35" />
-                        )}
-                        {conv.titlePending ? (
-                          <span className="my-1 block h-3 w-24 animate-pulse rounded-full bg-muted-foreground/20" />
-                        ) : (
-                          <span className="min-w-0 flex-1 truncate">{conv.title}</span>
-                        )}
-                      </button>
-                      <button
-                        onClick={() => onDelete(conv.id)}
-                        className="rounded-md p-1 text-muted-foreground opacity-100 transition-opacity hover:text-destructive focus-visible:opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
-                        aria-label="Hapus percakapan"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  ))}
+                        <button
+                          onClick={() => onSelect(conv.id)}
+                          className="flex min-w-0 flex-1 items-center gap-2.5 px-3 py-1.5 text-left"
+                          title={conv.title || undefined}
+                        >
+                          {conv.pinned ? (
+                            <Pin className="h-3 w-3 shrink-0 fill-primary/90" />
+                          ) : (
+                            <MessageSquare className="h-3 w-3 shrink-0 opacity-35" />
+                          )}
+                          {conv.titlePending ? (
+                            <span className="my-1 block h-3 w-24 animate-pulse rounded-full bg-muted-foreground/20" />
+                          ) : (
+                            <span className="min-w-0 flex-1 truncate">{conv.title}</span>
+                          )}
+                        </button>
+                        <button
+                          onClick={() => onDelete(conv.id)}
+                          className="rounded-md p-1 text-muted-foreground opacity-100 transition-opacity hover:text-destructive focus-visible:opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
+                          aria-label="Hapus percakapan"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))
+              ))}
+
+              {groupedPrd.length > 0 && (
+                <div className="mt-5">
+                  <p className="flex items-center gap-1.5 px-3 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/80">
+                    <FileText className="h-3 w-3" />
+                    PRD
+                  </p>
+                  <div className="space-y-0.5">
+                    {groupedPrd.map((g) => (
+                      <div key={g.label}>
+                        {groupedPrd.length > 1 && (
+                          <p className="px-3 pb-1 pt-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/50">
+                            {g.label}
+                          </p>
+                        )}
+                        {g.items.map((m) => (
+                          <div
+                            key={m.id}
+                            className={`group flex items-center gap-1 rounded-md pr-1 text-sm transition-colors ${
+                              currentPrdId === m.id
+                                ? 'bg-accent/70 text-foreground'
+                                : 'text-muted-foreground hover:bg-accent/40 hover:text-foreground'
+                            }`}
+                          >
+                            <button
+                              onClick={() => onSelectPrd(m.id)}
+                              className="flex min-w-0 flex-1 items-center gap-2.5 px-3 py-1.5 text-left"
+                              title={m.projectName || undefined}
+                            >
+                              <FileText className="h-3 w-3 shrink-0 opacity-35" />
+                              <span className="min-w-0 flex-1 truncate">{m.projectName || 'PRD tanpa judul'}</span>
+                            </button>
+                            <button
+                              onClick={() => onDeletePrd(m.id)}
+                              className="rounded-md p-1 text-muted-foreground opacity-100 transition-opacity hover:text-destructive focus-visible:opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
+                              aria-label="Hapus PRD"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
 
