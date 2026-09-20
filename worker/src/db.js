@@ -213,3 +213,72 @@ export async function deleteAllConversations(db, userId) {
     .run()
   return res.meta.changes || 0
 }
+
+// ---------------------------------------------------------------------------
+// PRD Projects (riwayat per akun Google). Seluruh objek project disimpan utuh
+// sebagai JSON (sama seperti conversations) supaya semua tahap + jawaban selamat.
+// Kolom relasional (name, timestamps) untuk query list & urutan riwayat.
+// ---------------------------------------------------------------------------
+
+export function rowToProject(row) {
+  if (!row) return null
+  let project = {}
+  try {
+    project = JSON.parse(row.project_json || '{}')
+  } catch {
+    project = {}
+  }
+  // Kolom relasional menang atas JSON untuk konsistensi list.
+  project.id = row.id
+  project.createdAt = row.created_at
+  project.updatedAt = row.updated_at
+  if (row.name) project.projectName = row.name
+  return project
+}
+
+// List ringan (tanpa project_json) untuk riwayat.
+export async function listProjects(db, userId) {
+  const res = await db
+    .prepare(`SELECT id, name, created_at, updated_at FROM prd_projects WHERE user_id = ? ORDER BY updated_at DESC`)
+    .bind(userId)
+    .all()
+  return (res.results || []).map((r) => ({ id: r.id, projectName: r.name || '', createdAt: r.created_at, updatedAt: r.updated_at }))
+}
+
+export async function getProject(db, userId, projectId) {
+  const row = await db
+    .prepare(`SELECT * FROM prd_projects WHERE id = ? AND user_id = ?`)
+    .bind(projectId, userId)
+    .first()
+  return rowToProject(row)
+}
+
+export async function saveProject(db, userId, project) {
+  const now = Date.now()
+  await db
+    .prepare(
+      `INSERT INTO prd_projects (id, user_id, name, created_at, updated_at, project_json)
+       VALUES (?, ?, ?, ?, ?, ?)
+       ON CONFLICT(id) DO UPDATE SET
+         name = excluded.name,
+         updated_at = excluded.updated_at,
+         project_json = excluded.project_json`,
+    )
+    .bind(
+      project.id,
+      userId,
+      (project.projectName || '').slice(0, 120),
+      project.createdAt || now,
+      project.updatedAt || now,
+      JSON.stringify(project),
+    )
+    .run()
+}
+
+export async function deleteProject(db, userId, projectId) {
+  const res = await db
+    .prepare(`DELETE FROM prd_projects WHERE id = ? AND user_id = ?`)
+    .bind(projectId, userId)
+    .run()
+  return res.meta.changes > 0
+}

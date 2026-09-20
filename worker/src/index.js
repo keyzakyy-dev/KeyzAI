@@ -10,6 +10,8 @@
  * PATCH /api/conversations/:id - pin/rename
  * DELETE /api/conversations   - hapus semua percakapan user
  * DELETE /api/conversations/:id
+ * GET  /api/prd/projects      - riwayat PRD per akun
+ * GET/PUT/DELETE /api/prd/projects/:id
  */
 
 import { verifyGoogleIdToken, signSession, verifySession } from './crypto.js'
@@ -20,6 +22,10 @@ import {
   saveConversation,
   patchConversation,
   deleteConversation,
+  listProjects,
+  getProject,
+  saveProject,
+  deleteProject,
   getPreferences,
   updatePreferences,
   deleteAllConversations,
@@ -233,6 +239,52 @@ export default {
         const data = await updatePreferences(env.DB, session.uid, patch)
         if (!data) return unauthorized(env, request)
         return response(true, 'Saved', 200, data, corsHeaders(request, env))
+      }
+    }
+
+    // ---------------- RIWAYAT PRD (butuh akun Google)
+    // GET    /api/prd/projects      - list ringan riwayat
+    // GET    /api/prd/projects/:id  - project utuh
+    // PUT    /api/prd/projects/:id  - upsert (auto-save client)
+    // DELETE /api/prd/projects/:id
+    const prdMatch = /^\/api\/prd\/projects(?:\/([^/]+))?$/.exec(path)
+    if (prdMatch) {
+      const session = await sessionUser(request, env)
+      if (!session) return unauthorized(env, request)
+      const projectId = prdMatch[1] || null
+      const db = env.DB
+
+      if (request.method === 'GET' && !projectId) {
+        const projects = await listProjects(db, session.uid)
+        return response(true, 'OK', 200, { projects }, corsHeaders(request, env))
+      }
+
+      if (projectId) {
+        if (request.method === 'GET') {
+          const project = await getProject(db, session.uid, projectId)
+          if (!project) return response(false, 'Not found', 404, { error: 'PRD tidak ditemukan' }, corsHeaders(request, env))
+          return response(true, 'OK', 200, { project }, corsHeaders(request, env))
+        }
+
+        if (request.method === 'PUT') {
+          let body
+          try {
+            body = await request.json()
+          } catch {
+            return response(false, 'Bad request', 400, { error: 'Invalid JSON' }, corsHeaders(request, env))
+          }
+          if (!body?.id || body.id !== projectId || typeof body.projectIdea !== 'string') {
+            return response(false, 'Bad request', 400, { error: 'Project tidak valid' }, corsHeaders(request, env))
+          }
+          await saveProject(db, session.uid, body)
+          return response(true, 'Saved', 200, {}, corsHeaders(request, env))
+        }
+
+        if (request.method === 'DELETE') {
+          const ok = await deleteProject(db, session.uid, projectId)
+          if (!ok) return response(false, 'Not found', 404, { error: 'PRD tidak ditemukan' }, corsHeaders(request, env))
+          return response(true, 'Deleted', 200, {}, corsHeaders(request, env))
+        }
       }
     }
 

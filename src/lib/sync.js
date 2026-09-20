@@ -81,3 +81,36 @@ export async function savePreferences(patch) {
   )
   return data
 }
+
+// ---------------------------------------------------------------------------
+// Riwayat PRD per akun Google. Meniru pola percakapan: list ringan, detail
+// utuh, upsert penuh, hapus.
+// ---------------------------------------------------------------------------
+
+export async function fetchPrdProjects() {
+  const data = await parse(await authFetch(`${API_URL}/api/prd/projects`))
+  return data.projects || []
+}
+
+export async function fetchPrdProject(id) {
+  const data = await parse(await authFetch(`${API_URL}/api/prd/projects/${encodeURIComponent(id)}`))
+  return data.project || null
+}
+
+export async function savePrdProject(project) {
+  await parse(
+    await authFetch(`${API_URL}/api/prd/projects/${encodeURIComponent(project.id)}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(project),
+    }),
+  )
+}
+
+export async function deletePrdProject(id) {
+  await parse(
+    await authFetch(`${API_URL}/api/prd/projects/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+    }),
+  )
+}

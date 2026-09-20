@@ -40,8 +40,10 @@ import {
   clearPrdState,
   loadPrdState,
   loadProject,
+  removeProject as removeProjectLocal,
   savePrdState,
 } from '../state/prd-persistence.js'
+import { deletePrdProject, fetchPrdProject, fetchPrdProjects, savePrdProject } from '../lib/sync.js'
 
 const LOADING_MESSAGES = {
   analyze: ['Menganalisis ide…', 'Memahami jenis produk…', 'Mencari requirement yang sudah jelas…'],
@@ -81,6 +83,13 @@ export function usePrdProject({ projectParam } = {}) {
     projectRef.current = project
   }, [project])
 
+  // Riwayat PRD per akun (metadata untuk dialog). Server = sumber kebenaran
+  // saat login; project lokal yang belum tersinkron ikut ter-upload sekali.
+  const [history, setHistory] = useState([])
+  const [loadingProject, setLoadingProject] = useState(!!projectParam)
+  const hydrated = useRef(false)
+  const lastSynced = useRef(new Map())
+
   const step = project?.step || 'idea'
   const stepIndex = indexOfStep(step)
   const isWorking = !!loadingStage
@@ -107,6 +116,112 @@ export function usePrdProject({ projectParam } = {}) {
     return () => clearTimeout(t)
   }, [project, persist])
 
+  // Riwayat per akun: saat login, tarik list server, lalu upload project lokal
+  // yang belum ada di server (mis. dibuat sebelum fitur ini) sekali jalan.
+  const hydrate = useCallback(async () => {
+    if (!isAuthenticated()) {
+      setLoadingProject(false)
+      return
+    }
+    if (hydrated.current) return
+    hydrated.current = true
+    try {
+      const list = await fetchPrdProjects()
+      const metas = Array.isArray(list) ? list : []
+      for (const m of metas) lastSynced.current.set(m.id, `${m.id}:${m.updatedAt || m.createdAt || 0}`)
+      // Project lokal yang belum ada di server (dibuat sebelum login / sebelum
+      // fitur ini) → upload sekali lalu gabungkan ke riwayat.
+      const { projects } = loadPrdState()
+      const localOnly = Object.values(projects).filter((p) => p?.id && p?.projectIdea && !lastSynced.current.has(p.id))
+      for (const p of localOnly) {
+        savePrdProject(p).catch(() => {})
+      }
+      setHistory(mergeMetas(metas, localOnly.map(toMeta)))
+    } catch {
+      // jaringan gagal → riwayat tetap dari lokal
+      const { projects } = loadPrdState()
+      setHistory(Object.values(projects).map(toMeta).sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)))
+    }
+  }, [])
+
+  useEffect(() => {
+    hydrate()
+  }, [hydrate])
+
+  // Deep-link: bila ada :id yang belum ada di lokal, ambil dari server (akun).
+  useEffect(() => {
+    if (!projectParam) return
+    if (loadProject(projectParam)) {
+      setLoadingProject(false)
+      return
+    }
+    if (!isAuthenticated()) {
+      setLoadingProject(false)
+      return
+    }
+    let cancelled = false
+    fetchPrdProject(projectParam)
+      .then((p) => {
+        if (cancelled || !p?.id) return
+        setProject(p)
+        const { projects } = loadPrdState()
+        projects[p.id] = p
+        savePrdState({ v: 1, projects, activeId: p.id })
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingProject(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [projectParam])
+
+  // Sinkron ke akun: project aktif yang berubah updatedAt di-PUT ke server
+  // (debounce + sig per-id supaya tidak upload ulang). Hanya saat login &
+  // riwayat sudah terhidrasi (server = sumber kebenaran).
+  useEffect(() => {
+    if (!project || !isAuthenticated()) return
+    if (!hydrated.current) return
+    const sig = `${project.id}:${project.updatedAt || 0}`
+    if (lastSynced.current.get(project.id) === sig) return
+    const t = setTimeout(() => {
+      lastSynced.current.set(project.id, sig)
+      savePrdProject(project)
+        .then(() => {
+          setHistory((h) => upsertMeta(h, project))
+        })
+        .catch(() => {
+          if (lastSynced.current.get(project.id) === sig) lastSynced.current.delete(project.id)
+        })
+    }, 600)
+    return () => clearTimeout(t)
+  }, [project])
+
+  const refreshHistory = useCallback(async () => {
+    if (!isAuthenticated()) {
+      const { projects } = loadPrdState()
+      setHistory(Object.values(projects).map(toMeta).sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)))
+      return
+    }
+    try {
+      const list = await fetchPrdProjects()
+      setHistory(Array.isArray(list) ? list : [])
+    } catch {
+      // biarkan riwayat sebelumnya
+    }
+  }, [])
+
+  const deleteProjectFromHistory = useCallback(
+    (id) => {
+      removeProjectLocal(id)
+      setHistory((h) => h.filter((m) => m.id !== id))
+      if (isAuthenticated()) {
+        deletePrdProject(id).catch(() => {})
+        if (projectRef.current?.id === id) setProject(null)
+      }
+    },
+    [],
+  )
   // Guard: jangan biarkan pengguna kabur saat generasi masih jalan.
   useEffect(() => {
     const onBeforeUnload = (e) => {
@@ -340,9 +455,13 @@ export function usePrdProject({ projectParam } = {}) {
     isWorking,
     loadingStage,
     loadingMessage,
+    loadingProject,
     error,
     needLogin,
     persistError,
+    history,
+    refreshHistory,
+    deleteProjectFromHistory,
     startFromIdea,
     runQuestions,
     runTech,
@@ -358,6 +477,28 @@ export function usePrdProject({ projectParam } = {}) {
     dismissError,
     dismissNeedLogin,
   }
+}
+
+// --- helper riwayat ---------------------------------------------------------
+
+// Meta ringan untuk dialog riwayat (tanpa isi project).
+function toMeta(p) {
+  return { id: p.id, projectName: p.projectName || '', createdAt: p.createdAt, updatedAt: p.updatedAt }
+}
+
+// Gabung meta server + lokal (server menang bila id sama), urut terbaru.
+function mergeMetas(server, local) {
+  const byId = new Map()
+  for (const m of server) byId.set(m.id, m)
+  for (const m of local) if (!byId.has(m.id)) byId.set(m.id, m)
+  return [...byId.values()].sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0))
+}
+
+// Upsert satu meta ke daftar riwayat (setelah save sukses).
+function upsertMeta(list, project) {
+  const next = list.filter((m) => m.id !== project.id)
+  next.unshift(toMeta(project))
+  return next
 }
 
 // Section hasil regenerate: pertahankan id lama oleh caller, di sini cukup
