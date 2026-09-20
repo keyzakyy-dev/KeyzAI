@@ -24,6 +24,7 @@ import {
   updatePreferences,
   deleteAllConversations,
 } from './db.js'
+import { buildPrdMessages, extractPrdJson, isValidPrdStage } from './prd.js'
 
 // If ALLOWED_ORIGINS is unset, all origins are allowed (backwards compatible).
 // When set (comma-separated), only listed origins get CORS headers.
@@ -432,6 +433,86 @@ export default {
         }, corsHeaders(request, env))
       } catch (error) {
         console.error('Error:', error)
+        return response(false, 'Server error', 500, { error: 'Server error' }, corsHeaders(request, env))
+      }
+    }
+
+    // ---------------- PRD BUILDER (butuh auth)
+    // POST /api/prd { stage, project, instruction?, sectionTitle?, sectionContent? }
+    // Dipakai frontend src/lib/prd-api.js. Prompt per-stage ada di prd.js;
+    // model menjawab JSON yang diparse + divalidasi di sini sebelum dikirim
+    // balik ke client (data model tidak pernah dipercaya mentah).
+    if (request.method === 'POST' && path === '/api/prd') {
+      const session = await sessionUser(request, env)
+      if (!session) return unauthorized(env, request)
+
+      let body
+      try {
+        const rawBody = await request.text()
+        body = JSON.parse(rawBody.replace(/^\uFEFF/, ''))
+      } catch {
+        return response(false, 'Bad request', 400, { error: 'Invalid JSON' }, corsHeaders(request, env))
+      }
+
+      const { stage, project, instruction, sectionTitle, sectionContent } = body || {}
+      if (!isValidPrdStage(stage)) {
+        return response(false, 'Bad request', 400, { error: `Unknown stage: ${stage}` }, corsHeaders(request, env))
+      }
+      if (!project || typeof project !== 'object' || typeof project.projectIdea !== 'string') {
+        return response(false, 'Bad request', 400, { error: 'Invalid project context' }, corsHeaders(request, env))
+      }
+
+      let messages
+      try {
+        messages = buildPrdMessages(stage, project, { instruction, sectionTitle, sectionContent })
+      } catch (e) {
+        return response(false, 'Bad request', 400, { error: e.message || 'Invalid stage input' }, corsHeaders(request, env))
+      }
+
+      // Routing provider sama dengan /api/chat.
+      const providers = {
+        bai: { url: env.OPENAI_API_URL || 'https://api.openai.com/v1', key: env.OPENAI_API_KEY },
+        atria: { url: 'https://api.atria-asi.ai/v1', key: env.ATRIA_API_KEY },
+      }
+      const ALLOWED_MODELS = ['qwen3.8-flash', 'deepseek-v4-flash', 'Atria-Dawn-Preview']
+      const MODEL_PROVIDER = { 'qwen3.8-flash': 'bai', 'deepseek-v4-flash': 'bai', 'Atria-Dawn-Preview': 'atria' }
+      const modelName = (project.model && ALLOWED_MODELS.includes(project.model)) || env.OPENAI_MODEL || ALLOWED_MODELS[0]
+      const provider = providers[MODEL_PROVIDER[modelName]] || providers.bai
+      const apiKey = provider.key
+      const apiUrl = provider.url
+      if (!apiKey) {
+        return response(false, 'API key not configured', 500, { error: `Server error: API key for ${modelName} is not set` }, corsHeaders(request, env))
+      }
+
+      try {
+        const upstream = await fetch(`${apiUrl}/chat/completions`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: modelName,
+            messages,
+            temperature: 0.5,
+            max_tokens: Number(env.OPENAI_MAX_TOKENS) || 16384,
+          }),
+          signal: AbortSignal.timeout(120000),
+        })
+
+        if (!upstream.ok) {
+          console.error('PRD upstream error:', await upstream.text())
+          return response(false, 'AI error', 500, { error: `Service error (${upstream.status})` }, corsHeaders(request, env))
+        }
+
+        const data = await upstream.json()
+        const raw = data.choices?.[0]?.message?.content || ''
+        const parsed = extractPrdJson(raw)
+        if (parsed == null) {
+          console.error('PRD parse failed:', raw.slice(0, 500))
+          return response(false, 'AI error', 502, { error: 'Respons AI tidak dapat dibaca. Coba lagi.' }, corsHeaders(request, env))
+        }
+
+        return response(true, 'OK', 200, { data: parsed }, corsHeaders(request, env))
+      } catch (error) {
+        console.error('PRD error:', error)
         return response(false, 'Server error', 500, { error: 'Server error' }, corsHeaders(request, env))
       }
     }

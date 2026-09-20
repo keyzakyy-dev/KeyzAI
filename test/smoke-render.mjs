@@ -25,19 +25,21 @@ import assert from 'node:assert/strict'
 import { LandingPage } from '${path.join(root, 'src/pages/LandingPage.jsx').replaceAll('\\', '/')}'
 import { PrivacyPage, TermsPage } from '${path.join(root, 'src/pages/LegalPage.jsx').replaceAll('\\', '/')}'
 import { ChatMock } from '${path.join(root, 'src/components/ChatMock.jsx').replaceAll('\\', '/')}'
+import { PrdBuilderPage } from '${path.join(root, 'src/pages/PrdBuilderPage.jsx').replaceAll('\\', '/')}'
 
 const cases = {
   'landing': h(LandingPage),
   'privacy': h(PrivacyPage),
   'terms': h(TermsPage),
   'chat-mockup': h(ChatMock),
+  'prd-builder': h(PrdBuilderPage),
 }
 for (const [name, el] of Object.entries(cases)) {
   const wrapped = name === 'chat-mockup' ? el : h(MemoryRouter, { initialEntries: ['/'] }, el)
   const html = renderToString(wrapped)
   assert(html && html.length > 100, name + ': render kosong')
 }
-console.log('smoke render (landing, legal, mockup): OK')
+console.log('smoke render (landing, legal, mockup, prd-builder): OK')
 `
 
 if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true })

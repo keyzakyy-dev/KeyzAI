@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Plus, MessageSquare, Pin, Trash2, User, Settings, ChevronRight } from 'lucide-react'
+import { Plus, MessageSquare, Pin, Trash2, User, Settings, ChevronRight, FileText } from 'lucide-react'
 
 import { Button } from './ui/button'
 import { LogoImg } from '../lib/logo-img'
@@ -54,7 +54,7 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
         </div>
 
         {/* New Chat */}
-        <div className="px-2">
+        <div className="space-y-1 px-2">
           <Button
             onClick={onNew}
             variant="ghost"
@@ -64,6 +64,21 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, o
               <Plus />
             </span>
             Chat baru
+          </Button>
+          <Button
+            asChild
+            variant="ghost"
+            className="h-8 w-full justify-start gap-2 px-3 font-medium text-muted-foreground hover:text-foreground"
+          >
+            <Link to="/prd-builder">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border/70 bg-foreground/5">
+                <FileText className="h-3.5 w-3.5" />
+              </span>
+              PRD Builder
+              <span className="ml-auto rounded-full border border-primary/30 bg-primary/10 px-1.5 py-px text-[9px] font-semibold text-primary">
+                Baru
+              </span>
+            </Link>
           </Button>
         </div>
 
