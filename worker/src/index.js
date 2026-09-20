@@ -476,7 +476,7 @@ export default {
       }
       const ALLOWED_MODELS = ['qwen3.8-flash', 'deepseek-v4-flash', 'Atria-Dawn-Preview']
       const MODEL_PROVIDER = { 'qwen3.8-flash': 'bai', 'deepseek-v4-flash': 'bai', 'Atria-Dawn-Preview': 'atria' }
-      const modelName = (project.model && ALLOWED_MODELS.includes(project.model)) || env.OPENAI_MODEL || ALLOWED_MODELS[0]
+      const modelName = ALLOWED_MODELS.includes(project.model) ? project.model : env.OPENAI_MODEL || ALLOWED_MODELS[0]
       const provider = providers[MODEL_PROVIDER[modelName]] || providers.bai
       const apiKey = provider.key
       const apiUrl = provider.url
