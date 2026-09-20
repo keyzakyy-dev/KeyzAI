@@ -223,12 +223,11 @@ function Hero({ navigate }) {
         <div className="grid items-center gap-10 sm:gap-16 lg:grid-cols-2">
           <div className="space-y-6 sm:space-y-8">
             <h1
-              className="animate-fade-up text-[34px] font-bold leading-[1.08] tracking-tighter text-foreground sm:text-5xl md:text-6xl xl:text-7xl"
+              className="animate-fade-up text-[32px] font-bold leading-[1.08] tracking-tighter text-foreground sm:text-5xl md:text-6xl xl:text-6xl"
               style={{ animationDelay: '0.1s' }}
             >
-              Tanya apa saja.
-              <br />
-              Dapat jawabannya.
+              <span className="block whitespace-nowrap">Tulis, kode, belajar.</span>
+              <span className="block whitespace-nowrap">Semua dibantuin.</span>
             </h1>
 
             <p className="animate-fade-up max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg" style={{ animationDelay: '0.2s' }}>
