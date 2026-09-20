@@ -6,6 +6,10 @@
  *
  * Setiap muat divalidasi: data rusak / versi tak dikenal → state segar, bukan
  * crash. Format lama di-migrate ke pohon pesan sebagai rantai tunggal.
+ *
+ * activeId sengaja TIDAK dipulihkan lintas sesi browser: setiap buka app baru
+ * mulai di chat baru (riwayat tetap di sidebar). Deep-link /chat/:convId tetap
+ * jalan karena dipimpin oleh URL param, bukan state tersimpan.
  */
 
 import { MSG_STATE, fallbackTitle, newConversation } from './tree.js'
@@ -140,13 +144,13 @@ export function loadState(storage) {
     const convs = (Array.isArray(parsed.convs) ? parsed.convs : [])
       .map(normalizeConv)
       .filter(Boolean)
-    return { v: SCHEMA_VERSION, convs, activeId: convs.some((c) => c.id === parsed.activeId) ? parsed.activeId : null }
+    return { v: SCHEMA_VERSION, convs, activeId: null }
   }
 
   const convs = (Array.isArray(parsed.convs) ? parsed.convs : [])
     .map(migrateLegacyConv)
     .filter(Boolean)
-  return { v: SCHEMA_VERSION, convs, activeId: convs.some((c) => c.id === parsed.activeId) ? parsed.activeId : null }
+  return { v: SCHEMA_VERSION, convs, activeId: null }
 }
 
 // Mengembalikan error bila gagal (mis. quota penuh) — caller yang menyampaikan

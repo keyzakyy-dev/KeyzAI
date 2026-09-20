@@ -137,7 +137,7 @@ const err = saveState(loaded, storage)
 assert.equal(err, null, 'simpan sukses')
 const again = loadState(storage)
 assert.equal(again.convs[0].id, 'c1', 'round-trip v3 utuh')
-assert.equal(again.activeId, 'c1')
+assert.equal(again.activeId, null, 'activeId tidak dipulihkan lintas sesi — mulai di chat baru')
 
 // ---------- persistence: data rusak tidak crash
 mem.set('keyzai-state', '{bukan json')
