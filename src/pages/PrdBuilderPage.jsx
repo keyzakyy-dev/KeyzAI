@@ -178,14 +178,21 @@ export function PrdBuilderPage() {
   const handleTechContinue = useCallback(() => {
     const stack = project?.technologyStack || {}
     const hasStack = Object.values(stack).some((v) => v)
+    const goToStructure = () => {
+      updateProject({ step: 'structure' })
+      // Struktur belum pernah dibuat → generate otomatis, bukan minta user
+      // menekan "Regenerate" di halaman yang baru dibuka.
+      const existing = project?.productStructure?.features || []
+      if (existing.length === 0) runStructure().catch(() => {})
+    }
     if (project?.technologySelectionMode === 'auto' && !hasStack) {
       runTech('auto')
-        .then(() => updateProject({ step: 'structure' }))
+        .then(goToStructure)
         .catch(() => {})
       return
     }
-    updateProject({ step: 'structure' })
-  }, [project, runTech, updateProject])
+    goToStructure()
+  }, [project, runTech, runStructure, updateProject])
 
   const handleStructureContinue = useCallback(() => {
     updateProject({ step: 'prd' })
