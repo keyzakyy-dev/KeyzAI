@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { ArrowLeft, ChevronDown, ChevronUp, Pencil, Plus, RotateCcw, Trash2, Check } from 'lucide-react'
+import { ChevronDown, ChevronUp, Pencil, Plus, RotateCcw, Trash2, Check } from 'lucide-react'
 
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { StageError, StageLoading } from './StageLoading'
-import { StepHeader } from './StepHeader'
+import { StepHeader, StageNav } from './StepHeader'
 import { newId } from '../../state/ids'
 
 /**
@@ -70,7 +70,7 @@ export function Structure({ structure = { features: [] }, onChange, onRegenerate
 
   if (loading) {
     return (
-      <div className="mx-auto w-full max-w-2xl space-y-6">
+      <div className="mx-auto w-full max-w-2xl space-y-8">
         <StepHeader
           label="Struktur Produk"
           title="Review struktur produk kamu"
@@ -84,7 +84,7 @@ export function Structure({ structure = { features: [] }, onChange, onRegenerate
   }
 
   return (
-    <div className="mx-auto w-full max-w-2xl space-y-6">
+    <div className="mx-auto w-full max-w-2xl space-y-8">
       <StepHeader
         label="Struktur Produk"
         title="Review struktur produk kamu"
@@ -92,7 +92,7 @@ export function Structure({ structure = { features: [] }, onChange, onRegenerate
       />
 
       {features.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border bg-card p-10 text-center">
+        <div className="rounded-2xl border border-dashed border-border bg-card p-12 text-center">
           <p className="text-sm text-muted-foreground">Struktur produk belum berhasil dibuat.</p>
           <Button variant="outline" size="sm" onClick={onRegenerate} className="mt-4 gap-1.5">
             <RotateCcw className="h-3.5 w-3.5" />
@@ -102,13 +102,14 @@ export function Structure({ structure = { features: [] }, onChange, onRegenerate
       ) : (
         <div className="space-y-2.5">
           {features.map((f, fi) => (
-            <div key={f.id} className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
-              <div className="flex items-center gap-2 border-b border-border bg-muted/40 px-3 py-2">
+            <div key={f.id} className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+              <div className="flex items-center gap-2 border-b border-border bg-muted/40 px-3.5 py-2">
                 {editing?.type === 'feature' && editing.featureId === f.id ? (
                   <Input
                     autoFocus
                     value={draft}
                     onChange={(e) => setDraft(e.target.value)}
+                    onBlur={commitRename}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') commitRename()
                       if (e.key === 'Escape') setEditing(null)
@@ -123,10 +124,13 @@ export function Structure({ structure = { features: [] }, onChange, onRegenerate
                       setEditing({ type: 'feature', featureId: f.id })
                       setDraft(f.name)
                     }}
-                    className="flex min-w-0 flex-1 items-center gap-1.5 text-left text-sm font-semibold text-foreground"
+                    className="group flex min-w-0 flex-1 items-center gap-1.5 text-left text-sm font-semibold text-foreground"
                   >
-                    <Pencil className="h-3 w-3 flex-shrink-0 text-muted-foreground/60" />
+                    <Pencil className="h-3 w-3 flex-shrink-0 text-muted-foreground/0 transition-colors group-hover:text-muted-foreground/60" />
                     <span className="truncate">{f.name}</span>
+                    <span className="ml-1 flex-shrink-0 rounded-full bg-background px-1.5 py-px text-[10px] font-medium tabular-nums text-muted-foreground">
+                      {f.subFeatures?.length || 0}
+                    </span>
                   </button>
                 )}
 
@@ -162,12 +166,13 @@ export function Structure({ structure = { features: [] }, onChange, onRegenerate
 
               <div className="divide-y divide-border">
                 {f.subFeatures.map((s, si) => (
-                  <div key={s.id} className="flex items-center gap-2 px-3 py-2">
+                  <div key={s.id} className="group flex items-center gap-2 px-3.5 py-2">
                     {editing?.type === 'sub' && editing.subId === s.id ? (
                       <Input
                         autoFocus
                         value={draft}
                         onChange={(e) => setDraft(e.target.value)}
+                        onBlur={commitRename}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') commitRename()
                           if (e.key === 'Escape') setEditing(null)
@@ -182,13 +187,13 @@ export function Structure({ structure = { features: [] }, onChange, onRegenerate
                           setEditing({ type: 'sub', featureId: f.id, subId: s.id })
                           setDraft(s.name)
                         }}
-                        className="flex min-w-0 flex-1 items-center gap-1.5 text-left text-[13px] text-muted-foreground transition-colors hover:text-foreground"
+                        className="flex min-w-0 flex-1 items-center gap-1.5 pl-5 text-left text-[13px] text-muted-foreground transition-colors hover:text-foreground"
                       >
-                        <Pencil className="h-3 w-3 flex-shrink-0 text-muted-foreground/50" />
+                        <span className="h-1 w-1 flex-shrink-0 rounded-full bg-muted-foreground/40" />
                         <span className="truncate">{s.name}</span>
                       </button>
                     )}
-                    <div className="flex flex-shrink-0 items-center gap-0.5">
+                    <div className="flex flex-shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
                       <button
                         type="button"
                         onClick={() => moveSub(fi, si, -1)}
@@ -219,12 +224,12 @@ export function Structure({ structure = { features: [] }, onChange, onRegenerate
                   </div>
                 ))}
                 {f.subFeatures.length === 0 && (
-                  <p className="px-3 py-2 text-[11px] italic text-muted-foreground/60">Belum ada sub-fitur.</p>
+                  <p className="px-3.5 py-2 text-[11px] italic text-muted-foreground/60">Belum ada sub-fitur.</p>
                 )}
                 <button
                   type="button"
                   onClick={() => addSub(f.id)}
-                  className="flex w-full items-center gap-1.5 px-3 py-2 text-left text-[11px] font-medium text-muted-foreground transition-colors hover:bg-accent/40 hover:text-foreground"
+                  className="flex w-full items-center gap-1.5 px-3.5 py-2 text-left text-[11px] font-medium text-muted-foreground transition-colors hover:bg-accent/40 hover:text-foreground"
                 >
                   <Plus className="h-3 w-3" />
                   Tambah sub-fitur
@@ -236,7 +241,7 @@ export function Structure({ structure = { features: [] }, onChange, onRegenerate
           <button
             type="button"
             onClick={addFeature}
-            className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-border py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent/40 hover:text-foreground"
+            className="flex w-full items-center justify-center gap-1.5 rounded-2xl border border-dashed border-border py-3.5 text-sm font-medium text-muted-foreground transition-colors hover:border-foreground/30 hover:bg-accent/30 hover:text-foreground"
           >
             <Plus className="h-4 w-4" />
             Tambah fitur
@@ -246,22 +251,17 @@ export function Structure({ structure = { features: [] }, onChange, onRegenerate
 
       {error && <StageError message={error} onRetry={onRetry} retryLabel="Generate ulang" />}
 
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <Button variant="ghost" size="sm" onClick={onBack}>
-          <ArrowLeft className="h-3.5 w-3.5" />
-          Kembali
+      <StageNav
+        onBack={onBack}
+        onNext={onContinue}
+        nextDisabled={loading || features.length === 0}
+        nextLabel="Lanjut ke PRD"
+      >
+        <Button variant="outline" size="sm" onClick={onRegenerate} disabled={loading} className="gap-1.5">
+          <RotateCcw className="h-3.5 w-3.5" />
+          Generate ulang
         </Button>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={onRegenerate} disabled={loading} className="gap-1.5">
-            <RotateCcw className="h-3.5 w-3.5" />
-            Regenerate Structure
-          </Button>
-          <Button size="sm" onClick={onContinue} disabled={loading || features.length === 0}>
-            Lanjut ke PRD
-            <Check className="h-3.5 w-3.5" />
-          </Button>
-        </div>
-      </div>
+      </StageNav>
     </div>
   )
 }

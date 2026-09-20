@@ -1,8 +1,8 @@
-import { ArrowLeft, Check, Sparkles, Wand2 } from 'lucide-react'
+import { Check, Sparkles, Wand2 } from 'lucide-react'
 
 import { Button } from '../ui/button'
 import { StageLoading } from './StageLoading'
-import { StepHeader } from './StepHeader'
+import { StepHeader, StageNav } from './StepHeader'
 import { TECH_KEYS } from '../../state/prd-model'
 
 const TECH_OPTIONS = {
@@ -12,6 +12,21 @@ const TECH_OPTIONS = {
   deployment: ['Vercel', 'Netlify', 'Cloudflare', 'AWS', 'Google Cloud', 'Docker + VPS'],
 }
 const AUTH_OPTIONS = ['Email & Password', 'Google OAuth', 'JWT', 'Magic Link', 'SSO / SAML', 'Phone OTP']
+
+const MODES = [
+  {
+    id: 'auto',
+    icon: Sparkles,
+    title: 'Biarkan AI memilih',
+    desc: 'Rekomendasi frontend, backend, database, auth, dan deployment sesuai kebutuhan produk.',
+  },
+  {
+    id: 'manual',
+    icon: Wand2,
+    title: 'Saya pilih sendiri',
+    desc: 'Tentukan sendiri stack-nya; AI akan memakainya apa adanya di PRD.',
+  },
+]
 
 /**
  * STEP 3 — Preferensi teknologi. "Biarkan AI memilih" (default) memanggil
@@ -31,74 +46,70 @@ export function TechPref({
   const hasAutoStack = mode === 'auto' && Object.values(stack).some((v) => v)
 
   return (
-    <div className="mx-auto w-full max-w-2xl space-y-6">
-      <StepHeader label="Teknologi" title="Bagaimana dengan teknologinya?" />
+    <div className="mx-auto w-full max-w-2xl space-y-8">
+      <StepHeader
+        label="Teknologi"
+        title="Bagaimana dengan teknologinya?"
+        description="Pilih cara AI membantu menentukan stack untuk produk kamu."
+      />
 
       <div className="grid gap-3 sm:grid-cols-2">
-        <button
-          type="button"
-          onClick={() => onSelectMode('auto')}
-          className={`flex flex-col items-start gap-2 rounded-xl border p-4 text-left transition-all ${
-            mode === 'auto' ? 'border-primary bg-primary/5 shadow-sm' : 'border-border bg-card hover:border-foreground/30'
-          }`}
-        >
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background">
-            <Sparkles className="h-4 w-4 text-primary" />
-          </span>
-          <span className="text-sm font-semibold text-foreground">Biarkan AI memilih</span>
-          <span className="text-xs leading-relaxed text-muted-foreground">
-            Rekomendasi frontend, backend, database, auth, dan deployment sesuai kebutuhan produk.
-          </span>
-          {mode === 'auto' && (
-            <span className="mt-1 flex items-center gap-1 text-[11px] font-medium text-primary">
-              <Check className="h-3 w-3" /> Dipilih
-            </span>
-          )}
-        </button>
-
-        <button
-          type="button"
-          onClick={() => onSelectMode('manual')}
-          className={`flex flex-col items-start gap-2 rounded-xl border p-4 text-left transition-all ${
-            mode === 'manual' ? 'border-primary bg-primary/5 shadow-sm' : 'border-border bg-card hover:border-foreground/30'
-          }`}
-        >
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background">
-            <Wand2 className="h-4 w-4 text-muted-foreground" />
-          </span>
-          <span className="text-sm font-semibold text-foreground">Saya pilih sendiri</span>
-          <span className="text-xs leading-relaxed text-muted-foreground">
-            Tentukan sendiri stack-nya; AI akan memakainya apa adanya di PRD.
-          </span>
-          {mode === 'manual' && (
-            <span className="mt-1 flex items-center gap-1 text-[11px] font-medium text-primary">
-              <Check className="h-3 w-3" /> Dipilih
-            </span>
-          )}
-        </button>
+        {MODES.map((m) => {
+          const Icon = m.icon
+          const active = mode === m.id
+          return (
+            <button
+              key={m.id}
+              type="button"
+              onClick={() => onSelectMode(m.id)}
+              className={`relative flex flex-col items-start gap-2.5 rounded-2xl border p-5 text-left transition-all ${
+                active
+                  ? 'border-primary bg-primary/5 shadow-sm ring-1 ring-primary/20'
+                  : 'border-border bg-card hover:border-foreground/30 hover:shadow-sm'
+              }`}
+            >
+              <span
+                className={`flex h-9 w-9 items-center justify-center rounded-xl border transition-colors ${
+                  active ? 'border-primary/40 bg-primary/10' : 'border-border bg-background'
+                }`}
+              >
+                <Icon className={`h-4 w-4 ${active ? 'text-primary' : 'text-muted-foreground'}`} />
+              </span>
+              <span className="text-sm font-semibold text-foreground">{m.title}</span>
+              <span className="text-xs leading-relaxed text-muted-foreground">{m.desc}</span>
+              {active && (
+                <span className="absolute right-4 top-4 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                  <Check className="h-3 w-3" />
+                </span>
+              )}
+            </button>
+          )
+        })}
       </div>
 
       {loading && (
-        <div className="rounded-xl border border-border bg-card p-5">
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <StageLoading message={loadingMessage} />
         </div>
       )}
 
       {!loading && mode === 'auto' && hasAutoStack && (
-        <div className="space-y-2 rounded-xl border border-border bg-card p-4 sm:p-5">
-          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Rekomendasi AI</p>
-          <ul className="space-y-2.5">
+        <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+          <div className="border-b border-border bg-muted/40 px-4 py-2.5">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Rekomendasi AI</p>
+          </div>
+          <ul className="divide-y divide-border">
             {TECH_KEYS.filter((k) => stack[k]).map((k) => {
               const v = stack[k]
               const name = typeof v === 'string' ? v : v?.name
               const reason = typeof v === 'string' ? '' : v?.reason
               return (
-                <li key={k} className="flex flex-col gap-0.5">
-                  <span className="text-sm">
-                    <span className="font-medium capitalize text-foreground">{k}:</span>{' '}
-                    <span className="text-foreground">{name}</span>
+                <li key={k} className="px-4 py-3">
+                  <span className="flex items-baseline gap-2 text-sm">
+                    <span className="w-24 flex-shrink-0 text-xs font-medium capitalize text-muted-foreground">{k}</span>
+                    <span className="font-medium text-foreground">{name}</span>
                   </span>
-                  {reason && <span className="pl-1 text-[11px] leading-relaxed text-muted-foreground/80">{reason}</span>}
+                  {reason && <p className="mt-1 pl-[6.5rem] text-[11px] leading-relaxed text-muted-foreground/80">{reason}</p>}
                 </li>
               )
             })}
@@ -107,7 +118,7 @@ export function TechPref({
       )}
 
       {!loading && mode === 'manual' && (
-        <div className="space-y-3.5 rounded-xl border border-border bg-card p-4 sm:p-5">
+        <div className="space-y-3.5 rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
           {TECH_KEYS.map((k) => {
             const opts = k === 'authentication' ? AUTH_OPTIONS : TECH_OPTIONS[k] || []
             const v = typeof stack[k] === 'string' ? stack[k] : stack[k]?.name || ''
@@ -135,15 +146,7 @@ export function TechPref({
         </div>
       )}
 
-      <div className="flex items-center justify-between">
-        <Button variant="ghost" size="sm" onClick={onBack} className="gap-1.5">
-          <ArrowLeft className="h-3.5 w-3.5" />
-          Kembali
-        </Button>
-        <Button onClick={onContinue} size="sm" disabled={loading}>
-          {loading ? 'Memproses…' : 'Lanjut ke struktur →'}
-        </Button>
-      </div>
+      <StageNav onBack={onBack} onNext={onContinue} nextDisabled={loading} nextLabel={loading ? 'Memproses…' : 'Lanjut ke struktur'} />
     </div>
   )
 }

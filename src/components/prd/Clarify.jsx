@@ -35,11 +35,12 @@ export function Clarify({
 
   const answered = normalizeAnswer(value) != null
   const isLast = index === total - 1
+  const answeredCount = questions.filter((qq) => normalizeAnswer(answers[qq.id]) != null).length
 
   return (
-    <div className="mx-auto w-full max-w-2xl space-y-6">
+    <div className="mx-auto w-full max-w-2xl space-y-8">
       <StepHeader
-        label={`Pertanyaan ${index + 1} dari ${total}`}
+        label={`Klarifikasi · ${index + 1}/${total}`}
         title={q.question}
         description="Biar PRD lebih akurat, AI perlu memastikan beberapa hal tentang produk kamu."
       />
@@ -51,7 +52,7 @@ export function Clarify({
       ) : (
         <div className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-6">
           {q.help && (
-            <p className="mb-3 flex items-start gap-2 text-[11px] leading-relaxed text-muted-foreground/80">
+            <p className="mb-4 flex items-start gap-2 rounded-lg bg-muted/40 px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
               <span className="mt-px flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full border border-border text-[9px]">i</span>
               <span>{q.help}</span>
             </p>
@@ -71,7 +72,7 @@ export function Clarify({
             </p>
           )}
 
-          <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-6 flex flex-col gap-2 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
             <Button variant="ghost" size="sm" onClick={onPrev} disabled={index === 0} className="gap-1.5 self-start sm:self-auto">
               <ArrowLeft className="h-3.5 w-3.5" />
               Sebelumnya
@@ -94,16 +95,21 @@ export function Clarify({
       {error && !loading && <StageError message={error} onRetry={onRetry} retryLabel="Coba lagi" />}
 
       {!loading && (
-        <div className="flex items-center justify-center gap-1.5">
-          {questions.map((qq, i) => (
-            <span
-              key={qq.id}
-              className={`h-1.5 rounded-full transition-all ${
-                i === index ? 'w-6 bg-primary' : normalizeAnswer(answers[qq.id]) != null ? 'w-1.5 bg-primary/50' : 'w-1.5 bg-muted-foreground/25'
-              }`}
-              aria-hidden="true"
-            />
-          ))}
+        <div className="flex flex-col items-center gap-2">
+          <div className="flex items-center justify-center gap-1.5">
+            {questions.map((qq, i) => (
+              <span
+                key={qq.id}
+                className={`h-1.5 rounded-full transition-all ${
+                  i === index ? 'w-6 bg-primary' : normalizeAnswer(answers[qq.id]) != null ? 'w-1.5 bg-primary/50' : 'w-1.5 bg-muted-foreground/25'
+                }`}
+                aria-hidden="true"
+              />
+            ))}
+          </div>
+          <p className="text-[11px] tabular-nums text-muted-foreground/70">
+            {answeredCount} dari {total} terjawab
+          </p>
         </div>
       )}
     </div>

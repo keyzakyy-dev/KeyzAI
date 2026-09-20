@@ -375,16 +375,16 @@ export function PrdBuilderPage() {
         )}
       </header>
 
-      <main className="min-h-0 flex-1 overflow-y-auto px-4 py-8 sm:px-6 sm:py-12">
+      <main className="min-h-0 flex-1 overflow-y-auto px-4 py-10 sm:px-6 sm:py-16">
         {project ? (
           // 2 kolom: canvas step di kiri, ringkasan konteks proyek (sticky)
           // di kanan. Project baru selalu punya ide → panel tidak kosong.
-          <div className="mx-auto grid w-full max-w-6xl items-start gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <div className="mx-auto grid w-full max-w-6xl items-start gap-10 lg:grid-cols-[minmax(0,1fr)_320px]">
             <div className="min-w-0">{stepCanvas}</div>
             <ContextPanel project={project} working={isWorking} loadingMessage={loadingMessage} savedAt={savedAt} onRename={updateProject} />
           </div>
         ) : (
-          <div className="flex flex-1 items-center justify-center">{stepCanvas}</div>
+          <div className="flex flex-1 items-center justify-center py-6">{stepCanvas}</div>
         )}
 
         {persistError && (

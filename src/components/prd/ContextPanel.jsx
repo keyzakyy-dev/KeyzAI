@@ -40,7 +40,7 @@ export function ContextPanel({ project, working = false, loadingMessage = '', sa
   return (
     <aside
       aria-label="Konteks proyek"
-      className="divide-y divide-border self-start rounded-2xl border border-border bg-card px-4 py-3 shadow-sm lg:sticky lg:top-28 lg:max-h-[calc(100dvh-8rem)] lg:overflow-y-auto"
+      className="divide-y divide-border self-start rounded-2xl border border-border bg-card/60 px-4 py-3 shadow-sm backdrop-blur lg:sticky lg:top-20 lg:max-h-[calc(100dvh-6rem)] lg:overflow-y-auto"
     >
       <div className="flex items-start justify-between gap-3 pb-2.5">
         <div className="min-w-0 flex-1">
@@ -105,7 +105,7 @@ export function ContextPanel({ project, working = false, loadingMessage = '', sa
 
       {qa.length > 0 && (
         <Fold label={`Jawaban (${answered}/${qa.length})`}>
-          <ul className="space-y-1.5">
+          <ul className="space-y-2">
             {qa.map((p) => (
               <li key={p.question}>
                 <p className="line-clamp-1 text-[11px] leading-snug text-muted-foreground">{p.question}</p>
