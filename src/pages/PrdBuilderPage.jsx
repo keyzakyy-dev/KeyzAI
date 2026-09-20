@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
-import { ArrowLeft, FileText, Sun, Moon } from 'lucide-react'
+import { ArrowLeft, ChevronLeft, ChevronRight, FileText, Menu, Sun, Moon, X } from 'lucide-react'
 
 import { Button } from '../components/ui/button'
 import { LoginDialog } from '../components/LoginDialog'
+import { AppSidebar } from '../components/AppSidebar'
 import { Stepper } from '../components/prd/Stepper'
 import { IdeaInput } from '../components/prd/IdeaInput'
 import { Clarify } from '../components/prd/Clarify'
@@ -74,6 +75,8 @@ export function PrdBuilderPage() {
   const pendingAction = useRef(null)
   const [loginLoading, setLoginLoading] = useState(false)
   const [loginErr, setLoginErr] = useState(null)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   usePageMeta({
     title: 'PRD Builder',
@@ -211,6 +214,21 @@ export function PrdBuilderPage() {
     navigate('/prd-builder', { replace: true })
   }, [resetProject, navigate])
 
+  // PRD aktif dihapus dari sidebar → kembali ke kanvas ide (jangan biarkan
+  // auto-save menghidupkan ulang project yang sudah dihapus).
+  const handlePrdRemoved = useCallback(
+    (id) => {
+      if (project?.id !== id) return
+      resetProject()
+      setPendingIdea('')
+      setPendingLang('id')
+      setQIndex(0)
+      pendingAction.current = null
+      navigate('/prd-builder', { replace: true })
+    },
+    [project?.id, resetProject, navigate],
+  )
+
   const handleBackToChat = useCallback(() => {
     navigate('/chat')
   }, [navigate])
@@ -294,10 +312,25 @@ export function PrdBuilderPage() {
     )
 
   return (
-    <div className="flex min-h-dvh flex-col bg-background text-foreground">
+    <AppSidebar
+      collapsed={sidebarCollapsed}
+      mobileOpen={sidebarOpen}
+      onMobileClose={() => setSidebarOpen(false)}
+      currentPrdId={project?.id}
+      onAfterDeletePrd={handlePrdRemoved}
+    >
       <header className="flex-shrink-0 border-b border-border">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hidden lg:flex -ml-2"
+              onClick={() => setSidebarCollapsed((c) => !c)}
+              aria-label={sidebarCollapsed ? 'Tampilkan sidebar' : 'Sembunyikan sidebar'}
+            >
+              {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+            </Button>
             <Link to="/" aria-label="Kembali ke beranda" className="rounded-xl transition-opacity hover:opacity-80">
               <LogoImg className="h-8 w-auto" />
             </Link>
@@ -316,6 +349,15 @@ export function PrdBuilderPage() {
             >
               {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              aria-label="Buka/tutup sidebar"
+            >
+              {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </Button>
             <Button variant="ghost" size="sm" onClick={handleBackToChat} className="gap-1.5">
               <ArrowLeft className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Kembali ke chat</span>
@@ -331,7 +373,7 @@ export function PrdBuilderPage() {
         )}
       </header>
 
-      <main className="flex flex-1 flex-col px-4 py-8 sm:px-6 sm:py-12">
+      <main className="min-h-0 flex-1 overflow-y-auto px-4 py-8 sm:px-6 sm:py-12">
         {project ? (
           // 2 kolom: canvas step di kiri, ringkasan konteks proyek (sticky)
           // di kanan. Project baru selalu punya ide → panel tidak kosong.
@@ -362,6 +404,6 @@ export function PrdBuilderPage() {
         loading={loginLoading}
         error={loginErr}
       />
-    </div>
+    </AppSidebar>
   )
 }

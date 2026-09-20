@@ -31,7 +31,7 @@ import { hasSiblings, navigateBranch, serializeConv } from '../state/tree.js'
 
 export function ChatInterface() {
   const { state, dispatch, activeConv, messages, loading, persistError, refreshHistory, logoutReset } = useChatStore()
-  const { history: prdItems, remove: removePrd } = usePrdHistory()
+  const { history: prdItems, remove: removePrd, refresh: refreshPrd } = usePrdHistory()
   const { send, stop } = useChatStream({ state, dispatch, loading })
   const { toast, notify, dismiss } = useToast()
   const { width: sidebarW, resizing, onDragStart, setWidth: setSidebarWidth, hasStoredWidth } = useResizableSidebar()
@@ -117,6 +117,7 @@ export function ChatInterface() {
     try {
       await loginWithGoogle(idToken)
       refreshPrefs()
+      refreshPrd().catch(() => {})
       try {
         sessionStorage.setItem('keyzai-fresh-chat', '1')
       } catch {

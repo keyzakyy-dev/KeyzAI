@@ -85,7 +85,7 @@ export function usePrdProject({ projectParam } = {}) {
 
   // Riwayat PRD per akun (hook bersama: sidebar & halaman ini memakai sumber
   // yang sama). Server = sumber kebenaran saat login.
-  const { hydrated, upsert, isSynced, markSynced, unmarkSynced } = usePrdHistory()
+  const { hydrated, upsert, isSynced, markSynced, unmarkSynced, refresh: refreshHistory } = usePrdHistory()
   const [loadingProject, setLoadingProject] = useState(!!projectParam)
 
   const step = project?.step || 'idea'
@@ -113,6 +113,12 @@ export function usePrdProject({ projectParam } = {}) {
     }, 400)
     return () => clearTimeout(t)
   }, [project, persist])
+
+  // Setelah login (halaman ini re-render), tarik riwayat dari server supaya
+  // sinkronisasi project aktif (gate hydrated) bisa mulai jalan.
+  useEffect(() => {
+    if (isAuthenticated()) refreshHistory().catch(() => {})
+  }, [refreshHistory, isAuthenticated()])
 
   // Deep-link: bila ada :id yang belum ada di lokal, ambil dari server (akun).
   useEffect(() => {

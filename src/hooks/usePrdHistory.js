@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { createContext, createElement, useCallback, useContext, useEffect, useRef, useState } from 'react'
 
 import { isAuthenticated } from '../lib/auth.js'
 import { deletePrdProject, fetchPrdProjects, savePrdProject } from '../lib/sync.js'
@@ -9,10 +9,13 @@ import { loadPrdState, removeProject } from '../state/prd-persistence.js'
  * kebenaran saat login; project lokal yang belum tersinkron ikut ter-upload
  * sekali. Saat offline / belum login, menampilkan project lokal saja.
  *
- * Dipakai Sidebar (lewat ChatInterface) & usePrdProject (sinkronisasi project
- * aktif). Satu hook = satu tempat merge server + lokal.
+ * Satu instance app-wide (PrdHistoryProvider di App) supaya sidebar & halaman
+ * PRD builder selalu melihat data yang sama; hapus dari sidebar tidak akan
+ * ditulang ulang oleh sinkronisasi builder.
  */
-export function usePrdHistory() {
+const PrdHistoryContext = createContext(null)
+
+export function PrdHistoryProvider({ children }) {
   const [history, setHistory] = useState([])
   const [hydrated, setHydrated] = useState(false)
   const lastSynced = useRef(new Map())
@@ -69,7 +72,17 @@ export function usePrdHistory() {
     if (isAuthenticated()) deletePrdProject(id).catch(() => {})
   }, [])
 
-  return { history, hydrated, refresh, upsert, remove, isSynced, markSynced, unmarkSynced }
+  return createElement(
+    PrdHistoryContext.Provider,
+    { value: { history, hydrated, refresh, upsert, remove, isSynced, markSynced, unmarkSynced } },
+    children,
+  )
+}
+
+export function usePrdHistory() {
+  const ctx = useContext(PrdHistoryContext)
+  if (!ctx) throw new Error('usePrdHistory harus di dalam PrdHistoryProvider')
+  return ctx
 }
 
 function localMetas() {

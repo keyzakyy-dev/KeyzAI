@@ -26,6 +26,7 @@ import { LandingPage } from '${path.join(root, 'src/pages/LandingPage.jsx').repl
 import { PrivacyPage, TermsPage } from '${path.join(root, 'src/pages/LegalPage.jsx').replaceAll('\\', '/')}'
 import { ChatMock } from '${path.join(root, 'src/components/ChatMock.jsx').replaceAll('\\', '/')}'
 import { PrdBuilderPage } from '${path.join(root, 'src/pages/PrdBuilderPage.jsx').replaceAll('\\', '/')}'
+import { PrdHistoryProvider } from '${path.join(root, 'src/hooks/usePrdHistory.js').replaceAll('\\', '/')}'
 
 const cases = {
   'landing': h(LandingPage),
@@ -35,7 +36,7 @@ const cases = {
   'prd-builder': h(PrdBuilderPage),
 }
 for (const [name, el] of Object.entries(cases)) {
-  const wrapped = name === 'chat-mockup' ? el : h(MemoryRouter, { initialEntries: ['/'] }, el)
+  const wrapped = name === 'chat-mockup' ? el : h(MemoryRouter, { initialEntries: ['/'] }, h(PrdHistoryProvider, null, el))
   const html = renderToString(wrapped)
   assert(html && html.length > 100, name + ': render kosong')
 }
