@@ -60,25 +60,26 @@ export function useCountUp(value, { duration = 900 } = {}) {
   return v
 }
 
-// Hero headline: tiap baris [data-line] muncul berurutan (fade + naik).
-export function useHeadline(ref, { delay = 100, stagger = 110, duration = 700 } = {}) {
+// Hero headline: tiap kata [data-word] muncul berurutan (fade + naik + blur-in).
+export function useHeadline(ref, { delay = 100, staggerStep = 65, duration = 600 } = {}) {
   useEffect(() => {
     const root = ref.current
-    const lines = root && Array.from(root.querySelectorAll('[data-line]'))
-    if (!lines?.length) return
+    const words = root && Array.from(root.querySelectorAll('[data-word]'))
+    if (!words?.length) return
     if (reducedMotion()) {
-      lines.forEach((el) => el.classList.remove('opacity-0'))
+      words.forEach((el) => el.classList.remove('opacity-0'))
       return
     }
     let alive = true
     let anim
-    import('animejs').then(({ animate }) => {
+    import('animejs').then(({ animate, stagger }) => {
       if (!alive) return
-      anim = animate(lines, {
+      anim = animate(words, {
         opacity: [0, 1],
-        translateY: [20, 0],
+        translateY: [14, 0],
+        filter: ['blur(8px)', 'blur(0px)'],
         duration,
-        delay: (el, i) => delay + i * stagger,
+        delay: stagger(staggerStep, { start: delay }),
         ease: 'outExpo',
       })
     })
@@ -86,7 +87,7 @@ export function useHeadline(ref, { delay = 100, stagger = 110, duration = 700 } 
       alive = false
       anim?.pause?.()
     }
-  }, [ref, delay, stagger, duration])
+  }, [ref, delay, staggerStep, duration])
 }
 
 // Bubble/chat pop-in spring (scale + naik sedikit + fade).

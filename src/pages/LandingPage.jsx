@@ -215,6 +215,16 @@ function Navbar({ navigate, theme, toggleTheme }) {
   )
 }
 
+function Words({ text }) {
+  const words = text.split(' ')
+  return words.map((w, i) => (
+    <span key={i} className="inline-block opacity-0" data-word>
+      {w}
+      {i < words.length - 1 ? '\u00A0' : ''}
+    </span>
+  ))
+}
+
 function Hero({ navigate }) {
   const headlineRef = useRef(null)
   useHeadline(headlineRef)
@@ -229,15 +239,19 @@ function Hero({ navigate }) {
               ref={headlineRef}
               className="text-[32px] font-bold leading-[1.08] tracking-tighter text-foreground sm:text-5xl md:text-6xl xl:text-6xl"
             >
-              <span className="block whitespace-nowrap opacity-0" data-line>Tulis, kode, belajar.</span>
-              <span className="block whitespace-nowrap opacity-0" data-line>Semua dibantuin.</span>
+              <span className="block whitespace-nowrap">
+                <Words text="Tulis, kode, belajar." />
+              </span>
+              <span className="block whitespace-nowrap">
+                <Words text="Semua dibantuin." />
+              </span>
             </h1>
 
-            <p className="animate-fade-up max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg" style={{ animationDelay: '0.2s' }}>
+            <p className="animate-fade-up max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg" style={{ animationDelay: '0.55s' }}>
               Jawaban AI cepat, rapi, dan gratis.
             </p>
 
-            <div className="animate-fade-up space-y-2.5" style={{ animationDelay: '0.25s' }}>
+            <div className="animate-fade-up space-y-2.5" style={{ animationDelay: '0.65s' }}>
               <button
                 type="button"
                 onClick={() => navigate('/chat')}
