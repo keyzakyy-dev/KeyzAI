@@ -23,7 +23,7 @@ import { serializeConv } from '../state/tree'
  * + undo), preferensi akun, dan login. Halaman cukup memberikan header & isi
  * sebagai children; status collapse/mobile dimiliki halaman.
  */
-export function AppSidebar({ children, collapsed, mobileOpen, onMobileClose, currentPrdId, onAfterDeletePrd }) {
+export function AppSidebar({ children, collapsed, mobileOpen, onMobileClose, showConversations = true, currentPrdId, onAfterDeletePrd }) {
   const { state, dispatch, refreshHistory, logoutReset } = useChatStore()
   const { history: prdItems, remove: removePrd, refresh: refreshPrd } = usePrdHistory()
   const { user, logout, loginWithGoogle, updateUser } = useAuth()
@@ -148,6 +148,7 @@ export function AppSidebar({ children, collapsed, mobileOpen, onMobileClose, cur
         onSelect={handleSelectConv}
         onNew={handleNewChat}
         onDelete={handleDeleteConv}
+        showConversations={showConversations}
         prdItems={prdItems}
         currentPrdId={currentPrdId}
         onSelectPrd={handleSelectPrd}

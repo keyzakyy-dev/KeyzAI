@@ -19,7 +19,7 @@ function groupKey(ts) {
   return 'Lebih lama'
 }
 
-export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, prdItems, currentPrdId, onSelectPrd, onDeletePrd, open, onClose, collapsed, onDragStart, user, onLogin, onOpenSettings }) {
+export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, showConversations = true, prdItems, currentPrdId, onSelectPrd, onDeletePrd, open, onClose, collapsed, onDragStart, user, onLogin, onOpenSettings }) {
   // Urut + grouping pakai aktivitas terakhir (updatedAt); fallback createdAt.
   const sortKey = (c) => c.updatedAt ?? c.createdAt ?? 0
   const sorted = [...conversations].sort(
@@ -91,16 +91,19 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, p
 
         {/* Conversations + Riwayat PRD */}
         <div className="flex-1 overflow-y-auto px-2 pb-3">
-          {conversations.length === 0 && sortedPrd.length === 0 ? (
+          {sortedPrd.length === 0 && conversations.length === 0 ? (
             <div className="px-3 pt-10 text-center">
-              <p className="text-sm font-medium text-muted-foreground">Belum ada percakapan</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                {showConversations ? 'Belum ada percakapan' : 'Belum ada PRD'}
+              </p>
               <p className="mt-1 text-xs leading-relaxed text-muted-foreground/60">
-                Mulai lewat “Chat baru” di atas.
+                {showConversations ? 'Mulai lewat “Chat baru” di atas.' : 'Mulai dari ide di halaman ini.'}
               </p>
             </div>
           ) : (
             <>
-              {grouped.map((g) => (
+              {showConversations &&
+                grouped.map((g) => (
                 <div key={g.label} className="mt-4">
                   <p className="px-3 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/80">{g.label}</p>
                   <div className="space-y-0.5">

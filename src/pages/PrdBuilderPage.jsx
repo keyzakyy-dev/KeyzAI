@@ -316,6 +316,7 @@ export function PrdBuilderPage() {
       collapsed={sidebarCollapsed}
       mobileOpen={sidebarOpen}
       onMobileClose={() => setSidebarOpen(false)}
+      showConversations={false}
       currentPrdId={project?.id}
       onAfterDeletePrd={handlePrdRemoved}
     >
