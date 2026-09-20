@@ -356,7 +356,7 @@ function Models({ navigate }) {
             >
               <span className="flex w-full items-center justify-between">
                 <span className="flex items-center gap-2">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-background p-1 ring-1 ring-border">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-background ring-1 ring-border">
                     <img src={m.logo} alt="" className="h-full w-full object-contain" />
                   </span>
                   <span className="text-sm font-semibold text-foreground">{m.label}</span>
