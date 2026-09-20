@@ -19,13 +19,6 @@ function GithubMark({ className, ...props }) {
 
 
 
-const STATS = [
-  { value: 'Rp0', label: 'Biaya untuk memulai' },
-  { value: '1 klik', label: 'Masuk dengan Google' },
-  { value: '24/7', label: 'Selalu bisa diakses' },
-  { value: 'Tersinkron', label: 'Riwayat di semua perangkat' },
-]
-
 const FEATURES = [
   {
     icon: MessageSquare,
@@ -292,26 +285,6 @@ function Features({ navigate }) {
   return (
     <section id="features" className="scroll-mt-20 py-12 sm:py-14 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <Reveal from="up" className="mx-auto mb-8 sm:mb-10 max-w-2xl space-y-4 text-center">
-          <h2 className="text-2xl font-bold tracking-tighter text-foreground sm:text-3xl">
-            Untuk semua hal, satu tempat
-          </h2>
-          <p className="text-sm sm:text-base text-muted-foreground">
-            Berpikir, menciptakan, dan belajar lebih cepat dalam satu antarmuka yang rapi.
-          </p>
-        </Reveal>
-
-        <Reveal from="up" className="mx-auto mb-10 hidden max-w-3xl grid-cols-2 gap-x-4 gap-y-8 sm:mb-14 md:grid md:grid-cols-4">
-          {STATS.map((stat) => (
-            <div key={stat.label} className="space-y-1 text-center">
-              <p className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                {stat.value}
-              </p>
-              <p className="text-xs text-muted-foreground sm:text-sm">{stat.label}</p>
-            </div>
-          ))}
-        </Reveal>
-
         <Reveal from="up" className="mx-auto grid max-w-5xl gap-x-10 md:grid-cols-2">
           {FEATURES.map((f, i) => {
             const Icon = f.icon
