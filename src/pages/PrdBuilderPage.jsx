@@ -10,6 +10,7 @@ import { Clarify } from '../components/prd/Clarify'
 import { TechPref } from '../components/prd/TechPref'
 import { Structure } from '../components/prd/Structure'
 import { PrdEditor } from '../components/prd/PrdEditor'
+import { ContextPanel } from '../components/prd/ContextPanel'
 import { usePrdProject } from '../hooks/usePrdProject'
 import { useAuth } from '../hooks/useAuth'
 import { useTheme } from '../lib/use-theme'
@@ -226,10 +227,76 @@ export function PrdBuilderPage() {
 
   const showStepper = !!project && step !== 'idea'
 
+  const stepCanvas =
+    step === 'idea' || !project ? (
+      <IdeaInput
+        initialIdea={pendingIdea}
+        initialLanguage={pendingLang}
+        loading={isWorking}
+        loadingMessage={loadingMessage}
+        error={error}
+        onStart={(v) => {
+          setPendingIdea(v.idea)
+          setPendingLang(v.language)
+          handleStart(v)
+        }}
+      />
+    ) : step === 'clarify' ? (
+      <Clarify
+        questions={project.questions || []}
+        answers={project.answers || {}}
+        index={qIndex}
+        onAnswer={setAnswer}
+        onPrev={() => setQIndex((i) => Math.max(0, i - 1))}
+        onNext={handleNextQ}
+        onSkip={handleSkip}
+        loading={isWorking}
+        loadingMessage={loadingMessage}
+        error={error}
+        onRetry={() => retry(runQuestions)}
+      />
+    ) : step === 'tech' ? (
+      <TechPref
+        mode={project.technologySelectionMode}
+        stack={project.technologyStack}
+        onSelectMode={handleSelectTechMode}
+        onManualChange={handleManualTech}
+        loading={isWorking}
+        loadingMessage={loadingMessage}
+        onContinue={handleTechContinue}
+        onBack={() => gotoStep('clarify')}
+      />
+    ) : step === 'structure' ? (
+      <Structure
+        structure={project.productStructure}
+        onChange={setStructure}
+        onRegenerate={() => retry(runStructure)}
+        onContinue={handleStructureContinue}
+        onBack={() => gotoStep('tech')}
+        loading={isWorking}
+        loadingMessage={loadingMessage}
+        error={error}
+        onRetry={() => retry(runStructure)}
+      />
+    ) : (
+      <PrdEditor
+        project={project}
+        sections={project.prd?.sections || []}
+        onChangeSections={setPRDSections}
+        onRegenerateSection={runRegenerateSection}
+        onBack={() => gotoStep('structure')}
+        onNew={handleNewPrd}
+        loading={isWorking}
+        loadingMessage={loadingMessage}
+        error={error}
+        onRetry={() => retry(runPRD)}
+      />
+    )
+
   return (
     <div className="flex min-h-dvh flex-col bg-background text-foreground">
       <header className="flex-shrink-0 border-b border-border">
-        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4 sm:px-6">
+        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <Link to="/" aria-label="Kembali ke beranda" className="rounded-xl transition-opacity hover:opacity-80">
               <LogoImg className="h-8 w-auto" />
@@ -258,78 +325,22 @@ export function PrdBuilderPage() {
         </div>
 
         {showStepper && (
-          <div className="mx-auto max-w-5xl px-4 pb-3 sm:px-6">
+          <div className="mx-auto max-w-6xl px-4 pb-3 sm:px-6">
             <Stepper stepIndex={stepIndex} disabled={isWorking} onJump={(i) => gotoStep(STEP_NAMES[i])} />
           </div>
         )}
       </header>
 
       <main className="flex flex-1 flex-col px-4 py-8 sm:px-6 sm:py-12">
-        {!project || step === 'idea' ? (
-          <div className="flex flex-1 items-center justify-center">
-            <IdeaInput
-              initialIdea={pendingIdea}
-              initialLanguage={pendingLang}
-              loading={isWorking}
-              loadingMessage={loadingMessage}
-              error={error}
-              onStart={(v) => {
-                setPendingIdea(v.idea)
-                setPendingLang(v.language)
-                handleStart(v)
-              }}
-            />
+        {project ? (
+          // 2 kolom: canvas step di kiri, ringkasan konteks proyek (sticky)
+          // di kanan. Project baru selalu punya ide → panel tidak kosong.
+          <div className="mx-auto grid w-full max-w-6xl items-start gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
+            <div className="min-w-0">{stepCanvas}</div>
+            <ContextPanel project={project} working={isWorking} loadingMessage={loadingMessage} />
           </div>
-        ) : step === 'clarify' ? (
-          <Clarify
-            questions={project.questions || []}
-            answers={project.answers || {}}
-            index={qIndex}
-            onAnswer={setAnswer}
-            onPrev={() => setQIndex((i) => Math.max(0, i - 1))}
-            onNext={handleNextQ}
-            onSkip={handleSkip}
-            loading={isWorking}
-            loadingMessage={loadingMessage}
-            error={error}
-            onRetry={() => retry(runQuestions)}
-          />
-        ) : step === 'tech' ? (
-          <TechPref
-            mode={project.technologySelectionMode}
-            stack={project.technologyStack}
-            onSelectMode={handleSelectTechMode}
-            onManualChange={handleManualTech}
-            loading={isWorking}
-            loadingMessage={loadingMessage}
-            onContinue={handleTechContinue}
-            onBack={() => gotoStep('clarify')}
-          />
-        ) : step === 'structure' ? (
-          <Structure
-            structure={project.productStructure}
-            onChange={setStructure}
-            onRegenerate={() => retry(runStructure)}
-            onContinue={handleStructureContinue}
-            onBack={() => gotoStep('tech')}
-            loading={isWorking}
-            loadingMessage={loadingMessage}
-            error={error}
-            onRetry={() => retry(runStructure)}
-          />
         ) : (
-          <PrdEditor
-            project={project}
-            sections={project.prd?.sections || []}
-            onChangeSections={setPRDSections}
-            onRegenerateSection={runRegenerateSection}
-            onBack={() => gotoStep('structure')}
-            onNew={handleNewPrd}
-            loading={isWorking}
-            loadingMessage={loadingMessage}
-            error={error}
-            onRetry={() => retry(runPRD)}
-          />
+          <div className="flex flex-1 items-center justify-center">{stepCanvas}</div>
         )}
 
         {persistError && (
