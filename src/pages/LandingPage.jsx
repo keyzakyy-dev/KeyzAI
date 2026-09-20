@@ -285,35 +285,33 @@ function Features({ navigate }) {
   return (
     <section id="features" className="scroll-mt-20 py-12 sm:py-14 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <Reveal from="up" className="mx-auto grid max-w-5xl gap-x-10 md:grid-cols-2">
+        <Reveal from="up" className="mx-auto grid max-w-5xl gap-x-10 gap-y-1 md:grid-cols-2">
           {FEATURES.map((f, i) => {
             const Icon = f.icon
             const inner = (
               <>
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-border bg-muted">
-                  <Icon className="h-4 w-4 text-foreground" />
+                <span className="flex items-center gap-2.5">
+                  <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <span className="text-sm font-semibold text-foreground sm:text-[15px]">{f.title}</span>
                 </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-semibold text-foreground sm:text-base">{f.title}</span>
-                  <span className="mt-0.5 block text-xs leading-relaxed text-muted-foreground sm:text-sm">
-                    {f.desc}
-                  </span>
+                <span className="mt-1 block pl-[26px] text-xs leading-relaxed text-muted-foreground sm:text-sm">
+                  {f.desc}
                 </span>
                 {f.prompt && (
-                  <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:opacity-100" />
+                  <ArrowRight className="absolute top-[19px] right-3 h-4 w-4 text-muted-foreground opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:opacity-100" />
                 )}
               </>
             )
             const collapsed = i >= 3 && !showAll
-            const rowCls = `group -mx-2 flex w-full items-center gap-4 rounded-lg border-t border-border px-2 py-4 text-left transition-colors hover:bg-accent/40 sm:gap-5 ${
+            const base = `group relative -mx-3 flex w-full flex-col rounded-lg px-3 py-3 text-left ${
               collapsed ? 'hidden md:flex' : ''
             }`
             return f.prompt ? (
-              <button key={f.title} type="button" onClick={() => onPrompt(f.prompt)} className={rowCls}>
+              <button key={f.title} type="button" onClick={() => onPrompt(f.prompt)} className={`${base} transition-colors hover:bg-accent/40`}>
                 {inner}
               </button>
             ) : (
-              <div key={f.title} className={rowCls}>
+              <div key={f.title} className={base}>
                 {inner}
               </div>
             )
