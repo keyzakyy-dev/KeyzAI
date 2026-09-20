@@ -247,11 +247,11 @@ function Hero({ navigate }) {
               </span>
             </h1>
 
-            <p className="animate-fade-up max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg" style={{ animationDelay: '0.55s' }}>
+            <p className="animate-fade-up max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg" style={{ animationDelay: '0.8s' }}>
               Jawaban AI cepat, rapi, dan gratis.
             </p>
 
-            <div className="animate-fade-up space-y-2.5" style={{ animationDelay: '0.65s' }}>
+            <div className="animate-fade-up space-y-2.5" style={{ animationDelay: '0.95s' }}>
               <button
                 type="button"
                 onClick={() => navigate('/chat')}

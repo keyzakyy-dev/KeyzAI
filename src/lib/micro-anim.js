@@ -61,7 +61,7 @@ export function useCountUp(value, { duration = 900 } = {}) {
 }
 
 // Hero headline: tiap kata [data-word] muncul berurutan (fade + naik + blur-in).
-export function useHeadline(ref, { delay = 100, staggerStep = 65, duration = 600 } = {}) {
+export function useHeadline(ref, { delay = 120, staggerStep = 95, duration = 780 } = {}) {
   useEffect(() => {
     const root = ref.current
     const words = root && Array.from(root.querySelectorAll('[data-word]'))
