@@ -31,13 +31,16 @@ export function rowToConv(row) {
 export async function upsertUser(db, profile) {
   const now = Date.now()
   const id = `usr_${crypto.randomUUID()}`
+  // nama hanya diisi dari profil Google saat INSERT pertama. Pada login
+  // berikutnya JANGAN ditimpa: kolom name adalah "nama tampilan" yang bisa
+  // diubah user lewat preferensi (updatePreferences). Email/picture aman
+  // diperbarui karena tidak pernah dikustom.
   const res = await db
     .prepare(
       `INSERT INTO users (id, google_sub, email, name, picture, created_at)
        VALUES (?, ?, ?, ?, ?, ?)
        ON CONFLICT(google_sub) DO UPDATE SET
          email = excluded.email,
-         name = excluded.name,
          picture = excluded.picture
        RETURNING id, google_sub, email, name, picture`,
     )
