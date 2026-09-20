@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
-import { ArrowLeft, FileText, Sun, Moon } from 'lucide-react'
+import { ArrowLeft, FileText, History, Sun, Moon } from 'lucide-react'
 
 import { Button } from '../components/ui/button'
+import { ConfirmDialog } from '../components/ui/confirm-dialog'
 import { LoginDialog } from '../components/LoginDialog'
+import { PrdHistoryDialog } from '../components/prd/PrdHistoryDialog'
 import { Stepper } from '../components/prd/Stepper'
 import { IdeaInput } from '../components/prd/IdeaInput'
 import { Clarify } from '../components/prd/Clarify'
@@ -36,7 +38,7 @@ export function PrdBuilderPage() {
   const navigate = useNavigate()
   const [theme, setTheme] = useTheme()
   const model = useMemo(loadModel, [])
-  const { loginWithGoogle } = useAuth()
+  const { user, loginWithGoogle } = useAuth()
 
   const prd = usePrdProject({ projectParam: projectId })
   const {
@@ -62,9 +64,14 @@ export function PrdBuilderPage() {
     resetProject,
     dismissError,
     dismissNeedLogin,
+    history,
+    refreshHistory,
+    deleteProjectFromHistory,
   } = prd
 
   const [qIndex, setQIndex] = useState(0)
+  const [historyOpen, setHistoryOpen] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(null)
 
   // Ide & bahasa sebelum tekan Mulai; juga dipakai deep-link project lama.
   const [pendingIdea, setPendingIdea] = useState('')
@@ -74,6 +81,7 @@ export function PrdBuilderPage() {
   const pendingAction = useRef(null)
   const [loginLoading, setLoginLoading] = useState(false)
   const [loginErr, setLoginErr] = useState(null)
+  const [loginOpen, setLoginOpen] = useState(false)
 
   usePageMeta({
     title: 'PRD Builder',
@@ -215,6 +223,21 @@ export function PrdBuilderPage() {
     navigate('/chat')
   }, [navigate])
 
+  const handleSelectHistory = useCallback(
+    (id) => {
+      navigate(`/prd-builder/${id}`)
+    },
+    [navigate],
+  )
+
+  const handleConfirmDelete = useCallback(() => {
+    const id = confirmDelete
+    setConfirmDelete(null)
+    if (!id) return
+    deleteProjectFromHistory(id)
+    if (project?.id === id) navigate('/prd-builder', { replace: true })
+  }, [confirmDelete, deleteProjectFromHistory, project?.id, navigate])
+
   const retry = useCallback(
     (fn) => {
       dismissError()
@@ -310,6 +333,16 @@ export function PrdBuilderPage() {
           <div className="flex flex-shrink-0 items-center gap-1.5">
             <Button
               variant="ghost"
+              size="sm"
+              onClick={() => setHistoryOpen(true)}
+              className="gap-1.5"
+              title="Riwayat PRD"
+            >
+              <History className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Riwayat</span>
+            </Button>
+            <Button
+              variant="ghost"
               size="icon"
               onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
               aria-label="Ganti tema"
@@ -351,16 +384,39 @@ export function PrdBuilderPage() {
       </main>
 
       <LoginDialog
-        open={needLogin}
+        open={needLogin || loginOpen}
         onOpenChange={(o) => {
           if (!o) {
             dismissNeedLogin()
+            setLoginOpen(false)
             pendingAction.current = null
           }
         }}
         onIdToken={handleLoginToken}
         loading={loginLoading}
         error={loginErr}
+      />
+
+      <PrdHistoryDialog
+        open={historyOpen}
+        onOpenChange={setHistoryOpen}
+        items={history}
+        currentId={project?.id}
+        isAuthenticated={!!user}
+        onLogin={() => setLoginOpen(true)}
+        onSelect={handleSelectHistory}
+        onDelete={(id) => setConfirmDelete(id)}
+        onRefresh={refreshHistory}
+      />
+
+      <ConfirmDialog
+        open={!!confirmDelete}
+        onOpenChange={(o) => !o && setConfirmDelete(null)}
+        title="Hapus PRD?"
+        description="PRD dan semua tahapannya dihapus permanen dari akun kamu."
+        confirmLabel="Hapus"
+        danger
+        onConfirm={handleConfirmDelete}
       />
     </div>
   )

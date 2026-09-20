@@ -215,9 +215,9 @@ export function usePrdProject({ projectParam } = {}) {
     (id) => {
       removeProjectLocal(id)
       setHistory((h) => h.filter((m) => m.id !== id))
+      if (projectRef.current?.id === id) setProject(null)
       if (isAuthenticated()) {
         deletePrdProject(id).catch(() => {})
-        if (projectRef.current?.id === id) setProject(null)
       }
     },
     [],
