@@ -8,7 +8,6 @@ import { LogoImg } from '../lib/logo-img'
 import { useHeadline } from '../lib/micro-anim'
 import { ChatMock } from '../components/ChatMock'
 import { MODELS } from '../lib/models'
-import { KeyMark } from '../lib/key-mark'
 import { ArrowRight, ArrowUp, MessageSquare, Code, Pencil, Lock, BookOpen, CircleHelp, Plus, Menu, X, Sun, Moon, Sparkles } from 'lucide-react'
 
 function GithubMark({ className, ...props }) {
@@ -343,7 +342,7 @@ function Models({ navigate }) {
             Ditenagai model terbaik
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Pilih model sesuai kebutuhanmu — semuanya gratis, tanpa biaya tersembunyi.
+            Pilih model sesuai kebutuhanmu, semuanya gratis tanpa biaya tersembunyi.
           </p>
         </Reveal>
 
@@ -357,8 +356,8 @@ function Models({ navigate }) {
             >
               <span className="flex w-full items-center justify-between">
                 <span className="flex items-center gap-2">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                    <KeyMark className="h-4 w-4" />
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-background p-1 ring-1 ring-border">
+                    <img src={m.logo} alt="" className="h-full w-full object-contain" />
                   </span>
                   <span className="text-sm font-semibold text-foreground">{m.label}</span>
                 </span>

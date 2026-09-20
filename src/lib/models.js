@@ -1,7 +1,7 @@
 export const MODELS = [
-  { id: 'qwen3.8-flash', label: 'Qwen 3.8 Flash', free: true },
-  { id: 'deepseek-v4-flash', label: 'DeepSeek V4 Flash', free: true },
-  { id: 'Atria-Dawn-Preview', label: 'Atria Dawn Preview', free: true },
+  { id: 'qwen3.8-flash', label: 'Qwen 3.8 Flash', free: true, logo: '/models/qwen.png' },
+  { id: 'deepseek-v4-flash', label: 'DeepSeek V4 Flash', free: true, logo: '/models/deepseek.png' },
+  { id: 'Atria-Dawn-Preview', label: 'Atria Dawn Preview', free: true, logo: '/models/atria.png' },
 ]
 export const DEFAULT_MODEL = MODELS[0].id
 
