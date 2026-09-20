@@ -7,7 +7,9 @@ import { useAuth } from '../hooks/useAuth'
 import { LogoImg } from '../lib/logo-img'
 import { useHeadline } from '../lib/micro-anim'
 import { ChatMock } from '../components/ChatMock'
-import { ArrowRight, ArrowUp, MessageSquare, Code, Pencil, Lock, BookOpen, CircleHelp, Plus, Menu, X, Sun, Moon } from 'lucide-react'
+import { MODELS } from '../lib/models'
+import { KeyMark } from '../lib/key-mark'
+import { ArrowRight, ArrowUp, MessageSquare, Code, Pencil, Lock, BookOpen, CircleHelp, Plus, Menu, X, Sun, Moon, Sparkles } from 'lucide-react'
 
 function GithubMark({ className, ...props }) {
   return (
@@ -328,6 +330,57 @@ function Features({ navigate }) {
   )
 }
 
+function Models({ navigate }) {
+  return (
+    <section id="models" className="scroll-mt-20 border-t border-border/60 py-12 sm:py-14 lg:py-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <Reveal from="up" className="mx-auto max-w-2xl text-center">
+          <span className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            <Sparkles className="h-3.5 w-3.5" />
+            Model AI
+          </span>
+          <h2 className="mt-3 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            Ditenagai model terbaik
+          </h2>
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
+            Pilih model sesuai kebutuhanmu — semuanya gratis, tanpa biaya tersembunyi.
+          </p>
+        </Reveal>
+
+        <Reveal from="up" delay={80} className="mx-auto mt-8 grid max-w-4xl gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {MODELS.map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              onClick={() => navigate('/chat')}
+              className="group flex flex-col items-start gap-2 rounded-xl border border-border bg-card p-4 text-left shadow-sm transition-all hover:border-foreground/40 hover:shadow-md"
+            >
+              <span className="flex w-full items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <KeyMark className="h-4 w-4" />
+                  </span>
+                  <span className="text-sm font-semibold text-foreground">{m.label}</span>
+                </span>
+                {m.free && (
+                  <span className="text-[10px] font-medium text-emerald-600/90 dark:text-emerald-400/90">
+                    Free
+                  </span>
+                )}
+              </span>
+              <span className="font-mono text-[11px] text-muted-foreground">{m.id}</span>
+              <span className="flex items-center gap-1 text-[11px] font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
+                Coba sekarang
+                <ArrowRight className="h-3 w-3" />
+              </span>
+            </button>
+          ))}
+        </Reveal>
+      </div>
+    </section>
+  )
+}
+
 function Footer() {
   const toTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
   const linkCls =
@@ -393,6 +446,7 @@ export function LandingPage() {
       <main>
         <Hero navigate={navigate} />
         <Features navigate={navigate} />
+        <Models navigate={navigate} />
       </main>
       <Footer />
     </div>
