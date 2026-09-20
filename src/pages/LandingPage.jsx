@@ -5,6 +5,7 @@ import { usePageMeta, SITE_NAME, SITE_DESC } from '../lib/seo'
 import { Reveal } from '../lib/reveal'
 import { useAuth } from '../hooks/useAuth'
 import { LogoImg } from '../lib/logo-img'
+import { useHeadline } from '../lib/micro-anim'
 import { ChatMock } from '../components/ChatMock'
 import { ArrowRight, ArrowUp, MessageSquare, Code, Pencil, Lock, BookOpen, CircleHelp, Plus, Menu, X, Sun, Moon } from 'lucide-react'
 
@@ -215,6 +216,8 @@ function Navbar({ navigate, theme, toggleTheme }) {
 }
 
 function Hero({ navigate }) {
+  const headlineRef = useRef(null)
+  useHeadline(headlineRef)
   return (
     <section className="relative overflow-hidden pb-12 pt-24 sm:pb-14 sm:pt-32 lg:pb-16 lg:pt-36">
       <div className="absolute left-1/2 top-0 h-56 w-[min(520px,100vw)] -translate-x-1/2 rounded-full bg-foreground/5 blur-[100px] sm:h-72 sm:w-[700px] sm:blur-[120px]" />
@@ -223,11 +226,11 @@ function Hero({ navigate }) {
         <div className="grid items-center gap-10 sm:gap-16 lg:grid-cols-2">
           <div className="space-y-6 sm:space-y-8">
             <h1
-              className="animate-fade-up text-[32px] font-bold leading-[1.08] tracking-tighter text-foreground sm:text-5xl md:text-6xl xl:text-6xl"
-              style={{ animationDelay: '0.1s' }}
+              ref={headlineRef}
+              className="text-[32px] font-bold leading-[1.08] tracking-tighter text-foreground sm:text-5xl md:text-6xl xl:text-6xl"
             >
-              <span className="block whitespace-nowrap">Tulis, kode, belajar.</span>
-              <span className="block whitespace-nowrap">Semua dibantuin.</span>
+              <span className="block whitespace-nowrap opacity-0" data-line>Tulis, kode, belajar.</span>
+              <span className="block whitespace-nowrap opacity-0" data-line>Semua dibantuin.</span>
             </h1>
 
             <p className="animate-fade-up max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg" style={{ animationDelay: '0.2s' }}>

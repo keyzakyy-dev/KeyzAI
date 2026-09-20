@@ -60,6 +60,35 @@ export function useCountUp(value, { duration = 900 } = {}) {
   return v
 }
 
+// Hero headline: tiap baris [data-line] muncul berurutan (fade + naik).
+export function useHeadline(ref, { delay = 100, stagger = 110, duration = 700 } = {}) {
+  useEffect(() => {
+    const root = ref.current
+    const lines = root && Array.from(root.querySelectorAll('[data-line]'))
+    if (!lines?.length) return
+    if (reducedMotion()) {
+      lines.forEach((el) => el.classList.remove('opacity-0'))
+      return
+    }
+    let alive = true
+    let anim
+    import('animejs').then(({ animate }) => {
+      if (!alive) return
+      anim = animate(lines, {
+        opacity: [0, 1],
+        translateY: [20, 0],
+        duration,
+        delay: (el, i) => delay + i * stagger,
+        ease: 'outExpo',
+      })
+    })
+    return () => {
+      alive = false
+      anim?.pause?.()
+    }
+  }, [ref, delay, stagger, duration])
+}
+
 // Bubble/chat pop-in spring (scale + naik sedikit + fade).
 export function usePopIn(ref, trigger) {
   useEffect(() => {
