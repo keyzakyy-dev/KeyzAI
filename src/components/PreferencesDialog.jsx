@@ -7,9 +7,20 @@ import { ConfirmDialog } from './ui/confirm-dialog'
 import { MODELS, DEFAULT_MODEL } from '../lib/models'
 import { normalizeDisplayName, isValidDisplayName } from '../lib/preferences'
 import { computeUsage } from '../lib/usage'
+import { useCountUp } from '../lib/micro-anim'
 
 // recharts cukup besar — dimuat saat tab Pemakaian pertama kali dibuka
 const TokenChart = lazy(() => import('./token-chart'))
+
+function TokenStat({ value, label }) {
+  const v = useCountUp(value)
+  return (
+    <div className="rounded-lg border border-border bg-card px-4 py-5 text-center">
+      <p className="text-2xl font-semibold tabular-nums text-foreground">± {v.toLocaleString('id-ID')}</p>
+      <p className="mt-1 text-sm text-muted-foreground">{label}</p>
+    </div>
+  )
+}
 
 const SIDEBAR_MIN = 220
 const SIDEBAR_MAX = 420
@@ -263,18 +274,8 @@ export function PreferencesDialog({
                     </Suspense>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-lg border border-border bg-card px-4 py-5 text-center">
-                      <p className="text-2xl font-semibold tabular-nums text-foreground">
-                        ± {usage.todayTokens.toLocaleString('id-ID')}
-                      </p>
-                      <p className="mt-1 text-sm text-muted-foreground">Token hari ini</p>
-                    </div>
-                    <div className="rounded-lg border border-border bg-card px-4 py-5 text-center">
-                      <p className="text-2xl font-semibold tabular-nums text-foreground">
-                        ± {usage.estTokens.toLocaleString('id-ID')}
-                      </p>
-                      <p className="mt-1 text-sm text-muted-foreground">Token total</p>
-                    </div>
+                    <TokenStat value={usage.todayTokens} label="Token hari ini" />
+                    <TokenStat value={usage.estTokens} label="Token total" />
                   </div>
                 </section>
               )}

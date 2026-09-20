@@ -3,6 +3,7 @@ import { Pencil, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react'
 import { KeyMark } from '../lib/key-mark'
 import { Markdown } from '../lib/markdown'
 import { CopyButton } from '../lib/copy-button'
+import { useStrokeDraw } from '../lib/micro-anim'
 
 // Close an unterminated ``` fence so partial streaming text still renders formatted
 function closeOpenFence(s) {
@@ -13,16 +14,17 @@ const THINKING_WORDS = ['Berpikir…', 'Menelusuri…', 'Menulis…', 'Memoles�
 
 function ThinkingIndicator() {
   const [i, setI] = useState(0)
+  const markRef = useRef(null)
+  useStrokeDraw(markRef)
   useEffect(() => {
     const t = setInterval(() => setI((v) => (v + 1) % THINKING_WORDS.length), 2400)
     return () => clearInterval(t)
   }, [])
   return (
     <div className="flex items-center gap-2">
-      <KeyMark
-        className="animate-pulsing h-4 w-4 shrink-0 text-primary"
-        style={{ animationDelay: `${i * 0.15}s` }}
-      />
+      <span ref={markRef} className="shrink-0 text-primary">
+        <KeyMark className="h-4 w-4" />
+      </span>
       <div
         key={i}
         className="font-serif text-foreground thinking-fade"

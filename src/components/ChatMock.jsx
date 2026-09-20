@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react'
 import { KeyMark } from '../lib/key-mark'
+import { usePopIn } from '../lib/micro-anim'
 
 const USER_TXT = 'Bikinin caption singkat buat foto kopi pagi'
 const ANSWERS = [
@@ -74,6 +75,12 @@ function useDemo() {
 
 export function ChatMock() {
   const { userText, typingUser, answer, answerDone, branch } = useDemo()
+  const userBubbleRef = useRef(null)
+  const aiBubbleRef = useRef(null)
+  const hasUser = userText.length > 0
+  const hasAnswer = answer.length > 0
+  usePopIn(userBubbleRef, hasUser)
+  usePopIn(aiBubbleRef, hasAnswer ? `b${branch}-${hasAnswer}` : false)
 
   return (
     <div className="relative animate-fade-up" style={{ animationDelay: '0.3s' }}>
@@ -91,6 +98,7 @@ export function ChatMock() {
         <div className="min-h-[268px] space-y-4 p-5">
           <div className="flex justify-end">
             <div
+              ref={userBubbleRef}
               className="max-w-[80%] whitespace-pre-wrap rounded-lg bg-primary px-3.5 py-2 text-sm text-primary-foreground"
               aria-label={USER_TXT}
             >
@@ -106,7 +114,7 @@ export function ChatMock() {
               <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border border-border">
                 <KeyMark className="h-3.5 w-3.5 text-muted-foreground" />
               </div>
-              <div className="max-w-[85%] space-y-2">
+              <div ref={aiBubbleRef} className="max-w-[85%] space-y-2">
                 <div
                   className="whitespace-pre-wrap rounded-lg bg-muted px-3.5 py-2 text-sm leading-relaxed text-foreground"
                   aria-label={ANSWERS[branch]}
