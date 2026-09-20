@@ -1,7 +1,7 @@
 ﻿import { useEffect, useRef, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useTheme } from '../lib/use-theme'
-import { usePageMeta, SITE_NAME, SITE_DESC, faqSchema, injectJsonLd } from '../lib/seo'
+import { usePageMeta, SITE_NAME, SITE_DESC } from '../lib/seo'
 import { Reveal } from '../lib/reveal'
 import { useAuth } from '../hooks/useAuth'
 import { LogoImg } from '../lib/logo-img'
@@ -54,25 +54,6 @@ const FEATURES = [
     icon: Lock,
     title: 'Privat & aman',
     desc: 'Percakapanmu milikmu. Tanpa pelacakan, tanpa jual data.',
-  },
-]
-
-const FAQS = [
-  {
-    q: 'KeyzAI benar-benar gratis?',
-    a: 'Iya. KeyzAI sepenuhnya gratis, tanpa langganan, tanpa biaya tersembunyi, tanpa kartu kredit. Masuk dan mulai bertanya.',
-  },
-  {
-    q: 'Harus bikin akun dulu?',
-    a: 'Kamu masuk sekali dengan akun Google, tanpa perlu bikin password baru. Ini agar riwayat percakapanmu tersimpan dan bisa kamu lanjutkan dari perangkat mana pun.',
-  },
-  {
-    q: 'Boleh tanya apa saja?',
-    a: 'Apa saja. Brainstorm ide bisnis, debug kode, rencanakan perjalanan, pahami konsep, draf email, atau sekadar ngobrol. Selama bisa diketik, KeyzAI bisa bantu.',
-  },
-  {
-    q: 'Data percakapanku aman?',
-    a: 'Riwayat tersimpan di akunmu dan hanya bisa diakses setelah login. Pesan yang kamu kirim diteruskan ke model AI pihak ketiga untuk diproses menjadi respons, dan tidak kami jual ke siapa pun.',
   },
 ]
 
@@ -331,44 +312,6 @@ function Features({ navigate }) {
   )
 }
 
-function FAQ({ navigate }) {
-  return (
-    <section id="faq" className="scroll-mt-20 py-12 sm:py-14 lg:py-16">
-      <div className="mx-auto max-w-2xl px-4 sm:px-6">
-        <Reveal from="up" className="mb-8 text-center sm:mb-10">
-          <h2 className="text-2xl font-bold tracking-tighter text-foreground sm:text-3xl">
-            Pertanyaan yang sering diajukan
-          </h2>
-        </Reveal>
-
-        <Reveal from="up" className="divide-y divide-border border-y border-border">
-          {FAQS.map((item) => (
-            <details key={item.q} className="group">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 transition-colors hover:text-foreground [&::-webkit-details-marker]:hidden">
-                <span className="text-sm font-medium text-foreground">{item.q}</span>
-                <Plus className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-300 group-open:rotate-45" />
-              </summary>
-              <p className="pb-4 pr-8 text-sm leading-relaxed text-muted-foreground">{item.a}</p>
-            </details>
-          ))}
-        </Reveal>
-
-        <p className="mt-8 text-center text-sm text-muted-foreground">
-          Nggak nemu jawabannya?{' '}
-          <button
-            type="button"
-            onClick={() => navigate('/chat')}
-            className="group inline-flex items-center gap-1 font-medium text-foreground underline-offset-4 hover:underline"
-          >
-            Tanya saja
-            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-          </button>
-        </p>
-      </div>
-    </section>
-  )
-}
-
 function Footer() {
   const toTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
   const linkCls =
@@ -428,17 +371,12 @@ export function LandingPage() {
 
   usePageMeta({ title: SITE_NAME, description: SITE_DESC, path: '/' })
 
-  useEffect(() => {
-    injectJsonLd(faqSchema(FAQS))
-  }, [])
-
   return (
     <div className="min-h-screen bg-background text-foreground antialiased">
       <Navbar navigate={navigate} theme={theme} toggleTheme={toggleTheme} />
       <main>
         <Hero navigate={navigate} />
         <Features navigate={navigate} />
-        <FAQ navigate={navigate} />
       </main>
       <Footer />
     </div>

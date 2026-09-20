@@ -46,26 +46,3 @@ export function usePageMeta(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.title, props.description, props.path])
 }
-
-export function injectJsonLd(data) {
-  const existing = document.head.querySelector('script[data-seo-jsonld]')
-  if (existing) existing.remove()
-  const script = document.createElement('script')
-  script.type = 'application/ld+json'
-  script.dataset.seoJsonld = ''
-  script.textContent = JSON.stringify(data)
-  document.head.appendChild(script)
-  return script
-}
-
-export function faqSchema(faqs) {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: faqs.map(({ q, a }) => ({
-      '@type': 'Question',
-      name: q,
-      acceptedAnswer: { '@type': 'Answer', text: a },
-    })),
-  }
-}
