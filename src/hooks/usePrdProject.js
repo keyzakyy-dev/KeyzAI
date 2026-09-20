@@ -195,7 +195,9 @@ export function usePrdProject({ projectParam } = {}) {
         if (!p) throw new Error('Project belum dimulai')
         const data = await generateClarificationQuestions(p)
         const questions = normalizeQuestions(data.questions)
-        setProject((cur) => (cur ? { ...cur, questions, step: 'clarify', updatedAt: Date.now() } : cur))
+        setProject((cur) =>
+          cur ? { ...cur, questions, step: questions.length ? 'clarify' : 'tech', updatedAt: Date.now() } : cur,
+        )
         return questions
       }),
     [runStage],
@@ -286,9 +288,10 @@ export function usePrdProject({ projectParam } = {}) {
         const qData = await generateClarificationQuestions(next)
         const questions = normalizeQuestions(qData.questions)
         next.questions = questions
-        // Baru pindah ke halaman pertanyaan setelah AI benar-benar selesai;
-        // selama proses user tetap melihat skeleton di halaman ide.
-        next.step = 'clarify'
+        // Baru pindah setelah AI benar-benar selesai; selama proses user tetap
+        // melihat skeleton di halaman ide. Ide yang sudah cukup jelas → AI bisa
+        // mengembalikan 0 pertanyaan: langsung ke tahap teknologi.
+        next.step = questions.length ? 'clarify' : 'tech'
         projectRef.current = next
         setProject((cur) => (cur && cur.id === next.id ? { ...next } : cur))
         return questions

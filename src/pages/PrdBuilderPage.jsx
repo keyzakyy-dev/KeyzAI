@@ -140,14 +140,6 @@ export function PrdBuilderPage() {
     [loginWithGoogle, dismissNeedLogin, startFromIdea, model],
   )
 
-  const handleSkip = useCallback(
-    (qid) => {
-      setAnswer(qid, null)
-      if (qIndex < (project?.questions?.length || 0) - 1) setQIndex((i) => i + 1)
-    },
-    [setAnswer, qIndex, project?.questions?.length],
-  )
-
   const handleNextQ = useCallback(() => {
     const total = project?.questions?.length || 0
     if (qIndex < total - 1) {
@@ -157,6 +149,16 @@ export function PrdBuilderPage() {
       updateProject({ step: 'tech' })
     }
   }, [qIndex, project?.questions?.length, updateProject])
+
+  // Lewati = kosongkan jawaban lalu maju sama seperti "Berikutnya" (di
+  // pertanyaan terakhir → lanjut ke teknologi, bukan diam).
+  const handleSkip = useCallback(
+    (qid) => {
+      setAnswer(qid, null)
+      handleNextQ()
+    },
+    [setAnswer, handleNextQ],
+  )
 
   const handleSelectTechMode = useCallback(
     (mode) => {
