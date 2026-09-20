@@ -271,7 +271,6 @@ export function usePrdProject({ projectParam } = {}) {
       const next = createEmptyProject(id, { language })
       next.projectIdea = idea.trim()
       next.projectName = deriveProjectName(idea)
-      next.step = 'clarify'
       if (model) next.model = model
       setError(null)
       setProject(next)
@@ -288,6 +287,9 @@ export function usePrdProject({ projectParam } = {}) {
         const qData = await generateClarificationQuestions(next)
         const questions = normalizeQuestions(qData.questions)
         next.questions = questions
+        // Baru pindah ke halaman pertanyaan setelah AI benar-benar selesai;
+        // selama proses user tetap melihat skeleton di halaman ide.
+        next.step = 'clarify'
         projectRef.current = next
         setProject((cur) => (cur && cur.id === next.id ? { ...next } : cur))
         return questions

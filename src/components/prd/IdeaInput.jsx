@@ -9,7 +9,7 @@ import { validateIdea } from '../../state/prd-model'
  * STEP 1 — Input ide. User bebas menjelaskan (satu kalimat sampai detail);
  * bahasa default Indonesia. Tombol Mulai disabled sampai ide valid.
  */
-export function IdeaInput({ initialIdea = '', initialLanguage = 'id', loading, onStart, error }) {
+export function IdeaInput({ initialIdea = '', initialLanguage = 'id', loading, loadingMessage, onStart, error }) {
   const [idea, setIdea] = useState(initialIdea)
   const [language, setLanguage] = useState(initialLanguage)
   const [touched, setTouched] = useState(false)
@@ -72,6 +72,15 @@ export function IdeaInput({ initialIdea = '', initialLanguage = 'id', loading, o
           <p className="text-xs text-destructive" role="alert">
             {issue}
           </p>
+        )}
+
+        {loading && (
+          <div className="mt-6 space-y-3" aria-busy="true" aria-live="polite">
+            <div className="h-3 w-48 animate-pulse rounded-full bg-muted" />
+            <div className="h-16 animate-pulse rounded-xl bg-muted" />
+            <div className="h-16 w-3/4 animate-pulse rounded-xl bg-muted" />
+            <p className="text-center text-xs text-muted-foreground">{loadingMessage || 'Memproses ide…'}</p>
+          </div>
         )}
 
         <Button onClick={handleStart} disabled={!!issue || loading} className="w-full gap-2" size="lg">

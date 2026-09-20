@@ -262,6 +262,7 @@ export function PrdBuilderPage() {
               initialIdea={pendingIdea}
               initialLanguage={pendingLang}
               loading={isWorking}
+              loadingMessage={loadingMessage}
               error={error}
               onStart={(v) => {
                 setPendingIdea(v.idea)
