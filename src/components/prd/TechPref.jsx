@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Check, Sparkles, Wand2 } from 'lucide-react'
 
 import { Button } from '../ui/button'
@@ -28,13 +27,6 @@ export function TechPref({
   onContinue,
   onBack,
 }) {
-  const [localMode, setLocalMode] = useState(mode)
-
-  const choose = (m) => {
-    setLocalMode(m)
-    onSelectMode(m)
-  }
-
   const hasAutoStack = mode === 'auto' && Object.values(stack).some((v) => v)
 
   return (
@@ -47,9 +39,9 @@ export function TechPref({
       <div className="grid gap-3 sm:grid-cols-2">
         <button
           type="button"
-          onClick={() => choose('auto')}
+          onClick={() => onSelectMode('auto')}
           className={`flex flex-col items-start gap-2 rounded-xl border p-4 text-left transition-all ${
-            localMode === 'auto' ? 'border-primary bg-primary/5 shadow-sm' : 'border-border bg-card hover:border-foreground/30'
+            mode === 'auto' ? 'border-primary bg-primary/5 shadow-sm' : 'border-border bg-card hover:border-foreground/30'
           }`}
         >
           <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background">
@@ -59,7 +51,7 @@ export function TechPref({
           <span className="text-xs leading-relaxed text-muted-foreground">
             Rekomendasi frontend, backend, database, auth, dan deployment sesuai kebutuhan produk.
           </span>
-          {localMode === 'auto' && (
+          {mode === 'auto' && (
             <span className="mt-1 flex items-center gap-1 text-[11px] font-medium text-primary">
               <Check className="h-3 w-3" /> Dipilih
             </span>
@@ -68,9 +60,9 @@ export function TechPref({
 
         <button
           type="button"
-          onClick={() => choose('manual')}
+          onClick={() => onSelectMode('manual')}
           className={`flex flex-col items-start gap-2 rounded-xl border p-4 text-left transition-all ${
-            localMode === 'manual' ? 'border-primary bg-primary/5 shadow-sm' : 'border-border bg-card hover:border-foreground/30'
+            mode === 'manual' ? 'border-primary bg-primary/5 shadow-sm' : 'border-border bg-card hover:border-foreground/30'
           }`}
         >
           <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background">
@@ -80,7 +72,7 @@ export function TechPref({
           <span className="text-xs leading-relaxed text-muted-foreground">
             Tentukan sendiri stack-nya; AI akan memakainya apa adanya di PRD.
           </span>
-          {localMode === 'manual' && (
+          {mode === 'manual' && (
             <span className="mt-1 flex items-center gap-1 text-[11px] font-medium text-primary">
               <Check className="h-3 w-3" /> Dipilih
             </span>
@@ -94,7 +86,7 @@ export function TechPref({
         </div>
       )}
 
-      {!loading && localMode === 'auto' && hasAutoStack && (
+      {!loading && mode === 'auto' && hasAutoStack && (
         <div className="space-y-2 rounded-xl border border-border bg-card p-4 sm:p-5">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Rekomendasi AI</p>
           <ul className="space-y-2.5">
@@ -116,7 +108,7 @@ export function TechPref({
         </div>
       )}
 
-      {!loading && localMode === 'manual' && (
+      {!loading && mode === 'manual' && (
         <div className="space-y-3.5 rounded-xl border border-border bg-card p-4 sm:p-5">
           {TECH_KEYS.map((k) => {
             const opts = k === 'authentication' ? AUTH_OPTIONS : TECH_OPTIONS[k] || []

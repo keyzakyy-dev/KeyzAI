@@ -306,9 +306,18 @@ export function usePrdProject({ projectParam } = {}) {
     [],
   )
 
+  // Loncat tahap lewat stepper: blokir tahap yang prasyaratnya belum ada,
+  // jangan sampai mendarat di halaman kosong.
   const gotoStep = useCallback(
     (target) => {
       if (isWorking) return
+      const p = projectRef.current
+      if (target === 'clarify' && !p?.questions?.length) return
+      if (target === 'structure') {
+        const hasStack = Object.values(p?.technologyStack || {}).some((v) => v)
+        if (p?.technologySelectionMode !== 'manual' && !hasStack) return
+      }
+      if (target === 'prd' && !p?.productStructure?.features?.length) return
       updateProject({ step: target })
     },
     [isWorking, updateProject],
