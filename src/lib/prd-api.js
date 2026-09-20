@@ -43,7 +43,7 @@ export async function callPrdStage(stage, project, opts = {}) {
       sectionTitle: opts.sectionTitle,
       sectionContent: opts.sectionContent,
     }),
-    signal: timeout(120000),
+    signal: timeout(300000),
   })
 
   if (!res.ok) throw await httpError(res)

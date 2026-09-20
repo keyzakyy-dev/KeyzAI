@@ -477,11 +477,15 @@ export default {
       const ALLOWED_MODELS = ['qwen3.8-flash', 'deepseek-v4-flash', 'Atria-Dawn-Preview']
       const MODEL_PROVIDER = { 'qwen3.8-flash': 'bai', 'deepseek-v4-flash': 'bai', 'Atria-Dawn-Preview': 'atria' }
       const modelName = ALLOWED_MODELS.includes(project.model) ? project.model : env.OPENAI_MODEL || ALLOWED_MODELS[0]
-      const provider = providers[MODEL_PROVIDER[modelName]] || providers.bai
+      // qwen3.8-flash (reasoning) butuh >5 menit untuk menulis PRD penuh — selalu
+      // timeout. Tahap berat dipaksa ke deepseek-v4-flash (terukur ±40-90s).
+      const HEAVY_PRD_STAGES = ['prd', 'regenerate']
+      const effectiveModel = HEAVY_PRD_STAGES.includes(stage) && modelName === 'qwen3.8-flash' ? 'deepseek-v4-flash' : modelName
+      const provider = providers[MODEL_PROVIDER[effectiveModel]] || providers.bai
       const apiKey = provider.key
       const apiUrl = provider.url
       if (!apiKey) {
-        return response(false, 'API key not configured', 500, { error: `Server error: API key for ${modelName} is not set` }, corsHeaders(request, env))
+        return response(false, 'API key not configured', 500, { error: `Server error: API key for ${effectiveModel} is not set` }, corsHeaders(request, env))
       }
 
       try {
@@ -489,12 +493,12 @@ export default {
           method: 'POST',
           headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            model: modelName,
+            model: effectiveModel,
             messages,
             temperature: 0.5,
             max_tokens: Number(env.OPENAI_MAX_TOKENS) || 16384,
           }),
-          signal: AbortSignal.timeout(120000),
+          signal: AbortSignal.timeout(300000),
         })
 
         if (!upstream.ok) {
