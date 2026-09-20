@@ -8,7 +8,7 @@ import { LogoImg } from '../lib/logo-img'
 import { useHeadline } from '../lib/micro-anim'
 import { ChatMock } from '../components/ChatMock'
 import { MODELS } from '../lib/models'
-import { ArrowRight, ArrowUp, MessageSquare, Code, Pencil, Lock, BookOpen, CircleHelp, Plus, Menu, X, Sun, Moon, Sparkles } from 'lucide-react'
+import { ArrowRight, ArrowUp, MessageSquare, Code, Pencil, Lock, BookOpen, CircleHelp, Plus, Menu, X, Sun, Moon, Sparkles, FileText } from 'lucide-react'
 
 function GithubMark({ className, ...props }) {
   return (
@@ -329,6 +329,36 @@ function Features({ navigate }) {
   )
 }
 
+function PrdBuilder({ navigate }) {
+  return (
+    <section id="prd-builder" className="scroll-mt-20 border-t border-border/60 py-12 sm:py-14 lg:py-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <Reveal from="up" className="mx-auto max-w-2xl text-center">
+          <span className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            <FileText className="h-3.5 w-3.5" />
+            Baru
+          </span>
+          <h2 className="mt-3 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            Dari ide jadi PRD dalam hitungan menit
+          </h2>
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
+            Ceritakan idemu, AI akan menanyakan hal-hal penting, merekomendasikan teknologi, menyusun struktur produk, sampai PRD siap pakai — semuanya bisa diedit.
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate('/prd-builder')}
+            className="mt-6 inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          >
+            <Sparkles className="h-4 w-4" />
+            Coba PRD Builder
+            <ArrowRight className="h-4 w-4" />
+          </button>
+        </Reveal>
+      </div>
+    </section>
+  )
+}
+
 function Models({ navigate }) {
   return (
     <section id="models" className="scroll-mt-20 border-t border-border/60 py-12 sm:py-14 lg:py-16">
@@ -445,6 +475,7 @@ export function LandingPage() {
       <main>
         <Hero navigate={navigate} />
         <Features navigate={navigate} />
+        <PrdBuilder navigate={navigate} />
         <Models navigate={navigate} />
       </main>
       <Footer />

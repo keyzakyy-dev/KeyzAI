@@ -73,6 +73,8 @@ export function usePrdProject({ projectParam } = {}) {
   const [error, setError] = useState(null)
   const [needLogin, setNeedLogin] = useState(false)
   const [persistError, setPersistError] = useState(null)
+  // Waktu tersimpan lokal terakhir (untuk indikator "Tersimpan" di panel).
+  const [savedAt, setSavedAt] = useState(null)
 
   const dirtyRef = useRef(false)
   const loadingTimerRef = useRef(null)
@@ -101,6 +103,7 @@ export function usePrdProject({ projectParam } = {}) {
     state.activeId = p.id
     const err = savePrdState(state)
     setPersistError(err || null)
+    setSavedAt(err ? null : Date.now())
   }, [])
 
   // Auto-save (debounce) setiap project berubah.
@@ -401,6 +404,7 @@ export function usePrdProject({ projectParam } = {}) {
     error,
     needLogin,
     persistError,
+    savedAt,
     startFromIdea,
     runQuestions,
     runTech,

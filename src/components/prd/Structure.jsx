@@ -4,6 +4,7 @@ import { ArrowLeft, ChevronDown, ChevronUp, Pencil, Plus, RotateCcw, Trash2, Che
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { StageError, StageLoading } from './StageLoading'
+import { StepHeader } from './StepHeader'
 import { newId } from '../../state/ids'
 
 /**
@@ -70,7 +71,11 @@ export function Structure({ structure = { features: [] }, onChange, onRegenerate
   if (loading) {
     return (
       <div className="mx-auto w-full max-w-2xl space-y-6">
-        <Header />
+        <StepHeader
+          label="Struktur Produk"
+          title="Review struktur produk kamu"
+          description="Struktur ini dibuat AI dari ide dan jawaban kamu. Ubah, tambah, atau hapus sesuai kebutuhan."
+        />
         <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
           <StageLoading message={loadingMessage} />
         </div>
@@ -80,7 +85,11 @@ export function Structure({ structure = { features: [] }, onChange, onRegenerate
 
   return (
     <div className="mx-auto w-full max-w-2xl space-y-6">
-      <Header />
+      <StepHeader
+        label="Struktur Produk"
+        title="Review struktur produk kamu"
+        description="Struktur ini dibuat AI dari ide dan jawaban kamu. Ubah, tambah, atau hapus sesuai kebutuhan."
+      />
 
       {features.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border bg-card p-10 text-center">
@@ -257,12 +266,3 @@ export function Structure({ structure = { features: [] }, onChange, onRegenerate
   )
 }
 
-function Header() {
-  return (
-    <div className="space-y-2">
-      <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Struktur Produk</p>
-      <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">Review struktur produk kamu</h2>
-      <p className="text-sm text-muted-foreground">Struktur ini dibuat AI dari ide dan jawaban kamu. Ubah, tambah, atau hapus sesuai kebutuhan.</p>
-    </div>
-  )
-}

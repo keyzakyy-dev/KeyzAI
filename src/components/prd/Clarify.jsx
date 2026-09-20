@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, SkipForward } from 'lucide-react'
 import { Button } from '../ui/button'
 import { QuestionField } from './QuestionField'
 import { StageError, StageLoading } from './StageLoading'
+import { StepHeader } from './StepHeader'
 import { normalizeAnswer } from '../../state/prd-model'
 
 /**
@@ -37,15 +38,11 @@ export function Clarify({
 
   return (
     <div className="mx-auto w-full max-w-2xl space-y-6">
-      <div className="space-y-2">
-        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-          Pertanyaan {index + 1} dari {total}
-        </p>
-        <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">{q.question}</h2>
-        <p className="text-sm text-muted-foreground">
-          Biar PRD lebih akurat, AI perlu memastikan beberapa hal tentang produk kamu.
-        </p>
-      </div>
+      <StepHeader
+        label={`Pertanyaan ${index + 1} dari ${total}`}
+        title={q.question}
+        description="Biar PRD lebih akurat, AI perlu memastikan beberapa hal tentang produk kamu."
+      />
 
       {loading ? (
         <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">

@@ -1,7 +1,8 @@
-import { Check, Sparkles, Wand2 } from 'lucide-react'
+import { ArrowLeft, Check, Sparkles, Wand2 } from 'lucide-react'
 
 import { Button } from '../ui/button'
 import { StageLoading } from './StageLoading'
+import { StepHeader } from './StepHeader'
 import { TECH_KEYS } from '../../state/prd-model'
 
 const TECH_OPTIONS = {
@@ -31,10 +32,7 @@ export function TechPref({
 
   return (
     <div className="mx-auto w-full max-w-2xl space-y-6">
-      <div className="space-y-2">
-        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Teknologi</p>
-        <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">Bagaimana dengan teknologinya?</h2>
-      </div>
+      <StepHeader label="Teknologi" title="Bagaimana dengan teknologinya?" />
 
       <div className="grid gap-3 sm:grid-cols-2">
         <button
@@ -138,8 +136,9 @@ export function TechPref({
       )}
 
       <div className="flex items-center justify-between">
-        <Button variant="ghost" size="sm" onClick={onBack}>
-          ← Kembali
+        <Button variant="ghost" size="sm" onClick={onBack} className="gap-1.5">
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Kembali
         </Button>
         <Button onClick={onContinue} size="sm" disabled={loading}>
           {loading ? 'Memproses…' : 'Lanjut ke struktur →'}

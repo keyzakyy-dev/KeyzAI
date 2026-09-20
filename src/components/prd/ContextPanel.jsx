@@ -1,3 +1,7 @@
+import { useState } from 'react'
+import { Check, Pencil } from 'lucide-react'
+
+import { Input } from '../ui/input'
 import { collectQAPairs, TECH_KEYS } from '../../state/prd-model'
 import { KeyMark } from '../../lib/key-mark'
 
@@ -6,8 +10,21 @@ import { KeyMark } from '../../lib/key-mark'
  * ketahui. Sengaja minimalis — info panjang dilipat pakai <details> native,
  * supaya panel tetap tenang dan tidak menyaingi konten utama.
  */
-export function ContextPanel({ project, working = false, loadingMessage = '' }) {
+export function ContextPanel({ project, working = false, loadingMessage = '', savedAt, onRename }) {
+  const [editingName, setEditingName] = useState(false)
+  const [nameDraft, setNameDraft] = useState('')
+
   if (!project) return null
+
+  const commitName = () => {
+    const name = nameDraft.trim()
+    setEditingName(false)
+    if (name && name !== project.projectName) onRename?.({ projectName: name })
+  }
+
+  const savedLabel = !savedAt
+    ? null
+    : `Tersimpan ${new Date(savedAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`
 
   const a = project.aiAnalysis || {}
   const qa = collectQAPairs(project)
@@ -26,11 +43,43 @@ export function ContextPanel({ project, working = false, loadingMessage = '' }) 
       className="divide-y divide-border self-start rounded-2xl border border-border bg-card px-4 py-3 shadow-sm lg:sticky lg:top-28 lg:max-h-[calc(100dvh-8rem)] lg:overflow-y-auto"
     >
       <div className="flex items-start justify-between gap-3 pb-2.5">
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground/70">Konteks Proyek</p>
-          <h3 className="mt-0.5 truncate text-sm font-semibold text-foreground" title={project.projectName}>
-            {project.projectName || 'PRD'}
-          </h3>
+          {editingName ? (
+            <Input
+              autoFocus
+              value={nameDraft}
+              onChange={(e) => setNameDraft(e.target.value)}
+              onBlur={commitName}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') commitName()
+                if (e.key === 'Escape') setEditingName(false)
+              }}
+              maxLength={120}
+              className="mt-0.5 h-8 text-sm"
+            />
+          ) : (
+            <button
+              type="button"
+              title="Ganti nama PRD"
+              onClick={() => {
+                setNameDraft(project.projectName || '')
+                setEditingName(true)
+              }}
+              className="mt-0.5 flex min-w-0 items-center gap-1.5 text-left text-sm font-semibold text-foreground transition-opacity hover:opacity-80"
+            >
+              <span className="truncate" title={project.projectName}>
+                {project.projectName || 'PRD'}
+              </span>
+              <Pencil className="h-3 w-3 flex-shrink-0 text-muted-foreground/50" />
+            </button>
+          )}
+          {savedLabel && !working && (
+            <p className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground/70">
+              <Check className="h-3 w-3 text-emerald-500 dark:text-emerald-400" />
+              {savedLabel}
+            </p>
+          )}
         </div>
         {working && (
           <span className="flex flex-shrink-0 items-center gap-1.5 text-[11px] text-primary" role="status">

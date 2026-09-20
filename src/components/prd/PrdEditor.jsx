@@ -6,6 +6,7 @@ import { Textarea } from '../ui/textarea'
 import { CopyButton } from '../../lib/copy-button'
 import { Markdown } from '../../lib/markdown'
 import { StageError, StageLoading } from './StageLoading'
+import { StepHeader } from './StepHeader'
 import { RegenerateDialog } from './RegenerateDialog'
 import { newId } from '../../state/ids'
 import { exportJSON, exportMarkdown, projectToMarkdown } from '../../lib/prd-export'
@@ -71,15 +72,11 @@ export function PrdEditor({
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-6">
-      <div className="space-y-2">
-        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">PRD</p>
-        <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
-          {project?.projectName || 'Product Requirements Document'}
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          PRD dibuat dari seluruh konteks: ide, jawaban klarifikasi, teknologi, dan struktur. Edit tiap section sesuai kebutuhan.
-        </p>
-      </div>
+      <StepHeader
+        label="PRD"
+        title={project?.projectName || 'Product Requirements Document'}
+        description="PRD dibuat dari seluruh konteks: ide, jawaban klarifikasi, teknologi, dan struktur. Edit tiap section sesuai kebutuhan."
+      />
 
       {loading && (
         <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">

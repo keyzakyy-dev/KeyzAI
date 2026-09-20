@@ -5,6 +5,12 @@ import { Button } from '../ui/button'
 import { Textarea } from '../ui/textarea'
 import { validateIdea } from '../../state/prd-model'
 
+const EXAMPLES = [
+  'Aplikasi absensi mahasiswa dengan QR Code untuk mahasiswa, dosen, dan admin.',
+  'Marketplace makanan sehat yang menghubungkan pelanggan dengan dapur lokal.',
+  'Aplikasi manajemen keuangan UMKM dengan laporan bulanan otomatis.',
+]
+
 /**
  * STEP 1 — Input ide. User bebas menjelaskan (satu kalimat sampai detail);
  * bahasa default Indonesia. Tombol Mulai disabled sampai ide valid.
@@ -67,6 +73,25 @@ export function IdeaInput({ initialIdea = '', initialLanguage = 'id', loading, l
             {idea.length}/4000
           </p>
         </div>
+
+        {!loading && idea.length === 0 && (
+          <div className="space-y-2">
+            <p className="text-[11px] font-medium text-muted-foreground/70">Atau mulai dari contoh:</p>
+            <div className="flex flex-col gap-1.5">
+              {EXAMPLES.map((ex) => (
+                <button
+                  key={ex}
+                  type="button"
+                  onClick={() => setIdea(ex)}
+                  className="flex items-center gap-2 rounded-lg border border-dashed border-border px-3 py-2 text-left text-xs text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
+                >
+                  <Sparkles className="h-3 w-3 flex-shrink-0 text-primary/70" />
+                  <span className="min-w-0 truncate">{ex}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {showIssue && (
           <p className="text-xs text-destructive" role="alert">

@@ -49,6 +49,7 @@ export function PrdBuilderPage() {
     error,
     needLogin,
     persistError,
+    savedAt,
     startFromIdea,
     runQuestions,
     runTech,
@@ -380,7 +381,7 @@ export function PrdBuilderPage() {
           // di kanan. Project baru selalu punya ide → panel tidak kosong.
           <div className="mx-auto grid w-full max-w-6xl items-start gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
             <div className="min-w-0">{stepCanvas}</div>
-            <ContextPanel project={project} working={isWorking} loadingMessage={loadingMessage} />
+            <ContextPanel project={project} working={isWorking} loadingMessage={loadingMessage} savedAt={savedAt} onRename={updateProject} />
           </div>
         ) : (
           <div className="flex flex-1 items-center justify-center">{stepCanvas}</div>
