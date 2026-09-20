@@ -41,9 +41,19 @@ export function AnnouncementDialog({ open, onOpenChange }) {
             <div className="mt-5 divide-y divide-border rounded-xl border border-border">
               {items.map((d) => (
                 <div key={d.label} className="flex items-center justify-between gap-3 px-4 py-3">
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold text-foreground">{d.label}</p>
-                    <p className="text-[11px] text-muted-foreground">{d.type}</p>
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    {d.logo && (
+                      <img
+                        src={d.logo}
+                        alt=""
+                        className="h-7 w-7 shrink-0 rounded object-contain"
+                        onError={(e) => e.currentTarget.remove()}
+                      />
+                    )}
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-foreground">{d.label}</p>
+                      <p className="text-[11px] text-muted-foreground">{d.type}</p>
+                    </div>
                   </div>
                   <div className="flex shrink-0 items-center gap-1.5">
                     <code className="font-mono text-sm text-foreground">{d.value}</code>
