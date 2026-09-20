@@ -35,11 +35,6 @@ export function Clarify({
   const answered = normalizeAnswer(value) != null
   const isLast = index === total - 1
 
-  const next = () => {
-    if (isLast) onNext()
-    else onNext()
-  }
-
   return (
     <div className="mx-auto w-full max-w-2xl space-y-6">
       <div className="space-y-2">
@@ -90,7 +85,7 @@ export function Clarify({
                 <SkipForward className="h-3.5 w-3.5" />
                 Lewati
               </Button>
-              <Button onClick={next} size="sm" className="gap-1.5">
+              <Button onClick={onNext} size="sm" className="gap-1.5">
                 {isLast ? 'Lanjut' : 'Berikutnya'}
                 <ArrowRight className="h-3.5 w-3.5" />
               </Button>

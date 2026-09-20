@@ -20,8 +20,7 @@ import {
   recommendTechnology,
   regeneratePRDSection,
 } from '../lib/prd-api'
-import { AuthError } from '../lib/auth'
-import { isAuthenticated } from '../lib/auth'
+import { AuthError, isAuthenticated } from '../lib/auth'
 import { newId } from '../state/ids.js'
 import {
   PRD_STEPS,
