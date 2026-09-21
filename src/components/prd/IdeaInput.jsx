@@ -38,7 +38,7 @@ export function IdeaInput({ initialIdea = '', initialLanguage = 'id', loading, l
           <Wand2 className="h-3 w-3" />
           PRD Builder
         </span>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+        <h1 className="text-center font-serif text-2xl font-medium tracking-tight text-foreground sm:text-3xl md:text-4xl">
           Mau bikin apa?
         </h1>
         <p className="mx-auto max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">

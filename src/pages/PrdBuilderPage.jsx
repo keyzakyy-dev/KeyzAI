@@ -383,7 +383,10 @@ export function PrdBuilderPage() {
             <ContextPanel project={project} working={isWorking} loadingMessage={loadingMessage} savedAt={savedAt} onRename={updateProject} />
           </div>
         ) : (
-          <div className="flex flex-1 items-center justify-center py-6">{stepCanvas}</div>
+          <div className="relative flex min-h-full flex-1 items-center justify-center py-6">
+            <div className="pointer-events-none absolute inset-0 bg-dots opacity-60 [mask-image:radial-gradient(ellipse_65%_55%_at_50%_42%,black,transparent)]" />
+            <div className="relative w-full">{stepCanvas}</div>
+          </div>
         )}
 
         {persistError && (
