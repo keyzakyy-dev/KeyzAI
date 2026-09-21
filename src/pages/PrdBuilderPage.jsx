@@ -11,7 +11,6 @@ import { Clarify } from '../components/prd/Clarify'
 import { TechPref } from '../components/prd/TechPref'
 import { Structure } from '../components/prd/Structure'
 import { PrdEditor } from '../components/prd/PrdEditor'
-import { ContextPanel } from '../components/prd/ContextPanel'
 import { usePrdProject } from '../hooks/usePrdProject'
 import { useAuth } from '../hooks/useAuth'
 import { useTheme } from '../lib/use-theme'
@@ -55,7 +54,6 @@ export function PrdBuilderPage() {
     error,
     needLogin,
     persistError,
-    savedAt,
     startFromIdea,
     runQuestions,
     runTech,
@@ -379,18 +377,13 @@ export function PrdBuilderPage() {
         )}
       </header>
 
-      <main className="min-h-0 flex-1 overflow-y-auto px-4 py-10 sm:px-6 sm:py-16">
+      <main className="min-h-0 flex-1 overflow-y-auto px-4 py-8 sm:px-6 sm:py-12">
         {project ? (
-          // 2 kolom: canvas step di kiri, ringkasan konteks proyek (sticky)
-          // di kanan. Project baru selalu punya ide → panel tidak kosong.
-          <div className="mx-auto grid w-full max-w-6xl items-start gap-10 lg:grid-cols-[minmax(0,1fr)_320px]">
-            <div className="min-w-0">{stepCanvas}</div>
-            <ContextPanel project={project} working={isWorking} loadingMessage={loadingMessage} savedAt={savedAt} onRename={updateProject} />
-          </div>
+          <div className="mx-auto w-full max-w-2xl">{stepCanvas}</div>
         ) : (
           <div className="relative flex min-h-full flex-1 items-center justify-center py-6">
             <div className="pointer-events-none absolute inset-0 bg-dots opacity-60 [mask-image:radial-gradient(ellipse_65%_55%_at_50%_42%,black,transparent)]" />
-            <div className="relative w-full">{stepCanvas}</div>
+            <div className="relative w-full max-w-2xl">{stepCanvas}</div>
           </div>
         )}
 

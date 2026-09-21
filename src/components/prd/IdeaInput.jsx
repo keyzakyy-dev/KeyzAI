@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Sparkles, ArrowRight, Wand2 } from 'lucide-react'
+import { Sparkles, ArrowRight } from 'lucide-react'
 
 import { Button } from '../ui/button'
 import { Textarea } from '../ui/textarea'
@@ -34,19 +34,12 @@ export function IdeaInput({ initialIdea = '', initialLanguage = 'id', loading, l
   return (
     <div className="mx-auto w-full max-w-2xl">
       <div className="space-y-4 text-center">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-primary">
-          <Wand2 className="h-3 w-3" />
-          PRD Builder
-        </span>
         <h1 className="text-center font-serif text-2xl font-medium tracking-tight text-foreground sm:text-3xl md:text-4xl">
           Mau bikin apa?
         </h1>
-        <p className="mx-auto max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">
-          Ceritakan ide produk atau aplikasi yang ingin kamu buat. AI akan menerjemahkannya menjadi PRD lengkap.
-        </p>
       </div>
 
-      <div className="mt-8 rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
+      <div className="mt-6 rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
         <Textarea
           value={idea}
           onChange={(e) => setIdea(e.target.value)}
