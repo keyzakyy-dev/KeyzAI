@@ -90,7 +90,7 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onNewPrd, o
                 </span>
                 PRD Builder
                 <span className="ml-auto rounded-full border border-primary/30 bg-primary/10 px-1.5 py-px text-[9px] font-semibold text-primary">
-                  Baru
+                  Beta
                 </span>
               </Link>
             </Button>
