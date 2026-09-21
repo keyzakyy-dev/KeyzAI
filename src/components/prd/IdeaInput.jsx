@@ -70,7 +70,7 @@ export function IdeaInput({ initialIdea = '', initialLanguage = 'id', loading, l
           }}
           onKeyDown={handleKeyDown}
           onBlur={() => setTouched(true)}
-          placeholder={'Contoh:\nSaya ingin membuat aplikasi absensi mahasiswa menggunakan QR Code yang digunakan oleh mahasiswa, dosen, dan admin.'}
+          placeholder="Contoh: aplikasi absensi mahasiswa dengan QR Code"
           disabled={loading}
           className="min-h-[52px] max-h-40 resize-none overflow-y-auto border-0 bg-transparent px-4 pt-3.5 pb-1 text-base text-foreground placeholder:font-serif placeholder:text-sm placeholder:text-muted-foreground/80 focus-visible:ring-0 focus-visible:ring-offset-0"
           rows={1}
