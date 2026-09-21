@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate, useParams, Link } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, ChevronLeft, ChevronRight, Menu, Sun, Moon, X } from 'lucide-react'
 
 import { Button } from '../components/ui/button'
@@ -16,7 +16,7 @@ import { usePrdProject } from '../hooks/usePrdProject'
 import { useAuth } from '../hooks/useAuth'
 import { useTheme } from '../lib/use-theme'
 import { usePageMeta } from '../lib/seo'
-import { LogoImg } from '../lib/logo-img'
+
 import { loadModel } from '../lib/models'
 
 const STEP_NAMES = ['idea', 'clarify', 'tech', 'structure', 'prd']
@@ -344,10 +344,7 @@ export function PrdBuilderPage() {
             aria-label={sidebarCollapsed ? 'Tampilkan sidebar' : 'Sembunyikan sidebar'}
           >
             {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-          </Button>
-            <Link to="/" aria-label="Kembali ke beranda" className="rounded-xl transition-opacity hover:opacity-80">
-              <LogoImg className="h-8 w-auto" />
-            </Link>
+            </Button>
           </div>
 
         <div className="flex flex-shrink-0 items-center gap-1.5">
