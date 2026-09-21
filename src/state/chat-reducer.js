@@ -11,6 +11,7 @@ import {
   attachMessage,
   detachSubtree,
   fallbackTitle,
+  deepestLeaf,
   newConversation,
   navigateBranch,
 } from './tree.js'
@@ -33,6 +34,17 @@ function setMessage(state, convId, msgId, fn) {
 // sinkronisasi D1 (yang memakai sig id:updatedAt) tahu harus tersimpan.
 function touch(state, convId) {
   return patchConv(state, convId, (c) => ({ ...c, updatedAt: Date.now() }))
+}
+
+// Self-heal leaf aktif untuk conv dari server: bila activeLeafId hilang/tidak
+// valid (mis. baris lama di D1), mundur ke daun terdalam dari root supaya isi
+// percakapan tetap terbuka, bukan blank.
+function healLeaf(conv) {
+  const { messages, rootId, activeLeafId } = conv
+  if (activeLeafId && messages[activeLeafId]) return conv
+  const root = (rootId && messages[rootId]) || Object.values(messages).find((m) => !m.parentId)
+  if (!root) return conv
+  return { ...conv, rootId: root.id, activeLeafId: deepestLeaf(messages, root.id) }
 }
 
 function patchConvTouch(state, convId, fn) {
@@ -59,7 +71,7 @@ export function chatReducer(state, action) {
       if (!action.conv || !action.conv.id) return state
       return patchConv(state, action.conv.id, (c) =>
         action.conv.messages && typeof action.conv.messages === 'object'
-          ? { ...c, ...action.conv }
+          ? healLeaf({ ...c, ...action.conv })
           : c,
       )
 

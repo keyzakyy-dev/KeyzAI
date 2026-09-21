@@ -29,7 +29,7 @@ import { newId } from '../state/ids.js'
 import { hasSiblings, navigateBranch, serializeConv } from '../state/tree.js'
 
 export function ChatInterface() {
-  const { state, dispatch, activeConv, messages, loading, persistError, refreshHistory, logoutReset } = useChatStore()
+  const { state, dispatch, activeConv, messages, loading, persistError, refreshHistory, logoutReset, authExpired, ackAuthExpired } = useChatStore()
   const { send, stop } = useChatStream({ state, dispatch, loading })
   const { toast, notify, dismiss } = useToast()
   const { width: sidebarW, resizing, onDragStart, setWidth: setSidebarWidth, hasStoredWidth } = useResizableSidebar()
@@ -63,6 +63,15 @@ export function ChatInterface() {
   const error = state.error || persistError
 
   const { user, logout, loginWithGoogle, updateUser } = useAuth()
+
+  // Sesi kedaluwarsa (401 dari API): bersihkan tampilan + minta login ulang.
+  useEffect(() => {
+    if (!authExpired) return
+    ackAuthExpired()
+    logoutReset()
+    setLoginErr('Sesi berakhir. Silakan masuk kembali.')
+    setLoginOpen(true)
+  }, [authExpired, ackAuthExpired, logoutReset])
 
   // ---------------------------------------------------------------
   // Preferensi akun: sumber kebenaran di server; cache lokal untuk offline.
@@ -117,7 +126,8 @@ export function ChatInterface() {
       } catch {
         // abaikan
       }
-      const freshId = (await refreshHistory()) || null
+      // force: re-hydrate meski sesi sebelumnya sempat 401 (hydrated direset).
+      const freshId = (await refreshHistory(true)) || null
       const pending = pendingRef.current
       pendingRef.current = null
       setLoginOpen(false)

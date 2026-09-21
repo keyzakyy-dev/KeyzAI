@@ -3,7 +3,7 @@ import { chatReducer } from '../state/chat-reducer.js'
 import { freshState, loadState, saveState, clearState } from '../state/persistence.js'
 import { getActivePath } from '../state/tree.js'
 import { fetchConversations, fetchConversation, saveConversation } from '../lib/sync.js'
-import { isAuthenticated } from '../lib/auth.js'
+import { AuthError, isAuthenticated } from '../lib/auth.js'
 import { newId } from '../state/ids.js'
 
 const STORAGE_FULL_MSG =
@@ -21,6 +21,8 @@ export function useChatStore() {
     isAuthenticated() ? loadState() : freshState(),
   )
   const [persistError, setPersistError] = useState(null)
+  // 401 dari API mana pun (sesi kedaluwarsa): komponen memicu re-login via popup.
+  const [authExpired, setAuthExpired] = useState(false)
   const lastErr = useRef(null)
   const hydrated = useRef(false)
   // id → sig terakhir yang sudah sukses disimpan ke D1 (id:updatedAt).
@@ -40,8 +42,8 @@ export function useChatStore() {
     lastSynced.current = m
   }
 
-  const refreshHistory = useCallback(async () => {
-    if (hydrated.current) return null
+  const refreshHistory = useCallback(async (force = false) => {
+    if (hydrated.current && !force) return null
     hydrated.current = true
     try {
       const convs = await fetchConversations()
@@ -49,7 +51,14 @@ export function useChatStore() {
         seedSynced(convs)
         dispatch({ type: 'REPLACE_ALL', convs })
       }
-    } catch {
+    } catch (e) {
+      // 401 = sesi berakhir (token dihapus authFetch) → tampilkan re-login,
+      // jangan biarkan histori basi dari localStorage seolah masih valid.
+      if (e instanceof AuthError) {
+        hydrated.current = false
+        setAuthExpired(true)
+        return null
+      }
       // jaringan gagal → state lokal tetap dipakai
     }
     let fresh = false
@@ -116,8 +125,9 @@ export function useChatStore() {
           dispatch({ type: 'MERGE_CONV', conv: full })
         }
       })
-      .catch(() => {
+      .catch((e) => {
         if (loadingFull.current === key) loadingFull.current = ''
+        if (e instanceof AuthError) setAuthExpired(true)
       })
   }, [state.convs, state.activeId])
 
@@ -155,5 +165,7 @@ export function useChatStore() {
     [messages],
   )
 
-  return { state, dispatch, activeConv, messages, loading, persistError, refreshHistory, logoutReset }
+  const ackAuthExpired = useCallback(() => setAuthExpired(false), [])
+
+  return { state, dispatch, activeConv, messages, loading, persistError, refreshHistory, logoutReset, authExpired, ackAuthExpired }
 }

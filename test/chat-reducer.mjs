@@ -147,4 +147,23 @@ const frozen = state
 state = chatReducer(state, { type: 'UNKNOWN' })
 assert.equal(state, frozen, 'aksi tak dikenal no-op')
 
+// ---------- MERGE_CONV self-heal leaf (baris D1 lama: activeLeafId null)
+let ms = { v: 3, convs: [{ id: 'm1', title: 'x', createdAt: 1, updatedAt: 2, messages: {} }], activeId: 'm1', error: null, lastSent: null }
+ms = chatReducer(ms, {
+  type: 'MERGE_CONV',
+  conv: {
+    id: 'm1',
+    rootId: 'u1',
+    activeLeafId: null,
+    messages: {
+      u1: { id: 'u1', role: 'user', content: 'halo', timestamp: 1, parentId: null, children: ['a1'], state: 'done' },
+      a1: { id: 'a1', role: 'assistant', content: 'hai', timestamp: 2, parentId: 'u1', children: [], state: 'done' },
+    },
+  },
+})
+assert.equal(getActivePath(ms.convs[0]).length, 2, 'MERGE_CONV self-heal activeLeafId → isi terbuka')
+// leaf valid tidak diubah
+ms = chatReducer(ms, { type: 'MERGE_CONV', conv: { id: 'm1', rootId: 'u1', activeLeafId: 'u1', messages: ms.convs[0].messages } })
+assert.equal(ms.convs[0].activeLeafId, 'u1', 'activeLeafId valid tidak ditimpa')
+
 console.log('chat reducer: OK')

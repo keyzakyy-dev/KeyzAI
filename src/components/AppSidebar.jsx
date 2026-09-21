@@ -24,7 +24,7 @@ import { serializeConv } from '../state/tree'
  * sebagai children; status collapse/mobile dimiliki halaman.
  */
 export function AppSidebar({ children, collapsed, mobileOpen, onMobileClose, showConversations = true, currentPrdId, onAfterDeletePrd, onNewPrd }) {
-  const { state, dispatch, refreshHistory, logoutReset } = useChatStore()
+  const { state, dispatch, refreshHistory, logoutReset, authExpired, ackAuthExpired } = useChatStore()
   const { history: prdItems, remove: removePrd, refresh: refreshPrd } = usePrdHistory()
   const { user, logout, loginWithGoogle, updateUser } = useAuth()
   const { toast, notify, dismiss } = useToast()
@@ -45,6 +45,15 @@ export function AppSidebar({ children, collapsed, mobileOpen, onMobileClose, sho
     stateRef.current = state
   }, [state])
 
+  // Sesi kedaluwarsa (401 dari API): bersihkan tampilan + minta login ulang.
+  useEffect(() => {
+    if (!authExpired) return
+    ackAuthExpired()
+    logoutReset()
+    setLoginErr('Sesi berakhir. Silakan masuk kembali.')
+    setLoginOpen(true)
+  }, [authExpired, ackAuthExpired, logoutReset])
+
   // ---------- login / logout (dari footer sidebar)
   const handleLoginToken = async (idToken) => {
     setLoginErr(null)
@@ -53,7 +62,7 @@ export function AppSidebar({ children, collapsed, mobileOpen, onMobileClose, sho
       await loginWithGoogle(idToken)
       refreshPrefs()
       refreshPrd().catch(() => {})
-      refreshHistory()
+      refreshHistory(true)
       setLoginOpen(false)
     } catch (e) {
       setLoginErr(e.message || 'Login gagal')
