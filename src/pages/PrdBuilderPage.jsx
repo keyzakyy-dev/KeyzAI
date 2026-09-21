@@ -49,6 +49,7 @@ export function PrdBuilderPage() {
     project,
     step,
     stepIndex,
+    maxStepIndex,
     isWorking,
     loadingMessage,
     error,
@@ -254,7 +255,9 @@ export function PrdBuilderPage() {
 
   // ---------- render ------------------------------------------------------
 
-  const showStepper = !!project && step !== 'idea'
+  // Stepper tetap tampil saat user mundur ke tahap ide tapi project sudah
+  // punya progres — kalau tidak, tidak ada jalan kembali ke tahap selesai.
+  const showStepper = !!project && (step !== 'idea' || maxStepIndex > 0)
 
   const stepCanvas =
     step === 'idea' || !project ? (
@@ -374,7 +377,7 @@ export function PrdBuilderPage() {
 
         {showStepper && (
           <div className="mx-auto w-full max-w-6xl px-4 pb-3 sm:px-6">
-            <Stepper stepIndex={stepIndex} disabled={isWorking} onJump={(i) => gotoStep(STEP_NAMES[i])} />
+            <Stepper stepIndex={stepIndex} maxIndex={maxStepIndex} disabled={isWorking} onJump={(i) => gotoStep(STEP_NAMES[i])} />
           </div>
         )}
       </header>

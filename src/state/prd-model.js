@@ -287,6 +287,19 @@ export function collectQAPairs(project) {
   })
 }
 
+// Tahap terjauh yang benar-benar punya data. Dipakai stepper agar langkah
+// tetap bisa dilompati setelah user mundur ke ide — `step` saja tidak
+// cukup, karena mundur ke ide membuat progres tampak hilang.
+export function furthestStepIndex(project) {
+  if (!project) return 0
+  let m = 0
+  if (project.questions?.length) m = 1
+  if (project.technologySelectionMode === 'manual' || Object.values(project.technologyStack || {}).some((v) => v)) m = 2
+  if (project.productStructure?.features?.length) m = 3
+  if (project.prd?.sections?.length) m = 4
+  return m
+}
+
 // Apakah ada pertanyaan penting yang belum dijawab (untuk saran di UI).
 export function unansweredImportant(project) {
   const answers = project?.answers || {}

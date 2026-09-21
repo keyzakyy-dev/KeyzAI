@@ -4,18 +4,21 @@ import { PRD_STEPS, STEP_LABELS } from '../../state/prd-model'
 
 /**
  * Progress ala draf dokumen: nomor serif 01..05 dengan segmen garis tipis.
- * Langkah yang sudah lewat bisa diklik untuk kembali. Mobile: hitungan + bar.
+ * Langkah yang sudah punya data (sampai maxIndex) bisa diklik — termasuk
+ * ke depan, supaya mundur ke ide tidak mengunci akses ke tahap yang sudah
+ * selesai. Mobile: hitungan + bar.
  */
-export function Stepper({ stepIndex, disabled = false, onJump }) {
+export function Stepper({ stepIndex, maxIndex, disabled = false, onJump }) {
   const total = PRD_STEPS.length
+  const max = Math.max(stepIndex, maxIndex ?? stepIndex)
   const pct = Math.round(((stepIndex + 1) / total) * 100)
 
   return (
     <div className="w-full">
       <ol className="hidden items-stretch gap-4 md:flex">
         {PRD_STEPS.map((s, i) => {
-          const state = i < stepIndex ? 'done' : i === stepIndex ? 'active' : 'todo'
-          const clickable = i <= stepIndex && !disabled
+          const state = i === stepIndex ? 'active' : i <= max ? 'done' : 'todo'
+          const clickable = i <= max && !disabled
           return (
             <li key={s} className="min-w-0 flex-1">
               <button

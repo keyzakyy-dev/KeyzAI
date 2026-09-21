@@ -29,6 +29,7 @@ import {
   createEmptyProject,
   deriveProjectName,
   emptyTechStack,
+  furthestStepIndex,
   normalizeAnalysis,
   normalizeQuestions,
   normalizeSections,
@@ -92,6 +93,9 @@ export function usePrdProject({ projectParam, urlLeads } = {}) {
 
   const step = project?.step || 'idea'
   const stepIndex = indexOfStep(step)
+  // Batas lompatan stepper: progres nyata, bukan step saat ini (user bisa
+  // mundur ke ide lalu harus bisa balik ke tahap yang sudah punya data).
+  const maxStepIndex = project ? Math.max(stepIndex, furthestStepIndex(project)) : 0
   const isWorking = !!loadingStage
 
   // ---------- persistence ------------------------------------------------
@@ -412,6 +416,7 @@ export function usePrdProject({ projectParam, urlLeads } = {}) {
     project,
     step,
     stepIndex,
+    maxStepIndex,
     qaPairs: project ? collectQAPairs(project) : [],
     isWorking,
     loadingStage,

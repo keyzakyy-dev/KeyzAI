@@ -5,8 +5,10 @@ import {
   QUESTION_TYPES,
   SECTION_STATUS,
   TECH_KEYS,
+  emptyTechStack,
   createEmptyProject,
   deriveProjectName,
+  furthestStepIndex,
   validateIdea,
   normalizeQuestion,
   normalizeQuestions,
@@ -137,6 +139,17 @@ assert.equal(qa[1].skipped, true, 'jawaban null = dilewati')
 const important = unansweredImportant({ ...proj, questions: [...proj.questions, { id: 'q3', question: 'Waktu valid QR?', type: 'text', required: true }] })
 assert.equal(important.length, 1, 'hanya q3 (required) yang belum dijawab')
 assert.equal(important[0].id, 'q3')
+
+// ---------- tahap terjauh yang punya data (dasar lompatan stepper)
+assert.equal(furthestStepIndex(p), 0, 'project segar = tahap ide')
+assert.equal(furthestStepIndex(null), 0)
+assert.equal(furthestStepIndex({ ...p, step: 'prd' }), 0, 'step saja tidak dihitung — data yang dihitung')
+assert.equal(furthestStepIndex({ ...p, questions: [{ id: 'q1', question: 'Q?', type: 'text' }] }), 1)
+assert.equal(furthestStepIndex({ ...p, technologySelectionMode: 'manual', technologyStack: emptyTechStack() }), 2)
+assert.equal(furthestStepIndex({ ...p, technologyStack: { ...emptyTechStack(), frontend: 'React' } }), 2)
+assert.equal(furthestStepIndex({ ...p, productStructure: { features: [{ id: 'f1', name: 'F', subFeatures: [] }] } }), 3)
+const full = { ...p, prd: { sections: [{ id: 's1', title: 'Overview', content: 'isi', status: 'ok' }] } }
+assert.equal(furthestStepIndex(full), 4, 'PRD sudah dibuat = tahap 5 tetap tercapai walau step mundur ke ide')
 
 // ---------- persistence: round-trip & data rusak
 const mem = new Map()
