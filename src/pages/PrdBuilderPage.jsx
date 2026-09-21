@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
-import { ArrowLeft, ChevronLeft, ChevronRight, FileText, Menu, Sun, Moon, X } from 'lucide-react'
+import { ArrowLeft, ChevronLeft, ChevronRight, Menu, Sun, Moon, X } from 'lucide-react'
 
 import { Button } from '../components/ui/button'
 import { LoginDialog } from '../components/LoginDialog'
@@ -345,14 +345,10 @@ export function PrdBuilderPage() {
           >
             {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
           </Button>
-          <Link to="/" aria-label="Kembali ke beranda" className="rounded-xl transition-opacity hover:opacity-80">
-            <LogoImg className="h-8 w-auto" />
-          </Link>
-          <span className="hidden items-center gap-1.5 text-sm font-medium text-muted-foreground sm:flex">
-            <FileText className="h-3.5 w-3.5" />
-            PRD Builder
-          </span>
-        </div>
+            <Link to="/" aria-label="Kembali ke beranda" className="rounded-xl transition-opacity hover:opacity-80">
+              <LogoImg className="h-8 w-auto" />
+            </Link>
+          </div>
 
         <div className="flex flex-shrink-0 items-center gap-1.5">
           <Button
