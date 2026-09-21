@@ -93,6 +93,12 @@
   background-size: 22px 22px;
 }
 
+/* Kolom baca dokumen PRD. Blok dengan padding horizontal memakai
+   max-w-[calc(var(--doc-col)+2.5rem)] agar TEKS-nya pas var ini. */
+:root {
+  --doc-col: 72ch;
+}
+
 /* Thinking indicator: fade the cycling word in + sweeping shimmer band */
 @keyframes thinking-fade {
   0% { opacity: 0; transform: translateY(4px); }

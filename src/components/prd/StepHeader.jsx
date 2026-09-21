@@ -15,7 +15,7 @@ export function StepHeader({ step, label, title, description }) {
         <span className="text-xs font-medium text-muted-foreground">{label}</span>
       </p>
       <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">{title}</h2>
-      {description && <p className="text-sm leading-relaxed text-muted-foreground sm:text-[15px]">{description}</p>}
+      {description && <p className="max-w-[var(--doc-col)] text-sm leading-relaxed text-muted-foreground sm:text-[15px]">{description}</p>}
     </div>
   )
 }
