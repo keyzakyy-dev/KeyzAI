@@ -5,7 +5,7 @@ import { usePopIn } from '../lib/micro-anim'
 
 const USER_TXT = 'Bikinin caption singkat buat foto kopi pagi'
 const ANSWERS = [
-  'Nikmatnya pagi, satu teguk sekaligus tenang. ☕',
+  'Nikmatnya pagi, satu teguk sekaligus tenang.',
   'Pagi ini punya saya: kopi hitam, sunyi, dan ide yang belum ditulis.',
 ]
 

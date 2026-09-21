@@ -37,7 +37,7 @@ const FEATURES = [
   {
     icon: Code,
     title: 'Debug kode',
-    desc: 'Tempel snippet, langsung dapat perbaikan, penjelasan, dan optimasi.',
+    desc: 'Tempel snippet, langsung dapat penjelasan error dan perbaikan.',
     prompt: 'Kenapa ini error "cannot read property of undefined"?',
   },
   {
@@ -55,7 +55,7 @@ const FEATURES = [
   {
     icon: Lock,
     title: 'Privat & aman',
-    desc: 'Percakapanmu milikmu. Tanpa pelacakan, tanpa jual data.',
+    desc: 'Percakapanmu milikmu. Kami tidak melacak atau menjual datamu.',
   },
 ]
 
@@ -342,7 +342,7 @@ function PrdBuilder({ navigate }) {
             Dari ide jadi PRD dalam hitungan menit
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Ceritakan idemu, AI akan menanyakan hal-hal penting, merekomendasikan teknologi, menyusun struktur produk, sampai PRD siap pakai — semuanya bisa diedit.
+            Ceritakan idemu, AI akan menanyakan hal-hal penting, merekomendasikan teknologi, menyusun struktur produk, sampai PRD siap pakai. Semua bagiannya bisa diedit.
           </p>
           <button
             type="button"
@@ -369,10 +369,10 @@ function Models({ navigate }) {
             Model AI
           </span>
           <h2 className="mt-3 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-            Ditenagai model terbaik
+            Beragam model, semua gratis
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Pilih model sesuai kebutuhanmu, semuanya gratis tanpa biaya tersembunyi.
+            Pilih model yang paling cocok untuk tiap percakapan.
           </p>
         </Reveal>
 
@@ -399,7 +399,7 @@ function Models({ navigate }) {
               </span>
               <span className="font-mono text-[11px] text-muted-foreground">{m.id}</span>
               <span className="flex items-center gap-1 text-[11px] font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
-                Coba sekarang
+                Buka chat
                 <ArrowRight className="h-3 w-3" />
               </span>
             </button>
