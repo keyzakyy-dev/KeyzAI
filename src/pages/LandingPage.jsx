@@ -336,7 +336,7 @@ function PrdBuilder({ navigate }) {
         <Reveal from="up" className="mx-auto max-w-2xl text-center">
           <span className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
             <FileText className="h-3.5 w-3.5" />
-            Baru
+            Beta
           </span>
           <h2 className="mt-3 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
             Dari ide jadi PRD dalam hitungan menit
