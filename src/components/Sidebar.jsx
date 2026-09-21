@@ -19,7 +19,7 @@ function groupKey(ts) {
   return 'Lebih lama'
 }
 
-export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, showConversations = true, prdItems, currentPrdId, onSelectPrd, onDeletePrd, open, onClose, collapsed, onDragStart, user, onLogin, onOpenSettings }) {
+export function Sidebar({ conversations, currentId, onSelect, onNew, onNewPrd, onDelete, showConversations = true, prdItems, currentPrdId, onSelectPrd, onDeletePrd, open, onClose, collapsed, onDragStart, user, onLogin, onOpenSettings }) {
   // Urut + grouping pakai aktivitas terakhir (updatedAt); fallback createdAt.
   const sortKey = (c) => c.updatedAt ?? c.createdAt ?? 0
   const sorted = [...conversations].sort(
@@ -60,17 +60,17 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onDelete, s
           </Link>
         </div>
 
-        {/* New Chat */}
+        {/* New Chat / New PRD (PRD Builder) */}
         <div className="space-y-1 px-2">
           <Button
-            onClick={onNew}
+            onClick={showConversations ? onNew : onNewPrd}
             variant="ghost"
             className="h-8 w-full justify-start gap-2 px-3 font-medium text-muted-foreground hover:text-foreground"
           >
             <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border/70 bg-foreground/5">
               <Plus />
             </span>
-            Chat baru
+            {showConversations ? 'Chat baru' : 'PRD baru'}
           </Button>
           <Button
             asChild

@@ -318,6 +318,7 @@ export function PrdBuilderPage() {
       showConversations={false}
       currentPrdId={project?.id}
       onAfterDeletePrd={handlePrdRemoved}
+      onNewPrd={handleNewPrd}
     >
       <header className="flex-shrink-0 border-b border-border">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
