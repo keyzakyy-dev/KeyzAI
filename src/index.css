@@ -93,16 +93,6 @@
   background-size: 22px 22px;
 }
 
-/* Kolom baca dokumen PRD. Unit absolut (rem), BUKAN ch: ch teresolusi
-   terhadap font-size elemen pemakainya, jadi var ch beda lebar di tiap
-   elemen (14px vs 16px) dan tepi kiri jadi meleset. 34rem ≈ 68 karakter
-   di 15px — panjang baris baca yang nyaman. Blok dengan padding
-   horizontal memakai max-w-[calc(var(--doc-col)+2.5rem)] agar TEKS-nya
-   (bukan kotak) pas di kolom ini. */
-:root {
-  --doc-col: 34rem;
-}
-
 /* Thinking indicator: fade the cycling word in + sweeping shimmer band */
 @keyframes thinking-fade {
   0% { opacity: 0; transform: translateY(4px); }

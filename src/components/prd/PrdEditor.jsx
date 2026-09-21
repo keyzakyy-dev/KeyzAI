@@ -72,27 +72,21 @@ export function PrdEditor({
 
   return (
     <div className="mx-auto w-full max-w-4xl space-y-8">
-      {/* Kolom baca --doc-col dipakai semua blok teks, di luar & di dalam
-          lembar: judul, isi dokumen, dan toolbar berbagi satu tepi kiri;
-          hanya kertasnya yang melebar. Blok ber-padding memakai calc agar
-          TEKS-nya (bukan kotaknya) pas kolom. */}
-      <div className="mx-auto w-full max-w-[var(--doc-col)]">
-        <StepHeader
-          step="05"
-          label="PRD"
-          title={project?.projectName || 'Product Requirements Document'}
-          description="PRD dibuat dari seluruh konteks: ide, jawaban klarifikasi, teknologi, dan struktur. Edit tiap section sesuai kebutuhan."
-        />
-      </div>
+      <StepHeader
+        step="05"
+        label="PRD"
+        title={project?.projectName || 'Product Requirements Document'}
+        description="PRD dibuat dari seluruh konteks: ide, jawaban klarifikasi, teknologi, dan struktur. Edit tiap section sesuai kebutuhan."
+      />
 
       {loading && (
-        <div className="mx-auto max-w-[var(--doc-col)] rounded-xl border border-border bg-card p-6">
+        <div className="rounded-xl border border-border bg-card p-6">
           <StageLoading message={loadingMessage} />
         </div>
       )}
 
       {sections.length === 0 && !loading ? (
-        <div className="mx-auto max-w-[var(--doc-col)] rounded-xl border border-dashed border-border bg-card p-12 text-center">
+        <div className="rounded-xl border border-dashed border-border bg-card p-12 text-center">
           <p className="text-sm text-muted-foreground">PRD belum berhasil dibuat.</p>
           <Button variant="outline" size="sm" onClick={onRetry} className="mt-4 h-11 gap-1.5 sm:h-8">
             <RotateCcw className="h-3.5 w-3.5" />
@@ -111,7 +105,7 @@ export function PrdEditor({
                   <section key={s.id} className="group">
                     {/* basis-48 memaksa baris aksi turun di layar sempit, jadi
                         tombol tetap 44px tanpa memangsa judul. */}
-                    <div className="mx-auto flex max-w-[calc(var(--doc-col)+2.5rem)] flex-wrap items-center gap-x-1.5 gap-y-1 px-5 pb-2 pt-4">
+                    <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 px-5 pb-2 pt-4">
                       <h3 className="min-w-0 flex-1 basis-48 truncate font-serif text-[15px] font-medium text-foreground">{s.title}</h3>
                       {s.status === SECTION_STATUS.NEEDS && (
                         <span className="flex-shrink-0 rounded-md border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-700 dark:text-amber-400">
@@ -176,7 +170,7 @@ export function PrdEditor({
                     </div>
 
                     {editing ? (
-                      <div className="mx-auto max-w-[calc(var(--doc-col)+2.5rem)] px-5 pb-5">
+                      <div className="px-5 pb-5">
                         <Textarea
                           value={draft}
                           onChange={(e) => setDraft(e.target.value)}
@@ -184,7 +178,7 @@ export function PrdEditor({
                         />
                       </div>
                     ) : (
-                      <div className="mx-auto max-w-[calc(var(--doc-col)+2.5rem)] px-5 pb-5 text-[15px] leading-relaxed text-foreground">
+                      <div className="px-5 pb-5 text-[15px] leading-relaxed text-foreground">
                         <Markdown text={s.content} />
                       </div>
                     )}
@@ -197,7 +191,7 @@ export function PrdEditor({
           <button
             type="button"
             onClick={addSection}
-            className="mx-auto flex w-full max-w-[var(--doc-col)] items-center justify-center gap-1.5 rounded-xl border border-dashed border-border py-3.5 text-sm font-medium text-muted-foreground transition-colors hover:border-foreground/30 hover:bg-accent/30 hover:text-foreground"
+            className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-border py-3.5 text-sm font-medium text-muted-foreground transition-colors hover:border-foreground/30 hover:bg-accent/30 hover:text-foreground"
           >
             <Plus className="h-4 w-4" />
             Tambah section
@@ -208,7 +202,7 @@ export function PrdEditor({
       {error && !loading && <StageError message={error} onRetry={onRetry} retryLabel="Coba lagi" />}
 
       {/* Toolbar ekspor & aksi akhir */}
-      <div className="mx-auto w-full max-w-[var(--doc-col)] space-y-4 border-t border-border pt-6">
+      <div className="w-full space-y-4 border-t border-border pt-6">
         <div className="flex flex-wrap items-center gap-2">
           <CopyButton text={md} withLabel className="h-11 rounded-lg border border-border px-4 sm:h-9" />
           <Button variant="outline" size="sm" onClick={() => exportMarkdown(project)} className="h-11 gap-1.5 px-4 sm:h-9 sm:px-3">
