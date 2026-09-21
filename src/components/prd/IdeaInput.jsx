@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Sparkles, ArrowRight } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { ArrowUp, ChevronDown, Loader2, Sparkles } from 'lucide-react'
 
 import { Button } from '../ui/button'
 import { Textarea } from '../ui/textarea'
@@ -11,17 +11,29 @@ const EXAMPLES = [
   'Aplikasi manajemen keuangan UMKM dengan laporan bulanan otomatis.',
 ]
 
+const MAX_CHARS = 4000
+
 /**
- * STEP 1 — Input ide. User bebas menjelaskan (satu kalimat sampai detail);
- * bahasa default Indonesia. Tombol Mulai disabled sampai ide valid.
+ * STEP 1 — Input ide, dibentuk serupa kolom chat: satu kartu, textarea
+ * auto-grow, Enter kirim, pill bahasa + tombol kirim bulat. User bebas
+ * menjelaskan (satu kalimat sampai detail); bahasa default Indonesia.
  */
 export function IdeaInput({ initialIdea = '', initialLanguage = 'id', loading, loadingMessage, onStart, error }) {
   const [idea, setIdea] = useState(initialIdea)
   const [language, setLanguage] = useState(initialLanguage)
   const [touched, setTouched] = useState(false)
+  const textareaRef = useRef(null)
 
   const issue = validateIdea(idea)
   const showIssue = touched && issue && !loading
+
+  // Auto-grow seperti ChatInput: ikuti isi, maks 160px.
+  useEffect(() => {
+    const el = textareaRef.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = `${Math.min(el.scrollHeight, 160)}px`
+  }, [idea])
 
   const handleStart = () => {
     if (issue) {
@@ -31,6 +43,16 @@ export function IdeaInput({ initialIdea = '', initialLanguage = 'id', loading, l
     onStart({ idea: idea.trim(), language })
   }
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+      e.preventDefault()
+      handleStart()
+    }
+  }
+
+  const charCount = idea.length
+  const nearLimit = charCount > MAX_CHARS - 400
+
   return (
     <div className="mx-auto w-full max-w-2xl">
       <div className="space-y-4 text-center">
@@ -39,68 +61,73 @@ export function IdeaInput({ initialIdea = '', initialLanguage = 'id', loading, l
         </h1>
       </div>
 
-      <div className="mt-6 rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
+      <div className="mt-6 rounded-2xl border border-border bg-card shadow-sm">
         <Textarea
+          ref={textareaRef}
           value={idea}
-          onChange={(e) => setIdea(e.target.value)}
+          onChange={(e) => {
+            if (e.target.value.length <= MAX_CHARS) setIdea(e.target.value)
+          }}
+          onKeyDown={handleKeyDown}
           onBlur={() => setTouched(true)}
           placeholder={'Contoh:\nSaya ingin membuat aplikasi absensi mahasiswa menggunakan QR Code yang digunakan oleh mahasiswa, dosen, dan admin.'}
           disabled={loading}
-          className="min-h-[140px] resize-y border-0 bg-transparent p-1 text-base shadow-none focus-visible:ring-0 sm:text-[15px]"
-          maxLength={4000}
+          className="min-h-[52px] max-h-40 resize-none overflow-y-auto border-0 bg-transparent px-4 pt-3.5 pb-1 text-base text-foreground placeholder:font-serif placeholder:text-sm placeholder:text-muted-foreground/80 focus-visible:ring-0 focus-visible:ring-offset-0"
+          rows={1}
         />
 
-        <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
-          <div className="flex items-center gap-2">
-            <label htmlFor="prd-language" className="text-xs text-muted-foreground">
-              Bahasa
-            </label>
-            <select
-              id="prd-language"
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-              disabled={loading}
-              className="h-8 rounded-lg border border-input bg-background px-2 text-xs text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
-            >
-              <option value="id">Bahasa Indonesia</option>
-              <option value="en">English</option>
-            </select>
+        <div className="flex items-center justify-between gap-3 px-3 pb-2.5">
+          <div className="flex min-w-0 items-center gap-2">
+            <div className="relative">
+              <select
+                id="prd-language"
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                disabled={loading}
+                aria-label="Bahasa PRD"
+                className="inline-flex h-7 appearance-none items-center rounded-full border border-border bg-background pl-2.5 pr-7 text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+              >
+                <option value="id">Bahasa Indonesia</option>
+                <option value="en">English</option>
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+            </div>
+            <span className="flex min-w-0 items-center gap-1.5 text-[11px] text-muted-foreground">
+              {nearLimit && (
+                <span className={`tabular-nums ${charCount > MAX_CHARS - 50 ? 'text-destructive' : ''}`}>
+                  {charCount}/{MAX_CHARS}
+                </span>
+              )}
+            </span>
           </div>
-          <p className="text-[11px] tabular-nums text-muted-foreground/70">
-            {idea.length}/4000
-          </p>
+
+          <Button
+            onClick={handleStart}
+            disabled={!!issue || loading}
+            size="icon"
+            className="h-8 w-8 flex-shrink-0 rounded-full"
+            aria-label="Mulai buat PRD"
+          >
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUp className="h-4 w-4" />}
+          </Button>
         </div>
-
-        {showIssue && (
-          <p className="mt-3 text-xs text-destructive" role="alert">
-            {issue}
-          </p>
-        )}
-
-        {loading && (
-          <div className="mt-4 space-y-3 rounded-xl bg-muted/30 p-4" aria-busy="true" aria-live="polite">
-            <div className="h-3 w-48 animate-pulse rounded-full bg-muted" />
-            <div className="h-16 animate-pulse rounded-xl bg-muted" />
-            <div className="h-16 w-3/4 animate-pulse rounded-xl bg-muted" />
-            <p className="text-center text-xs text-muted-foreground">{loadingMessage || 'Memproses ide…'}</p>
-          </div>
-        )}
-
-        <Button onClick={handleStart} disabled={!!issue || loading} className="mt-4 w-full gap-2" size="lg">
-          {loading ? (
-            'Menganalisis…'
-          ) : (
-            <>
-              <Sparkles className="h-4 w-4" />
-              Mulai
-              <ArrowRight className="h-4 w-4" />
-            </>
-          )}
-        </Button>
       </div>
 
-      {error && (
-        <p className="mt-4 text-center text-xs text-destructive" role="alert">
+      {loading && (
+        <p className="mt-2 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground" role="status">
+          <Loader2 className="h-3 w-3 animate-spin" />
+          {loadingMessage || 'Memproses ide…'}
+        </p>
+      )}
+
+      {showIssue && (
+        <p className="mt-2 text-center text-xs text-destructive" role="alert">
+          {issue}
+        </p>
+      )}
+
+      {error && !loading && (
+        <p className="mt-2 text-center text-xs text-destructive" role="alert">
           {error}
         </p>
       )}
@@ -120,7 +147,6 @@ export function IdeaInput({ initialIdea = '', initialLanguage = 'id', loading, l
               >
                 <Sparkles className="h-3.5 w-3.5 flex-shrink-0 text-primary/70 transition-colors group-hover:text-primary" />
                 <span className="min-w-0 flex-1 text-muted-foreground transition-colors group-hover:text-foreground">{ex}</span>
-                <ArrowRight className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground/0 transition-all group-hover:translate-x-0.5 group-hover:text-muted-foreground" />
               </button>
             ))}
           </div>
