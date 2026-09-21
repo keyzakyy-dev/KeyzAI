@@ -39,7 +39,13 @@ export function PrdBuilderPage() {
   const model = useMemo(loadModel, [])
   const { loginWithGoogle } = useAuth()
 
-  const prd = usePrdProject({ projectParam: projectId })
+  // Dibuat sebelum usePrdProject: efek deep-link di hook menandai saat URL
+  // yang memimpin (klik riwayat / deep-link); efek store→URL di bawah
+  // memakainya untuk skip satu putaran. Tanpa ini kedua efek saling dorong
+  // URL ↔ project dan halaman flicker saat pindah antar riwayat.
+  const urlLeads = useRef(false)
+
+  const prd = usePrdProject({ projectParam: projectId, urlLeads })
   const {
     project,
     step,
@@ -93,8 +99,16 @@ export function PrdBuilderPage() {
     path: '/prd-builder',
   })
 
-  // Sinkron URL dengan project aktif (pola /chat/:convId).
+  // Sinkron URL dengan project aktif (pola /chat/:convId). urlLeads dicegah
+  // di sini: saat URL yang memimpin (klik riwayat / deep-link), efek
+  // usePrdProject sudah menandai bahwa ia sedang memuat project dari URL ini.
+  // Tanpa guard ini, efek store→URL memantulkan URL ke project lama sebelum
+  // pemuatan selesai → kedua efek saling dorong dan halaman flicker.
   useEffect(() => {
+    if (urlLeads.current) {
+      urlLeads.current = false
+      return
+    }
     if (project?.id && projectId !== project.id) {
       navigate(`/prd-builder/${project.id}`, { replace: true })
     }

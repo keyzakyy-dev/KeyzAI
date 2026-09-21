@@ -59,7 +59,7 @@ function indexOfStep(step) {
   return i === -1 ? 0 : i
 }
 
-export function usePrdProject({ projectParam } = {}) {
+export function usePrdProject({ projectParam, urlLeads } = {}) {
   // Project aktif: dari deep-link, atau baru saat membuka /prd-builder.
   const [project, setProject] = useState(() => {
     if (projectParam) {
@@ -127,6 +127,11 @@ export function usePrdProject({ projectParam } = {}) {
   // (atau server bila belum login / dibuat di perangkat lain). Saat halaman
   // sudah mounted (mis. pindah dari /prd-builder atau antar item riwayat),
   // initializer useState tidak jalan lagi — project harus dimuat di sini.
+  // urlLeads ditandai tepat saat project benar-benar dimuat dari URL; efek
+  // store→URL di halaman memakainya untuk skip satu putaran. Tanpa ini kedua
+  // efek saling dorong URL ↔ project lama → flicker tanpa henti saat pindah
+  // riwayat. Bila project tidak bisa dimuat (tidak login / server kosong),
+  // flag tidak diisi → URL dikoreksi kembali ke project aktif seperti biasa.
   useEffect(() => {
     if (!projectParam) return
     if (projectRef.current?.id === projectParam) {
@@ -135,6 +140,7 @@ export function usePrdProject({ projectParam } = {}) {
     }
     const stored = loadProject(projectParam)
     if (stored) {
+      if (urlLeads) urlLeads.current = true
       setProject(stored)
       setLoadingProject(false)
       return
@@ -144,6 +150,7 @@ export function usePrdProject({ projectParam } = {}) {
       return
     }
     let cancelled = false
+    if (urlLeads) urlLeads.current = true
     fetchPrdProject(projectParam)
       .then((p) => {
         if (cancelled || !p?.id) return
