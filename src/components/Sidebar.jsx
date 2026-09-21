@@ -62,6 +62,16 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onNewPrd, o
 
         {/* New Chat / New PRD (PRD Builder) */}
         <div className="space-y-1 px-2">
+          {onNewPrd && (
+            <Button asChild variant="ghost" className="h-8 w-full justify-start gap-2 px-3 font-medium text-muted-foreground hover:text-foreground">
+              <Link to="/chat">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border/70 bg-foreground/5">
+                  <MessageSquare className="h-3.5 w-3.5" />
+                </span>
+                Chat
+              </Link>
+            </Button>
+          )}
           <Button
             onClick={onNewPrd || onNew}
             variant="ghost"
@@ -94,10 +104,10 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onNewPrd, o
           {sortedPrd.length === 0 && conversations.length === 0 ? (
             <div className="px-3 pt-10 text-center">
               <p className="text-sm font-medium text-muted-foreground">
-                {showConversations && !onNewPrd ? 'Belum ada percakapan' : 'Belum ada PRD'}
+                {showConversations ? 'Belum ada percakapan' : 'Belum ada PRD'}
               </p>
               <p className="mt-1 text-xs leading-relaxed text-muted-foreground/60">
-                {showConversations && !onNewPrd ? 'Mulai lewat “Chat baru” di atas.' : 'Mulai dari ide di halaman ini.'}
+                {showConversations ? 'Mulai lewat “Chat baru” di atas.' : 'Mulai dari ide di halaman ini.'}
               </p>
             </div>
           ) : (

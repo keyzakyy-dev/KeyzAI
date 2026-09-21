@@ -327,7 +327,7 @@ export function PrdBuilderPage() {
       collapsed={sidebarCollapsed}
       mobileOpen={sidebarOpen}
       onMobileClose={() => setSidebarOpen(false)}
-      showConversations
+      showConversations={false}
       currentPrdId={project?.id}
       onAfterDeletePrd={handlePrdRemoved}
       onNewPrd={handleNewPrd}
@@ -364,11 +364,11 @@ export function PrdBuilderPage() {
             >
               {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </Button>
-            <Button variant="ghost" size="sm" onClick={handleBackToChat} className="gap-1.5">
-              <ArrowLeft className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Kembali ke chat</span>
-              <span className="sm:hidden">Chat</span>
-            </Button>
+          <Button variant="ghost" size="sm" onClick={handleBackToChat} className="gap-1.5">
+            <ArrowLeft className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Kembali ke chat</span>
+            <span className="sm:hidden">Chat</span>
+          </Button>
           </div>
         </div>
 
