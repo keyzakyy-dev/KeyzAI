@@ -332,46 +332,48 @@ export function PrdBuilderPage() {
       onAfterDeletePrd={handlePrdRemoved}
       onNewPrd={handleNewPrd}
     >
-      <header className="relative z-20 flex h-14 flex-shrink-0 items-center justify-between bg-background/80 px-4 backdrop-blur-sm sm:px-6">
-        <div className="flex min-w-0 items-center gap-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hidden lg:flex -ml-2"
-            onClick={() => setSidebarCollapsed((c) => !c)}
-            aria-label={sidebarCollapsed ? 'Tampilkan sidebar' : 'Sembunyikan sidebar'}
-          >
-            {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+      <header className="relative z-20 flex flex-shrink-0 flex-col bg-background/80 backdrop-blur-sm">
+        <div className="flex h-14 items-center justify-between px-4 sm:px-6">
+          <div className="flex min-w-0 items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hidden lg:flex -ml-2"
+              onClick={() => setSidebarCollapsed((c) => !c)}
+              aria-label={sidebarCollapsed ? 'Tampilkan sidebar' : 'Sembunyikan sidebar'}
+            >
+              {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
             </Button>
           </div>
 
-        <div className="flex flex-shrink-0 items-center gap-1.5">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
-            aria-label="Ganti tema"
-          >
-            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            aria-label="Buka/tutup sidebar"
-          >
-            {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-          </Button>
-          <Button variant="ghost" size="sm" onClick={handleBackToChat} className="gap-1.5">
-            <ArrowLeft className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Kembali ke chat</span>
-            <span className="sm:hidden">Chat</span>
-          </Button>
+          <div className="flex flex-shrink-0 items-center gap-1.5">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
+              aria-label="Ganti tema"
+            >
+              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              aria-label="Buka/tutup sidebar"
+            >
+              {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </Button>
+            <Button variant="ghost" size="sm" onClick={handleBackToChat} className="gap-1.5">
+              <ArrowLeft className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Kembali ke chat</span>
+              <span className="sm:hidden">Chat</span>
+            </Button>
+          </div>
         </div>
 
         {showStepper && (
-          <div className="mx-auto max-w-6xl px-4 pb-3 sm:px-6">
+          <div className="mx-auto w-full max-w-6xl px-4 pb-3 sm:px-6">
             <Stepper stepIndex={stepIndex} disabled={isWorking} onJump={(i) => gotoStep(STEP_NAMES[i])} />
           </div>
         )}
