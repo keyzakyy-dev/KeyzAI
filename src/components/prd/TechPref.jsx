@@ -47,7 +47,7 @@ export function TechPref({
   const hasAutoStack = mode === 'auto' && Object.values(stack).some((v) => v)
 
   return (
-    <div className="mx-auto w-full max-w-2xl space-y-8">
+    <div className="mx-auto w-full max-w-3xl space-y-8">
       <StepHeader
         step="03"
         label="Teknologi"

@@ -71,7 +71,7 @@ export function PrdEditor({
   const md = projectToMarkdown(project)
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-8">
+    <div className="mx-auto w-full max-w-4xl space-y-8">
       <StepHeader
         step="05"
         label="PRD"
@@ -105,7 +105,7 @@ export function PrdEditor({
                   <section key={s.id} className="group">
                     {/* basis-48 memaksa baris aksi turun di layar sempit, jadi
                         tombol tetap 44px tanpa memangsa judul. */}
-                    <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 px-5 pb-2 pt-4">
+                    <div className="mx-auto flex max-w-[75ch] flex-wrap items-center gap-x-1.5 gap-y-1 px-5 pb-2 pt-4">
                       <h3 className="min-w-0 flex-1 basis-48 truncate font-serif text-[15px] font-medium text-foreground">{s.title}</h3>
                       {s.status === SECTION_STATUS.NEEDS && (
                         <span className="flex-shrink-0 rounded-md border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-700 dark:text-amber-400">
@@ -170,13 +170,15 @@ export function PrdEditor({
                     </div>
 
                     {editing ? (
-                      <Textarea
-                        value={draft}
-                        onChange={(e) => setDraft(e.target.value)}
-                        className="min-h-[200px] resize-y rounded-none border-0 text-[13px] focus-visible:ring-0"
-                      />
+                      <div className="mx-auto max-w-[75ch] px-5 pb-5">
+                        <Textarea
+                          value={draft}
+                          onChange={(e) => setDraft(e.target.value)}
+                          className="min-h-[200px] resize-y rounded-none border-0 text-[13px] focus-visible:ring-0"
+                        />
+                      </div>
                     ) : (
-                      <div className="px-5 pb-5 text-[15px] leading-relaxed text-foreground">
+                      <div className="mx-auto max-w-[75ch] px-5 pb-5 text-[15px] leading-relaxed text-foreground">
                         <Markdown text={s.content} />
                       </div>
                     )}

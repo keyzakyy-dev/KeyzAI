@@ -70,7 +70,7 @@ export function Structure({ structure = { features: [] }, onChange, onRegenerate
 
   if (loading) {
     return (
-      <div className="mx-auto w-full max-w-2xl space-y-8">
+      <div className="mx-auto w-full max-w-3xl space-y-8">
         <StepHeader
           step="04"
           label="Struktur Produk"
@@ -85,7 +85,7 @@ export function Structure({ structure = { features: [] }, onChange, onRegenerate
   }
 
   return (
-    <div className="mx-auto w-full max-w-2xl space-y-8">
+    <div className="mx-auto w-full max-w-3xl space-y-8">
       <StepHeader
         step="04"
         label="Struktur Produk"

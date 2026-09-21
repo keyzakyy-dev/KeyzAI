@@ -376,18 +376,20 @@ export function PrdBuilderPage() {
         </div>
 
         {showStepper && (
-          <div className="mx-auto w-full max-w-6xl px-4 pb-3 sm:px-6">
+          <div className="mx-auto w-full max-w-4xl px-4 pb-3 sm:px-6">
             <Stepper stepIndex={stepIndex} maxIndex={maxStepIndex} disabled={isWorking} onJump={(i) => gotoStep(STEP_NAMES[i])} />
           </div>
         )}
       </header>
 
+      {/* Lebar per tahap dimiliki komponen step sendiri (satu sumber, tanpa
+          cap ganda di sini). */}
       <main className="min-h-0 flex-1 overflow-y-auto px-4 py-8 sm:px-6 sm:py-12">
         {project ? (
-          <div className="mx-auto w-full max-w-2xl">{stepCanvas}</div>
+          <div className="w-full">{stepCanvas}</div>
         ) : (
           <div className="flex min-h-full flex-1 items-center justify-center py-6">
-            <div className="w-full max-w-2xl">{stepCanvas}</div>
+            <div className="w-full">{stepCanvas}</div>
           </div>
         )}
 
