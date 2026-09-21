@@ -73,17 +73,17 @@ export function Clarify({
           )}
 
           <div className="mt-6 flex flex-col gap-2 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
-            <Button variant="ghost" size="sm" onClick={onPrev} disabled={index === 0} className="gap-1.5 self-start sm:self-auto">
+            <Button variant="ghost" size="sm" onClick={onPrev} disabled={index === 0} className="h-11 gap-1.5 self-start sm:h-8 sm:self-auto">
               <ArrowLeft className="h-3.5 w-3.5" />
               Sebelumnya
             </Button>
 
             <div className="flex gap-2">
-              <Button variant="ghost" size="sm" onClick={() => onSkip(q.id)} className="gap-1.5">
+              <Button variant="ghost" size="sm" onClick={() => onSkip(q.id)} className="h-11 gap-1.5 sm:h-8">
                 <SkipForward className="h-3.5 w-3.5" />
                 Lewati
               </Button>
-              <Button onClick={onNext} size="sm" className="gap-1.5">
+              <Button onClick={onNext} size="sm" className="h-11 gap-1.5 sm:h-8">
                 {isLast ? 'Lanjut' : 'Berikutnya'}
                 <ArrowRight className="h-3.5 w-3.5" />
               </Button>
@@ -107,7 +107,7 @@ export function Clarify({
               />
             ))}
           </div>
-          <p className="text-[11px] tabular-nums text-muted-foreground/70">
+          <p className="text-[11px] tabular-nums text-muted-foreground">
             {answeredCount} dari {total} terjawab
           </p>
         </div>

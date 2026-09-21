@@ -111,7 +111,7 @@ export function TechPref({
                     <span className="w-24 flex-shrink-0 text-xs font-medium capitalize text-muted-foreground">{k}</span>
                     <span className="font-medium text-foreground">{name}</span>
                   </span>
-                  {reason && <p className="mt-1 pl-[6.5rem] text-[11px] leading-relaxed text-muted-foreground/80">{reason}</p>}
+                  {reason && <p className="mt-1 pl-[6.5rem] text-[11px] leading-relaxed text-muted-foreground">{reason}</p>}
                 </li>
               )
             })}
@@ -133,7 +133,7 @@ export function TechPref({
                   id={`tech-${k}`}
                   value={v}
                   onChange={(e) => onManualChange(k, e.target.value)}
-                  className="flex h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="flex h-11 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:h-10"
                 >
                   <option value="">Belum dipilih</option>
                   {opts.map((o) => (

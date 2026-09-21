@@ -23,12 +23,13 @@ export function StepHeader({ step, label, title, description }) {
 /**
  * Bar navigasi bawah yang seragam di tiap langkah: Kembali di kiri, aksi
  * utama (Lanjut) di kanan. `nextLabel`/`nextIcon` bisa diganti per langkah.
+ * Tombol 44px di mobile, 32px di desktop.
  */
 export function StageNav({ onBack, backLabel = 'Kembali', onNext, nextLabel = 'Lanjut', nextDisabled = false, loading = false, children }) {
   return (
     <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
       {onBack && (
-        <Button variant="ghost" size="sm" onClick={onBack} className="gap-1.5 self-start sm:self-auto">
+        <Button variant="ghost" size="sm" onClick={onBack} className="h-11 gap-1.5 self-start sm:h-8 sm:self-auto">
           <ArrowLeft className="h-3.5 w-3.5" />
           {backLabel}
         </Button>
@@ -36,7 +37,7 @@ export function StageNav({ onBack, backLabel = 'Kembali', onNext, nextLabel = 'L
       <div className="flex flex-wrap items-center gap-2 sm:justify-end">
         {children}
         {onNext && (
-          <Button size="sm" onClick={onNext} disabled={nextDisabled || loading} className="gap-1.5">
+          <Button size="sm" onClick={onNext} disabled={nextDisabled || loading} className="h-11 gap-1.5 sm:h-8">
             {nextLabel}
             <ArrowRight className="h-3.5 w-3.5" />
           </Button>

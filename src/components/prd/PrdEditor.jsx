@@ -13,7 +13,7 @@ import { exportJSON, exportMarkdown, projectToMarkdown } from '../../lib/prd-exp
 import { SECTION_STATUS } from '../../state/prd-model'
 
 /**
- * STEP 5 â€” Tampilan & editor PRD. Tiap section: render markdown, edit
+ * STEP 5 — Tampilan & editor PRD. Tiap section: render markdown, edit
  * inline (Save/Cancel), Copy, Delete, Regenerate (modal instruksi, AI hanya
  * sentuh section itu). Section baru bisa ditambahkan.
  *
@@ -47,7 +47,7 @@ export function PrdEditor({
   }
   const delSection = (id) => onChangeSections(sections.filter((s) => s.id !== id))
   const addSection = () => {
-    const s = { id: newId('sec'), title: 'Section Baru', content: '## Section Baru\n\nTulis di siniâ€¦', status: SECTION_STATUS.OK }
+    const s = { id: newId('sec'), title: 'Section Baru', content: '## Section Baru\n\nTulis di sini…', status: SECTION_STATUS.OK }
     onChangeSections([...sections, s])
     setEditingId(s.id)
     setDraft(s.content)
@@ -88,7 +88,7 @@ export function PrdEditor({
       {sections.length === 0 && !loading ? (
         <div className="rounded-xl border border-dashed border-border bg-card p-12 text-center">
           <p className="text-sm text-muted-foreground">PRD belum berhasil dibuat.</p>
-          <Button variant="outline" size="sm" onClick={onRetry} className="mt-4 gap-1.5">
+          <Button variant="outline" size="sm" onClick={onRetry} className="mt-4 h-11 gap-1.5 sm:h-8">
             <RotateCcw className="h-3.5 w-3.5" />
             Coba lagi
           </Button>
@@ -103,10 +103,12 @@ export function PrdEditor({
                 const editing = editingId === s.id
                 return (
                   <section key={s.id} className="group">
-                    <div className="flex items-center gap-2 px-5 pb-2 pt-4">
-                      <h3 className="min-w-0 flex-1 truncate font-serif text-[15px] font-medium text-foreground">{s.title}</h3>
+                    {/* basis-48 memaksa baris aksi turun di layar sempit, jadi
+                        tombol tetap 44px tanpa memangsa judul. */}
+                    <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 px-5 pb-2 pt-4">
+                      <h3 className="min-w-0 flex-1 basis-48 truncate font-serif text-[15px] font-medium text-foreground">{s.title}</h3>
                       {s.status === SECTION_STATUS.NEEDS && (
-                        <span className="flex-shrink-0 rounded-md border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-600 dark:text-amber-400">
+                        <span className="flex-shrink-0 rounded-md border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-700 dark:text-amber-400">
                           Belum ditentukan
                         </span>
                       )}
@@ -118,7 +120,7 @@ export function PrdEditor({
                               onClick={() => saveEdit(s.id)}
                               disabled={!draft.trim()}
                               aria-label="Simpan section"
-                              className="rounded p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-40"
+                              className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-40 sm:h-7 sm:w-7"
                             >
                               <Check className="h-3.5 w-3.5" />
                             </button>
@@ -126,7 +128,7 @@ export function PrdEditor({
                               type="button"
                               onClick={() => setEditingId(null)}
                               aria-label="Batal edit"
-                              className="rounded p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                              className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground sm:h-7 sm:w-7"
                             >
                               <X className="h-3.5 w-3.5" />
                             </button>
@@ -137,11 +139,11 @@ export function PrdEditor({
                               type="button"
                               onClick={() => startEdit(s)}
                               aria-label="Edit section"
-                              className="rounded p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                              className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground sm:h-7 sm:w-7"
                             >
                               <Pencil className="h-3.5 w-3.5" />
                             </button>
-                            <CopyButton text={s.content} className="p-1.5" />
+                            <CopyButton text={s.content} className="h-11 w-11 justify-center p-0 sm:h-7 sm:w-7 sm:p-1.5" />
                             <button
                               type="button"
                               onClick={() => {
@@ -150,7 +152,7 @@ export function PrdEditor({
                               }}
                               aria-label="Regenerate section dengan AI"
                               title="Regenerate dengan AI"
-                              className="rounded p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                              className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground sm:h-7 sm:w-7"
                             >
                               <RotateCcw className="h-3.5 w-3.5" />
                             </button>
@@ -158,7 +160,7 @@ export function PrdEditor({
                               type="button"
                               onClick={() => delSection(s.id)}
                               aria-label="Hapus section"
-                              className="rounded p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                              className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive sm:h-7 sm:w-7"
                             >
                               <Trash2 className="h-3.5 w-3.5" />
                             </button>
@@ -200,30 +202,26 @@ export function PrdEditor({
       {/* Toolbar ekspor & aksi akhir */}
       <div className="space-y-4 border-t border-border pt-6">
         <div className="flex flex-wrap items-center gap-2">
-          <CopyButton text={md} withLabel className="h-9 rounded-lg border border-border px-3" />
-          <Button variant="outline" size="sm" onClick={() => exportMarkdown(project)} className="gap-1.5">
+          <CopyButton text={md} withLabel className="h-11 rounded-lg border border-border px-4 sm:h-9" />
+          <Button variant="outline" size="sm" onClick={() => exportMarkdown(project)} className="h-11 gap-1.5 px-4 sm:h-9 sm:px-3">
             <Download className="h-3.5 w-3.5" />
             Markdown
           </Button>
-          <Button variant="outline" size="sm" onClick={() => exportJSON(project)} className="gap-1.5">
+          <Button variant="outline" size="sm" onClick={() => exportJSON(project)} className="h-11 gap-1.5 px-4 sm:h-9 sm:px-3">
             <FileJson className="h-3.5 w-3.5" />
             JSON
           </Button>
-          <span
-            title="PDF & DOCX: sambungkan library export di lib/prd-export.js"
-            className="inline-flex items-center gap-1 text-[11px] text-muted-foreground/60"
-          >
-            <Download className="h-3 w-3" />
+          <span className="text-[11px] text-muted-foreground">
             PDF/DOCX segera
           </span>
         </div>
 
-        <div className="flex items-center justify-between">
-          <Button variant="ghost" size="sm" onClick={onBack} className="gap-1.5">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <Button variant="ghost" size="sm" onClick={onBack} className="h-11 gap-1.5 sm:h-8">
             <ArrowLeft className="h-3.5 w-3.5" />
             Kembali
           </Button>
-          <Button variant="outline" size="sm" onClick={onNew}>
+          <Button variant="outline" size="sm" onClick={onNew} className="h-11 sm:h-8">
             PRD baru
           </Button>
         </div>

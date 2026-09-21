@@ -52,7 +52,7 @@ export function QuestionField({ type = 'text', options = [], placeholder = '', v
                 active
                   ? 'border-primary bg-primary/10 text-foreground'
                   : 'border-border text-muted-foreground hover:bg-accent/40 hover:text-foreground'
-              } ${picked && !active ? 'opacity-50' : ''}`}
+              }`}
             >
               {label}
             </button>

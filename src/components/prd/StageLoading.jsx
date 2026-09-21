@@ -24,17 +24,12 @@ export function StageLoading({ message = 'Memproses…' }) {
 export function StageError({ message = 'Terjadi kesalahan.', onRetry, retryLabel = 'Coba lagi' }) {
   return (
     <div className="flex flex-col items-start gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4">
-      <div className="flex items-center gap-2.5">
-        <span className="shrink-0 text-destructive">
-          <KeyMark className="h-4 w-4" />
-        </span>
-        <p className="text-sm text-foreground">{message}</p>
-      </div>
+      <p className="text-sm text-foreground">{message}</p>
       {onRetry && (
         <button
           type="button"
           onClick={onRetry}
-          className="rounded-lg border border-destructive/40 px-3 py-1.5 text-xs font-medium text-destructive transition-colors hover:bg-destructive/10"
+          className="h-11 rounded-lg border border-destructive/40 px-4 text-xs font-medium text-destructive transition-colors hover:bg-destructive/10 sm:h-8"
         >
           {retryLabel}
         </button>

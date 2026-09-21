@@ -35,7 +35,7 @@ export function RegenerateDialog({ open, onOpenChange, sectionTitle, onConfirm, 
                 <X className="h-4 w-4" />
               </button>
             </Dialog.Close>
-            <Dialog.Title className="pr-8 text-lg font-bold tracking-tight text-foreground">
+            <Dialog.Title className="pr-8 text-lg font-semibold tracking-tight text-foreground">
               Regenerate section
             </Dialog.Title>
             <Dialog.Description className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
@@ -68,11 +68,11 @@ export function RegenerateDialog({ open, onOpenChange, sectionTitle, onConfirm, 
             )}
             <div className="mt-5 flex flex-shrink-0 justify-end gap-2">
               <Dialog.Close asChild>
-                <Button type="button" variant="outline" size="sm">
+                <Button type="button" variant="outline" size="sm" className="h-11 sm:h-8">
                   Batal
                 </Button>
               </Dialog.Close>
-              <Button type="submit" size="sm" disabled={loading}>
+              <Button type="submit" size="sm" disabled={loading} className="h-11 sm:h-8">
                 {loading ? 'Menulis ulang…' : 'Regenerate dengan AI'}
               </Button>
             </div>
