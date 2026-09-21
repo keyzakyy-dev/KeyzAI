@@ -165,7 +165,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
             type="button"
             onClick={toggleTheme}
             aria-label="Ganti tema"
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           >
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
@@ -175,7 +175,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
             aria-label={open ? 'Tutup menu' : 'Buka menu'}
             aria-expanded={open}
             aria-controls="landing-mobile-nav"
-            className="relative flex h-9 w-9 items-center justify-center rounded-lg text-foreground transition-colors hover:bg-accent"
+            className="relative flex h-11 w-11 items-center justify-center rounded-lg text-foreground transition-colors hover:bg-accent"
           >
             <Menu
               className={`h-4 w-4 transition-all duration-300 ${
@@ -205,7 +205,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
                 setOpen(false)
                 navigate('/chat')
               }}
-              className="my-3 h-10 w-full rounded-lg bg-primary text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              className="my-3 h-11 w-full rounded-lg bg-primary text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               {user ? 'Buka chat' : 'Masuk dengan Google'}
             </button>
@@ -240,10 +240,10 @@ function Hero({ navigate }) {
               ref={headlineRef}
               className="text-[32px] font-bold leading-[1.08] tracking-tighter text-foreground sm:text-5xl md:text-6xl xl:text-6xl"
             >
-              <span className="block whitespace-nowrap">
+              <span className="block whitespace-normal sm:whitespace-nowrap">
                 <Words text="Tulis, kode, belajar." />
               </span>
-              <span className="block whitespace-nowrap">
+              <span className="block whitespace-normal sm:whitespace-nowrap">
                 <Words text="Semua dibantuin." />
               </span>
             </h1>
@@ -319,7 +319,7 @@ function Features({ navigate }) {
         <button
           type="button"
           onClick={() => setShowAll((s) => !s)}
-          className="mx-auto mt-6 flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground md:hidden"
+          className="mx-auto mt-6 flex min-h-11 items-center gap-1.5 rounded-lg px-4 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground md:hidden"
         >
           {showAll ? 'Sembunyikan' : 'Lihat fitur lainnya'}
           <Plus className={`h-4 w-4 transition-transform duration-300 ${showAll ? 'rotate-45' : ''}`} />
@@ -347,7 +347,7 @@ function PrdBuilder({ navigate }) {
           <button
             type="button"
             onClick={() => navigate('/prd-builder')}
-            className="mt-6 inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="mt-6 inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             <Sparkles className="h-4 w-4" />
             Coba PRD Builder
@@ -413,7 +413,7 @@ function Models({ navigate }) {
 function Footer() {
   const toTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
   const linkCls =
-    'inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground'
+    'inline-flex min-h-11 items-center gap-1.5 rounded-md text-xs font-medium text-muted-foreground transition-colors hover:text-foreground'
 
   return (
     <footer className="border-t border-border">
