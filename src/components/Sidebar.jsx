@@ -62,16 +62,6 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onNewPrd, o
 
         {/* New Chat / New PRD (PRD Builder) */}
         <div className="space-y-1 px-2">
-          {onNewPrd && (
-            <Button asChild variant="ghost" className="h-8 w-full justify-start gap-2 px-3 font-medium text-muted-foreground hover:text-foreground">
-              <Link to="/chat">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border/70 bg-foreground/5">
-                  <MessageSquare className="h-3.5 w-3.5" />
-                </span>
-                Chat
-              </Link>
-            </Button>
-          )}
           <Button
             onClick={onNewPrd || onNew}
             variant="ghost"
@@ -82,21 +72,29 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onNewPrd, o
             </span>
             {onNewPrd ? 'PRD baru' : 'Chat baru'}
           </Button>
-          <Button
-            asChild
-            variant="ghost"
-            className="h-8 w-full justify-start gap-2 px-3 font-medium text-muted-foreground hover:text-foreground"
-          >
-            <Link to="/prd-builder">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border/70 bg-foreground/5">
-                <FileText className="h-3.5 w-3.5" />
-              </span>
-              PRD Builder
-              <span className="ml-auto rounded-full border border-primary/30 bg-primary/10 px-1.5 py-px text-[9px] font-semibold text-primary">
-                Baru
-              </span>
-            </Link>
-          </Button>
+          {onNewPrd && (
+            <Button asChild variant="ghost" className="h-8 w-full justify-start gap-2 px-3 font-medium text-muted-foreground hover:text-foreground">
+              <Link to="/chat">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border/70 bg-foreground/5">
+                  <MessageSquare className="h-3.5 w-3.5" />
+                </span>
+                Chat
+              </Link>
+            </Button>
+          )}
+          {!onNewPrd && (
+            <Button asChild variant="ghost" className="h-8 w-full justify-start gap-2 px-3 font-medium text-muted-foreground hover:text-foreground">
+              <Link to="/prd-builder">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border/70 bg-foreground/5">
+                  <FileText className="h-3.5 w-3.5" />
+                </span>
+                PRD Builder
+                <span className="ml-auto rounded-full border border-primary/30 bg-primary/10 px-1.5 py-px text-[9px] font-semibold text-primary">
+                  Baru
+                </span>
+              </Link>
+            </Button>
+          )}
         </div>
 
         {/* Conversations + Riwayat PRD */}
