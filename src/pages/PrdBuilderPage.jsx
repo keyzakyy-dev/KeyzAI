@@ -69,9 +69,17 @@ export function PrdBuilderPage() {
   const [qIndex, setQIndex] = useState(0)
 
   // Ide & bahasa sebelum tekan Mulai; juga dipakai deep-link project lama.
+  // Sinkron ulang setiap project berganti (mis. buka item riwayat lain) —
+  // khususnya untuk project yang masih di tahap ide.
   const [pendingIdea, setPendingIdea] = useState('')
   const [pendingLang, setPendingLang] = useState('id')
-  const initialized = useRef(false)
+  useEffect(() => {
+    if (project?.projectIdea) {
+      setPendingIdea(project.projectIdea)
+      setPendingLang(project.language || 'id')
+    }
+  }, [project?.id])
+
   // Aksi AI yang tertunda karena belum login; dikirim ulang setelah session.
   const pendingAction = useRef(null)
   const [loginLoading, setLoginLoading] = useState(false)
@@ -84,16 +92,6 @@ export function PrdBuilderPage() {
     description: 'Ubah ide aplikasi kamu menjadi Product Requirements Document lengkap bersama AI KeyzAI.',
     path: '/prd-builder',
   })
-
-  // Deep-link ke project lama: muat ide-nya ke form.
-  useEffect(() => {
-    if (initialized.current) return
-    initialized.current = true
-    if (project?.projectIdea) {
-      setPendingIdea(project.projectIdea)
-      setPendingLang(project.language || 'id')
-    }
-  }, [project])
 
   // Sinkron URL dengan project aktif (pola /chat/:convId).
   useEffect(() => {

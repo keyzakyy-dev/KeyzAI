@@ -123,10 +123,19 @@ export function usePrdProject({ projectParam } = {}) {
     if (isAuthenticated()) refreshHistory().catch(() => {})
   }, [refreshHistory, isAuthenticated()])
 
-  // Deep-link: bila ada :id yang belum ada di lokal, ambil dari server (akun).
+  // Deep-link: bila ada :id yang belum ada di state aktif, ambil dari lokal
+  // (atau server bila belum login / dibuat di perangkat lain). Saat halaman
+  // sudah mounted (mis. pindah dari /prd-builder atau antar item riwayat),
+  // initializer useState tidak jalan lagi — project harus dimuat di sini.
   useEffect(() => {
     if (!projectParam) return
-    if (loadProject(projectParam)) {
+    if (projectRef.current?.id === projectParam) {
+      setLoadingProject(false)
+      return
+    }
+    const stored = loadProject(projectParam)
+    if (stored) {
+      setProject(stored)
       setLoadingProject(false)
       return
     }
