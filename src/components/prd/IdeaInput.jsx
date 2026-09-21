@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { ArrowUp, ChevronDown, Loader2, Sparkles } from 'lucide-react'
+import { ArrowUp, ChevronDown, Loader2 } from 'lucide-react'
 
 import { Button } from '../ui/button'
 import { Textarea } from '../ui/textarea'
@@ -14,9 +14,9 @@ const EXAMPLES = [
 const MAX_CHARS = 4000
 
 /**
- * STEP 1 — Input ide, dibentuk serupa kolom chat: satu kartu, textarea
- * auto-grow, Enter kirim, pill bahasa + tombol kirim bulat. User bebas
- * menjelaskan (satu kalimat sampai detail); bahasa default Indonesia.
+ * STEP 1 — Input ide: satu kartu, textarea auto-grow, Enter kirim, pilihan
+ * bahasa + tombol kirim. Nomor serif di judul dan contoh adalah motif
+ * dokumen yang sama dengan stepper.
  */
 export function IdeaInput({ initialIdea = '', initialLanguage = 'id', loading, loadingMessage, onStart, error }) {
   const [idea, setIdea] = useState(initialIdea)
@@ -55,13 +55,16 @@ export function IdeaInput({ initialIdea = '', initialLanguage = 'id', loading, l
 
   return (
     <div className="mx-auto w-full max-w-2xl">
-      <div className="space-y-4 text-center">
-        <h1 className="text-center font-serif text-2xl font-medium tracking-tight text-foreground sm:text-3xl md:text-4xl">
+      <div className="space-y-3 text-center">
+        <h1 className="font-serif text-2xl font-medium tracking-tight text-foreground sm:text-3xl md:text-4xl">
           Mau bikin apa?
         </h1>
+        <p className="mx-auto max-w-md text-sm leading-relaxed text-muted-foreground">
+          Satu kalimat cukup. AI akan menanyakan sisanya sampai PRD-mu siap dipakai.
+        </p>
       </div>
 
-      <div className="mt-6 rounded-2xl border border-border bg-card shadow-sm">
+      <div className="mt-6 rounded-xl border border-border bg-card shadow-sm">
         <Textarea
           ref={textareaRef}
           value={idea}
@@ -85,7 +88,7 @@ export function IdeaInput({ initialIdea = '', initialLanguage = 'id', loading, l
                 onChange={(e) => setLanguage(e.target.value)}
                 disabled={loading}
                 aria-label="Bahasa PRD"
-                className="inline-flex h-7 appearance-none items-center rounded-full border border-border bg-background pl-2.5 pr-7 text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+                className="inline-flex h-7 appearance-none items-center rounded-md border border-border bg-background pl-2.5 pr-7 text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
               >
                 <option value="id">Bahasa Indonesia</option>
                 <option value="en">English</option>
@@ -105,7 +108,7 @@ export function IdeaInput({ initialIdea = '', initialLanguage = 'id', loading, l
             onClick={handleStart}
             disabled={!!issue || loading}
             size="icon"
-            className="h-8 w-8 flex-shrink-0 rounded-full"
+            className="h-8 w-8 flex-shrink-0 rounded-lg"
             aria-label="Mulai buat PRD"
           >
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUp className="h-4 w-4" />}
@@ -134,19 +137,21 @@ export function IdeaInput({ initialIdea = '', initialLanguage = 'id', loading, l
 
       {!loading && idea.length === 0 && (
         <div className="mt-6">
-          <p className="mb-2.5 text-center text-[11px] font-medium uppercase tracking-wider text-muted-foreground/70">
-            Atau mulai dari contoh
-          </p>
+          <p className="mb-2.5 text-center text-xs text-muted-foreground">Atau mulai dari contoh:</p>
           <div className="flex flex-col gap-1.5">
-            {EXAMPLES.map((ex) => (
+            {EXAMPLES.map((ex, i) => (
               <button
                 key={ex}
                 type="button"
                 onClick={() => setIdea(ex)}
-                className="group flex items-center gap-2.5 rounded-xl border border-border bg-background px-3.5 py-2.5 text-left text-xs transition-all hover:border-foreground/30 hover:bg-accent/30 sm:text-[13px]"
+                className="group flex items-baseline gap-3 rounded-lg border border-border bg-background px-3.5 py-2.5 text-left transition-colors hover:border-foreground/30 hover:bg-accent/30"
               >
-                <Sparkles className="h-3.5 w-3.5 flex-shrink-0 text-primary/70 transition-colors group-hover:text-primary" />
-                <span className="min-w-0 flex-1 text-muted-foreground transition-colors group-hover:text-foreground">{ex}</span>
+                <span className="flex-shrink-0 font-serif text-[11px] tabular-nums text-muted-foreground/60 group-hover:text-foreground">
+                  0{i + 1}
+                </span>
+                <span className="min-w-0 flex-1 text-xs text-muted-foreground transition-colors group-hover:text-foreground sm:text-[13px]">
+                  {ex}
+                </span>
               </button>
             ))}
           </div>

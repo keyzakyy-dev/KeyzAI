@@ -40,24 +40,18 @@ export function Clarify({
   return (
     <div className="mx-auto w-full max-w-2xl space-y-8">
       <StepHeader
+        step="02"
         label={`Klarifikasi · ${index + 1}/${total}`}
         title={q.question}
         description="Biar PRD lebih akurat, AI perlu memastikan beberapa hal tentang produk kamu."
       />
 
       {loading ? (
-        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+        <div className="rounded-xl border border-border bg-card p-6">
           <StageLoading message={loadingMessage} />
         </div>
       ) : (
-        <div className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-6">
-          {q.help && (
-            <p className="mb-4 flex items-start gap-2 rounded-lg bg-muted/40 px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
-              <span className="mt-px flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full border border-border text-[9px]">i</span>
-              <span>{q.help}</span>
-            </p>
-          )}
-
+        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
           <QuestionField
             type={q.type}
             options={q.options}
@@ -66,8 +60,14 @@ export function Clarify({
             onChange={(v) => onAnswer(q.id, v)}
           />
 
+          {q.help && (
+            <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
+              Kenapa ditanya? {q.help}
+            </p>
+          )}
+
           {q.required && !answered && (
-            <p className="mt-3 text-[11px] text-amber-600 dark:text-amber-400">
+            <p className="mt-2 text-[11px] text-amber-600 dark:text-amber-400">
               Disarankan dijawab karena memengaruhi struktur produk.
             </p>
           )}

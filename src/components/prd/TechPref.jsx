@@ -1,8 +1,9 @@
-import { Check, Sparkles, Wand2 } from 'lucide-react'
+import { Check, SlidersHorizontal } from 'lucide-react'
 
 import { Button } from '../ui/button'
 import { StageLoading } from './StageLoading'
 import { StepHeader, StageNav } from './StepHeader'
+import { KeyMark } from '../../lib/key-mark'
 import { TECH_KEYS } from '../../state/prd-model'
 
 const TECH_OPTIONS = {
@@ -16,13 +17,13 @@ const AUTH_OPTIONS = ['Email & Password', 'Google OAuth', 'JWT', 'Magic Link', '
 const MODES = [
   {
     id: 'auto',
-    icon: Sparkles,
+    icon: KeyMark,
     title: 'Biarkan AI memilih',
     desc: 'Rekomendasi frontend, backend, database, auth, dan deployment sesuai kebutuhan produk.',
   },
   {
     id: 'manual',
-    icon: Wand2,
+    icon: SlidersHorizontal,
     title: 'Saya pilih sendiri',
     desc: 'Tentukan sendiri stack-nya; AI akan memakainya apa adanya di PRD.',
   },
@@ -48,6 +49,7 @@ export function TechPref({
   return (
     <div className="mx-auto w-full max-w-2xl space-y-8">
       <StepHeader
+        step="03"
         label="Teknologi"
         title="Bagaimana dengan teknologinya?"
         description="Pilih cara AI membantu menentukan stack untuk produk kamu."
@@ -62,14 +64,14 @@ export function TechPref({
               key={m.id}
               type="button"
               onClick={() => onSelectMode(m.id)}
-              className={`relative flex flex-col items-start gap-2.5 rounded-2xl border p-5 text-left transition-all ${
+              className={`relative flex flex-col items-start gap-2.5 rounded-xl border p-5 text-left transition-colors ${
                 active
-                  ? 'border-primary bg-primary/5 shadow-sm ring-1 ring-primary/20'
-                  : 'border-border bg-card hover:border-foreground/30 hover:shadow-sm'
+                  ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
+                  : 'border-border bg-card hover:border-foreground/30'
               }`}
             >
               <span
-                className={`flex h-9 w-9 items-center justify-center rounded-xl border transition-colors ${
+                className={`flex h-9 w-9 items-center justify-center rounded-lg border transition-colors ${
                   active ? 'border-primary/40 bg-primary/10' : 'border-border bg-background'
                 }`}
               >
@@ -88,15 +90,15 @@ export function TechPref({
       </div>
 
       {loading && (
-        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+        <div className="rounded-xl border border-border bg-card p-5">
           <StageLoading message={loadingMessage} />
         </div>
       )}
 
       {!loading && mode === 'auto' && hasAutoStack && (
-        <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+        <div className="overflow-hidden rounded-xl border border-border bg-card">
           <div className="border-b border-border bg-muted/40 px-4 py-2.5">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Rekomendasi AI</p>
+            <p className="text-xs font-medium text-muted-foreground">Rekomendasi AI</p>
           </div>
           <ul className="divide-y divide-border">
             {TECH_KEYS.filter((k) => stack[k]).map((k) => {
@@ -118,7 +120,7 @@ export function TechPref({
       )}
 
       {!loading && mode === 'manual' && (
-        <div className="space-y-3.5 rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
+        <div className="space-y-3.5 rounded-xl border border-border bg-card p-4 sm:p-5">
           {TECH_KEYS.map((k) => {
             const opts = k === 'authentication' ? AUTH_OPTIONS : TECH_OPTIONS[k] || []
             const v = typeof stack[k] === 'string' ? stack[k] : stack[k]?.name || ''

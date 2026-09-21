@@ -3,8 +3,8 @@ import { Check } from 'lucide-react'
 import { PRD_STEPS, STEP_LABELS } from '../../state/prd-model'
 
 /**
- * Stepper minimalis: deretan pill berlabel, state jelas (done/active/todo),
- * bisa diklik untuk kembali ke langkah sebelumnya. Mobile: bar tipis + hitungan.
+ * Progress ala draf dokumen: nomor serif 01..05 dengan segmen garis tipis.
+ * Langkah yang sudah lewat bisa diklik untuk kembali. Mobile: hitungan + bar.
  */
 export function Stepper({ stepIndex, disabled = false, onJump }) {
   const total = PRD_STEPS.length
@@ -12,44 +12,67 @@ export function Stepper({ stepIndex, disabled = false, onJump }) {
 
   return (
     <div className="w-full">
-      <ol className="hidden items-center gap-1 md:flex">
+      <ol className="hidden items-stretch gap-4 md:flex">
         {PRD_STEPS.map((s, i) => {
           const state = i < stepIndex ? 'done' : i === stepIndex ? 'active' : 'todo'
           const clickable = i <= stepIndex && !disabled
           return (
-            <li key={s} className="flex items-center">
+            <li key={s} className="min-w-0 flex-1">
               <button
                 type="button"
                 disabled={!clickable}
                 onClick={() => clickable && onJump?.(i)}
-                className={`group flex items-center gap-2 rounded-full py-1.5 pl-2 pr-3.5 text-sm transition-all ${
-                  clickable ? 'cursor-pointer hover:bg-accent/50' : 'cursor-default'
-                } ${state === 'active' ? 'bg-foreground text-background' : state === 'done' ? 'text-foreground' : 'text-muted-foreground/50'}`}
+                aria-current={state === 'active' ? 'step' : undefined}
+                aria-label={`Langkah ${i + 1}: ${STEP_LABELS[s]}`}
+                className={`group w-full ${clickable ? 'cursor-pointer' : 'cursor-default'}`}
               >
-                <span
-                  className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full text-[10px] font-semibold tabular-nums transition-colors ${
-                    state === 'active'
-                      ? 'bg-background/20 text-background'
-                      : state === 'done'
-                        ? 'bg-primary text-primary-foreground'
-                        : 'border border-border text-muted-foreground'
-                  }`}
-                >
-                  {state === 'done' ? <Check className="h-3 w-3" /> : i + 1}
+                <span className="flex items-center gap-1.5">
+                  {state === 'done' ? (
+                    <Check className="h-3 w-3 text-muted-foreground" />
+                  ) : (
+                    <span
+                      className={`font-serif text-[13px] tabular-nums ${
+                        state === 'active' ? 'text-foreground' : 'text-muted-foreground/40'
+                      }`}
+                    >
+                      0{i + 1}
+                    </span>
+                  )}
+                  <span
+                    className={`hidden truncate text-[11px] font-medium sm:block ${
+                      state === 'active'
+                        ? 'text-foreground'
+                        : state === 'done'
+                          ? 'text-muted-foreground'
+                          : 'text-muted-foreground/40 group-hover:text-muted-foreground'
+                    }`}
+                  >
+                    {STEP_LABELS[s]}
+                  </span>
                 </span>
-                <span className="font-medium">{STEP_LABELS[s]}</span>
+                <span
+                  className={`mt-1.5 block h-px w-full transition-colors ${
+                    state === 'active'
+                      ? 'bg-primary'
+                      : state === 'done'
+                        ? 'bg-foreground/30'
+                        : 'bg-border group-hover:bg-foreground/20'
+                  }`}
+                />
               </button>
-              {i < total - 1 && <span className="mx-0.5 h-px w-4 bg-border" aria-hidden="true" />}
             </li>
           )
         })}
       </ol>
 
       <div className="flex items-center justify-between md:hidden">
-        <p className="text-sm font-medium text-foreground">
-          Langkah {stepIndex + 1} dari {total}
+        <p className="text-sm text-foreground">
+          <span className="font-serif tabular-nums">0{stepIndex + 1}</span>
+          <span className="text-muted-foreground"> · {STEP_LABELS[PRD_STEPS[stepIndex]]}</span>
         </p>
-        <p className="text-xs text-muted-foreground">{STEP_LABELS[PRD_STEPS[stepIndex]]}</p>
+        <p className="text-xs tabular-nums text-muted-foreground">
+          {stepIndex + 1}/{total}
+        </p>
       </div>
       <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-muted md:hidden">
         <div className="h-full rounded-full bg-primary transition-all duration-300" style={{ width: `${pct}%` }} />

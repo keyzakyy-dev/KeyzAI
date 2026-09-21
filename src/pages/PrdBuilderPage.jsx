@@ -332,8 +332,8 @@ export function PrdBuilderPage() {
       onAfterDeletePrd={handlePrdRemoved}
       onNewPrd={handleNewPrd}
     >
-      <header className="relative z-20 flex flex-shrink-0 flex-col bg-background/80 backdrop-blur-sm">
-        <div className="flex h-14 items-center justify-between px-4 sm:px-6">
+      <header className="relative z-20 flex-shrink-0 border-b border-border bg-background">
+        <div className="flex h-14 items-center justify-between gap-2 px-4 sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <Button
               variant="ghost"
@@ -343,6 +343,11 @@ export function PrdBuilderPage() {
               aria-label={sidebarCollapsed ? 'Tampilkan sidebar' : 'Sembunyikan sidebar'}
             >
               {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+            </Button>
+            <Button variant="ghost" size="sm" onClick={handleBackToChat} className="gap-1.5">
+              <ArrowLeft className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Kembali ke chat</span>
+              <span className="sm:hidden">Chat</span>
             </Button>
           </div>
 
@@ -364,11 +369,6 @@ export function PrdBuilderPage() {
             >
               {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </Button>
-          <Button variant="ghost" size="sm" onClick={handleBackToChat} className="gap-1.5">
-            <ArrowLeft className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Kembali ke chat</span>
-            <span className="sm:hidden">Chat</span>
-          </Button>
           </div>
         </div>
 
@@ -383,9 +383,8 @@ export function PrdBuilderPage() {
         {project ? (
           <div className="mx-auto w-full max-w-2xl">{stepCanvas}</div>
         ) : (
-          <div className="relative flex min-h-full flex-1 items-center justify-center py-6">
-            <div className="pointer-events-none absolute inset-0 bg-dots opacity-60 [mask-image:radial-gradient(ellipse_65%_55%_at_50%_42%,black,transparent)]" />
-            <div className="relative w-full max-w-2xl">{stepCanvas}</div>
+          <div className="flex min-h-full flex-1 items-center justify-center py-6">
+            <div className="w-full max-w-2xl">{stepCanvas}</div>
           </div>
         )}
 
