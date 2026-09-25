@@ -4,7 +4,7 @@
 
 import { authFetch } from './lib/auth'
 
-const API_URL = import.meta.env?.VITE_WORKER_URL || 'https://chat.keyzakyy.com/api/worker'
+const API_URL = import.meta.env?.VITE_WORKER_URL || 'https://keyzai-worker-prod.2406007.workers.dev'
 
 function validateMessage(message) {
   if (!message || typeof message !== 'string' || message.trim().length === 0) {
