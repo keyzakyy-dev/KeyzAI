@@ -1,4 +1,4 @@
 ﻿User-agent: *
 Allow: /
 
-Sitemap: https://keyz-ai.vercel.app/sitemap.xml
+Sitemap: https://chat.keyzakyy.com/sitemap.xml

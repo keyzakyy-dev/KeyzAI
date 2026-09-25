@@ -1,6 +1,6 @@
 ﻿import { useEffect } from 'react'
 
-export const SITE_URL = 'https://keyz-ai.vercel.app'
+export const SITE_URL = 'https://chat.keyzakyy.com'
 export const SITE_NAME = 'KeyzAI'
 export const SITE_DESC =
   'KeyzAI adalah teman chat AI gratis. Masuk dengan Google, brainstorming ide, tulis kode, debug, pelajari topik baru, dan riwayat percakapanmu tersinkron di semua perangkat.'
