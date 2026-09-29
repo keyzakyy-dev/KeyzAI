@@ -8,28 +8,53 @@ function getInitialTheme() {
   }
 }
 
+// Titik pusat wipe = posisi tombol yang baru diklik (button becomes
+// document.activeElement). Kalau toggle dipicu tanpa klik (mis. programatik),
+// jatuh ke tengah layar.
+function getWipeOrigin() {
+  const el = document.activeElement
+  if (el && el !== document.body && el.getBoundingClientRect) {
+    const rect = el.getBoundingClientRect()
+    if (rect.width || rect.height) {
+      return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
+    }
+  }
+  return { x: window.innerWidth / 2, y: window.innerHeight / 2 }
+}
+
 export function useTheme() {
   const [theme, setTheme] = useState(getInitialTheme)
-  const timer = useRef(null)
+  const mounted = useRef(false)
 
   useEffect(() => {
     const root = document.documentElement
-    // Kelas ini hanya hidup selama transisi, agar tidak ikut memperlambat
-    // interaksi lain (hover, scroll-reveal, dll).
-    root.classList.add('theme-transitioning')
-    root.classList.toggle('dark', theme === 'dark')
+    const apply = () => root.classList.toggle('dark', theme === 'dark')
 
-    clearTimeout(timer.current)
-    timer.current = setTimeout(() => root.classList.remove('theme-transitioning'), 450)
+    // Jangan animasi saat mount: itu load pertama, bukan perpindahan tema.
+    const canWipe =
+      mounted.current &&
+      typeof document.startViewTransition === 'function' &&
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
+    if (canWipe) {
+      const { x, y } = getWipeOrigin()
+      root.style.setProperty('--wipe-x', `${x}px`)
+      root.style.setProperty('--wipe-y', `${y}px`)
+      // Memanggil startViewTransition sementara transisi lain berjalan akan
+      // melewati yang sebelumnya — ini perilaku yang diinginkan saat toggle
+      // kontrakif, tidak menumpuk antrean.
+      document.startViewTransition(apply)
+    } else {
+      apply()
+    }
+
+    mounted.current = true
     try {
       localStorage.setItem('keyzai-theme', theme)
     } catch {
       // private mode — theme just won't persist
     }
   }, [theme])
-
-  useEffect(() => () => clearTimeout(timer.current), [])
 
   return [theme, setTheme]
 }
