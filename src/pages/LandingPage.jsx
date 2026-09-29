@@ -26,37 +26,37 @@ const FEATURES = [
   {
     icon: MessageSquare,
     title: 'Tanya apa saja',
-    desc: 'Dari fakta singkat sampai pertanyaan mendalam, dapat jawaban yang tepat dan rapi dalam hitungan detik.',
+    desc: 'Jawaban cepat untuk pertanyaan apa pun.',
     prompt: 'Apa itu bunga berbunga, dijelaskan dengan sederhana?',
   },
   {
     icon: Pencil,
     title: 'Menulis lebih cepat',
-    desc: 'Draf email, esai, dan konten dengan AI yang mengikuti gaya tulisanmu.',
+    desc: 'Draf email, esai, dan konten sesuai gayamu.',
     prompt: 'Tulis email follow-up yang ramah ke klien yang menghilang.',
   },
   {
     icon: Code,
     title: 'Debug kode',
-    desc: 'Tempel snippet, langsung dapat penjelasan error dan perbaikan.',
+    desc: 'Tempel kode, dapat penjelasan dan perbaikan.',
     prompt: 'Kenapa ini error "cannot read property of undefined"?',
   },
   {
     icon: BookOpen,
     title: 'Pelajari topik baru',
-    desc: 'Pecah topik rumit menjadi penjelasan sederhana yang mudah dipahami.',
+    desc: 'Topik rumit jadi penjelasan sederhana.',
     prompt: 'Jelaskan cara kerja neural network untuk pemula.',
   },
   {
     icon: CircleHelp,
     title: 'Bantu belajar',
-    desc: 'Langkah demi langkah untuk soal dan konsep yang bikin mentok.',
+    desc: 'Langkah demi langkah sampai paham.',
     prompt: 'Bantu aku pahami persamaan kuadrat dari nol.',
   },
   {
     icon: Lock,
     title: 'Privat & aman',
-    desc: 'Percakapanmu milikmu. Kami tidak melacak atau menjual datamu.',
+    desc: 'Tanpa pelacakan, tanpa penjualan data.',
   },
 ]
 
@@ -305,11 +305,8 @@ function Features({ navigate }) {
               Fitur
             </span>
             <h2 className="mt-3 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-              Semua yang butuhmu untuk menulis, coding, dan belajar
+              Tulis, kode, belajar
             </h2>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base max-w-2xl mx-auto">
-              Enam fitur inti yang membuat tugas sehari-hari jadi lebih cepat dan ringan.
-            </p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
