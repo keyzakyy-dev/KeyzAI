@@ -8,7 +8,7 @@ import { LogoImg } from '../lib/logo-img'
 import { useHeadline } from '../lib/micro-anim'
 import { ChatMock } from '../components/ChatMock'
 import { MODELS } from '../lib/models'
-import { ArrowRight, ArrowUp, MessageSquare, Code, Pencil, Lock, BookOpen, CircleHelp, Plus, Menu, X, Sun, Moon, Sparkles, FileText } from 'lucide-react'
+import { ArrowRight, ArrowUp, MessageSquare, Code, Pencil, Lock, BookOpen, CircleHelp, Plus, Menu, X, Sun, Moon, Sparkles, FileText, Copy, Check } from 'lucide-react'
 import { MeshCanvas } from '../components/MeshCanvas'
 
 function GithubMark({ className, ...props }) {
@@ -387,53 +387,101 @@ function PrdBuilder({ navigate }) {
 }
 
 function Models({ navigate }) {
+  const [copied, setCopied] = useState(null)
+  const copyId = (id) => {
+    navigator.clipboard.writeText(id).then(() => {
+      setCopied(id)
+      setTimeout(() => setCopied(null), 1200)
+    })
+  }
   return (
     <section id="models" className="scroll-mt-20 border-t border-border/60 py-12 sm:py-14 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <Reveal from="up" className="mx-auto max-w-2xl text-center">
-          <span className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            <Sparkles className="h-3.5 w-3.5" />
-            Model AI
-          </span>
-          <h2 className="mt-3 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-            Beragam model, semua gratis
-          </h2>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Pilih model yang paling cocok untuk tiap percakapan.
-          </p>
-        </Reveal>
+        <Reveal from="up" className="mx-auto max-w-5xl">
+          <div className="text-center mb-10">
+            <span className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              <Sparkles className="h-3.5 w-3.5" />
+              Model AI
+            </span>
+            <h2 className="mt-3 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+              Beragam model, semua gratis
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base max-w-2xl mx-auto">
+              Pilih model yang paling cocok untuk tiap percakapan.
+            </p>
+          </div>
 
-        <Reveal from="up" delay={80} className="mx-auto mt-8 grid max-w-4xl gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {MODELS.map((m) => (
-            <button
-              key={m.id}
-              type="button"
-              onClick={() => navigate('/chat')}
-              className="group flex flex-col items-start gap-2 rounded-xl border border-border bg-card p-4 text-left shadow-sm transition-all hover:border-foreground/40 hover:shadow-md"
-            >
-              <span className="flex w-full items-center justify-between">
-                <span className="flex items-center gap-2">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-background ring-1 ring-border">
-                    <img src={m.logo} alt="" className="h-full w-full object-contain" />
-                  </span>
-                  <span className="text-sm font-semibold text-foreground">{m.label}</span>
-                </span>
-                {m.free && (
-                  <span className="text-[10px] font-medium text-emerald-600/90 dark:text-emerald-400/90">
-                    Free
-                  </span>
-                )}
-              </span>
-              <span className="font-mono text-[11px] text-muted-foreground">{m.id}</span>
-              <span className="flex items-center gap-1 text-[11px] font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
-                Buka chat
-                <ArrowRight className="h-3 w-3" />
-              </span>
-            </button>
-          ))}
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {MODELS.map((m) => (
+              <ModelCard key={m.id} model={m} navigate={navigate} copied={copied} onCopy={copyId} />
+            ))}
+          </div>
         </Reveal>
       </div>
     </section>
+  )
+}
+
+function ModelCard({ model, navigate, copied, onCopy }) {
+  return (
+    <div className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card/40 p-5 transition-all duration-200 hover:border-foreground/30 hover:bg-accent/30 hover:-translate-y-0.5">
+      {/* Watermark logo — mirip referensi: brand glyph besar & samar di belakang */}
+      <img
+        src={model.logo}
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none absolute right-0 top-1/2 h-[70%] w-[70%] -translate-y-1/2 object-contain opacity-[0.15] brightness-150 contrast-125"
+      />
+      <div className="relative z-10 flex flex-col gap-3">
+        <div className="flex items-center gap-2">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-background ring-1 ring-border">
+            <img src={model.logo} alt="" className="h-full w-full object-contain" />
+          </span>
+          <span className="text-xs font-medium text-muted-foreground">{model.provider}</span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <h3 className="text-base font-bold text-foreground">{model.label}</h3>
+          {model.tagline === 'Baru & eksperimental' && (
+            <span className="rounded-md bg-primary/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+              Baru
+            </span>
+          )}
+        </div>
+
+        <div className="flex items-center gap-1.5">
+          <span className="rounded-md bg-background/80 px-2 py-1 font-mono text-[11px] text-muted-foreground ring-1 ring-border/60">
+            {model.id}
+          </span>
+          <button
+            type="button"
+            onClick={() => onCopy(model.id)}
+            title="Salin id model"
+            className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          >
+            {copied === model.id ? (
+              <Check className="h-3.5 w-3.5 text-emerald-500" />
+            ) : (
+              <Copy className="h-3.5 w-3.5" />
+            )}
+          </button>
+        </div>
+
+        <div className="mt-auto flex items-center gap-1.5">
+          {['Starter', 'Pro', 'Max'].map((tier) => (
+            <span
+              key={tier}
+              className="rounded-md border border-border/60 bg-background/60 px-2 py-0.5 text-[11px] font-medium text-muted-foreground"
+            >
+              {tier}
+            </span>
+          ))}
+          <span className="ml-auto text-[10px] font-medium text-emerald-600/90 dark:text-emerald-400/90">
+            Free
+          </span>
+        </div>
+      </div>
+    </div>
   )
 }
 
