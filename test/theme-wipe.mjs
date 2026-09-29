@@ -107,11 +107,17 @@ globalThis.document = {
   createElement: (tag) => new El(tag),
 }
 globalThis.window = { innerWidth: 1200, innerHeight: 800, matchMedia: () => ({ matches: false }) }
+// Nilai WAJIB ditulis dalam bentuk yang sama dengan hasil minifier CSS di produksi
+// (620ms -> ".62s"). Kalau test pakai "620ms" padahal build menulis ".62s",
+// bug parsing satuan lolos dari test tapi hancur saat runtime.
+const DURATIONS = { '--wipe-cover-ms': '.62s', '--wipe-reveal-ms': '.72s' }
+
 globalThis.getComputedStyle = (el) => ({
   getPropertyValue: (name) => {
     if (name === '--background') {
       return THEME_BG[el.classList.contains('dark') ? 'dark' : 'light']
     }
+    if (name in DURATIONS) return DURATIONS[name]
     return ''
   },
 })
@@ -124,6 +130,11 @@ const { playThemeWipe } = await import('../src/lib/theme-wipe.js')
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 const overlay = () => body.children.find((c) => c.className === 'theme-wipe')
+
+// Sama dengan nilai :root di src/index.css.
+const COVER = 620
+const REVEAL = 720
+const FULL = COVER + REVEAL + 150
 
 function reset({ reducedMotion = false } = {}) {
   for (const c of [...body.children]) body.removeChild(c)
@@ -159,14 +170,14 @@ test('overlay menutup, swap di tengah, lalu membuka', async () => {
   assert.ok(htmlEl.classList.contains('dark'), 'kelas .dark belum boleh berubah saat cover')
   assert.deepEqual(events, [])
 
-  await sleep(500)
+  await sleep(COVER + 120)
 
   // Setelah cover selesai: swap terjadi, state=reveal.
   assert.deepEqual(events, ['swap'], 'onSwap harus dipanggil sekali')
   assert.ok(!htmlEl.classList.contains('dark'), 'kelas .dark harus tertukar')
   assert.equal(el.dataset.state, 'reveal')
 
-  await sleep(500)
+  await sleep(REVEAL + 150)
 
   // Setelah reveal: overlay dibersihkan.
   assert.equal(overlay(), undefined, 'overlay harus di-remove setelah animasi selesai')
@@ -179,7 +190,7 @@ test('wipe ke dark memakai warna background dark', async () => {
   playThemeWipe('dark', () => htmlEl.classList.add('dark'))
 
   assert.equal(overlay().style.getPropertyValue('--wipe-bg'), THEME_BG.dark)
-  await sleep(800)
+  await sleep(FULL)
   assert.ok(htmlEl.classList.contains('dark'))
 })
 
@@ -192,7 +203,7 @@ test('titik pusat wipe mengikuti posisi tombol yang diklik', async () => {
   const el = overlay()
   assert.equal(el.style.getPropertyValue('--wipe-x'), '116px') // 100 + 32/2
   assert.equal(el.style.getPropertyValue('--wipe-y'), '216px') // 200 + 32/2
-  await sleep(800)
+  await sleep(FULL)
 })
 
 test('tanpa elemen fokus, titik pusat jatuh ke tengah viewport', async () => {
@@ -203,7 +214,7 @@ test('tanpa elemen fokus, titik pusat jatuh ke tengah viewport', async () => {
 
   assert.equal(overlay().style.getPropertyValue('--wipe-x'), '600px')
   assert.equal(overlay().style.getPropertyValue('--wipe-y'), '400px')
-  await sleep(800)
+  await sleep(FULL)
 })
 
 test('resolveTargetBg tidak meninggalkan kelas .dark dalam keadaan salah', async () => {
@@ -212,7 +223,7 @@ test('resolveTargetBg tidak meninggalkan kelas .dark dalam keadaan salah', async
 
   playThemeWipe('light', () => htmlEl.classList.remove('dark'))
   assert.equal(overlay().style.getPropertyValue('--wipe-bg'), THEME_BG.light)
-  await sleep(800)
+  await sleep(FULL)
   assert.ok(!htmlEl.classList.contains('dark'), 'harus berakhir di light')
 })
 
@@ -243,9 +254,34 @@ test('toggle berulang tidak menumpuk overlay', async () => {
   assert.equal(all[0].dataset.state, 'cover', 'restart dari fase cover')
   assert.equal(all[0].style.getPropertyValue('--wipe-bg'), THEME_BG.dark, 'warna ikut target terbaru')
 
-  await sleep(800)
+  await sleep(FULL)
   assert.equal(overlay(), undefined, 'overlay dibersihkan di akhir')
   assert.ok(htmlEl.classList.contains('dark'), 'toggle terakhir (dark) yang menang')
+})
+
+test('durasi swap mengikuti --wipe-cover-ms dari CSS, bukan konstanta JS', async () => {
+  reset()
+  // Slow down tema lewat CSS saja — timer JS harus ikut menyesuaikan.
+  DURATIONS['--wipe-cover-ms'] = '1.2s'
+  DURATIONS['--wipe-reveal-ms'] = '.3s'
+  try {
+    const events = []
+    playThemeWipe('light', () => {
+      events.push('swap')
+      htmlEl.classList.remove('dark')
+    })
+
+    // Kalau JS masih pakai konstanta lama (620ms), swap sudah terjadi.
+    await sleep(900)
+    assert.deepEqual(events, [], 'belum boleh swap sebelum --wipe-cover-ms tercapai')
+
+    await sleep(400)
+    assert.deepEqual(events, ['swap'], 'swap terjadi sesuai durasi CSS, bukan konstanta JS')
+  } finally {
+    DURATIONS['--wipe-cover-ms'] = '.62s'
+    DURATIONS['--wipe-reveal-ms'] = '.72s'
+  }
+  await sleep(600)
 })
 
 console.log('theme wipe: OK')
