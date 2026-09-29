@@ -232,13 +232,6 @@ function Hero({ navigate }) {
   useHeadline(headlineRef)
   return (
     <section className="relative flex min-h-[calc(100svh-4rem)] flex-col justify-center overflow-hidden py-24 sm:py-28 lg:py-32">
-      {/* Mesh canvas interaktif — latar titik & garis yang melengkung mengikuti kursor */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,#000_60%,transparent_100%)]"
-      >
-        <MeshCanvas />
-      </div>
       <div className="absolute left-1/2 top-0 h-56 w-[min(520px,100vw)] -translate-x-1/2 rounded-full bg-foreground/5 blur-[100px] hidden sm:block sm:h-72 sm:w-[700px] sm:blur-[120px]" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
@@ -358,14 +351,7 @@ function Features({ navigate }) {
 
 function PrdBuilder({ navigate }) {
   return (
-    <section id="prd-builder" className="relative overflow-hidden scroll-mt-20 py-12 sm:py-14 lg:py-16">
-      {/* Flow field streamlines — sama seperti hero, mask fade ke atas agar berbatasan halus dengan section sebelumnya */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_top,#000_40%,transparent_100%)]"
-      >
-        <MeshCanvas />
-      </div>
+    <section id="prd-builder" className="relative scroll-mt-20 py-12 sm:py-14 lg:py-16">
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         <Reveal from="up" className="mx-auto max-w-2xl text-center">
           <span className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
@@ -544,15 +530,22 @@ export function LandingPage() {
   usePageMeta({ title: SITE_NAME, description: SITE_DESC, path: '/' })
 
   return (
-    <div className="min-h-screen bg-background text-foreground antialiased">
-      <Navbar navigate={navigate} theme={theme} toggleTheme={toggleTheme} />
-      <main>
-        <Hero navigate={navigate} />
-        <Features navigate={navigate} />
-        <PrdBuilder navigate={navigate} />
-        <Models navigate={navigate} />
-      </main>
-      <Footer />
+    <div className="relative min-h-screen bg-background text-foreground antialiased">
+      <MeshCanvas
+        parallax
+        label="Decorative background: full-page flow field that drifts with scroll."
+        className="pointer-events-none absolute inset-0"
+      />
+      <div className="relative">
+        <Navbar navigate={navigate} theme={theme} toggleTheme={toggleTheme} />
+        <main>
+          <Hero navigate={navigate} />
+          <Features navigate={navigate} />
+          <PrdBuilder navigate={navigate} />
+          <Models navigate={navigate} />
+        </main>
+        <Footer />
+      </div>
     </div>
   )
 }

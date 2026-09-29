@@ -8,6 +8,7 @@ const STEP_LEN = 2.4
 export function MeshCanvas({
   className = 'block h-full w-full',
   label = 'Decorative background: flowing streamlines that bend around your cursor.',
+  parallax = false,
 }) {
   const canvasRef = useRef(null)
 
@@ -31,6 +32,15 @@ export function MeshCanvas({
     let seeds = []
     const pointer = { x: -1e4, y: -1e4, tx: -1e4, ty: -1e4, active: false }
     let raf = 0, running = false, visible = true, lastTime = 0, time = 0
+    let scrollPhase = 0, scrollTarget = 0
+
+    // parallax: fase medan bergeser mengikuti scroll (smooth di loop)
+    const onScroll = () => { scrollTarget = window.scrollY * 0.0012 }
+    if (parallax) {
+      window.addEventListener('scroll', onScroll, { passive: true })
+      scrollTarget = window.scrollY * 0.0012
+      scrollPhase = scrollTarget
+    }
 
     // ---- LAYOUT ----
     function layout() {
@@ -56,8 +66,9 @@ export function MeshCanvas({
     // ---- FIELD ----
     // medan kecepatan dari superposisi gelombang sinus
     function field(x, y, t, out) {
-      let vx = Math.sin(y * 0.006 + t * 0.4) + 0.5 * Math.sin(y * 0.013 - t * 0.23)
-      let vy = Math.cos(x * 0.006 - t * 0.32) + 0.5 * Math.cos(x * 0.011 + t * 0.19)
+      const g = t + scrollPhase
+      let vx = Math.sin(y * 0.006 + g * 0.4) + 0.5 * Math.sin(y * 0.013 - g * 0.23)
+      let vy = Math.cos(x * 0.006 - g * 0.32) + 0.5 * Math.cos(x * 0.011 + g * 0.19)
       if (pointer.active) {
         const dx = x - pointer.x, dy = y - pointer.y
         const d = Math.hypot(dx, dy)
@@ -109,6 +120,7 @@ export function MeshCanvas({
       }
 
       time += 0.004 * dt
+      scrollPhase += (scrollTarget - scrollPhase) * Math.min(1, 0.08 * dt)
 
       draw()
       raf = requestAnimationFrame(step)
@@ -188,6 +200,7 @@ export function MeshCanvas({
     return () => {
       stop()
       if (resizeRaf) cancelAnimationFrame(resizeRaf)
+      window.removeEventListener('scroll', onScroll)
       resizeObserver.disconnect()
       colorObserver.disconnect()
       intersectObserver.disconnect()
