@@ -155,29 +155,37 @@
 /* Dialog: animasi popup (Radix mengatur data-state; keyframes menjaga
    perataan tengah -50% supaya tidak ditimpa transform animasi) */
 
-/* Tema: wipe (iris) — snapshot tema baru terbuka melingkar dari posisi
-   tombol toggle, bukan cross-fade. Butuh View Transitions API; browser
-   tanpa dukungan tetap switch instan (fallback di use-theme.js). */
+/* Tema: wipe (iris) pakai overlay biasa, tanpa View Transitions API.
+   Overlay berisi warna solid tema tujuan, jadi yang terlihat hanya
+   bentuk lingkaran yang membesar/mengecil — bukan fade.
+   Alur (lihat lib/theme-wipe.js): data-state=cover -> ganti kelas
+   .dark -> data-state=reveal. */
 
-@keyframes theme-wipe-in {
-  from { clip-path: circle(0% at var(--wipe-x, 50%) var(--wipe-y, 50%)); }
-  to   { clip-path: circle(150% at var(--wipe-x, 50%) var(--wipe-y, 50%)); }
+.theme-wipe {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  background: hsl(var(--wipe-bg));
+  /* 150% jauh melewati sudut terjauh dari titik mana pun di viewport. */
+  clip-path: circle(0% at var(--wipe-x, 50%) var(--wipe-y, 50%));
+  will-change: clip-path;
 }
-
-/* Matikan fade bawaan View Transitions, ganti dengan wipe. */
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation: none;
-  mix-blend-mode: normal;
-  height: 100%;
-  overflow: clip;
+.theme-wipe[data-state='cover'] {
+  animation: theme-wipe-cover 340ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
-::view-transition-new(root) {
-  animation: theme-wipe-in 520ms cubic-bezier(0.22, 1, 0.36, 1);
+.theme-wipe[data-state='reveal'] {
+  animation: theme-wipe-reveal 420ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes theme-wipe-cover {
+  to { clip-path: circle(150% at var(--wipe-x, 50%) var(--wipe-y, 50%)); }
+}
+@keyframes theme-wipe-reveal {
+  from { clip-path: circle(150% at var(--wipe-x, 50%) var(--wipe-y, 50%)); }
+  to   { clip-path: circle(0% at var(--wipe-x, 50%) var(--wipe-y, 50%)); }
 }
 @media (prefers-reduced-motion: reduce) {
-  ::view-transition-old(root),
-  ::view-transition-new(root) { animation: none; }
+  .theme-wipe { display: none; }
 }
 
 /* Ikon Sun/Moon ikut berputar saat tema berganti (elemen di-mount ulang

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { playThemeWipe } from './theme-wipe'
 
 function getInitialTheme() {
   try {
@@ -8,44 +9,20 @@ function getInitialTheme() {
   }
 }
 
-// Titik pusat wipe = posisi tombol yang baru diklik (button becomes
-// document.activeElement). Kalau toggle dipicu tanpa klik (mis. programatik),
-// jatuh ke tengah layar.
-function getWipeOrigin() {
-  const el = document.activeElement
-  if (el && el !== document.body && el.getBoundingClientRect) {
-    const rect = el.getBoundingClientRect()
-    if (rect.width || rect.height) {
-      return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
-    }
-  }
-  return { x: window.innerWidth / 2, y: window.innerHeight / 2 }
-}
-
 export function useTheme() {
   const [theme, setTheme] = useState(getInitialTheme)
   const mounted = useRef(false)
 
   useEffect(() => {
     const root = document.documentElement
-    const apply = () => root.classList.toggle('dark', theme === 'dark')
+    const swap = () => root.classList.toggle('dark', theme === 'dark')
 
-    // Jangan animasi saat mount: itu load pertama, bukan perpindahan tema.
-    const canWipe =
-      mounted.current &&
-      typeof document.startViewTransition === 'function' &&
-      !window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
-    if (canWipe) {
-      const { x, y } = getWipeOrigin()
-      root.style.setProperty('--wipe-x', `${x}px`)
-      root.style.setProperty('--wipe-y', `${y}px`)
-      // Memanggil startViewTransition sementara transisi lain berjalan akan
-      // melewati yang sebelumnya — ini perilaku yang diinginkan saat toggle
-      // kontrakif, tidak menumpuk antrean.
-      document.startViewTransition(apply)
+    // Mount pertama bukan perpindahan tema — jangan animasi, langsung
+    // terapkan supaya tidak ada kilatan tema lama.
+    if (mounted.current) {
+      playThemeWipe(theme, swap)
     } else {
-      apply()
+      swap()
     }
 
     mounted.current = true
