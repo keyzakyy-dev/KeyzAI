@@ -534,7 +534,7 @@ export function LandingPage() {
       <MeshCanvas
         parallax
         label="Decorative background: full-page flow field that drifts with scroll."
-        className="pointer-events-none absolute inset-0"
+        className="pointer-events-none fixed inset-0"
       />
       <div className="relative">
         <Navbar navigate={navigate} theme={theme} toggleTheme={toggleTheme} />

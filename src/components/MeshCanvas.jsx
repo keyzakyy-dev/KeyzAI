@@ -44,9 +44,15 @@ export function MeshCanvas({
 
     // ---- LAYOUT ----
     function layout() {
-      const rect = parent.getBoundingClientRect()
-      W = Math.max(1, Math.round(rect.width))
-      H = Math.max(1, Math.round(rect.height))
+      if (parallax) {
+        // canvas fixed inset-0: ukuran = viewport, bukan tinggi dokumen
+        W = window.innerWidth
+        H = window.innerHeight
+      } else {
+        const rect = parent.getBoundingClientRect()
+        W = Math.max(1, Math.round(rect.width))
+        H = Math.max(1, Math.round(rect.height))
+      }
       dpr = Math.min(window.devicePixelRatio || 1, 2)
 
       canvas.width = Math.round(W * dpr)
@@ -139,7 +145,7 @@ export function MeshCanvas({
     }
 
     const toLocal = (e) => {
-      const rect = parent.getBoundingClientRect()
+      const rect = canvas.getBoundingClientRect()
       return { x: e.clientX - rect.left, y: e.clientY - rect.top }
     }
 
