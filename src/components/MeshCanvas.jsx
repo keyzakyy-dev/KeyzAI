@@ -286,7 +286,7 @@ export function MeshCanvas({
 
     return () => {
       stop()
-      if (resizeRaf) cancelAnimationFrame(raf)
+      if (resizeRaf) cancelAnimationFrame(resizeRaf)
       resizeObserver.disconnect()
       colorObserver.disconnect()
       intersectObserver.disconnect()
