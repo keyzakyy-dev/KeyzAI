@@ -9,27 +9,8 @@
 // lalu overlay dikecilkan kembali. Karena yang bergerak cuma clip-path
 // pada satu elemen, tidak ada yang mem-trigger reflow halaman.
 
-// Durasi wipe dibaca dari CSS (--wipe-cover-ms / --wipe-reveal-ms di :root),
-// bukan ditulis ulang di sini. Animasi CSS dan timer swap kelas .dark
-// mengambil sumber yang sama, jadi tidak bisa terpisah.
-const FALLBACK = { cover: 620, reveal: 720 }
-
-function readDurations() {
-  const styles = getComputedStyle(document.documentElement)
-  const read = (name, fallback) => {
-    const raw = styles.getPropertyValue(name)
-    if (!raw) return fallback
-    const n = parseFloat(raw)
-    if (!Number.isFinite(n)) return fallback
-    // Minifier CSS menulis 620ms sebagai ".62s" — parseFloat("0.62s")
-    // hanya menghasilkan 0.62, jadi satuan 's' harus dikonversi.
-    return raw.trim().endsWith('ms') ? n : n * 1000
-  }
-  return {
-    cover: read('--wipe-cover-ms', FALLBACK.cover),
-    reveal: read('--wipe-reveal-ms', FALLBACK.reveal),
-  }
-}
+const COVER_MS = 340
+const REVEAL_MS = 420
 
 let overlay = null
 let timers = []
@@ -101,22 +82,19 @@ export function playThemeWipe(target, onSwap) {
   const el = createOverlay()
   const { x, y } = origin()
 
-  const { cover, reveal } = readDurations()
-
   el.style.setProperty('--wipe-bg', resolveTargetBg(target))
   el.style.setProperty('--wipe-x', `${x}px`)
   el.style.setProperty('--wipe-y', `${y}px`)
   el.dataset.state = 'cover'
 
-  // Tukar kelas .dark saat layar tertutup penuh, lalu buka lagi.
-  // Buffer 30ms menahan antara 'layar penuh' dan '--wipe-cover-ms'.
+  // Swipe saat layar penuh, lalu buka lagi.
   later(() => {
     onSwap()
     el.dataset.state = 'reveal'
-  }, cover + 30)
+  }, COVER_MS)
 
   later(() => {
     el.dataset.state = ''
     destroyOverlay()
-  }, cover + reveal + 60)
+  }, COVER_MS + REVEAL_MS + 20)
 }
