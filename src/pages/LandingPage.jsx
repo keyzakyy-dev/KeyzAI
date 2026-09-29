@@ -7,8 +7,9 @@ import { useAuth } from '../hooks/useAuth'
 import { LogoImg } from '../lib/logo-img'
 import { useHeadline } from '../lib/micro-anim'
 import { ChatMock } from '../components/ChatMock'
+import { ThemeIcon } from '../components/theme-icon'
 import { MODELS } from '../lib/models'
-import { ArrowRight, ArrowUp, MessageSquare, Code, Pencil, Lock, BookOpen, CircleHelp, Plus, Menu, X, Sun, Moon, Sparkles, FileText, Copy, Check } from 'lucide-react'
+import { ArrowRight, ArrowUp, MessageSquare, Code, Pencil, Lock, BookOpen, CircleHelp, Plus, Menu, X, Sparkles, FileText, Copy, Check } from 'lucide-react'
 import { MeshCanvas } from '../components/MeshCanvas'
 
 function GithubMark({ className, ...props }) {
@@ -148,7 +149,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
             aria-label="Ganti tema"
             className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           >
-            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            <ThemeIcon theme={theme} />
           </button>
           <button type="button" onClick={() => navigate('/chat')} className={ctaClass}>
             {user ? 'Buka chat' : 'Masuk'}
@@ -163,7 +164,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
             aria-label="Ganti tema"
             className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           >
-            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            <ThemeIcon theme={theme} />
           </button>
           <button
             type="button"

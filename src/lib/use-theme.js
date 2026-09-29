@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 function getInitialTheme() {
   try {
@@ -10,13 +10,26 @@ function getInitialTheme() {
 
 export function useTheme() {
   const [theme, setTheme] = useState(getInitialTheme)
+  const timer = useRef(null)
+
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark')
+    const root = document.documentElement
+    // Kelas ini hanya hidup selama transisi, agar tidak ikut memperlambat
+    // interaksi lain (hover, scroll-reveal, dll).
+    root.classList.add('theme-transitioning')
+    root.classList.toggle('dark', theme === 'dark')
+
+    clearTimeout(timer.current)
+    timer.current = setTimeout(() => root.classList.remove('theme-transitioning'), 450)
+
     try {
       localStorage.setItem('keyzai-theme', theme)
     } catch {
       // private mode — theme just won't persist
     }
   }, [theme])
+
+  useEffect(() => () => clearTimeout(timer.current), [])
+
   return [theme, setTheme]
 }

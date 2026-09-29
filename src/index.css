@@ -154,6 +154,72 @@
 
 /* Dialog: animasi popup (Radix mengatur data-state; keyframes menjaga
    perataan tengah -50% supaya tidak ditimpa transform animasi) */
+
+/* Tema: cross-fade halus saat toggle dark/light.
+   Cara: daftarkan custom property warna sebagai <color> agar bisa
+   di-transition, lalu transisi di elemen <html> saja. Karena hanya
+   variabel yang dianimasikan, tidak ada `transition` yang menimpa
+   animasi lain (mis. scroll-reveal) di elemen descendant. */
+@property --background { syntax: '<color>'; inherits: true; initial-value: hsl(60 5% 94%); }
+@property --foreground { syntax: '<color>'; inherits: true; initial-value: hsl(26 9% 16%); }
+@property --card { syntax: '<color>'; inherits: true; initial-value: hsl(60 5% 96%); }
+@property --card-foreground { syntax: '<color>'; inherits: true; initial-value: hsl(26 9% 16%); }
+@property --popover { syntax: '<color>'; inherits: true; initial-value: hsl(60 5% 96%); }
+@property --popover-foreground { syntax: '<color>'; inherits: true; initial-value: hsl(26 9% 16%); }
+@property --primary { syntax: '<color>'; inherits: true; initial-value: hsl(24 7% 18%); }
+@property --primary-foreground { syntax: '<color>'; inherits: true; initial-value: hsl(60 5% 96%); }
+@property --secondary { syntax: '<color>'; inherits: true; initial-value: hsl(46 6% 88%); }
+@property --secondary-foreground { syntax: '<color>'; inherits: true; initial-value: hsl(26 9% 16%); }
+@property --muted { syntax: '<color>'; inherits: true; initial-value: hsl(46 6% 88%); }
+@property --muted-foreground { syntax: '<color>'; inherits: true; initial-value: hsl(32 4% 42%); }
+@property --accent { syntax: '<color>'; inherits: true; initial-value: hsl(46 7% 85%); }
+@property --accent-foreground { syntax: '<color>'; inherits: true; initial-value: hsl(26 9% 16%); }
+@property --destructive { syntax: '<color>'; inherits: true; initial-value: hsl(4 72% 44%); }
+@property --destructive-foreground { syntax: '<color>'; inherits: true; initial-value: hsl(60 5% 96%); }
+@property --border { syntax: '<color>'; inherits: true; initial-value: hsl(46 6% 80%); }
+@property --input { syntax: '<color>'; inherits: true; initial-value: hsl(46 6% 80%); }
+@property --ring { syntax: '<color>'; inherits: true; initial-value: hsl(26 7% 38%); }
+
+html.theme-transitioning {
+  transition:
+    --background 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    --foreground 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    --card 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    --card-foreground 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    --popover 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    --popover-foreground 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    --primary 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    --primary-foreground 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    --secondary 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    --secondary-foreground 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    --muted 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    --muted-foreground 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    --accent 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    --accent-foreground 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    --destructive 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    --destructive-foreground 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    --border 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    --input 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    --ring 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  html.theme-transitioning { transition: none; }
+}
+
+/* Ikon Sun/Moon ikut berputar saat tema berganti (elemen di-mount ulang
+   karena jenis ikon berubah, jadi animasi selalu restart). */
+@keyframes theme-icon-spin {
+  0% { transform: rotate(-90deg) scale(0.55); opacity: 0; }
+  60% { transform: rotate(10deg) scale(1.12); opacity: 1; }
+  100% { transform: rotate(360deg) scale(1); opacity: 1; }
+}
+.theme-toggle-icon {
+  display: inline-block;
+  animation: theme-icon-spin 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle-icon { animation: none; }
+}
 @keyframes announcement-in {
   0% { opacity: 0; transform: translate(-50%, calc(-50% + 14px)) scale(0.97); }
   100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }

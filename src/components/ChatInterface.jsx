@@ -1,6 +1,7 @@
 ﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { Sun, Moon, Menu, X, ArrowDown, ChevronLeft, ChevronRight, CircleX, RotateCcw, ChevronDown, Pin, Pencil, Trash2, Download } from 'lucide-react'
+import { Menu, X, ArrowDown, ChevronLeft, ChevronRight, CircleX, RotateCcw, ChevronDown, Pin, Pencil, Trash2, Download } from 'lucide-react'
+import { ThemeIcon } from './theme-icon'
 
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
@@ -497,7 +498,7 @@ export function ChatInterface() {
 
           <div className="flex flex-shrink-0 items-center gap-1.5">
             <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Ganti tema">
-              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              <ThemeIcon theme={theme} />
             </Button>
             <Button
               variant="ghost"

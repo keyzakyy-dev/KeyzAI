@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, ChevronLeft, ChevronRight, Menu, Sun, Moon, X } from 'lucide-react'
+import { ArrowLeft, ChevronLeft, ChevronRight, Menu, X } from 'lucide-react'
+import { ThemeIcon } from '../components/theme-icon'
 
 import { Button } from '../components/ui/button'
 import { LoginDialog } from '../components/LoginDialog'
@@ -361,7 +362,7 @@ export function PrdBuilderPage() {
               onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
               aria-label="Ganti tema"
             >
-              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              <ThemeIcon theme={theme} />
             </Button>
             <Button
               variant="ghost"
