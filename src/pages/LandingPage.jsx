@@ -306,7 +306,7 @@ function Features({ navigate }) {
             {FEATURES.map((f, i) => {
               const Icon = f.icon
               const collapsed = i >= 3 && !showAll
-              const cardClass = `group relative flex flex-col rounded-2xl border border-border/60 bg-card/40 p-5 text-left transition-all duration-200 hover:border-foreground/30 hover:bg-accent/40 hover:-translate-y-0.5 ${
+              const cardClass = `group relative flex flex-col rounded-2xl border border-border/60 bg-card/70 backdrop-blur-sm p-5 text-left transition-all duration-200 hover:border-foreground/30 hover:bg-accent/50 hover:-translate-y-0.5 ${
                 collapsed ? 'hidden lg:flex' : ''
               }`
               return f.prompt ? (
@@ -417,7 +417,7 @@ function Models({ navigate }) {
 
 function ModelCard({ model, navigate, copied, onCopy }) {
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card/40 p-5 transition-all duration-200 hover:border-foreground/30 hover:bg-accent/30 hover:-translate-y-0.5">
+    <div className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card/70 backdrop-blur-sm p-5 transition-all duration-200 hover:border-foreground/30 hover:bg-accent/50 hover:-translate-y-0.5">
       {/* Watermark logo — brand glyph besar & samar di belakang */}
       <img
         src={model.logo}

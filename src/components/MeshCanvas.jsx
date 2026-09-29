@@ -1,13 +1,17 @@
 import { useEffect, useRef } from 'react'
 
-// ponytail: sine-based pseudo noise field (bukan simplex noise asli); upgrade ke simplex jika pola terlihat berulang.
-const SEED_SPACING = 46
-const STEPS = 100
-const STEP_LEN = 2.4
+// Kontur topografi: baris horizontal paralel yang digeser gelombang sinus.
+// AMP < ROW_SPACING / 2 adalah syarat agar antar baris tidak pernah berpotongan.
+const ROW_SPACING = 78
+const AMP = 26
+const AMP_MAX = 32
+const X_STEP = 14
+const POINTER_R = 220
+const POINTER_PUSH = 14
 
 export function MeshCanvas({
   className = 'block h-full w-full',
-  label = 'Decorative background: flowing streamlines that bend around your cursor.',
+  label = 'Decorative background: contour lines that drift and bend around your cursor.',
   parallax = false,
 }) {
   const canvasRef = useRef(null)
@@ -29,7 +33,7 @@ export function MeshCanvas({
 
     // ---- state ----
     let W = 0, H = 0, dpr = 1
-    let seeds = []
+    let rows = []
     const pointer = { x: -1e4, y: -1e4, tx: -1e4, ty: -1e4, active: false }
     let raf = 0, running = false, visible = true, lastTime = 0, time = 0
     let scrollPhase = 0, scrollTarget = 0
@@ -61,52 +65,50 @@ export function MeshCanvas({
       canvas.style.height = `${H}px`
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
-      seeds = []
-      for (let y = SEED_SPACING / 2; y < H + SEED_SPACING; y += SEED_SPACING) {
-        for (let x = SEED_SPACING / 2; x < W + SEED_SPACING; x += SEED_SPACING) {
-          seeds.push({ x: x + (Math.random() - 0.5) * 20, y: y + (Math.random() - 0.5) * 20, a: 0.1 + Math.random() * 0.12 })
-        }
+      // satu baris kontur per ROW_SPACING px, dengan alpha & fase acak supaya tidak terlihat mechanical
+      rows = []
+      let n = 0
+      for (let y = ROW_SPACING / 2; y < H + ROW_SPACING; y += ROW_SPACING) {
+        rows.push({ y, a: 0.05 + Math.random() * 0.09, phase: (n++ % 7) * 0.9 + Math.random() * 0.6 })
       }
     }
 
     // ---- FIELD ----
-    // medan kecepatan dari superposisi gelombang sinus
-    function field(x, y, t, out) {
-      const g = t + scrollPhase
-      let vx = Math.sin(y * 0.006 + g * 0.4) + 0.5 * Math.sin(y * 0.013 - g * 0.23)
-      let vy = Math.cos(x * 0.006 - g * 0.32) + 0.5 * Math.cos(x * 0.011 + g * 0.19)
-      if (pointer.active) {
-        const dx = x - pointer.x, dy = y - pointer.y
-        const d = Math.hypot(dx, dy)
-        if (d < 220 && d > 0.5) {
-          const f = (1 - d / 220) * 2.2
-          vx += (-dy / d) * f
-          vy += (dx / d) * f
-        }
-      }
-      out[0] = vx
-      out[1] = vy
+    // offset vertikal untuk satu baris pada koordinat x (tanpa pointer)
+    function wave(x, rowY, t) {
+      return (
+        Math.sin(x * 0.008 + rowY * 0.004 + t * 0.35) * 0.6 +
+        Math.sin(x * 0.0035 - rowY * 0.002 + t * 0.22) * 0.4
+      )
     }
 
     // ---- DRAW ----
-    const vec = [0, 0]
     function draw() {
       ctx.clearRect(0, 0, W, H)
       ctx.lineWidth = 1
       ctx.lineCap = 'round'
       const ink = getInk()
+      const g = time + scrollPhase
 
-      for (const seed of seeds) {
-        ctx.strokeStyle = `hsl(${ink} / ${seed.a.toFixed(3)})`
+      // amplitude naik sedikit terhadap scroll → feedback kedalaman
+      const amp = AMP + (AMP_MAX - AMP) * Math.min(1, Math.abs(scrollPhase) * 0.6)
+
+      for (const row of rows) {
+        ctx.strokeStyle = `hsl(${ink} / ${row.a.toFixed(3)})`
         ctx.beginPath()
-        ctx.moveTo(seed.x, seed.y)
-        let x = seed.x, y = seed.y
-        for (let i = 0; i < STEPS; i++) {
-          field(x, y, time, vec)
-          x += vec[0] * STEP_LEN
-          y += vec[1] * STEP_LEN
-          if (x < -20 || x > W + 20 || y < -20 || y > H + 20) break
-          ctx.lineTo(x, y)
+        for (let x = 0; x <= W + X_STEP; x += X_STEP) {
+          let y = row.y + wave(x, row.y, g + row.phase) * amp
+          if (pointer.active) {
+            const dx = x - pointer.x
+            const dy = row.y - pointer.y
+            const d = Math.hypot(dx, dy)
+            if (d < POINTER_R && d > 0.5) {
+              const f = 1 - d / POINTER_R
+              y += (dy / d) * f * f * POINTER_PUSH
+            }
+          }
+          if (x === 0) ctx.moveTo(x, y)
+          else ctx.lineTo(x, y)
         }
         ctx.stroke()
       }
