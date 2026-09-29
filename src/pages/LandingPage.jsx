@@ -289,7 +289,7 @@ function Features({ navigate }) {
   const [showAll, setShowAll] = useState(false)
   const onPrompt = (p) => navigate(`/chat?q=${encodeURIComponent(p)}`)
   return (
-    <section id="features" className="relative overflow-hidden scroll-mt-20 border-t border-border/60 py-12 sm:py-14 lg:py-16">
+    <section id="features" className="relative overflow-hidden scroll-mt-20 py-12 sm:py-14 lg:py-16">
       {/* Pola titik halus — CSS only, zero JS */}
       <div
         aria-hidden="true"
@@ -358,7 +358,7 @@ function Features({ navigate }) {
 
 function PrdBuilder({ navigate }) {
   return (
-    <section id="prd-builder" className="relative overflow-hidden scroll-mt-20 border-t border-border/60 py-12 sm:py-14 lg:py-16">
+    <section id="prd-builder" className="relative overflow-hidden scroll-mt-20 py-12 sm:py-14 lg:py-16">
       {/* Flow field streamlines — sama seperti hero, mask fade ke atas agar berbatasan halus dengan section sebelumnya */}
       <div
         aria-hidden="true"
@@ -402,7 +402,7 @@ function Models({ navigate }) {
     })
   }
   return (
-    <section id="models" className="scroll-mt-20 border-t border-border/60 py-12 sm:py-14 lg:py-16">
+    <section id="models" className="scroll-mt-20 py-12 sm:py-14 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <Reveal from="up" className="mx-auto max-w-5xl">
           <div className="text-center mb-10">
