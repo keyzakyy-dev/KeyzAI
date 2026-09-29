@@ -467,15 +467,7 @@ function ModelCard({ model, navigate, copied, onCopy }) {
           </button>
         </div>
 
-        <div className="mt-auto flex items-center gap-1.5">
-          {['Starter', 'Pro', 'Max'].map((tier) => (
-            <span
-              key={tier}
-              className="rounded-md border border-border/60 bg-background/60 px-2 py-0.5 text-[11px] font-medium text-muted-foreground"
-            >
-              {tier}
-            </span>
-          ))}
+        <div className="mt-auto flex items-center">
           <span className="ml-auto text-[10px] font-medium text-emerald-600/90 dark:text-emerald-400/90">
             Free
           </span>
