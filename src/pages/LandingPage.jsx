@@ -71,14 +71,11 @@ function Logo() {
 function Navbar({ navigate, theme, toggleTheme }) {
   const { user } = useAuth()
   const [open, setOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
   const progressRef = useRef(null)
 
-  // Satu listener untuk semua: status scroll, progress baca, dan scroll-spy.
+  // Listener untuk progress baca dan scroll-spy.
   useEffect(() => {
     const onScroll = () => {
-      setScrolled(window.scrollY > 12)
-
       // progress baca — ditulis langsung ke DOM agar tidak memicu re-render tiap frame
       const doc = document.documentElement
       const max = doc.scrollHeight - doc.clientHeight
@@ -121,10 +118,8 @@ function Navbar({ navigate, theme, toggleTheme }) {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 border-b transition-colors duration-300 ${
-        scrolled || open
-          ? 'border-border/70 bg-background/95 backdrop-blur'
-          : 'border-transparent'
+      className={`fixed inset-x-0 top-0 z-50 border-b border-transparent transition-colors duration-300 ${
+        open ? 'border-border/70 bg-background/95 backdrop-blur' : ''
       }`}
     >
       {/* Hairline progress baca */}
