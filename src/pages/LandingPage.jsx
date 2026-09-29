@@ -289,8 +289,15 @@ function Features({ navigate }) {
   const [showAll, setShowAll] = useState(false)
   const onPrompt = (p) => navigate(`/chat?q=${encodeURIComponent(p)}`)
   return (
-    <section id="features" className="scroll-mt-20 border-t border-border/60 py-12 sm:py-14 lg:py-16">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+    <section id="features" className="relative overflow-hidden scroll-mt-20 border-t border-border/60 py-12 sm:py-14 lg:py-16">
+      {/* Pola titik halus — CSS only, zero JS */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(hsl(var(--foreground)/0.06)_1px,transparent_1px)] bg-[size:22px_22px] [mask-image:linear-gradient(to_bottom,#000_50%,transparent_100%)]"
+      />
+      {/* Soft glow blob — mirip hero tapi lebih lembut */}
+      <div className="absolute left-1/2 top-1/4 h-72 w-[min(600px,100vw)] -translate-x-1/2 rounded-full bg-foreground/5 blur-[120px] hidden lg:block" />
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 relative z-10">
         <Reveal from="up" className="mx-auto max-w-5xl">
           <div className="text-center mb-10">
             <span className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
