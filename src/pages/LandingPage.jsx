@@ -425,12 +425,12 @@ function Models({ navigate }) {
 function ModelCard({ model, navigate, copied, onCopy }) {
   return (
     <div className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card/40 p-5 transition-all duration-200 hover:border-foreground/30 hover:bg-accent/30 hover:-translate-y-0.5">
-      {/* Watermark logo — mirip referensi: brand glyph besar & samar di belakang */}
+      {/* Watermark logo — brand glyph besar & samar di belakang */}
       <img
         src={model.logo}
         alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute right-0 top-1/2 h-[70%] w-[70%] -translate-y-1/2 object-contain opacity-[0.15] brightness-150 contrast-125"
+        className="pointer-events-none absolute right-0 top-1/2 h-[70%] w-[70%] -translate-y-1/2 object-contain opacity-[0.15]"
       />
       <div className="relative z-10 flex flex-col gap-3">
         <div className="flex items-center gap-2">
