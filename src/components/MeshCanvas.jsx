@@ -1,12 +1,13 @@
 import { useEffect, useRef } from 'react'
 
-// ponytail: O(n²) neighbor check, aman sampai ~110 partikel; pakai spatial grid jika count > 300.
-const MAX_PARTICLES = 110
-const LINK_DIST = 120
+// ponytail: sine-based pseudo noise field (bukan simplex noise asli); upgrade ke simplex jika pola terlihat berulang.
+const SEED_SPACING = 46
+const STEPS = 100
+const STEP_LEN = 2.4
 
 export function MeshCanvas({
   className = 'block h-full w-full',
-  label = 'Decorative background: a constellation of drifting points that react to your cursor.',
+  label = 'Decorative background: flowing streamlines that bend around your cursor.',
 }) {
   const canvasRef = useRef(null)
 
@@ -27,14 +28,9 @@ export function MeshCanvas({
 
     // ---- state ----
     let W = 0, H = 0, dpr = 1
-    let count = 0
-    let curX = new Float32Array(0), curY = new Float32Array(0)
-    let velX = new Float32Array(0), velY = new Float32Array(0)
-    let restX = new Float32Array(0), restY = new Float32Array(0)
+    let seeds = []
     const pointer = { x: -1e4, y: -1e4, tx: -1e4, ty: -1e4, active: false }
-    const pulses = []
-    let raf = 0, running = false, visible = true, lastTime = 0
-    const paths = Array.from({ length: 6 }, () => new Path2D())
+    let raf = 0, running = false, visible = true, lastTime = 0, time = 0
 
     // ---- LAYOUT ----
     function layout() {
@@ -49,81 +45,53 @@ export function MeshCanvas({
       canvas.style.height = `${H}px`
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
-      count = Math.max(30, Math.min(MAX_PARTICLES, Math.round((W * H) / 16000)))
-      curX = new Float32Array(count)
-      curY = new Float32Array(count)
-      velX = new Float32Array(count)
-      velY = new Float32Array(count)
-      restX = new Float32Array(count)
-      restY = new Float32Array(count)
-
-      for (let i = 0; i < count; i++) {
-        restX[i] = Math.random() * W
-        restY[i] = Math.random() * H
-        curX[i] = restX[i]
-        curY[i] = restY[i]
-        // kecepatan drift awal kecil, arah acak
-        const a = Math.random() * Math.PI * 2
-        const s = 0.15 + Math.random() * 0.2
-        velX[i] = Math.cos(a) * s
-        velY[i] = Math.sin(a) * s
+      seeds = []
+      for (let y = SEED_SPACING / 2; y < H + SEED_SPACING; y += SEED_SPACING) {
+        for (let x = SEED_SPACING / 2; x < W + SEED_SPACING; x += SEED_SPACING) {
+          seeds.push({ x: x + (Math.random() - 0.5) * 20, y: y + (Math.random() - 0.5) * 20, a: 0.1 + Math.random() * 0.12 })
+        }
       }
     }
 
-    // ---- DRAW ----
-    function draw() {
-      ctx.clearRect(0, 0, W, H)
-      const reach = 160
-      const { x: px, y: py, active } = pointer
-
-      for (let b = 0; b < 6; b++) paths[b] = new Path2D()
-
-      // garis antar partikel yang berdekatan
-      for (let i = 0; i < count; i++) {
-        for (let j = i + 1; j < count; j++) {
-          const dx = curX[i] - curX[j], dy = curY[i] - curY[j]
-          const d2 = dx * dx + dy * dy
-          if (d2 > LINK_DIST * LINK_DIST) continue
-          const d = Math.sqrt(d2)
-          let alpha = 0.38 * (1 - d / LINK_DIST)
-
-          if (active) {
-            const md = Math.hypot((curX[i] + curX[j]) * 0.5 - px, (curY[i] + curY[j]) * 0.5 - py)
-            if (md < reach) {
-              const t = 1 - md / reach
-              alpha += t * t * 0.5
-            }
-          }
-
-          const b = Math.min(5, Math.floor(6 * alpha))
-          paths[b].moveTo(curX[i], curY[i])
-          paths[b].lineTo(curX[j], curY[j])
+    // ---- FIELD ----
+    // medan kecepatan dari superposisi gelombang sinus
+    function field(x, y, t, out) {
+      let vx = Math.sin(y * 0.006 + t * 0.4) + 0.5 * Math.sin(y * 0.013 - t * 0.23)
+      let vy = Math.cos(x * 0.006 - t * 0.32) + 0.5 * Math.cos(x * 0.011 + t * 0.19)
+      if (pointer.active) {
+        const dx = x - pointer.x, dy = y - pointer.y
+        const d = Math.hypot(dx, dy)
+        if (d < 220 && d > 0.5) {
+          const f = (1 - d / 220) * 2.2
+          vx += (-dy / d) * f
+          vy += (dx / d) * f
         }
       }
+      out[0] = vx
+      out[1] = vy
+    }
 
+    // ---- DRAW ----
+    const vec = [0, 0]
+    function draw() {
+      ctx.clearRect(0, 0, W, H)
       ctx.lineWidth = 1
       ctx.lineCap = 'round'
       const ink = getInk()
-      for (let b = 0; b < 6; b++) {
-        const a = Math.min(0.9, (b + 0.5) / 6)
-        ctx.strokeStyle = `hsl(${ink} / ${a.toFixed(3)})`
-        ctx.stroke(paths[b])
-      }
 
-      // nodes
-      for (let i = 0; i < count; i++) {
-        let alpha = 0.42
-        let s = 2
-        if (active) {
-          const d = Math.hypot(curX[i] - px, curY[i] - py)
-          if (d < reach) {
-            const t = 1 - d / reach
-            alpha = 0.42 + t * t * 0.53
-            s = 2 + t * t * 3
-          }
+      for (const seed of seeds) {
+        ctx.strokeStyle = `hsl(${ink} / ${seed.a.toFixed(3)})`
+        ctx.beginPath()
+        ctx.moveTo(seed.x, seed.y)
+        let x = seed.x, y = seed.y
+        for (let i = 0; i < STEPS; i++) {
+          field(x, y, time, vec)
+          x += vec[0] * STEP_LEN
+          y += vec[1] * STEP_LEN
+          if (x < -20 || x > W + 20 || y < -20 || y > H + 20) break
+          ctx.lineTo(x, y)
         }
-        ctx.fillStyle = `hsl(${ink} / ${alpha.toFixed(3)})`
-        ctx.fillRect(curX[i] - s / 2, curY[i] - s / 2, s, s)
+        ctx.stroke()
       }
     }
 
@@ -135,67 +103,12 @@ export function MeshCanvas({
       const dt = lastTime ? Math.min(2.5, (now - lastTime) / (1000 / 60)) : 1
       lastTime = now
 
-      const reach = 160
-      const pull = 60
-      const spring = 0.02 * dt
-      const damp = Math.pow(0.96, dt)
-
       if (pointer.active) {
         pointer.x += (pointer.tx - pointer.x) * Math.min(1, 0.22 * dt)
         pointer.y += (pointer.ty - pointer.y) * Math.min(1, 0.22 * dt)
       }
-      const { x: px, y: py } = pointer
 
-      for (let i = 0; i < count; i++) {
-        // target = rest + repulsion dari kursor
-        let tx = restX[i], ty = restY[i]
-        if (pointer.active) {
-          const dx = tx - px, dy = ty - py
-          const d = Math.hypot(dx, dy)
-          if (d < reach && d > 0.001) {
-            const t = 1 - d / reach
-            const s = t * t * pull
-            tx += (dx / d) * s
-            ty += (dy / d) * s
-          }
-        }
-
-        // drift: rest bergerak pelan, bounce di tepi
-        if (!reduced) {
-          restX[i] += velX[i] * dt
-          restY[i] += velY[i] * dt
-          if (restX[i] < 0 || restX[i] > W) velX[i] *= -1
-          if (restY[i] < 0 || restY[i] > H) velY[i] *= -1
-          restX[i] = Math.max(0, Math.min(W, restX[i]))
-          restY[i] = Math.max(0, Math.min(H, restY[i]))
-        }
-
-        velX[i] += (tx - curX[i]) * spring
-        velY[i] += (ty - curY[i]) * spring
-        velX[i] *= damp
-        velY[i] *= damp
-        curX[i] += velX[i] * dt
-        curY[i] += velY[i] * dt
-      }
-
-      // click pulses
-      for (let n = pulses.length - 1; n >= 0; n--) {
-        const pulse = pulses[n]
-        const age = (now - pulse.t) / 1000
-        if (age > 1.6) { pulses.splice(n, 1); continue }
-        const wave = 620 * age
-        const amp = (1 - age / 1.6) * 34 * dt
-        for (let i = 0; i < count; i++) {
-          const dx = restX[i] - pulse.x, dy = restY[i] - pulse.y
-          const d = Math.hypot(dx, dy)
-          const band = Math.abs(d - wave)
-          if (band < 70 && d > 0.001) {
-            const t = 1 - band / 70
-            velX[i] += (dx / d) * t * amp
-            velY[i] += (dy / d) * t * amp
-          }
-        }
-      }
+      time += 0.004 * dt
 
       draw()
       raf = requestAnimationFrame(step)
@@ -232,24 +145,13 @@ export function MeshCanvas({
     }
     const onOut = (e) => { if (e.relatedTarget === null) onLeave() }
     const onUpTouch = (e) => { if (e.pointerType === 'touch') onLeave() }
-    const onDown = (e) => {
-      if (reduced) return
-      const { x, y } = toLocal(e)
-      if (x < 0 || y < 0 || x > W || y > H) return
-      pulses.push({ x, y, t: performance.now() })
-      if (pulses.length > 6) pulses.shift()
-    }
+
     const onVisibility = () => { document.hidden ? stop() : start() }
 
     const onMotionChange = (e) => {
       reduced = e.matches
-      if (reduced) {
-        stop()
-        for (let i = 0; i < count; i++) {
-          curX[i] = restX[i]; curY[i] = restY[i]
-        }
-        draw()
-      } else start()
+      if (reduced) stop()
+      else start()
     }
 
     // theme change → re-draw (ink token may change)
@@ -275,7 +177,6 @@ export function MeshCanvas({
     intersectObserver.observe(canvas)
 
     window.addEventListener('pointermove', onMove, { passive: true })
-    window.addEventListener('pointerdown', onDown, { passive: true })
     window.addEventListener('pointerup', onUpTouch, { passive: true })
     window.addEventListener('pointercancel', onUpTouch, { passive: true })
     window.addEventListener('pointerout', onOut, { passive: true })
@@ -291,7 +192,6 @@ export function MeshCanvas({
       colorObserver.disconnect()
       intersectObserver.disconnect()
       window.removeEventListener('pointermove', onMove)
-      window.removeEventListener('pointerdown', onDown)
       window.removeEventListener('pointerup', onUpTouch)
       window.removeEventListener('pointercancel', onUpTouch)
       window.removeEventListener('pointerout', onOut)
