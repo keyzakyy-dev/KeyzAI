@@ -358,8 +358,15 @@ function Features({ navigate }) {
 
 function PrdBuilder({ navigate }) {
   return (
-    <section id="prd-builder" className="scroll-mt-20 border-t border-border/60 py-12 sm:py-14 lg:py-16">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+    <section id="prd-builder" className="relative overflow-hidden scroll-mt-20 border-t border-border/60 py-12 sm:py-14 lg:py-16">
+      {/* Flow field streamlines — sama seperti hero, mask fade ke atas agar berbatasan halus dengan section sebelumnya */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_top,#000_40%,transparent_100%)]"
+      >
+        <MeshCanvas />
+      </div>
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         <Reveal from="up" className="mx-auto max-w-2xl text-center">
           <span className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
             <FileText className="h-3.5 w-3.5" />
