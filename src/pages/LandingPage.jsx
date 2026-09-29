@@ -9,6 +9,7 @@ import { useHeadline } from '../lib/micro-anim'
 import { ChatMock } from '../components/ChatMock'
 import { MODELS } from '../lib/models'
 import { ArrowRight, ArrowUp, MessageSquare, Code, Pencil, Lock, BookOpen, CircleHelp, Plus, Menu, X, Sun, Moon, Sparkles, FileText } from 'lucide-react'
+import { MeshCanvas } from '../components/MeshCanvas'
 
 function GithubMark({ className, ...props }) {
   return (
@@ -230,7 +231,14 @@ function Hero({ navigate }) {
   const headlineRef = useRef(null)
   useHeadline(headlineRef)
   return (
-    <section className="relative overflow-hidden pb-12 pt-24 sm:pb-14 sm:pt-32 lg:pb-16 lg:pt-36">
+    <section className="relative flex min-h-[calc(100svh-4rem)] flex-col justify-center overflow-hidden py-24 sm:py-28 lg:py-32">
+      {/* Mesh canvas interaktif — latar titik & garis yang melengkung mengikuti kursor */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,#000_60%,transparent_100%)]"
+      >
+        <MeshCanvas />
+      </div>
       <div className="absolute left-1/2 top-0 h-56 w-[min(520px,100vw)] -translate-x-1/2 rounded-full bg-foreground/5 blur-[100px] hidden sm:block sm:h-72 sm:w-[700px] sm:blur-[120px]" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
@@ -281,49 +289,64 @@ function Features({ navigate }) {
   const [showAll, setShowAll] = useState(false)
   const onPrompt = (p) => navigate(`/chat?q=${encodeURIComponent(p)}`)
   return (
-    <section id="features" className="scroll-mt-20 py-12 sm:py-14 lg:py-16">
+    <section id="features" className="scroll-mt-20 border-t border-border/60 py-12 sm:py-14 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <Reveal from="up" className="mx-auto grid max-w-5xl gap-x-10 gap-y-1 md:grid-cols-2">
-          {FEATURES.map((f, i) => {
-            const Icon = f.icon
-            const inner = (
-              <>
-                <span className="flex items-center gap-2.5">
-                  <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
-                  <span className="text-sm font-semibold text-foreground sm:text-[15px]">{f.title}</span>
-                </span>
-                <span className="mt-1 block pl-[26px] text-xs leading-relaxed text-muted-foreground sm:text-sm">
-                  {f.desc}
-                </span>
-                {f.prompt && (
-                  <ArrowRight className="absolute top-[19px] right-3 h-4 w-4 text-muted-foreground opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:opacity-100" />
-                )}
-              </>
-            )
-            const collapsed = i >= 3 && !showAll
-            const base = `group relative -mx-3 flex w-full flex-col rounded-lg px-3 py-3 text-left ${
-              collapsed ? 'hidden md:flex' : ''
-            }`
-            return f.prompt ? (
-              <button key={f.title} type="button" onClick={() => onPrompt(f.prompt)} className={`${base} transition-colors hover:bg-accent/40`}>
-                {inner}
-              </button>
-            ) : (
-              <div key={f.title} className={base}>
-                {inner}
-              </div>
-            )
-          })}
-        </Reveal>
+        <Reveal from="up" className="mx-auto max-w-5xl">
+          <div className="text-center mb-10">
+            <span className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              <Sparkles className="h-3.5 w-3.5" />
+              Fitur
+            </span>
+            <h2 className="mt-3 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+              Semua yang butuhmu untuk menulis, coding, dan belajar
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base max-w-2xl mx-auto">
+              Enam fitur inti yang membuat tugas sehari-hari jadi lebih cepat dan ringan.
+            </p>
+          </div>
 
-        <button
-          type="button"
-          onClick={() => setShowAll((s) => !s)}
-          className="mx-auto mt-6 flex min-h-11 items-center gap-1.5 rounded-lg px-4 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground md:hidden"
-        >
-          {showAll ? 'Sembunyikan' : 'Lihat fitur lainnya'}
-          <Plus className={`h-4 w-4 transition-transform duration-300 ${showAll ? 'rotate-45' : ''}`} />
-        </button>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {FEATURES.map((f, i) => {
+              const Icon = f.icon
+              const collapsed = i >= 3 && !showAll
+              const cardClass = `group relative flex flex-col rounded-2xl border border-border/60 bg-card/40 p-5 text-left transition-all duration-200 hover:border-foreground/30 hover:bg-accent/40 hover:-translate-y-0.5 ${
+                collapsed ? 'hidden lg:flex' : ''
+              }`
+              return f.prompt ? (
+                <button
+                  key={f.title}
+                  type="button"
+                  onClick={() => onPrompt(f.prompt)}
+                  className={cardClass}
+                >
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent text-foreground">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <h3 className="mt-3 font-semibold text-foreground">{f.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.desc}</p>
+                  <ArrowRight className="absolute bottom-5 right-5 h-4 w-4 text-muted-foreground opacity-0 translate-y-1 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100" />
+                </button>
+              ) : (
+                <div key={f.title} className={cardClass}>
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent text-foreground">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <h3 className="mt-3 font-semibold text-foreground">{f.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.desc}</p>
+                </div>
+              )
+            })}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setShowAll((s) => !s)}
+            className="mx-auto mt-6 flex min-h-11 items-center gap-1.5 rounded-lg px-4 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground lg:hidden"
+          >
+            {showAll ? 'Sembunyikan' : 'Lihat fitur lainnya'}
+            <Plus className={`h-4 w-4 transition-transform duration-300 ${showAll ? 'rotate-45' : ''}`} />
+          </button>
+        </Reveal>
       </div>
     </section>
   )
