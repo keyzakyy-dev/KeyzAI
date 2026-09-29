@@ -345,30 +345,107 @@ function Features({ navigate }) {
 }
 
 function PrdBuilder({ navigate }) {
+  const steps = [
+    { icon: MessageSquare, label: 'Ide' },
+    { icon: CircleHelp, label: 'Klarifikasi' },
+    { icon: Code, label: 'Teknologi' },
+    { icon: FileText, label: 'Struktur' },
+    { icon: FileText, label: 'PRD' },
+  ]
+
   return (
     <section id="prd-builder" className="relative scroll-mt-20 py-12 sm:py-14 lg:py-16">
+      {/* Subtle dot grid — CSS only, zero JS */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(hsl(var(--foreground)/0.05)_1px,transparent_1px)] bg-[size:22px_22px] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,#000_40%,transparent_70%)]"
+      />
+      {/* Soft glow blob */}
+      <div className="absolute left-1/2 top-0 h-72 w-[min(600px,100vw)] -translate-x-1/2 rounded-full bg-foreground/5 blur-[120px] hidden lg:block" />
+
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
-        <Reveal from="up" className="mx-auto max-w-2xl text-center">
-          <span className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            <FileText className="h-3.5 w-3.5" />
-            Beta
-          </span>
-          <h2 className="mt-3 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-            Dari ide jadi PRD dalam hitungan menit
-          </h2>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Ceritakan idemu, AI akan menanyakan hal-hal penting, merekomendasikan teknologi, menyusun struktur produk, sampai PRD siap pakai. Semua bagiannya bisa diedit.
-          </p>
-          <button
-            type="button"
-            onClick={() => navigate('/prd-builder')}
-            className="mt-6 inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            <Sparkles className="h-4 w-4" />
-            Coba PRD Builder
-            <ArrowRight className="h-4 w-4" />
-          </button>
-        </Reveal>
+        <div className="grid items-center gap-12 lg:grid-cols-2">
+          {/* Left: headline + pipeline + CTA */}
+          <Reveal from="up" className="space-y-5">
+            <span className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              <FileText className="h-3.5 w-3.5" />
+              Beta
+            </span>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+              Dari ide jadi PRD
+              <br />
+              <span className="text-muted-foreground">dalam hitungan menit</span>
+            </h2>
+            <p className="max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">
+              Ceritakan idemu, AI akan menanyakan hal-hal penting, merekomendasikan teknologi, menyusun struktur produk, sampai PRD siap pakai. Semua bagiannya bisa diedit.
+            </p>
+
+            {/* Pipeline preview — horizontal flow of 5 steps */}
+            <div className="flex flex-wrap items-center gap-1">
+              {steps.map((s, i) => (
+                <div key={s.label} className="flex items-center gap-1">
+                  <div className="flex items-center gap-1.5 rounded-lg border border-border/60 bg-card/70 px-2.5 py-1.5 backdrop-blur-sm">
+                    <s.icon className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span className="text-xs font-medium text-foreground">{s.label}</span>
+                  </div>
+                  {i < steps.length - 1 && (
+                    <ArrowRight className="h-3 w-3 shrink-0 text-muted-foreground/40" />
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => navigate('/prd-builder')}
+              className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            >
+              <Sparkles className="h-4 w-4" />
+              Coba PRD Builder
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </Reveal>
+
+          {/* Right: PRD document mockup */}
+          <Reveal from="up" delay={150} className="relative">
+            <div className="rounded-2xl border border-border/60 bg-card/70 p-5 backdrop-blur-sm shadow-xl">
+              {/* Window chrome */}
+              <div className="flex items-center gap-2 border-b border-border/60 pb-3">
+                <div className="h-2.5 w-2.5 rounded-full bg-destructive/50" />
+                <div className="h-2.5 w-2.5 rounded-full bg-yellow-500/50" />
+                <div className="h-2.5 w-2.5 rounded-full bg-green-500/50" />
+                <span className="ml-2 font-mono text-xs text-muted-foreground">prd.md</span>
+              </div>
+              {/* Document body */}
+              <div className="mt-4 space-y-4">
+                <div>
+                  <div className="h-2.5 w-28 rounded bg-foreground/10" />
+                  <div className="mt-1.5 h-2 w-44 rounded bg-foreground/8" />
+                </div>
+                <div className="space-y-1.5">
+                  <div className="h-1.5 w-full rounded bg-foreground/6" />
+                  <div className="h-1.5 w-5/6 rounded bg-foreground/6" />
+                  <div className="h-1.5 w-4/6 rounded bg-foreground/6" />
+                </div>
+                <div className="space-y-1.5">
+                  <div className="h-1.5 w-32 rounded bg-foreground/8" />
+                  <div className="h-1.5 w-full rounded bg-foreground/6" />
+                  <div className="h-1.5 w-3/4 rounded bg-foreground/6" />
+                </div>
+                <div className="space-y-1.5">
+                  <div className="h-1.5 w-28 rounded bg-foreground/8" />
+                  <div className="h-1.5 w-full rounded bg-foreground/6" />
+                  <div className="h-1.5 w-5/6 rounded bg-foreground/6" />
+                </div>
+                <div className="space-y-1.5">
+                  <div className="h-1.5 w-36 rounded bg-foreground/8" />
+                  <div className="h-1.5 w-full rounded bg-foreground/6" />
+                  <div className="h-1.5 w-2/3 rounded bg-foreground/6" />
+                </div>
+              </div>
+            </div>
+          </Reveal>
+        </div>
       </div>
     </section>
   )
