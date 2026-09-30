@@ -66,7 +66,10 @@ export function FeaturesWithPanel({
   return (
     <section id={id} className={cn("relative w-full py-12 sm:py-14 lg:py-16", className)}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-16 lg:items-start">
+        {/* items-center, bukan items-start: daftar fitur lebih tinggi dari panel,
+            jadi kalau panel nempel di atas, jarak bawahnya kosong dan mock-nya
+            terlihat tidak tengah terhadap isi kolom kiri. */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 lg:items-center lg:gap-16">
           <div>
             {kicker && (
               <span className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
@@ -140,8 +143,10 @@ export function FeaturesWithPanel({
             </ul>
           </div>
 
-          {/* Desktop: satu panel sticky, isinya crossfade saat baris diganti. */}
-          <div className="sticky top-10 hidden lg:block">
+          {/* Desktop: satu panel, isinya crossfade saat baris diganti.
+              self-center (bukan sticky) supaya mock tetap di tengah list
+              walaupun daftar fiturnya lebih panjang dari panel. */}
+          <div className="hidden lg:block lg:self-center">
             {/* Lebar dikunci max-w-md supaya panel tidak ikut melar saat
                 jendela besar; tinggi ikut aspect-nya, bukan grow. */}
             <Card className="relative mx-auto aspect-[16/11] w-full max-w-md gap-0 overflow-hidden p-0">

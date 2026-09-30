@@ -29,10 +29,10 @@ function GithubMark({ className, ...props }) {
 
 
 
-// Mock untuk panel media section fitur. Semuanya(mock) pakai token tema
+// Mock untuk panel media section fitur. Semuanya pakai token tema
 // (border/muted/foreground) supaya ikut light-dark tanpa warna hardcode.
-// Padding sengaja rapat: panelnya max-w-md, mock yang lega akan Forced scroll
-// atau_ldft wrap di dalam kotak.
+// Padding sengaja rapat: panelnya max-w-md, mock yang lega akan wrap atau
+// exceed tinggi kotak.
 const Media = ({ children }) => (
   <div className="flex h-full w-full items-center justify-center bg-muted/30 p-4 sm:p-5">
     <div className="w-full max-w-xs">{children}</div>
