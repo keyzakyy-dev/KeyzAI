@@ -1,10 +1,11 @@
 import { useEffect, useRef } from 'react'
 
-// Sarang lebah heksagon (pointy-top), full-page + parallax scroll, sedikit
-// ditekuk menjauhi kursor. R = jari-jari heksagon — 68px → ~118px antar pusat,
-// sengaja renggang supaya tidak ramai. Margin 2 baris di semua sisi agar
-// geseran parallax/pointer tidak pernah meninggalkan lubang di tepi layar.
-const R = 68
+// Sarang lebah heksagon (pointy-top), full-page + parallax scroll, ditekuk
+// menjauhi kursor dan memencar saat diklik. R = jari-jari heksagon — 52px →
+// ~90px antar pusat, cukup rapat untuk terbaca sebagai pola tapi tidak padat.
+// Margin 2 baris di semua sisi agar geseran parallax/pointer tidak pernah
+// meninggalkan lubang di tepi layar.
+const R = 52
 const COL = Math.sqrt(3) * R // jarak horizontal antar pusat
 const ROW = 1.5 * R // jarak vertikal antar pusat baris
 const SCROLL_RATE = 0.08 // px grid bergeser per px scroll → kesan kedalaman
@@ -15,13 +16,20 @@ const ALPHA_BASE = 0.055
 const ALPHA_HOVER = 0.32
 const BUCKETS = 6
 
+// Riak saat klik: cincin yang melebar dari titik klik, heksagon dalam band's
+// terdorong ke luar. Amplitudo meredup seiring waktu laluoyo.
+const PULSE_SPEED = 620 // px per detik
+const PULSE_LIFE = 1.6 // detik sampai lenyap
+const PULSE_BAND = 90 // lebar cincin, px
+const PULSE_PUSH = 16 // dorongan puncak, px
+
 // Titik sudut heksagon relatif ke pusat — trig dihitung sekali di module scope.
 const VX = Array.from({ length: 6 }, (_, k) => Math.cos((Math.PI / 180) * (60 * k - 90)))
 const VY = Array.from({ length: 6 }, (_, k) => Math.sin((Math.PI / 180) * (60 * k - 90)))
 
 export function MeshCanvas({
   className = 'block h-full w-full',
-  label = 'Decorative background: full-page honeycomb that drifts with scroll and bends around your cursor.',
+  label = 'Decorative background: full-page honeycomb that drifts with scroll, bends around your cursor, and ripples when you click.',
   parallax = false,
 }) {
   const canvasRef = useRef(null)
@@ -45,6 +53,7 @@ export function MeshCanvas({
     let W = 0, H = 0, dpr = 1
     let cells = []
     const pointer = { x: -1e4, y: -1e4, tx: -1e4, ty: -1e4, active: false }
+    const pulses = []
     let raf = 0, running = false, visible = true, lastTime = 0, time = 0
     let scrollShift = 0, scrollTarget = 0
 
@@ -99,6 +108,18 @@ export function MeshCanvas({
 
       // Bucket per level alpha → 6 stroke call, bukan ratusan.
       const paths = Array.from({ length: BUCKETS }, () => new Path2D())
+
+      // Riak klik: untuk setiap pulse yang masih hidup, pre-compute radius
+      // cincin + amplitudo yang meredup. Tanpa ini tiap sel akan menghitung
+      // hypot ke tiap pulse (N sel × M pulse per frame).
+      const now = performance.now()
+      const live = []
+      for (let n = pulses.length - 1; n >= 0; n--) {
+        const age = (now - pulses[n].t) / 1000
+        if (age > PULSE_LIFE) { pulses.splice(n, 1); continue }
+        live.push({ ...pulses[n], wave: age * PULSE_SPEED, amp: (1 - age / PULSE_LIFE) * PULSE_PUSH })
+      }
+
       for (const c of cells) {
         const cx = c.x + shiftX
         const cy = c.y + shiftY
@@ -116,6 +137,20 @@ export function MeshCanvas({
             r = R * (1 + 0.08 * e)
             ox = (dx / d) * POINTER_PUSH * e
             oy = (dy / d) * POINTER_PUSH * e
+          }
+        }
+        for (const p of live) {
+          const dx = cx - p.x
+          const dy = cy - p.y
+          const d = Math.hypot(dx, dy)
+          const band = Math.abs(d - p.wave)
+          if (band < PULSE_BAND && d > 0.5) {
+            const e = 1 - band / PULSE_BAND
+            a += ALPHA_HOVER * 0.7 * e
+            r = R * (1 + 0.05 * e)
+            const s = e * e * p.amp
+            ox += (dx / d) * s
+            oy += (dy / d) * s
           }
         }
         const b = Math.min(BUCKETS - 1, Math.floor(((a - ALPHA_BASE) / ALPHA_HOVER) * BUCKETS))
@@ -180,6 +215,14 @@ export function MeshCanvas({
     }
     const onOut = (e) => { if (e.relatedTarget === null) onLeave() }
     const onUpTouch = (e) => { if (e.pointerType === 'touch') onLeave() }
+    const onDown = (e) => {
+      if (reduced) return
+      const { x, y } = toLocal(e)
+      // Abaikan klik yang jatuh di luar kanvas (mis. di elemen sticky).
+      if (x < 0 || y < 0 || x > W || y > H) return
+      pulses.push({ x, y, t: performance.now() })
+      if (pulses.length > 6) pulses.shift()
+    }
 
     const onVisibility = () => { document.hidden ? stop() : start() }
 
@@ -216,6 +259,7 @@ export function MeshCanvas({
     intersectObserver.observe(canvas)
 
     window.addEventListener('pointermove', onMove, { passive: true })
+    window.addEventListener('pointerdown', onDown, { passive: true })
     window.addEventListener('pointerup', onUpTouch, { passive: true })
     window.addEventListener('pointercancel', onUpTouch, { passive: true })
     window.addEventListener('pointerout', onOut, { passive: true })
@@ -231,6 +275,7 @@ export function MeshCanvas({
       colorObserver.disconnect()
       intersectObserver.disconnect()
       window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerdown', onDown)
       window.removeEventListener('pointerup', onUpTouch)
       window.removeEventListener('pointercancel', onUpTouch)
       window.removeEventListener('pointerout', onOut)

@@ -646,7 +646,7 @@ export function LandingPage() {
     <div className="relative min-h-screen bg-background text-foreground antialiased">
       <MeshCanvas
         parallax
-        label="Decorative background: full-page honeycomb that drifts with scroll."
+        label="Decorative background: full-page honeycomb that drifts with scroll, bends around the cursor, and ripples on click."
         className="pointer-events-none fixed inset-0"
       />
       <div className="relative">
