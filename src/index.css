@@ -88,18 +88,29 @@
   }
 }
 
-.bg-dots {
-  background-image: radial-gradient(hsl(var(--foreground) / 0.14) 1px, transparent 1px);
-  background-size: 22px 22px;
+/* Tile heksagon (3 hex: baris 0, baris offset, baris +1.5R) yang ujungnya
+   dipotong viewBox; sisa potongan diisi tile tetangganya, jadi tidak ada
+   sambungan garis yang terlihat. Disimpan sekali karena dipakai dua utility. */
+:root {
+  --hex-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24.25' height='42' viewBox='0 0 24.25 42'%3E%3Cpath d='M0 -14L12.125 -7L12.125 7L0 14L-12.125 7L-12.125 -7ZM12.125 7L24.25 14L24.25 28L12.125 35L0 28L0 14ZM0 28L12.125 35L12.125 49L0 56L-12.125 49L-12.125 35Z' fill='none' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E");
 }
 
-/* Honeycomb tipis untuk permukaan kecil (mis. kolom input chat).
-   Pakai mask, bukan background-image, supaya warna garisnya bisa mengikuti
-   --foreground → otomatis sinkron dengan tema light/dark. Tile-nya 3 heksagon
-   (baris 0, baris offset, baris 1.5R) yang ujungnya dipotong viewBox; sisa
-   sisipan diisi tile Tetangganya, jadi tidak ada sambungan yang terlihat.
+/* Motif heksagon sebagai background penuh (bukan pseudo-element) — dipakai di
+   latar area percakapan. Pakai mask, bukan background-image, supaya warna
+   garisnya mengikuti --foreground → otomatis sinkron dengan tema light/dark. */
+.bg-hex {
+  background-color: hsl(var(--foreground) / 0.09);
+  -webkit-mask-image: var(--hex-tile);
+  mask-image: var(--hex-tile);
+  -webkit-mask-size: 40px 69px;
+  mask-size: 40px 69px;
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+}
+
+/* Honeycomb tipis untuk permukaan kecil (mis. latar composer).
    isolation: isolate supaya ::before (z-index -1) tetap di atas background
-   kartu sendiri, bukan menghilang di belakang background leluhur. */
+   elemen sendiri, bukan menghilang di belakang background leluhur. */
 .hex-surface {
   position: relative;
   isolation: isolate;
@@ -112,8 +123,8 @@
   pointer-events: none;
   border-radius: inherit;
   background-color: hsl(var(--foreground) / 0.07);
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24.25' height='42' viewBox='0 0 24.25 42'%3E%3Cpath d='M0 -14L12.125 -7L12.125 7L0 14L-12.125 7L-12.125 -7ZM12.125 7L24.25 14L24.25 28L12.125 35L0 28L0 14ZM0 28L12.125 35L12.125 49L0 56L-12.125 49L-12.125 35Z' fill='none' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24.25' height='42' viewBox='0 0 24.25 42'%3E%3Cpath d='M0 -14L12.125 -7L12.125 7L0 14L-12.125 7L-12.125 -7ZM12.125 7L24.25 14L24.25 28L12.125 35L0 28L0 14ZM0 28L12.125 35L12.125 49L0 56L-12.125 49L-12.125 35Z' fill='none' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E");
+  -webkit-mask-image: var(--hex-tile);
+  mask-image: var(--hex-tile);
   -webkit-mask-size: 36px 62px;
   mask-size: 36px 62px;
   -webkit-mask-repeat: repeat;

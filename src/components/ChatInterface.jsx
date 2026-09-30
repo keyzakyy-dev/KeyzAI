@@ -513,7 +513,16 @@ export function ChatInterface() {
         </header>
 
         <div className="relative flex-1 min-h-0">
-          <div className="pointer-events-none absolute inset-0 bg-dots opacity-60 [mask-image:radial-gradient(ellipse_65%_55%_at_50%_42%,black,transparent)]" />
+          {/* Latar area percakapan: sarang lebah (.bg-hex, lihat index.css).
+              Mask radial yang sudah ada di elemen luar tetap jadi fade-nya,
+              jadi motif ini penghilang di tepi — dua mask sekaligus butuh
+              mask-composite yang tidak semua browser dukung. */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_65%_55%_at_50%_42%,black,transparent)]"
+          >
+            <div className="bg-hex h-full w-full" />
+          </div>
           <div
             ref={scrollAreaRef}
             onScroll={handleScroll}
