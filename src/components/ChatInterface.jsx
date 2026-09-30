@@ -591,7 +591,10 @@ export function ChatInterface() {
         </div>
 
         {messages.length > 0 && (
-          <div className="flex-shrink-0 bg-background p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+          /* Latar composer: sarang lebah tipis (hex-surface, lihat index.css).
+             Polanya ada di sini, bukan di dalam kartu input, supaya kolomnya
+             sendiri tetap polos dan teksnya tidak berebut kontras. */
+          <div className="hex-surface flex-shrink-0 bg-background p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
             <ChatInput onSend={handleSend} loading={loading} onStop={stop} showDisclaimer model={model} onModelChange={changeModel} />
           </div>
         )}
