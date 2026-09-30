@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState } from 'react'
+﻿import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useTheme } from '../lib/use-theme'
 import { usePageMeta, SITE_NAME, SITE_DESC } from '../lib/seo'
@@ -9,8 +9,14 @@ import { useHeadline } from '../lib/micro-anim'
 import { ChatMock } from '../components/ChatMock'
 import { ThemeIcon } from '../components/theme-icon'
 import { MODELS } from '../lib/models'
-import { ArrowRight, ArrowUp, MessageSquare, Code, Pencil, Lock, BookOpen, CircleHelp, Menu, X, Sparkles, FileText, Copy, Check, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowRight, ArrowUp, MessageSquare, Code, Pencil, Lock, BookOpen, CircleHelp, Menu, X, Sparkles, FileText, Copy, Check } from 'lucide-react'
 import { MeshCanvas } from '../components/MeshCanvas'
+
+// motion menambah ~40 kB gz. Section fitur ada di bawah fold, jadi di-load
+// terpisah supaya bundle awal landing page tidak ikut berat.
+const FeaturesWithPanel = lazy(() =>
+  import('../components/ui/features-with-panel').then((m) => ({ default: m.FeaturesWithPanel }))
+)
 
 function GithubMark({ className, ...props }) {
   return (
@@ -23,41 +29,147 @@ function GithubMark({ className, ...props }) {
 
 
 
+// Mock untuk panel media section fitur. Semuanya(mock) pakai token tema
+// (border/muted/foreground) supaya ikut light-dark tanpa warna hardcode.
+const Media = ({ children }) => (
+  <div className="flex h-full w-full items-center justify-center bg-muted/30 p-5 sm:p-7">
+    <div className="w-full max-w-sm">{children}</div>
+  </div>
+)
+
+function MockWriting() {
+  return (
+    <div className="space-y-2.5">
+      <p className="font-display text-sm font-semibold text-foreground">Draf: follow-up klien</p>
+      {['Hai Bu Rina,', 'Terima kasih sudah sempat menyempatkan waktu kemarin. Saya kirim revisi', 'ringkasannya — mohon dicek bagian harga sebelum kita lanjut.'].map((t, i) => (
+        <p key={i} className="text-xs leading-relaxed text-muted-foreground">{t}</p>
+      ))}
+      <div className="flex gap-1.5 pt-1">
+        {['Nada: ramah', 'Singkat', 'Butuh tweak'].map((t) => (
+          <span key={t} className="rounded-md bg-background px-1.5 py-0.5 text-[10px] text-muted-foreground ring-1 ring-border">
+            {t}
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function MockCode() {
+  return (
+    <div className="space-y-2">
+      <div className="overflow-hidden rounded-lg bg-muted/60 font-mono text-[11px] leading-relaxed">
+        <div className="flex items-center gap-1.5 border-b border-border px-3 py-1.5 text-[10px] text-muted-foreground">
+          <span className="size-1.5 rounded-full bg-muted-foreground/30" />
+          app.js
+        </div>
+        <div className="space-y-0.5 p-3 text-foreground">
+          <div><span className="text-muted-foreground">1</span> <span className="text-muted-foreground">const</span> user = users.find(</div>
+          <div><span className="text-muted-foreground">2</span>   (u) =&gt; u.id === id</div>
+          <div className="text-destructive"><span className="text-muted-foreground">3</span> );</div>
+        </div>
+      </div>
+      <p className="flex items-start gap-1.5 text-[11px] leading-relaxed text-muted-foreground">
+        <span className="mt-0.5 flex size-3.5 shrink-0 items-center justify-center rounded-full bg-foreground text-[9px] text-background">i</span>
+        <span><span className="font-medium text-foreground">Penyebab:</span> find() bisa mengembalikan undefined. Pakai <span className="font-mono">?? null</span> lalu cek sebelum akses.</span>
+      </p>
+    </div>
+  )
+}
+
+function MockTopic() {
+  return (
+    <div className="space-y-2.5">
+      <p className="text-xs font-medium text-foreground">Neural network, dari nol</p>
+      {[
+        ['1. Input', 'Data mentah masuk lewat neuron pertama.'],
+        ['2. Bobot', 'Setiap koneksi punya angka yang mengatur seberapa kuat sinyal.'],
+        ['3. Output', 'Prediksi terbentuk dari kombinasi semua bobot.'],
+      ].map(([t, d]) => (
+        <div key={t} className="rounded-lg border border-border bg-background/60 px-3 py-2">
+          <p className="text-[11px] font-medium text-foreground">{t}</p>
+          <p className="mt-0.5 text-[11px] leading-relaxed text-muted-foreground">{d}</p>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function MockLearn() {
+  return (
+    <div className="space-y-2.5">
+      <p className="text-xs font-medium text-foreground">Persamaan kuadrat — langkah 2 dari 4</p>
+      <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+        <div className="h-full w-1/2 rounded-full bg-foreground" />
+      </div>
+      {['ax² + bx + c = 0', 'Hitung discriminant: b² − 4ac', 'Tentukan akar dari nilainya', 'Tulis bentuk akhir'].map((s, i) => (
+        <div key={s} className={`flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[11px] ${i < 2 ? 'bg-background/60 text-muted-foreground' : 'text-muted-foreground/50'}`}>
+          {i < 2 ? (
+            <Check className="size-3 shrink-0 text-foreground" />
+          ) : (
+            <span className="size-3 shrink-0 rounded-full border border-border" />
+          )}
+          {s}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function MockPrivacy() {
+  return (
+    <div className="space-y-2">
+      {['Tanpa pelacakan', 'Tanpa penjualan data', 'Riwayat di perangkatmu'].map((t) => (
+        <div key={t} className="flex items-center gap-2.5 rounded-lg border border-border bg-background/60 px-3 py-2.5">
+          <Lock className="size-3.5 shrink-0 text-muted-foreground" />
+          <span className="text-xs text-foreground">{t}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 const FEATURES = [
   {
     icon: MessageSquare,
     title: 'Tanya apa saja',
     desc: 'Jawaban cepat untuk pertanyaan apa pun.',
     prompt: 'Apa itu bunga berbunga, dijelaskan dengan sederhana?',
+    media: <Media><ChatMock /></Media>,
   },
   {
     icon: Pencil,
     title: 'Menulis lebih cepat',
     desc: 'Draf email, esai, dan konten sesuai gayamu.',
     prompt: 'Tulis email follow-up yang ramah ke klien yang menghilang.',
+    media: <Media><MockWriting /></Media>,
   },
   {
     icon: Code,
     title: 'Debug kode',
     desc: 'Tempel kode, dapat penjelasan dan perbaikan.',
     prompt: 'Kenapa ini error "cannot read property of undefined"?',
+    media: <Media><MockCode /></Media>,
   },
   {
     icon: BookOpen,
     title: 'Pelajari topik baru',
     desc: 'Topik rumit jadi penjelasan sederhana.',
     prompt: 'Jelaskan cara kerja neural network untuk pemula.',
+    media: <Media><MockTopic /></Media>,
   },
   {
     icon: CircleHelp,
     title: 'Bantu belajar',
     desc: 'Langkah demi langkah sampai paham.',
     prompt: 'Bantu aku pahami persamaan kuadrat dari nol.',
+    media: <Media><MockLearn /></Media>,
   },
   {
     icon: Lock,
     title: 'Privat & aman',
     desc: 'Tanpa pelacakan, tanpa penjualan data.',
+    media: <Media><MockPrivacy /></Media>,
   },
 ]
 
@@ -274,121 +386,6 @@ function Hero({ navigate }) {
   )
 }
 
-function Features({ navigate }) {
-  const trackRef = useRef(null)
-  // Panah kiri/kanan disembunyikan saat track sudah mentok di tepi.
-  const [edges, setEdges] = useState({ start: true, end: false })
-  const onPrompt = (p) => navigate(`/chat?q=${encodeURIComponent(p)}`)
-
-  const measure = () => {
-    const el = trackRef.current
-    if (!el) return
-    const max = el.scrollWidth - el.clientWidth
-    setEdges({ start: el.scrollLeft <= 4, end: el.scrollLeft >= max - 4 })
-  }
-
-  useEffect(() => {
-    measure()
-    const el = trackRef.current
-    el?.addEventListener('scroll', measure, { passive: true })
-    window.addEventListener('resize', measure)
-    return () => {
-      el?.removeEventListener('scroll', measure)
-      window.removeEventListener('resize', measure)
-    }
-  }, [])
-
-  // Satu kartu per klik; snap-mandatory yang merapikan posisi akhirnya.
-  const nudge = (dir) => {
-    const el = trackRef.current
-    if (!el) return
-    const card = el.querySelector('li')
-    el.scrollBy({ left: dir * ((card?.offsetWidth ?? 320) + 16), behavior: 'smooth' })
-  }
-
-  const arrow =
-    'absolute top-1/2 z-10 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-border bg-card text-foreground shadow-md transition hover:bg-accent disabled:opacity-0'
-
-  const cardClass =
-    'group relative flex h-full w-full flex-col rounded-2xl border border-border/60 bg-card/70 backdrop-blur-sm p-5 text-left transition-all duration-200 hover:border-foreground/30 hover:bg-accent/50 hover:-translate-y-0.5'
-
-  const cardBody = (f) => {
-    const Icon = f.icon
-    return (
-      <>
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent text-foreground">
-          <Icon className="h-5 w-5" />
-        </div>
-        <h3 className="mt-3 font-semibold text-foreground">{f.title}</h3>
-        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.desc}</p>
-      </>
-    )
-  }
-
-  return (
-    <section id="features" className="relative overflow-hidden scroll-mt-20 py-12 sm:py-14 lg:py-16">
-      {/* Soft glow blob — mirip hero tapi lebih lembut */}
-      <div className="absolute left-1/2 top-1/4 h-72 w-[min(600px,100vw)] -translate-x-1/2 rounded-full bg-foreground/5 blur-[120px] hidden lg:block" />
-      {/* Container sama persis dengan section "Dari ide jadi PRD" */}
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 relative z-10">
-        <Reveal from="up">
-          <div className="text-center mb-10">
-            <span className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              <Sparkles className="h-3.5 w-3.5" />
-              Fitur
-            </span>
-            <h2 className="mt-3 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-              Tulis, kode, belajar
-            </h2>
-          </div>
-
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => nudge(-1)}
-              disabled={edges.start}
-              aria-label="Geser fitur ke kiri"
-              className={`-left-3 ${arrow}`}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-
-            <ul
-              ref={trackRef}
-              className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-            >
-              {FEATURES.map((f) => (
-                <li
-                  key={f.title}
-                  className="w-[82%] shrink-0 snap-center sm:w-[calc((100%-1rem)/2)] sm:snap-start lg:w-[calc((100%-2rem)/3)]"
-                >
-                  {f.prompt ? (
-                    <button type="button" onClick={() => onPrompt(f.prompt)} className={cardClass}>
-                      {cardBody(f)}
-                      <ArrowRight className="absolute bottom-5 right-5 h-4 w-4 text-muted-foreground opacity-0 translate-y-1 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100" />
-                    </button>
-                  ) : (
-                    <div className={cardClass}>{cardBody(f)}</div>
-                  )}
-                </li>
-              ))}
-            </ul>
-
-            <button
-              type="button"
-              onClick={() => nudge(1)}
-              disabled={edges.end}
-              aria-label="Geser fitur ke kanan"
-              className={`-right-3 ${arrow}`}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
-        </Reveal>
-      </div>
-    </section>
-  )
-}
 
 function PrdBuilder({ navigate }) {
   const steps = [
@@ -653,7 +650,33 @@ export function LandingPage() {
         <Navbar navigate={navigate} theme={theme} toggleTheme={toggleTheme} />
         <main>
           <Hero navigate={navigate} />
-          <Features navigate={navigate} />
+          {/* List fitur + panel media. Glow blob dibungkus di luar karena
+              komponennya sendiri sudah membawa <section>-nya. Padding
+              fallback disamakan dengan section aslinya supaya tidak ada
+              layout shift sewaktu chunk motion selesai di-load. */}
+          <Suspense
+            fallback={
+              <div className="py-12 sm:py-14 lg:py-16" aria-hidden="true" />
+            }
+          >
+            <div className="relative">
+              <div
+                aria-hidden="true"
+                className="absolute left-1/2 top-1/4 hidden h-72 w-[min(600px,100vw)] -translate-x-1/2 rounded-full bg-foreground/5 blur-[120px] lg:block"
+              />
+              <FeaturesWithPanel
+                id="features"
+                items={FEATURES}
+                title="Tulis, kode, belajar"
+                kicker={
+                  <>
+                    <Sparkles className="h-3.5 w-3.5" />
+                    Fitur
+                  </>
+                }
+              />
+            </div>
+          </Suspense>
           <PrdBuilder navigate={navigate} />
           <Models navigate={navigate} />
         </main>
