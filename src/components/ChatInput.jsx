@@ -54,7 +54,8 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
 
   return (
     <div className="mx-auto w-full max-w-3xl">
-      <div className="rounded-2xl border border-border bg-card shadow-sm">
+      {/* hex-surface = sarang lebah tipis di balik kolom (lihat index.css) */}
+      <div className="hex-surface rounded-2xl border border-border bg-card shadow-sm">
         <Textarea
           ref={textareaRef}
           value={message}
