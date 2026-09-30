@@ -9,7 +9,7 @@ import { useHeadline } from '../lib/micro-anim'
 import { ChatMock } from '../components/ChatMock'
 import { ThemeIcon } from '../components/theme-icon'
 import { MODELS } from '../lib/models'
-import { ArrowRight, ArrowUp, MessageSquare, Code, Pencil, Lock, BookOpen, CircleHelp, Plus, Menu, X, Sparkles, FileText, Copy, Check } from 'lucide-react'
+import { ArrowRight, ArrowUp, MessageSquare, Code, Pencil, Lock, BookOpen, CircleHelp, Menu, X, Sparkles, FileText, Copy, Check, ChevronLeft, ChevronRight } from 'lucide-react'
 import { MeshCanvas } from '../components/MeshCanvas'
 
 function GithubMark({ className, ...props }) {
@@ -275,8 +275,56 @@ function Hero({ navigate }) {
 }
 
 function Features({ navigate }) {
-  const [showAll, setShowAll] = useState(false)
+  const trackRef = useRef(null)
+  // Panah kiri/kanan disembunyikan saat track sudah mentok di tepi.
+  const [edges, setEdges] = useState({ start: true, end: false })
   const onPrompt = (p) => navigate(`/chat?q=${encodeURIComponent(p)}`)
+
+  const measure = () => {
+    const el = trackRef.current
+    if (!el) return
+    const max = el.scrollWidth - el.clientWidth
+    setEdges({ start: el.scrollLeft <= 4, end: el.scrollLeft >= max - 4 })
+  }
+
+  useEffect(() => {
+    measure()
+    const el = trackRef.current
+    el?.addEventListener('scroll', measure, { passive: true })
+    window.addEventListener('resize', measure)
+    return () => {
+      el?.removeEventListener('scroll', measure)
+      window.removeEventListener('resize', measure)
+    }
+  }, [])
+
+  // Satu kartu per klik; snap-mandatory yang merapikan posisi akhirnya.
+  const nudge = (dir) => {
+    const el = trackRef.current
+    if (!el) return
+    const card = el.querySelector('li')
+    el.scrollBy({ left: dir * ((card?.offsetWidth ?? 320) + 16), behavior: 'smooth' })
+  }
+
+  const arrow =
+    'absolute top-1/2 z-10 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-border bg-card text-foreground shadow-md transition hover:bg-accent disabled:opacity-0'
+
+  const cardClass =
+    'group relative flex h-full w-full flex-col rounded-2xl border border-border/60 bg-card/70 backdrop-blur-sm p-5 text-left transition-all duration-200 hover:border-foreground/30 hover:bg-accent/50 hover:-translate-y-0.5'
+
+  const cardBody = (f) => {
+    const Icon = f.icon
+    return (
+      <>
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent text-foreground">
+          <Icon className="h-5 w-5" />
+        </div>
+        <h3 className="mt-3 font-semibold text-foreground">{f.title}</h3>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.desc}</p>
+      </>
+    )
+  }
+
   return (
     <section id="features" className="relative overflow-hidden scroll-mt-20 py-12 sm:py-14 lg:py-16">
       {/* Pola titik halus — CSS only, zero JS */}
@@ -286,8 +334,9 @@ function Features({ navigate }) {
       />
       {/* Soft glow blob — mirip hero tapi lebih lembut */}
       <div className="absolute left-1/2 top-1/4 h-72 w-[min(600px,100vw)] -translate-x-1/2 rounded-full bg-foreground/5 blur-[120px] hidden lg:block" />
+      {/* Container sama persis dengan section "Dari ide jadi PRD" */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 relative z-10">
-        <Reveal from="up" className="mx-auto max-w-5xl">
+        <Reveal from="up">
           <div className="text-center mb-10">
             <span className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
               <Sparkles className="h-3.5 w-3.5" />
@@ -298,47 +347,48 @@ function Features({ navigate }) {
             </h2>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURES.map((f, i) => {
-              const Icon = f.icon
-              const collapsed = i >= 3 && !showAll
-              const cardClass = `group relative flex flex-col rounded-2xl border border-border/60 bg-card/70 backdrop-blur-sm p-5 text-left transition-all duration-200 hover:border-foreground/30 hover:bg-accent/50 hover:-translate-y-0.5 ${
-                collapsed ? 'hidden lg:flex' : ''
-              }`
-              return f.prompt ? (
-                <button
-                  key={f.title}
-                  type="button"
-                  onClick={() => onPrompt(f.prompt)}
-                  className={cardClass}
-                >
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent text-foreground">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <h3 className="mt-3 font-semibold text-foreground">{f.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.desc}</p>
-                  <ArrowRight className="absolute bottom-5 right-5 h-4 w-4 text-muted-foreground opacity-0 translate-y-1 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100" />
-                </button>
-              ) : (
-                <div key={f.title} className={cardClass}>
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent text-foreground">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <h3 className="mt-3 font-semibold text-foreground">{f.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.desc}</p>
-                </div>
-              )
-            })}
-          </div>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => nudge(-1)}
+              disabled={edges.start}
+              aria-label="Geser fitur ke kiri"
+              className={`-left-3 ${arrow}`}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
 
-          <button
-            type="button"
-            onClick={() => setShowAll((s) => !s)}
-            className="mx-auto mt-6 flex min-h-11 items-center gap-1.5 rounded-lg px-4 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground lg:hidden"
-          >
-            {showAll ? 'Sembunyikan' : 'Lihat fitur lainnya'}
-            <Plus className={`h-4 w-4 transition-transform duration-300 ${showAll ? 'rotate-45' : ''}`} />
-          </button>
+            <ul
+              ref={trackRef}
+              className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            >
+              {FEATURES.map((f) => (
+                <li
+                  key={f.title}
+                  className="w-[82%] shrink-0 snap-center sm:w-[calc((100%-1rem)/2)] sm:snap-start lg:w-[calc((100%-2rem)/3)]"
+                >
+                  {f.prompt ? (
+                    <button type="button" onClick={() => onPrompt(f.prompt)} className={cardClass}>
+                      {cardBody(f)}
+                      <ArrowRight className="absolute bottom-5 right-5 h-4 w-4 text-muted-foreground opacity-0 translate-y-1 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100" />
+                    </button>
+                  ) : (
+                    <div className={cardClass}>{cardBody(f)}</div>
+                  )}
+                </li>
+              ))}
+            </ul>
+
+            <button
+              type="button"
+              onClick={() => nudge(1)}
+              disabled={edges.end}
+              aria-label="Geser fitur ke kanan"
+              className={`-right-3 ${arrow}`}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
         </Reveal>
       </div>
     </section>
