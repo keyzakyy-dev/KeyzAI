@@ -327,11 +327,6 @@ function Features({ navigate }) {
 
   return (
     <section id="features" className="relative overflow-hidden scroll-mt-20 py-12 sm:py-14 lg:py-16">
-      {/* Pola titik halus — CSS only, zero JS */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(hsl(var(--foreground)/0.06)_1px,transparent_1px)] bg-[size:22px_22px] [mask-image:linear-gradient(to_bottom,#000_50%,transparent_100%)]"
-      />
       {/* Soft glow blob — mirip hero tapi lebih lembut */}
       <div className="absolute left-1/2 top-1/4 h-72 w-[min(600px,100vw)] -translate-x-1/2 rounded-full bg-foreground/5 blur-[120px] hidden lg:block" />
       {/* Container sama persis dengan section "Dari ide jadi PRD" */}
@@ -406,11 +401,6 @@ function PrdBuilder({ navigate }) {
 
   return (
     <section id="prd-builder" className="relative scroll-mt-20 py-12 sm:py-14 lg:py-16">
-      {/* Subtle dot grid — CSS only, zero JS */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(hsl(var(--foreground)/0.05)_1px,transparent_1px)] bg-[size:22px_22px] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,#000_40%,transparent_70%)]"
-      />
       {/* Soft glow blob */}
       <div className="absolute left-1/2 top-0 h-72 w-[min(600px,100vw)] -translate-x-1/2 rounded-full bg-foreground/5 blur-[120px] hidden lg:block" />
 
@@ -656,7 +646,7 @@ export function LandingPage() {
     <div className="relative min-h-screen bg-background text-foreground antialiased">
       <MeshCanvas
         parallax
-        label="Decorative background: full-page flow field that drifts with scroll."
+        label="Decorative background: full-page honeycomb that drifts with scroll."
         className="pointer-events-none fixed inset-0"
       />
       <div className="relative">

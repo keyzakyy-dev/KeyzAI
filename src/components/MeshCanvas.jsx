@@ -1,17 +1,27 @@
 import { useEffect, useRef } from 'react'
 
-// Kontur topografi: baris horizontal paralel yang digeser gelombang sinus.
-// AMP < ROW_SPACING / 2 adalah syarat agar antar baris tidak pernah berpotongan.
-const ROW_SPACING = 78
-const AMP = 26
-const AMP_MAX = 32
-const X_STEP = 14
-const POINTER_R = 220
-const POINTER_PUSH = 14
+// Sarang lebah heksagon (pointy-top), full-page + parallax scroll, sedikit
+// ditekuk menjauhi kursor. R = jari-jari heksagon — 68px → ~118px antar pusat,
+// sengaja renggang supaya tidak ramai. Margin 2 baris di semua sisi agar
+// geseran parallax/pointer tidak pernah meninggalkan lubang di tepi layar.
+const R = 68
+const COL = Math.sqrt(3) * R // jarak horizontal antar pusat
+const ROW = 1.5 * R // jarak vertikal antar pusat baris
+const SCROLL_RATE = 0.08 // px grid bergeser per px scroll → kesan kedalaman
+const DRIFT_AMP = 4 // ayunan idle, px
+const POINTER_R = 240
+const POINTER_PUSH = 10
+const ALPHA_BASE = 0.055
+const ALPHA_HOVER = 0.32
+const BUCKETS = 6
+
+// Titik sudut heksagon relatif ke pusat — trig dihitung sekali di module scope.
+const VX = Array.from({ length: 6 }, (_, k) => Math.cos((Math.PI / 180) * (60 * k - 90)))
+const VY = Array.from({ length: 6 }, (_, k) => Math.sin((Math.PI / 180) * (60 * k - 90)))
 
 export function MeshCanvas({
   className = 'block h-full w-full',
-  label = 'Decorative background: contour lines that drift and bend around your cursor.',
+  label = 'Decorative background: full-page honeycomb that drifts with scroll and bends around your cursor.',
   parallax = false,
 }) {
   const canvasRef = useRef(null)
@@ -33,17 +43,15 @@ export function MeshCanvas({
 
     // ---- state ----
     let W = 0, H = 0, dpr = 1
-    let rows = []
+    let cells = []
     const pointer = { x: -1e4, y: -1e4, tx: -1e4, ty: -1e4, active: false }
     let raf = 0, running = false, visible = true, lastTime = 0, time = 0
-    let scrollPhase = 0, scrollTarget = 0
+    let scrollShift = 0, scrollTarget = 0
 
-    // parallax: fase medan bergeser mengikuti scroll (smooth di loop)
-    const onScroll = () => { scrollTarget = window.scrollY * 0.0012 }
+    const onScroll = () => { scrollTarget = -window.scrollY * SCROLL_RATE }
     if (parallax) {
       window.addEventListener('scroll', onScroll, { passive: true })
-      scrollTarget = window.scrollY * 0.0012
-      scrollPhase = scrollTarget
+      scrollTarget = scrollShift = -window.scrollY * SCROLL_RATE
     }
 
     // ---- LAYOUT ----
@@ -65,52 +73,59 @@ export function MeshCanvas({
       canvas.style.height = `${H}px`
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
-      // satu baris kontur per ROW_SPACING px, dengan alpha & fase acak supaya tidak terlihat mechanical
-      rows = []
-      let n = 0
-      for (let y = ROW_SPACING / 2; y < H + ROW_SPACING; y += ROW_SPACING) {
-        rows.push({ y, a: 0.05 + Math.random() * 0.09, phase: (n++ % 7) * 0.9 + Math.random() * 0.6 })
+      cells = []
+      let row = -2
+      for (let y = -2 * ROW; y < H + 2 * ROW; y += ROW, row++) {
+        const offset = row % 2 ? COL / 2 : 0
+        for (let x = -COL; x < W + 2 * COL; x += COL) {
+          cells.push({ x: x + offset, y })
+        }
       }
     }
 
-    // ---- FIELD ----
-    // offset vertikal untuk satu baris pada koordinat x (tanpa pointer)
-    function wave(x, rowY, t) {
-      return (
-        Math.sin(x * 0.008 + rowY * 0.004 + t * 0.35) * 0.6 +
-        Math.sin(x * 0.0035 - rowY * 0.002 + t * 0.22) * 0.4
-      )
+    // ---- DRAW ----
+    function hex(p, cx, cy, r) {
+      p.moveTo(cx + r * VX[0], cy + r * VY[0])
+      for (let k = 1; k < 6; k++) p.lineTo(cx + r * VX[k], cy + r * VY[k])
+      p.closePath()
     }
 
-    // ---- DRAW ----
     function draw() {
       ctx.clearRect(0, 0, W, H)
       ctx.lineWidth = 1
-      ctx.lineCap = 'round'
       const ink = getInk()
-      const g = time + scrollPhase
+      const shiftY = reduced ? 0 : scrollShift + Math.sin(time) * DRIFT_AMP
+      const shiftX = reduced ? 0 : Math.cos(time * 0.7) * DRIFT_AMP
 
-      // amplitude naik sedikit terhadap scroll → feedback kedalaman
-      const amp = AMP + (AMP_MAX - AMP) * Math.min(1, Math.abs(scrollPhase) * 0.6)
-
-      for (const row of rows) {
-        ctx.strokeStyle = `hsl(${ink} / ${row.a.toFixed(3)})`
-        ctx.beginPath()
-        for (let x = 0; x <= W + X_STEP; x += X_STEP) {
-          let y = row.y + wave(x, row.y, g + row.phase) * amp
-          if (pointer.active) {
-            const dx = x - pointer.x
-            const dy = row.y - pointer.y
-            const d = Math.hypot(dx, dy)
-            if (d < POINTER_R && d > 0.5) {
-              const f = 1 - d / POINTER_R
-              y += (dy / d) * f * f * POINTER_PUSH
-            }
+      // Bucket per level alpha → 6 stroke call, bukan ratusan.
+      const paths = Array.from({ length: BUCKETS }, () => new Path2D())
+      for (const c of cells) {
+        const cx = c.x + shiftX
+        const cy = c.y + shiftY
+        let a = ALPHA_BASE
+        let r = R
+        let ox = 0
+        let oy = 0
+        if (pointer.active && !reduced) {
+          const dx = cx - pointer.x
+          const dy = cy - pointer.y
+          const d = Math.hypot(dx, dy)
+          if (d < POINTER_R && d > 0.5) {
+            const e = (1 - d / POINTER_R) ** 2
+            a += ALPHA_HOVER * e
+            r = R * (1 + 0.08 * e)
+            ox = (dx / d) * POINTER_PUSH * e
+            oy = (dy / d) * POINTER_PUSH * e
           }
-          if (x === 0) ctx.moveTo(x, y)
-          else ctx.lineTo(x, y)
         }
-        ctx.stroke()
+        const b = Math.min(BUCKETS - 1, Math.floor(((a - ALPHA_BASE) / ALPHA_HOVER) * BUCKETS))
+        hex(paths[b], cx + ox, cy + oy, r)
+      }
+
+      for (let b = 0; b < BUCKETS; b++) {
+        const a = ALPHA_BASE + (ALPHA_HOVER * (b + 0.5)) / BUCKETS
+        ctx.strokeStyle = `hsl(${ink} / ${a.toFixed(3)})`
+        ctx.stroke(paths[b])
       }
     }
 
@@ -127,8 +142,8 @@ export function MeshCanvas({
         pointer.y += (pointer.ty - pointer.y) * Math.min(1, 0.22 * dt)
       }
 
-      time += 0.004 * dt
-      scrollPhase += (scrollTarget - scrollPhase) * Math.min(1, 0.08 * dt)
+      time += 0.006 * dt
+      scrollShift += (scrollTarget - scrollShift) * Math.min(1, 0.08 * dt)
 
       draw()
       raf = requestAnimationFrame(step)
@@ -170,7 +185,11 @@ export function MeshCanvas({
 
     const onMotionChange = (e) => {
       reduced = e.matches
-      if (reduced) stop()
+      if (reduced) {
+        scrollShift = 0
+        draw()
+        stop()
+      }
       else start()
     }
 
@@ -208,7 +227,6 @@ export function MeshCanvas({
     return () => {
       stop()
       if (resizeRaf) cancelAnimationFrame(resizeRaf)
-      window.removeEventListener('scroll', onScroll)
       resizeObserver.disconnect()
       colorObserver.disconnect()
       intersectObserver.disconnect()
@@ -219,8 +237,9 @@ export function MeshCanvas({
       window.removeEventListener('blur', onLeave)
       document.removeEventListener('visibilitychange', onVisibility)
       motionQuery.removeEventListener('change', onMotionChange)
+      if (parallax) window.removeEventListener('scroll', onScroll)
     }
-  }, [])
+  }, [parallax])
 
   return <canvas ref={canvasRef} className={className} role="img" aria-label={label} />
 }
