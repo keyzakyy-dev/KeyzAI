@@ -6,6 +6,7 @@ import { ThemeIcon } from './theme-icon'
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
 import { Sidebar } from './Sidebar'
+import { MeshCanvas } from './MeshCanvas'
 import { Button } from './ui/button'
 import { ConfirmDialog } from './ui/confirm-dialog'
 import { RenameDialog } from './ui/rename-dialog'
@@ -513,15 +514,19 @@ export function ChatInterface() {
         </header>
 
         <div className="relative flex-1 min-h-0">
-          {/* Latar area percakapan: sarang lebah (.bg-hex, lihat index.css).
-              Mask radial yang sudah ada di elemen luar tetap jadi fade-nya,
-              jadi motif ini penghilang di tepi — dua mask sekaligus butuh
-              mask-composite yang tidak semua browser dukung. */}
+          {/* Latar area percakapan: sarang lebah yang sama dengan landing
+              (MeshCanvas) — heksagonnya menekuk menjauhi kursor dan memencar
+              saat diklik. Mask radial di elemen luar tetap jadi fade-nya.
+              Canvas-nya absolute (bukan di dalam scroller) supaya pola tidak
+              ikut tergeser bersama isi percakapan. */}
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_65%_55%_at_50%_42%,black,transparent)]"
           >
-            <div className="bg-hex h-full w-full" />
+            <MeshCanvas
+              className="block h-full w-full"
+              label="Decorative honeycomb background that bends around the cursor and ripples on click."
+            />
           </div>
           <div
             ref={scrollAreaRef}
