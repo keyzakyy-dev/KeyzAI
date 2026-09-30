@@ -125,7 +125,7 @@ export function FeaturesWithPanel({
                             transition={{ duration: reduced ? 0 : 0.35, ease: [0.4, 0, 0.2, 1] }}
                             className="w-full overflow-hidden lg:hidden"
                           >
-                            <Card className="relative mt-3 aspect-[4/3] w-full gap-0 overflow-hidden p-0">
+                            <Card className="relative mt-3 aspect-[16/11] w-full gap-0 overflow-hidden p-0">
                               <div className="absolute inset-0">
                                 <FeatureMedia content={item.media} alt={item.alt} />
                               </div>
@@ -142,7 +142,9 @@ export function FeaturesWithPanel({
 
           {/* Desktop: satu panel sticky, isinya crossfade saat baris diganti. */}
           <div className="sticky top-10 hidden lg:block">
-            <Card className="relative aspect-[4/3] w-full gap-0 overflow-hidden p-0">
+            {/* Lebar dikunci max-w-md supaya panel tidak ikut melar saat
+                jendela besar; tinggi ikut aspect-nya, bukan grow. */}
+            <Card className="relative mx-auto aspect-[16/11] w-full max-w-md gap-0 overflow-hidden p-0">
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={active}

@@ -31,11 +31,53 @@ function GithubMark({ className, ...props }) {
 
 // Mock untuk panel media section fitur. Semuanya(mock) pakai token tema
 // (border/muted/foreground) supaya ikut light-dark tanpa warna hardcode.
+// Padding sengaja rapat: panelnya max-w-md, mock yang lega akan Forced scroll
+// atau_ldft wrap di dalam kotak.
 const Media = ({ children }) => (
-  <div className="flex h-full w-full items-center justify-center bg-muted/30 p-5 sm:p-7">
-    <div className="w-full max-w-sm">{children}</div>
+  <div className="flex h-full w-full items-center justify-center bg-muted/30 p-4 sm:p-5">
+    <div className="w-full max-w-xs">{children}</div>
   </div>
 )
+
+// Bentuk ringkas dari mock chat hero (lihat components/ChatMock.jsx): chrome
+// + satu putaran bubble dan kontrolnya. Dipakai di panel 16:11 yang jauh lebih
+// pendek dari mock hero, jadi bagian yang dipangkas hanya chrome yang redundant.
+function MockChat() {
+  return (
+    <div className="w-full overflow-hidden rounded-lg border border-border bg-card shadow-sm">
+      <div className="flex items-center gap-1.5 border-b border-border px-3 py-2">
+        <span className="h-2 w-2 rounded-full bg-muted-foreground/30" />
+        <span className="h-2 w-2 rounded-full bg-muted-foreground/30" />
+        <span className="h-2 w-2 rounded-full bg-muted-foreground/30" />
+      </div>
+      <div className="space-y-2.5 p-3">
+        <div className="flex justify-end">
+          <div className="max-w-[85%] rounded-lg bg-primary px-2.5 py-1.5 text-[11px] text-primary-foreground">
+            Kenapa error ini muncul terus?
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <div className="size-5 shrink-0 rounded-full border border-border" />
+          <div className="max-w-[88%] space-y-1.5">
+            <div className="rounded-lg bg-muted px-2.5 py-1.5 text-[11px] leading-relaxed text-foreground">
+              karena <span className="font-mono">data</span> belum dimuat saat komponen
+              dirender. Taruh pemanggilan di dalam{' '}
+              <span className="font-mono">useEffect</span>.
+            </div>
+            <div className="flex items-center gap-1 text-[9px] text-muted-foreground">
+              <span className="rounded-full border border-border bg-background px-1 py-px">
+                1 / 2
+              </span>
+              <span className="rounded-full border border-border bg-background px-1 py-px">
+                buat ulang
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 function MockWriting() {
   return (
@@ -135,7 +177,7 @@ const FEATURES = [
     title: 'Tanya apa saja',
     desc: 'Jawaban cepat untuk pertanyaan apa pun.',
     prompt: 'Apa itu bunga berbunga, dijelaskan dengan sederhana?',
-    media: <Media><ChatMock /></Media>,
+    media: <Media><MockChat /></Media>,
   },
   {
     icon: Pencil,
