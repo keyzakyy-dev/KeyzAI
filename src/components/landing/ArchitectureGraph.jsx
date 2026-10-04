@@ -94,7 +94,7 @@ export function ArchitectureGraph() {
 
   return (
     <div
-      className="relative mx-auto flex w-full max-w-[520px] flex-col items-center justify-center p-6"
+      className="relative mx-auto flex w-full max-w-[520px] flex-col items-center justify-center p-2"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
@@ -160,11 +160,11 @@ export function ArchitectureGraph() {
                     punya denyut sendiri (animate-ping di bawah) jadi dikecualikan
                     agar tidak berdenyut dua kali. */}
                 <div
-                  className={`relative flex items-center justify-center rounded-2xl border transition-all duration-300 overflow-hidden ${
+                  className={`relative flex items-center justify-center rounded-xl border transition-all duration-300 overflow-hidden ${
                     isCore
-                      ? 'h-16 w-16 border-foreground/50 bg-background p-2 shadow-lg'
-                      : 'h-11 w-11 border-foreground/15 bg-transparent p-2'
-                  } ${isActive ? 'border-primary ring-2 ring-primary/20 shadow-md' : ''} ${
+                      ? 'h-14 w-14 border-foreground/45 bg-transparent p-2'
+                      : 'h-10 w-10 border-foreground/20 bg-transparent p-2'
+                  } ${isActive ? 'border-foreground/70 ring-1 ring-foreground/20' : ''} ${
                     isActive && !isCore ? 'node-breathe' : ''
                   }`}
                 >
@@ -204,7 +204,7 @@ export function ArchitectureGraph() {
                 }`}
               >
                 <p
-                  className={`text-[11px] font-bold ${
+                  className={`text-[11px] font-medium ${
                     isActive ? 'text-foreground' : 'text-muted-foreground/70'
                   }`}
                 >
