@@ -1,12 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { useTheme } from '../lib/use-theme'
 import { usePageMeta, SITE_NAME, SITE_DESC } from '../lib/seo'
 import { Reveal } from '../lib/reveal'
 import { useAuth } from '../hooks/useAuth'
 import { LogoImg } from '../lib/logo-img'
 import { ModelMarquee } from '../components/ModelMarquee'
-import { ThemeIcon } from '../components/theme-icon'
 import { MODELS } from '../lib/models'
 import {
   ArrowRight,
@@ -43,7 +41,7 @@ function Logo() {
   )
 }
 
-function Navbar({ navigate, theme, toggleTheme }) {
+function Navbar({ navigate }) {
   const { user } = useAuth()
   const [open, setOpen] = useState(false)
   const progressRef = useRef(null)
@@ -117,14 +115,6 @@ function Navbar({ navigate, theme, toggleTheme }) {
 
         {/* Desktop */}
         <div className="hidden shrink-0 items-center gap-2 md:flex">
-          <button
-            type="button"
-            onClick={toggleTheme}
-            aria-label="Ganti tema"
-            className="flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-foreground/[0.06] hover:text-foreground"
-          >
-            <ThemeIcon theme={theme} />
-          </button>
           <button type="button" onClick={() => navigate('/chat')} className={ctaClass}>
             {user ? 'Buka chat' : 'Masuk'}
           </button>
@@ -132,14 +122,6 @@ function Navbar({ navigate, theme, toggleTheme }) {
 
         {/* Mobile */}
         <div className="flex shrink-0 items-center gap-1 md:hidden">
-          <button
-            type="button"
-            onClick={toggleTheme}
-            aria-label="Ganti tema"
-            className="flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-transparent hover:text-foreground"
-          >
-            <ThemeIcon theme={theme} />
-          </button>
           <button
             type="button"
             onClick={() => setOpen((o) => !o)}
@@ -543,14 +525,12 @@ function Footer() {
 
 export function LandingPage() {
   const navigate = useNavigate()
-  const [theme, , toggleTheme] = useTheme()
-
   usePageMeta({ title: SITE_NAME, description: SITE_DESC, path: '/' })
 
   return (
     <div className="relative min-h-dvh bg-background text-foreground antialiased">
       <div className="relative">
-        <Navbar navigate={navigate} theme={theme} toggleTheme={toggleTheme} />
+        <Navbar navigate={navigate} />
         <main>
           <Hero navigate={navigate} />
           <ModelMarqueeSection />
