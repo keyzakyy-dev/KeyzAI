@@ -79,7 +79,6 @@ export function ModelMarquee() {
       }}
     >
       <Row />
-      <Row reverse />
     </div>
   )
 }
