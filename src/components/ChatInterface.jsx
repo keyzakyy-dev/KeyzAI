@@ -520,13 +520,8 @@ export function ChatInterface() {
               ikut tergeser bersama isi percakapan. */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_65%_55%_at_50%_42%,black,transparent)]"
-          >
-            <MeshCanvas
-              className="block h-full w-full"
-              label="Decorative honeycomb background that bends around the cursor and ripples on click."
-            />
-          </div>
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_45%_at_50%_0%,hsl(var(--foreground)/0.035),transparent_70%)]"
+          />
           <div
             ref={scrollAreaRef}
             onScroll={handleScroll}
@@ -544,7 +539,7 @@ export function ChatInterface() {
             </div>
           ) : (
             <OptionsContext.Provider value={optionsValue}>
-            <div className="mx-auto w-full max-w-3xl flex-1 space-y-6 px-4 py-8">
+            <div className="mx-auto w-full max-w-4xl flex-1 space-y-8 px-4 py-10 sm:px-8 sm:py-12">
               {messages.map((msg, i) => (
                 <ChatMessage
                   key={msg.id}
