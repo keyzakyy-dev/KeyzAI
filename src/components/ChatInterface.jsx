@@ -1,12 +1,10 @@
 ﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { Menu, X, Plus, FileText, ArrowDown, ChevronLeft, ChevronRight, CircleX, RotateCcw, ChevronDown, Pin, Pencil, Trash2, Download } from 'lucide-react'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { Menu, X, ArrowDown, ChevronLeft, ChevronRight, CircleX, RotateCcw, ChevronDown, Pin, Pencil, Trash2, Download } from 'lucide-react'
 import { ThemeIcon } from './theme-icon'
-import { LogoImg } from '../lib/logo-img'
 
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
-import { Sidebar } from './Sidebar'
 import { MeshCanvas } from './MeshCanvas'
 import { Button } from './ui/button'
 import { ConfirmDialog } from './ui/confirm-dialog'
@@ -402,8 +400,8 @@ export function ChatInterface() {
   )
 
   return (
-    <div className="grid h-dvh grid-cols-[220px_280px_minmax(0,1fr)] bg-background text-foreground lg:grid-cols-[220px_280px_minmax(0,1fr)]" style={{ '--sidebar-w': `${sidebarW}px` }}>
-      <aside className="hidden border-r border-foreground/10 bg-background lg:flex lg:flex-col">
+    <div className="flex h-dvh bg-background text-foreground">
+      {false && <aside className="hidden border-r border-foreground/10 bg-background lg:flex lg:flex-col">
         <div className="flex h-16 items-center border-b border-foreground/10 px-5">
           <Link to="/" aria-label="Kembali ke beranda" className="rounded-xl transition-opacity hover:opacity-80">
             <LogoImg className="h-9 w-auto" />
@@ -417,11 +415,11 @@ export function ChatInterface() {
             <Link to="/prd-builder"><FileText className="h-4 w-4" /> PRD Builder <span className="ml-auto text-[10px] text-muted-foreground">Beta</span></Link>
           </Button>
         </div>
-      </aside>
-      <div className="hidden border-r border-foreground/10 lg:block">
+      </aside>}
+      {false && <div className="hidden border-r border-foreground/10 lg:block">
         <Sidebar conversations={state.convs} currentId={state.activeId} onSelect={handleSelectConv} onNew={handleNewChat} onDelete={handleDeleteConv} open collapsed={false} onDragStart={null} user={user} onLogin={() => { setLoginErr(null); setLoginOpen(true) }} onOpenSettings={() => setPrefsOpen(true)} />
-      </div>
-      <main className={`flex min-w-0 flex-col ${collapsed || resizing ? '' : 'transition-[margin] duration-300'} `}>
+      </div>}
+      <main className="flex min-w-0 flex-1 flex-col">
         <header className="relative z-20 flex h-14 flex-shrink-0 items-center justify-between bg-background/80 px-4 backdrop-blur-sm sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <Button
