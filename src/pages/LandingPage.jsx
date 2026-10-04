@@ -297,8 +297,8 @@ function PrdBuilder({ navigate }) {
               Beta
             </span>
             <h2 className="mt-3 text-3xl font-medium tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-              Dari ide jadi PRD dalam hitungan{' '}
-              <span className="text-red-500">menit</span>
+              Dari ide jadi PRD dalam{' '}
+              <span className="text-red-500">hitungan menit</span>
             </h2>
           </div>
           <p className="max-w-sm text-sm leading-relaxed text-muted-foreground sm:text-right">
@@ -372,8 +372,8 @@ function Models() {
                 Model AI
               </span>
               <h2 className="mt-3 text-3xl font-medium tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-                Beragam model, semua{' '}
-                <span className="text-red-500">gratis</span>
+                Beragam model,{' '}
+                <span className="text-red-500">semua gratis</span>
               </h2>
             </div>
             <p className="max-w-sm text-sm leading-relaxed text-muted-foreground sm:text-right">
