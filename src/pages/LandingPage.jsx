@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useTheme } from '../lib/use-theme'
 import { usePageMeta, SITE_NAME, SITE_DESC } from '../lib/seo'
@@ -8,16 +8,27 @@ import { LogoImg } from '../lib/logo-img'
 import { ModelMarquee } from '../components/ModelMarquee'
 import { ThemeIcon } from '../components/theme-icon'
 import { MODELS } from '../lib/models'
-import { ArrowRight, ArrowUp, MessageSquare, Code, Pencil, Lock, BookOpen, CircleHelp, Menu, X, FileText, Copy, Check } from 'lucide-react'
+import {
+  ArrowRight,
+  ArrowUp,
+  MessageSquare,
+  Code,
+  Pencil,
+  Lock,
+  BookOpen,
+  CircleHelp,
+  Menu,
+  X,
+  FileText,
+  Copy,
+  Check,
+  Zap,
+  Sparkles,
+  GitBranch,
+} from 'lucide-react'
 import { MeshCanvas } from '../components/MeshCanvas'
-
 import { ArchitectureGraph } from '../components/landing/ArchitectureGraph'
-
-// motion menambah ~40 kB gz. Section fitur ada di bawah fold, jadi di-load
-// terpisah supaya bundle awal landing page tidak ikut berat.
-const FeaturesWithPanel = lazy(() =>
-  import('../components/ui/features-with-panel').then((m) => ({ default: m.FeaturesWithPanel }))
-)
+import { FeaturesBento } from '../components/landing/FeaturesBento'
 
 function GithubMark({ className, ...props }) {
   return (
@@ -29,192 +40,6 @@ function GithubMark({ className, ...props }) {
 
 
 
-
-// Mock untuk panel media section fitur. Semuanya pakai token tema
-// (border/muted/foreground) supaya ikut light-dark tanpa warna hardcode.
-// Padding sengaja rapat: panelnya max-w-md, mock yang lega akan wrap atau
-// exceed tinggi kotak.
-const Media = ({ children }) => (
-  <div className="flex h-full w-full items-center justify-center bg-muted/30 p-4 sm:p-5">
-    <div className="w-full max-w-xs">{children}</div>
-  </div>
-)
-
-// Bentuk ringkas dari mock chat: chrome + satu putaran bubble dan kontrolnya.
-// Dipakai di panel fitur yang jauh lebih pendek dari mockup hero, jadi bagian
-// yang dipangkas hanya chrome yang redundant.
-function MockChat() {
-  return (
-    <div className="w-full overflow-hidden rounded-lg border border-border bg-card shadow-sm">
-      <div className="flex items-center gap-1.5 border-b border-border px-3 py-2">
-        <span className="h-2 w-2 rounded-full bg-muted-foreground/30" />
-        <span className="h-2 w-2 rounded-full bg-muted-foreground/30" />
-        <span className="h-2 w-2 rounded-full bg-muted-foreground/30" />
-      </div>
-      <div className="space-y-2.5 p-3">
-        <div className="flex justify-end">
-          <div className="max-w-[85%] rounded-lg bg-primary px-2.5 py-1.5 text-[11px] text-primary-foreground">
-            Kenapa error ini muncul terus?
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <div className="size-5 shrink-0 rounded-full border border-border" />
-          <div className="max-w-[88%] space-y-1.5">
-            <div className="rounded-lg bg-muted px-2.5 py-1.5 text-[11px] leading-relaxed text-foreground">
-              karena <span className="font-mono">data</span> belum dimuat saat komponen
-              dirender. Taruh pemanggilan di dalam{' '}
-              <span className="font-mono">useEffect</span>.
-            </div>
-            <div className="flex items-center gap-1 text-[9px] text-muted-foreground">
-              <span className="rounded-full border border-border bg-background px-1 py-px">
-                1 / 2
-              </span>
-              <span className="rounded-full border border-border bg-background px-1 py-px">
-                buat ulang
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function MockWriting() {
-  return (
-    <div className="space-y-2.5">
-      <p className="font-display text-sm font-semibold text-foreground">Draf: follow-up klien</p>
-      {['Hai Bu Rina,', 'Terima kasih sudah sempat menyempatkan waktu kemarin. Saya kirim revisi', 'ringkasannya. Mohon dicek bagian harga sebelum kita lanjut.'].map((t, i) => (
-        <p key={i} className="text-xs leading-relaxed text-muted-foreground">{t}</p>
-      ))}
-      <div className="flex gap-1.5 pt-1">
-        {['Nada: ramah', 'Singkat', 'Butuh tweak'].map((t) => (
-          <span key={t} className="rounded-md bg-background px-1.5 py-0.5 text-[10px] text-muted-foreground ring-1 ring-border">
-            {t}
-          </span>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function MockCode() {
-  return (
-    <div className="space-y-2">
-      <div className="overflow-hidden rounded-lg bg-muted/60 font-mono text-[11px] leading-relaxed">
-        <div className="flex items-center gap-1.5 border-b border-border px-3 py-1.5 text-[10px] text-muted-foreground">
-          <span className="size-1.5 rounded-full bg-muted-foreground/30" />
-          app.js
-        </div>
-        <div className="space-y-0.5 p-3 text-foreground">
-          <div><span className="text-muted-foreground">1</span> <span className="text-muted-foreground">const</span> user = users.find(</div>
-          <div><span className="text-muted-foreground">2</span>   (u) =&gt; u.id === id</div>
-          <div className="text-destructive"><span className="text-muted-foreground">3</span> );</div>
-        </div>
-      </div>
-      <p className="flex items-start gap-1.5 text-[11px] leading-relaxed text-muted-foreground">
-        <span className="mt-0.5 flex size-3.5 shrink-0 items-center justify-center rounded-full bg-foreground text-[9px] text-background">i</span>
-        <span><span className="font-medium text-foreground">Penyebab:</span> find() bisa mengembalikan undefined. Pakai <span className="font-mono">?? null</span> lalu cek sebelum akses.</span>
-      </p>
-    </div>
-  )
-}
-
-function MockTopic() {
-  return (
-    <div className="space-y-2.5">
-      <p className="text-xs font-medium text-foreground">Neural network, dari nol</p>
-      {[
-        ['1. Input', 'Data mentah masuk lewat neuron pertama.'],
-        ['2. Bobot', 'Setiap koneksi punya angka yang mengatur seberapa kuat sinyal.'],
-        ['3. Output', 'Prediksi terbentuk dari kombinasi semua bobot.'],
-      ].map(([t, d]) => (
-        <div key={t} className="rounded-lg border border-border bg-background/60 px-3 py-2">
-          <p className="text-[11px] font-medium text-foreground">{t}</p>
-          <p className="mt-0.5 text-[11px] leading-relaxed text-muted-foreground">{d}</p>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-function MockLearn() {
-  return (
-    <div className="space-y-2.5">
-      <p className="text-xs font-medium text-foreground">Persamaan kuadrat, langkah 2 dari 4</p>
-      <div className="h-1.5 overflow-hidden rounded-full bg-muted">
-        <div className="h-full w-1/2 rounded-full bg-foreground" />
-      </div>
-      {['ax² + bx + c = 0', 'Hitung discriminant: b² − 4ac', 'Tentukan akar dari nilainya', 'Tulis bentuk akhir'].map((s, i) => (
-        <div key={s} className={`flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[11px] ${i < 2 ? 'bg-background/60 text-muted-foreground' : 'text-muted-foreground/50'}`}>
-          {i < 2 ? (
-            <Check className="size-3 shrink-0 text-foreground" />
-          ) : (
-            <span className="size-3 shrink-0 rounded-full border border-border" />
-          )}
-          {s}
-        </div>
-      ))}
-    </div>
-  )
-}
-
-function MockPrivacy() {
-  return (
-    <div className="space-y-2">
-      {['Tanpa pelacakan', 'Tanpa penjualan data', 'Riwayat di perangkatmu'].map((t) => (
-        <div key={t} className="flex items-center gap-2.5 rounded-lg border border-border bg-background/60 px-3 py-2.5">
-          <Lock className="size-3.5 shrink-0 text-muted-foreground" />
-          <span className="text-xs text-foreground">{t}</span>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-const FEATURES = [
-  {
-    icon: MessageSquare,
-    title: 'Tanya apa saja',
-    desc: 'Jawaban cepat untuk pertanyaan apa pun.',
-    prompt: 'Apa itu bunga berbunga, dijelaskan dengan sederhana?',
-    media: <Media><MockChat /></Media>,
-  },
-  {
-    icon: Pencil,
-    title: 'Menulis lebih cepat',
-    desc: 'Draf email, esai, dan konten sesuai gayamu.',
-    prompt: 'Tulis email follow-up yang ramah ke klien yang menghilang.',
-    media: <Media><MockWriting /></Media>,
-  },
-  {
-    icon: Code,
-    title: 'Debug kode',
-    desc: 'Tempel kode, dapat penjelasan dan perbaikan.',
-    prompt: 'Kenapa ini error "cannot read property of undefined"?',
-    media: <Media><MockCode /></Media>,
-  },
-  {
-    icon: BookOpen,
-    title: 'Pelajari topik baru',
-    desc: 'Topik rumit jadi penjelasan sederhana.',
-    prompt: 'Jelaskan cara kerja neural network untuk pemula.',
-    media: <Media><MockTopic /></Media>,
-  },
-  {
-    icon: CircleHelp,
-    title: 'Bantu belajar',
-    desc: 'Langkah demi langkah sampai paham.',
-    prompt: 'Bantu aku pahami persamaan kuadrat dari nol.',
-    media: <Media><MockLearn /></Media>,
-  },
-  {
-    icon: Lock,
-    title: 'Privat & aman',
-    desc: 'Tanpa pelacakan, tanpa penjualan data.',
-    media: <Media><MockPrivacy /></Media>,
-  },
-]
 
 function Logo() {
   return (
@@ -723,28 +548,7 @@ export function LandingPage() {
         <main>
           <Hero navigate={navigate} />
           <ModelMarqueeSection />
-          {/* List fitur + panel media. Glow blob dibungkus di luar karena
-              komponennya sendiri sudah membawa <section>-nya. Padding
-              fallback disamakan dengan section aslinya supaya tidak ada
-              layout shift sewaktu chunk motion selesai di-load. */}
-          <Suspense
-            fallback={
-              <div className="py-12 sm:py-14 lg:py-16" aria-hidden="true" />
-            }
-          >
-            <div className="relative">
-              <div
-                aria-hidden="true"
-                className="absolute left-1/2 top-1/4 hidden h-72 w-[min(600px,100vw)] -translate-x-1/2 rounded-full bg-foreground/5 blur-[120px] lg:block"
-              />
-              <FeaturesWithPanel
-                id="features"
-                items={FEATURES}
-                title="Tulis, kode, belajar"
-                kicker="Fitur"
-              />
-            </div>
-          </Suspense>
+          <FeaturesBento />
           <PrdBuilder navigate={navigate} />
           <Models navigate={navigate} />
         </main>
