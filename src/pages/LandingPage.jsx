@@ -166,7 +166,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
       {open && (
         <div
           id="landing-mobile-nav"
-          className="animate-fade-up border-t border-border/70 bg-background md:hidden"
+          className="animate-fade-up border-t border-foreground/10 md:hidden"
           style={{ animationDuration: '220ms' }}
         >
           <nav className="mx-auto max-w-7xl px-4 py-2">
