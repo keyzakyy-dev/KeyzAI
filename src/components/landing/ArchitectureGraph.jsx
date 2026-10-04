@@ -105,21 +105,16 @@ export function ArchitectureGraph() {
                 <path
                   d={path}
                   className="stroke-border/60 transition-colors duration-500 fill-none"
-                  strokeWidth="2"
-                  strokeDasharray="6 6"
+                  strokeWidth="1.5"
                 />
 
-                {/* Animated active beam — rope curve */}
+                {/* Active beam — solid rope curve */}
                 <path
                   d={path}
                   className={`stroke-primary transition-opacity duration-500 fill-none ${
                     highlight ? 'opacity-100' : 'opacity-0'
                   }`}
-                  strokeWidth="2"
-                  strokeDasharray="10 10"
-                  style={{
-                    animation: highlight ? 'dashMove 1s linear infinite' : 'none',
-                  }}
+                  strokeWidth="1.5"
                 />
               </g>
             )
@@ -210,16 +205,6 @@ export function ArchitectureGraph() {
           )
         })}
       </div>
-
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-        @keyframes dashMove {
-          to { stroke-dashoffset: -16; }
-        }
-      `,
-        }}
-      />
     </div>
   )
 }
