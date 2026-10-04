@@ -520,7 +520,6 @@ export function ChatInterface() {
                   {greeting}
                 </h1>
 
-                <ChatInput onSend={handleSend} loading={loading} model={model} onModelChange={changeModel} />
               </div>
             </div>
           ) : (
@@ -589,7 +588,7 @@ export function ChatInterface() {
              Polanya ada di sini, bukan di dalam kartu input, supaya kolomnya
              sendiri tetap polos dan teksnya tidak berebut kontras. */
           <div className="flex-shrink-0 bg-background px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2">
-            <div className="w-full max-w-3xl">
+            <div className="w-full">
                <ChatInput onSend={handleSend} loading={loading} onStop={stop} showDisclaimer model={model} onModelChange={changeModel} />
              </div>
           </div>
