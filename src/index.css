@@ -159,7 +159,7 @@
   to { stroke-dashoffset: 0; }
 }
 
-.feature-grid-reveal[data-revealed] .feature-card::before {
+.feature-grid .feature-card::before {
   content: '';
   box-sizing: border-box;
   position: absolute;
@@ -169,6 +169,7 @@
   border: 1px solid hsl(var(--foreground) / 0.25);
   clip-path: polygon(0 0, 0 0, 0 0, 0 0);
   animation: feature-line-draw 1.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: var(--card-line-delay, 0ms);
 }
 
 @keyframes feature-line-draw {
@@ -195,10 +196,6 @@
   border: 1px solid hsl(var(--foreground) / 0.25);
   clip-path: polygon(0 0, 0 0, 0 0, 0 0);
   animation: feature-line-draw 1.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  animation-delay: var(--card-line-delay, 0ms);
-}
-
-.feature-grid-reveal[data-revealed] .feature-card::before {
   animation-delay: var(--card-line-delay, 0ms);
 }
 
