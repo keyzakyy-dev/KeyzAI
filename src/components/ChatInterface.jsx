@@ -2,6 +2,7 @@
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { Menu, X, Plus, FileText, ArrowDown, ChevronLeft, ChevronRight, CircleX, RotateCcw, ChevronDown, Pin, Pencil, Trash2, Download } from 'lucide-react'
 import { ThemeIcon } from './theme-icon'
+import { LogoImg } from '../lib/logo-img'
 
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
