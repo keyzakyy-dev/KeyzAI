@@ -181,7 +181,7 @@ function Hero({ navigate }) {
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-32 left-1/2 h-[26rem] w-[min(70rem,120vw)] -translate-x-1/2 rounded-full bg-red-500/10 blur-[140px]"
+        className="pointer-events-none absolute left-[10%] top-1/2 h-[28rem] w-[min(38rem,70vw)] -translate-y-1/2 rounded-full bg-red-500/10 blur-[140px]"
       />
       <div className="relative mx-auto w-full max-w-7xl px-4 sm:px-6">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
