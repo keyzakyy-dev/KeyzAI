@@ -312,21 +312,26 @@ function PrdBuilder({ navigate }) {
       <div className="absolute left-1/2 top-0 h-96 w-[min(800px,100vw)] -translate-x-1/2 rounded-full bg-primary/5 blur-[140px] hidden lg:block" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="mb-10 text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
-            <FileText className="h-3 w-3" />
-            Beta
-          </span>
-          <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-            Dari ide jadi PRD dalam hitungan menit
-          </h2>
+        <div className="mb-10 flex flex-col justify-between gap-4 border-b border-foreground/10 pb-6 sm:flex-row sm:items-end">
+          <div>
+            <span className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
+              <FileText className="h-3 w-3" />
+              Beta
+            </span>
+            <h2 className="mt-3 text-3xl font-medium tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+              Dari ide jadi PRD dalam hitungan menit
+            </h2>
+          </div>
+          <p className="max-w-sm text-sm leading-relaxed text-muted-foreground sm:text-right">
+            Ubah ide mentah menjadi dokumen produk yang jelas, terstruktur, dan siap dibangun.
+          </p>
         </div>
 
         {/* Bento Grid */}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
+        <div className="grid gap-px overflow-hidden border border-foreground/10 bg-foreground/10 sm:grid-cols-2 lg:grid-cols-3">
           {/* Hero Card - spans 2 cols on lg */}
           <Reveal from="up" className="sm:col-span-2 lg:col-span-2 lg:row-span-2">
-            <div className="group relative h-full overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-card to-muted/30 p-6 shadow-sm transition-all hover:shadow-md sm:p-8">
+            <div className="group relative h-full overflow-hidden border border-transparent bg-background p-6 transition-colors hover:border-foreground/25 sm:p-8">
               <div className="absolute right-0 top-0 h-64 w-64 rounded-full bg-primary/5 blur-3xl" />
               <div className="relative space-y-4">
                 <h3 className="text-xl font-bold text-foreground sm:text-2xl">
@@ -373,7 +378,7 @@ function PrdBuilder({ navigate }) {
           {/* Step Cards */}
           {steps.map((step, i) => (
             <Reveal key={step.label} from="up" delay={100 + i * 50}>
-              <div className="h-full rounded-2xl border border-border bg-card p-5 shadow-sm transition-all hover:shadow-md">
+              <div className="h-full border border-transparent bg-background p-5 transition-colors hover:border-foreground/25">
                 <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
                   <step.icon className="h-5 w-5 text-primary" />
                 </div>
