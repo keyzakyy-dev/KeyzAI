@@ -62,12 +62,27 @@ class El {
     this.parentNode = null
     this.isConnected = false
     this._attrs = {}
+    this._listeners = new Map()
+    // theme-wipe memaksa style ter-compute dengan membaca offsetWidth.
+    this.offsetWidth = 0
   }
   setAttribute(k, v) {
     this._attrs[k] = v
   }
   getAttribute(k) {
     return this._attrs[k] ?? null
+  }
+  addEventListener(type, fn) {
+    if (!this._listeners.has(type)) this._listeners.set(type, new Set())
+    this._listeners.get(type).add(fn)
+  }
+  removeEventListener(type, fn) {
+    this._listeners.get(type)?.delete(fn)
+  }
+  /** Simulasikan browser yang memancarkan animationend. */
+  dispatch(type, detail = {}) {
+    const e = { type, target: this, ...detail }
+    for (const fn of this._listeners.get(type) ?? []) fn(e)
   }
   appendChild(child) {
     child.parentNode = this
@@ -132,9 +147,14 @@ function reset({ reducedMotion = false } = {}) {
   globalThis.window.matchMedia = () => ({ matches: reducedMotion })
 }
 
-function clickButton(x, y, w = 32, h = 32) {
+function makeButton(x, y, w = 32, h = 32) {
   const btn = new El('button')
   btn._rect = { left: x, top: y, width: w, height: h }
+  return btn
+}
+
+function clickButton(x, y, w = 32, h = 32) {
+  const btn = makeButton(x, y, w, h)
   document.activeElement = btn
   return btn
 }
@@ -242,10 +262,76 @@ test('toggle berulang tidak menumpuk overlay', async () => {
   assert.notEqual(all[0], first, 'overlay lama dibuang, bukan ditumpuk')
   assert.equal(all[0].dataset.state, 'cover', 'restart dari fase cover')
   assert.equal(all[0].style.getPropertyValue('--wipe-bg'), THEME_BG.dark, 'warna ikut target terbaru')
+  // Swap lama harus dieksekusi seketika, bukan dibuang — kalau tidak
+  // kelas .dark nyangkut dan toggle kedua tidak mengubah apa pun.
+  assert.ok(!htmlEl.classList.contains('dark'), 'swap pending harus di-flush saat wipe baru mulai')
 
   await sleep(800)
   assert.equal(overlay(), undefined, 'overlay dibersihkan di akhir')
   assert.ok(htmlEl.classList.contains('dark'), 'toggle terakhir (dark) yang menang')
+})
+
+test('swap terjadi tepat di akhir cover, bukan sebelum (pakai animationend)', async () => {
+  reset()
+  const events = []
+
+  playThemeWipe('light', () => {
+    events.push('swap')
+    htmlEl.classList.remove('dark')
+  })
+
+  const el = overlay()
+  assert.deepEqual(events, [], 'belum ada swap sebelum cover selesai')
+
+  // Browser memancarkan animationend saat cover selesai → swap.
+  el.dispatch('animationend', { animationName: 'theme-wipe-cover' })
+  assert.deepEqual(events, ['swap'], 'swap tepat saat cover selesai')
+  assert.equal(el.dataset.state, 'reveal')
+
+  await sleep(1000)
+  assert.equal(overlay(), undefined, 'reveal selesai → overlay dibersihkan')
+})
+
+test('animationend dari elemen lain diabaikan', async () => {
+  reset()
+  const events = []
+
+  playThemeWipe('light', () => {
+    events.push('swap')
+    htmlEl.classList.remove('dark')
+  })
+
+  const el = overlay()
+  const stray = new El('div')
+  el.dispatch('animationend', { animationName: 'theme-wipe-cover', target: stray })
+
+  assert.deepEqual(events, [], 'event dari target lain tidak boleh Memicu advance')
+  assert.equal(el.dataset.state, 'cover')
+  await sleep(800)
+})
+
+test('titik pusat mengikuti trigger even, walau activeElement tidak ada', async () => {
+  reset()
+  document.activeElement = null
+  const btn = makeButton(300, 400)
+
+  playThemeWipe('light', () => htmlEl.classList.remove('dark'), btn)
+
+  const el = overlay()
+  assert.equal(el.style.getPropertyValue('--wipe-x'), '316px') // 300 + 32/2
+  assert.equal(el.style.getPropertyValue('--wipe-y'), '416px') // 400 + 32/2
+  await sleep(800)
+})
+
+test('trigger dipakai walau activeElement menunjuk elemen lain', async () => {
+  reset()
+  clickButton(10, 10) // activeElement = tombol lain (mis. focus keyboard)
+  const btn = clickButton(500, 600)
+
+  playThemeWipe('dark', () => htmlEl.classList.add('dark'), btn)
+
+  assert.equal(overlay().style.getPropertyValue('--wipe-x'), '516px')
+  await sleep(800)
 })
 
 console.log('theme wipe: OK')

@@ -530,8 +530,7 @@ function Footer() {
 
 export function LandingPage() {
   const navigate = useNavigate()
-  const [theme, setTheme] = useTheme()
-  const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
+  const [theme, , toggleTheme] = useTheme()
 
   usePageMeta({ title: SITE_NAME, description: SITE_DESC, path: '/' })
 

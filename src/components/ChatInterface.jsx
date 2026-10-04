@@ -36,7 +36,7 @@ export function ChatInterface() {
   const { toast, notify, dismiss } = useToast()
   const { width: sidebarW, resizing, onDragStart, setWidth: setSidebarWidth, hasStoredWidth } = useResizableSidebar()
 
-  const [theme, setTheme] = useTheme()
+  const [theme, , toggleTheme] = useTheme()
   const [model, setModel] = useState(loadModel)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
@@ -105,7 +105,6 @@ export function ChatInterface() {
   }
   // ---------------------------------------------------------------
 
-  const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
   const changeModel = (id) => { setModel(id); saveModel(id) }
 
   // Popup login: muncul saat user belum login mencoba mengirim pesan.

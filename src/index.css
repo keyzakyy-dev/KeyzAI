@@ -222,7 +222,11 @@
   100% { transform: rotate(360deg) scale(1); }
 }
 .theme-toggle-icon {
+  /* inline-block wajib supaya transform (spin) berlaku — elemen inline
+     non-replaced mengabaikan transform. vertical-align: middle mencegah
+     celah baseline yang biasanya muncul di header saat ikon di-inline-block. */
   display: inline-block;
+  vertical-align: middle;
   animation: theme-icon-spin 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 @media (prefers-reduced-motion: reduce) {

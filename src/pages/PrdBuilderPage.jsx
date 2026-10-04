@@ -35,7 +35,7 @@ const STEP_NAMES = ['idea', 'clarify', 'tech', 'structure', 'prd']
 export function PrdBuilderPage() {
   const { projectId } = useParams()
   const navigate = useNavigate()
-  const [theme, setTheme] = useTheme()
+  const [theme, , toggleTheme] = useTheme()
   const model = useMemo(loadModel, [])
   const { loginWithGoogle } = useAuth()
 
@@ -359,7 +359,7 @@ export function PrdBuilderPage() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
+              onClick={toggleTheme}
               aria-label="Ganti tema"
             >
               <ThemeIcon theme={theme} />
