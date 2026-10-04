@@ -523,6 +523,16 @@ export function ChatInterface() {
           <div className="flex flex-shrink-0 items-center gap-2 text-xs">
             <span className="tui-tab-active px-1.5 py-0.5 font-semibold">Chat</span>
             <span className="select-none text-muted-foreground/40" aria-hidden="true">·</span>
+            {!user ? (
+              <button type="button" onClick={() => { setLoginErr(null); setLoginOpen(true) }} aria-label="Masuk" className="tui-tab-active px-1.5 py-0.5 font-semibold">
+                masuk
+              </button>
+            ) : (
+              <button type="button" onClick={() => setPrefsOpen(true)} title={user.email || undefined} className="max-w-24 truncate text-muted-foreground transition-colors hover:text-foreground">
+                {tuiUserLabel}
+              </button>
+            )}
+            <span className="select-none text-muted-foreground/40" aria-hidden="true">·</span>
             <button type="button" onClick={() => setPrefsOpen(true)} aria-label="Pengaturan" className="text-muted-foreground transition-colors hover:text-foreground">
               Settings
             </button>
@@ -559,6 +569,11 @@ export function ChatInterface() {
                   <span className="tui-prompt font-bold" aria-hidden="true">› </span>
                   ketik di bawah · Enter untuk kirim
                 </p>
+                {!user && (
+                  <button type="button" onClick={() => { setLoginErr(null); setLoginOpen(true) }} className="font-mono text-xs text-muted-foreground underline decoration-dotted underline-offset-4 transition-colors hover:text-foreground">
+                    masuk untuk menyimpan riwayat
+                  </button>
+                )}
               </div>
             </div>
           ) : (

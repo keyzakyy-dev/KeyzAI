@@ -32,6 +32,9 @@ export function LoginDialog({ open, onOpenChange, onIdToken, loading = false, er
           </div>
 
           <div className="mt-4 space-y-2">
+            <p className="font-mono text-[11px] text-muted-foreground">
+              tekan tombol di bawah untuk masuk dengan Google:
+            </p>
             <div className="rounded-sm border border-foreground/10 p-2">
               <GoogleSignInButton
                 onIdToken={onIdToken}
