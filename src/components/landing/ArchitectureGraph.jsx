@@ -81,7 +81,7 @@ export function ArchitectureGraph() {
     const sag = dist * 0.18
     const cx = (x1 + x2) / 2 + nx * sag
     const cy = (y1 + y2) / 2 + ny * sag
-    return `M${x1}% ${y1}% Q${cx}% ${cy}% ${x2}% ${y2}%`
+    return `M${x1} ${y1} Q${cx} ${cy} ${x2} ${y2}`
   }
 
   return (
@@ -92,7 +92,7 @@ export function ArchitectureGraph() {
     >
       <div className="relative aspect-square w-full">
         {/* SVG Connections */}
-        <svg className="absolute inset-0 h-full w-full pointer-events-none" aria-hidden="true">
+        <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full pointer-events-none" aria-hidden="true">
           {satellites.map((node) => {
             const isActive = activeNode === node.id
             const isCore = activeNode === 'engine'
