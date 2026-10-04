@@ -74,14 +74,22 @@ export function ArchitectureGraph() {
     const dx = x2 - x1
     const dy = y2 - y1
     const dist = Math.hypot(dx, dy) || 1
+    const ux = dx / dist
+    const uy = dy / dist
+    const startInset = 7
+    const endInset = 5
+    const startX = x1 + ux * startInset
+    const startY = y1 + uy * startInset
+    const endX = x2 - ux * endInset
+    const endY = y2 - uy * endInset
     // Vektor tegak lurus (rotate 90°): (-dy, dx). Normalisasi.
     const nx = -dy / dist
     const ny = dx / dist
     // Sag = 18% jarak. Arah dipilih supaya tali cenderung "keluar" dari tengah.
     const sag = dist * 0.18
-    const cx = (x1 + x2) / 2 + nx * sag
-    const cy = (y1 + y2) / 2 + ny * sag
-    return `M${x1} ${y1} Q${cx} ${cy} ${x2} ${y2}`
+    const cx = (startX + endX) / 2 + nx * sag
+    const cy = (startY + endY) / 2 + ny * sag
+    return `M${startX} ${startY} Q${cx} ${cy} ${endX} ${endY}`
   }
 
   return (
