@@ -48,27 +48,29 @@ export function FeaturesBento() {
   return (
     <section id="features" className="relative scroll-mt-20 py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="mb-12 text-center">
-          <span className="inline-flex items-center text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            Fitur Utama
-          </span>
-          <h2 className="mt-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-            Tulis, kode, eksplorasi
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Dirancang untuk produktivitas tinggi dengan performa instan di edge network.
+        <div className="mb-10 flex flex-col justify-between gap-4 border-b border-foreground/10 pb-6 sm:flex-row sm:items-end">
+          <div>
+            <span className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
+              Fitur utama
+            </span>
+            <h2 className="mt-3 text-3xl font-medium tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+              Tulis, kode, eksplorasi
+            </h2>
+          </div>
+          <p className="max-w-sm text-sm leading-relaxed text-muted-foreground sm:text-right">
+            Satu ruang kerja untuk berpikir, membuat, dan menyelesaikan lebih cepat.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-3 lg:gap-5">
+        <div className="grid grid-cols-1 gap-px overflow-hidden border border-foreground/10 bg-foreground/10 md:grid-cols-3">
           {FEATURES.map((item, index) => {
             const Icon = item.icon
             return (
               <Reveal key={item.id} from="up" delay={index * 60} className={item.span}>
-                <div className="group relative flex h-full flex-col justify-between overflow-hidden rounded-3xl border border-border bg-card/60 p-6 transition-all duration-300 hover:border-foreground/30 hover:bg-card hover:shadow-md sm:p-8">
+                <div className="group relative flex h-full flex-col justify-between overflow-hidden bg-background p-6 transition-colors duration-300 hover:bg-foreground/[0.03] sm:p-8">
                   <div>
-                    <div className="mb-6 flex items-center justify-between">
-                      <div className="flex size-12 items-center justify-center rounded-2xl bg-foreground/5 text-foreground transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                    <div className="mb-8 flex items-center justify-between">
+                      <div className="flex size-10 items-center justify-center rounded-full border border-foreground/15 text-foreground transition-colors group-hover:border-foreground/40">
                         <Icon className="size-6" />
                       </div>
                       <span className="rounded-full bg-background px-3 py-1 font-mono text-[11px] font-medium text-muted-foreground ring-1 ring-border">
@@ -76,7 +78,7 @@ export function FeaturesBento() {
                       </span>
                     </div>
 
-                    <h3 className="text-xl font-bold text-foreground sm:text-2xl">
+                    <h3 className="text-lg font-medium text-foreground sm:text-xl">
                       {item.title}
                     </h3>
                     <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
