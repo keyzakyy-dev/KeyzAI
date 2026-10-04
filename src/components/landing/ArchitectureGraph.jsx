@@ -111,13 +111,13 @@ export function ArchitectureGraph() {
               <g key={`line-${node.id}`}>
                 <path
                   d={path}
-                  className="stroke-foreground/15 fill-none"
+                  className="architecture-line-draw stroke-foreground/15 fill-none"
                   strokeWidth="0.35"
                   strokeDasharray="1 2"
                 />
                 <path
                   d={path}
-                  className={`stroke-foreground/70 fill-none transition-opacity duration-500 ${
+                  className={`architecture-line-draw stroke-foreground/70 fill-none transition-opacity duration-500 ${
                     highlight ? 'opacity-100' : 'opacity-0'
                   }`}
                   strokeWidth="0.7"
