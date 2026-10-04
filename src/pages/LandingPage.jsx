@@ -242,14 +242,14 @@ function Hero({ navigate }) {
               <button
                 type="button"
                 onClick={() => navigate('/chat')}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-[15px] font-semibold text-primary-foreground transition-colors hover:bg-primary/85"
+                className="group inline-flex h-12 items-center justify-center gap-2 rounded-full bg-primary px-6 text-[15px] font-medium text-primary-foreground shadow-[0_8px_24px_hsl(var(--foreground)/0.12)] transition-all hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-[0_10px_28px_hsl(var(--foreground)/0.18)]"
               >
                 Buka chat
-                <ArrowRight className="size-4" aria-hidden="true" />
+                <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
               </button>
               <a
                 href="#prd-builder"
-                className="inline-flex h-12 items-center justify-center rounded-lg border border-border bg-card px-5 text-[15px] font-semibold text-foreground transition-colors hover:border-foreground/40"
+                className="inline-flex h-12 items-center justify-center rounded-full border border-foreground/15 bg-transparent px-6 text-[15px] font-medium text-foreground transition-all hover:-translate-y-0.5 hover:border-foreground/40 hover:bg-foreground/[0.04]"
               >
                 Dari ide jadi PRD
               </a>
