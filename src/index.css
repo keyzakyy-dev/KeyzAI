@@ -408,8 +408,8 @@
    hanya untuk elemen chrome terminal. */
 .tui-root {
   --tui-border: hsl(var(--foreground) / 0.16);
-  --tui-accent: #ff2d78;
-  --tui-warn: #ff9f0a;
+  --tui-accent: #ff3b30;
+  --tui-warn: #ff3b30;
 }
 .tui-panel {
   position: relative;
@@ -472,6 +472,20 @@
   border: 1px solid var(--tui-border);
   color: hsl(var(--muted-foreground));
   border-radius: 2px;
+}
+/* Kotak indikator loading: kedip berurutan (delay di-set per kotak via
+   animationDelay). Pixel-style: opacity penuh -> redup, tanpa glow. */
+@keyframes tui-box-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.15; }
+}
+.tui-box-loading {
+  animation: tui-box-blink 1s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tui-box-loading {
+    animation: none;
+  }
 }
 .tui-prompt {
   color: var(--tui-accent);

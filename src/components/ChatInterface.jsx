@@ -643,9 +643,9 @@ export function ChatInterface() {
       <div className="relative flex flex-col gap-1 px-1 pb-[max(0.25rem,env(safe-area-inset-bottom))] text-[11px] leading-relaxed lg:col-span-2" aria-live="polite">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
           <span className="inline-flex items-center gap-1" aria-hidden="true">
-            <span className={`inline-block h-1.5 w-1.5 ${loading ? 'bg-red-500' : 'bg-foreground/25'}`} />
-            <span className={`inline-block h-1.5 w-1.5 ${loading ? 'bg-red-500/60' : 'bg-foreground/25'}`} />
-            <span className="inline-block h-1.5 w-1.5 bg-foreground/25" />
+            <span className={`inline-block h-1.5 w-1.5 ${loading ? 'tui-box-loading bg-red-500' : 'bg-foreground/25'}`} />
+            <span className={`inline-block h-1.5 w-1.5 ${loading ? 'tui-box-loading bg-red-500' : 'bg-foreground/25'}`} style={loading ? { animationDelay: '0.15s' } : undefined} />
+            <span className={`inline-block h-1.5 w-1.5 ${loading ? 'tui-box-loading bg-red-500' : 'bg-foreground/25'}`} style={loading ? { animationDelay: '0.3s' } : undefined} />
           </span>
           {loading ? (
             <span><span className="text-foreground">Waiting for the model</span><span className="text-muted-foreground"> · Esc to stop</span></span>
