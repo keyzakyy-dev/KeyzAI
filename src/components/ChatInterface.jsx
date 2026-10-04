@@ -536,11 +536,18 @@ export function ChatInterface() {
           >
           {messages.length === 0 ? (
             <div className="flex flex-1 items-center justify-center px-4 py-8 sm:py-12">
-              <div className="w-full max-w-2xl space-y-4">
-                <h1 className="text-center font-serif text-2xl font-medium tracking-tight text-foreground sm:text-3xl md:text-4xl">
+              <div className="w-full max-w-2xl space-y-3 text-center">
+                <p className="flex items-center justify-center gap-2 font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+                  <span className="inline-block h-1.5 w-1.5 bg-emerald-400" aria-hidden="true" />
+                  session ready
+                </p>
+                <h1 className="font-serif text-2xl font-medium tracking-tight text-foreground sm:text-3xl md:text-4xl">
                   {greeting}
                 </h1>
-
+                <p className="font-mono text-xs text-muted-foreground/70">
+                  <span className="tui-prompt font-bold" aria-hidden="true">› </span>
+                  ketik di bawah · Enter untuk kirim
+                </p>
               </div>
             </div>
           ) : (
