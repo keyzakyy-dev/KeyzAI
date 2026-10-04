@@ -5,6 +5,7 @@ import { usePageMeta, SITE_NAME, SITE_DESC } from '../lib/seo'
 import { Reveal } from '../lib/reveal'
 import { useAuth } from '../hooks/useAuth'
 import { LogoImg } from '../lib/logo-img'
+import { ModelMarquee } from '../components/ModelMarquee'
 import { ThemeIcon } from '../components/theme-icon'
 import { MODELS } from '../lib/models'
 import { ArrowRight, ArrowUp, MessageSquare, Code, Pencil, Lock, BookOpen, CircleHelp, Menu, X, FileText, Copy, Check } from 'lucide-react'
@@ -372,8 +373,8 @@ function Hero({ navigate }) {
        heksagon di belakang mengisi ruang itu, mockup sudah dihapus. */
     <section className="relative overflow-hidden py-16 sm:py-20 lg:flex lg:min-h-[calc(100svh-4rem)] lg:items-center lg:py-24">
       <div className="relative mx-auto w-full max-w-7xl px-4 sm:px-6">
-        {/* lg:col-span-6 (bukan 5) supaya heading di 3.25rem tidak jadi 6 baris
-            sempit di tablet; di xl kembali ke 5/12 seperti pola aslinya. */}
+        {/* Kolom kiri 6/12 di tablet, 5/12 di xl — 5/12 bikin heading 3.5rem
+            jadi terlalu banyak baris di tablet. Kolom kanan jadi 6/7. */}
         <div className="grid grid-cols-1 lg:grid-cols-12">
           <div className="min-w-0 lg:col-span-6 xl:col-span-5">
             <a
@@ -447,6 +448,18 @@ function Hero({ navigate }) {
                 </li>
               ))}
             </ul>
+          </div>
+
+          {/* Kolom kanan: marquee model gratis — membuktikan klaim "semua model
+              gratis" di headline, bukan sekadar kebetulan. Delay 200ms
+              sesuai pola stagger hero: kolom kanan muncul sebelum checklist. */}
+          <div
+            className="animate-rise mt-12 hidden lg:col-span-6 lg:mt-0 lg:block xl:col-span-7"
+            style={{ animationDelay: '200ms' }}
+          >
+            <div className="flex h-full items-center">
+              <ModelMarquee />
+            </div>
           </div>
         </div>
       </div>

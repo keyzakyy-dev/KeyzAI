@@ -282,6 +282,13 @@
   .animate-rise {
     animation: none !important;
   }
+  /* Salinan kedua marquee (konten digabung 2x demi sambungan loop) tetap
+     ada di DOM, jadi setelah animasi dimatikan isinya masih terbaca normal
+     — yang tadinya duplikat tak terlihat jadi sekadar daftar model. */
+  .animate-marquee,
+  .animate-marquee-reverse {
+    animation: none !important;
+  }
   html {
     scroll-behavior: auto;
   }

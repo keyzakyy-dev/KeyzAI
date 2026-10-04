@@ -53,6 +53,16 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
+        // Marquee: isi baris dirender 2x, jadi geser tepat -50% (= satu
+        // salinan) selalu kembali ke frame yang identik — loop tanpa celah.
+        marquee: {
+          from: { transform: 'translateX(0)' },
+          to: { transform: 'translateX(-50%)' },
+        },
+        'marquee-reverse': {
+          from: { transform: 'translateX(-50%)' },
+          to: { transform: 'translateX(0)' },
+        },
         // Hero: naik 14px + fade, ~80ms stagger per elemen. both fill-mode
         // supaya elemen tidak berkedip sebelum delay-nya mulai.
         rise: {
@@ -77,6 +87,8 @@ export default {
         },
       },
       animation: {
+        'marquee': 'marquee 45s linear infinite',
+        'marquee-reverse': 'marquee-reverse 45s linear infinite',
         'rise': 'rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both',
         'fade-up': 'fade-up 0.8s ease-out both',
         float: 'float 6s ease-in-out infinite',
