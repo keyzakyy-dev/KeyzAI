@@ -6,6 +6,10 @@ const MAX_EDGES = 4
 export function MeshCanvas({
   className = 'block h-full w-full',
   label = 'Decorative animated network mesh.',
+  // Pengali intensitas & kepadatan. Default 1 = tampilan landing saat ini;
+  // halaman chat memakai nilai lebih tinggi agar mesh terlihat di balik panel.
+  strength = 1,
+  density = 1,
 }) {
   const canvasRef = useRef(null)
 
@@ -14,6 +18,9 @@ export function MeshCanvas({
     const parent = canvas?.parentElement
     const ctx = canvas?.getContext('2d')
     if (!canvas || !parent || !ctx) return
+
+    // Klem alpha 0..1 setelah dikali strength.
+    const A = (v) => Math.max(0, Math.min(1, v * strength))
 
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     let width = 0
@@ -36,7 +43,7 @@ export function MeshCanvas({
       canvas.width = Math.round(width * dpr)
       canvas.height = Math.round(height * dpr)
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-      const count = Math.max(36, Math.min(130, Math.round(width * height / 11000)))
+      const count = Math.max(36, Math.min(Math.round(130 * density), Math.round(width * height / 11000 * density)))
       nodes = Array.from({ length: count }, () => {
         const vx = (Math.random() - 0.5) * 0.22
         const vy = (Math.random() - 0.5) * 0.22
@@ -71,12 +78,12 @@ export function MeshCanvas({
         const x = packet.from.x + (packet.target.x - packet.from.x) * ease
         const y = packet.from.y + (packet.target.y - packet.from.y) * ease
         const alpha = Math.sin(Math.PI * progress)
-        ctx.strokeStyle = `rgba(${INK}, ${0.16 * alpha})`
+        ctx.strokeStyle = `rgba(${INK}, ${A(0.16 * alpha)})`
         ctx.beginPath()
         ctx.moveTo(packet.from.x, packet.from.y)
         ctx.lineTo(packet.target.x, packet.target.y)
         ctx.stroke()
-        ctx.fillStyle = `rgba(${INK}, ${0.85 * alpha})`
+        ctx.fillStyle = `rgba(${INK}, ${A(0.85 * alpha)})`
         ctx.beginPath()
         ctx.arc(x, y, 1.7, 0, Math.PI * 2)
         ctx.fill()
@@ -123,7 +130,7 @@ export function MeshCanvas({
 
       ctx.lineWidth = 1
       for (let i = 0; i < MAX_EDGES; i += 1) {
-        ctx.strokeStyle = `rgba(${INK}, ${0.045 + i * 0.05})`
+        ctx.strokeStyle = `rgba(${INK}, ${A(0.045 + i * 0.05)})`
         ctx.stroke(paths[i])
       }
 
@@ -135,7 +142,7 @@ export function MeshCanvas({
           .slice(0, 5)
 
         for (const { node, distance } of nearby) {
-          const alpha = Math.max(0, (1 - distance / 260) * 0.2)
+          const alpha = A(Math.max(0, (1 - distance / 260) * 0.2))
           ctx.strokeStyle = `rgba(${INK}, ${alpha})`
           ctx.beginPath()
           ctx.moveTo(node.x, node.y)
@@ -145,13 +152,13 @@ export function MeshCanvas({
       }
 
       for (const node of nodes) {
-        const alpha = (node.hub ? 0.38 : 0.22) + node.influence * 0.55
+        const alpha = A((node.hub ? 0.38 : 0.22) + node.influence * 0.55)
         ctx.fillStyle = `rgba(${INK}, ${alpha})`
         ctx.beginPath()
         ctx.arc(node.x, node.y, node.r + node.influence, 0, Math.PI * 2)
         ctx.fill()
         if (node.hub) {
-          ctx.strokeStyle = `rgba(${INK}, ${0.1 + node.influence * 0.3})`
+          ctx.strokeStyle = `rgba(${INK}, ${A(0.1 + node.influence * 0.3)})`
           ctx.beginPath()
           ctx.arc(node.x, node.y, node.r + 4 + node.influence * 2, 0, Math.PI * 2)
           ctx.stroke()
@@ -199,7 +206,7 @@ export function MeshCanvas({
       document.documentElement.removeEventListener('pointerleave', leave)
       document.removeEventListener('visibilitychange', visibility)
     }
-  }, [])
+  }, [strength, density])
 
   return <canvas ref={canvasRef} className={className} role="img" aria-label={label} />
 }

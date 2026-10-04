@@ -474,7 +474,7 @@
    transparan + blur supaya mesh terlihat samar tanpa mengganggu keterbacaan.
    Scoped ke .chat-mesh agar panel/dialog di halaman lain tidak ikut berubah. */
 .chat-mesh .tui-panel {
-  background: hsl(var(--background) / 0.8);
+  background: hsl(var(--background) / 0.72);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
