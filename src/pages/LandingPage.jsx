@@ -327,29 +327,6 @@ function PrdBuilder({ navigate }) {
                   <ArrowRight className="h-4 w-4" />
                 </button>
               </div>
-              {/* Mini PRD preview */}
-              <div className="relative mt-8 overflow-hidden bg-background/80">
-                <div className="flex items-center gap-2 border-b border-border/50 bg-muted/40 px-3 py-2">
-                  <span className="flex gap-1" aria-hidden="true">
-                    <span className="size-2 rounded-full bg-foreground/20" />
-                    <span className="size-2 rounded-full bg-foreground/20" />
-                    <span className="size-2 rounded-full bg-foreground/20" />
-                  </span>
-                  <span className="ml-1 font-mono text-[10px] text-muted-foreground">prd.md</span>
-                </div>
-                <div className="space-y-3 p-4">
-                  <div className="h-2 w-24 rounded bg-foreground/10" />
-                  <div className="space-y-1.5">
-                    <div className="h-1.5 w-full rounded bg-foreground/5" />
-                    <div className="h-1.5 w-4/5 rounded bg-foreground/5" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <div className="h-1.5 w-20 rounded bg-foreground/8" />
-                    <div className="h-1.5 w-full rounded bg-foreground/5" />
-                    <div className="h-1.5 w-3/4 rounded bg-foreground/5" />
-                  </div>
-                </div>
-              </div>
             </div>
           </Reveal>
 
