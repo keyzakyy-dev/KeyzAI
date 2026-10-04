@@ -15,7 +15,7 @@ export function LogoImg({ className = '' }) {
 // Wordmark teks: KEYZ mengikuti tema (putih di dark, gelap di light) + AI merah.
 export function Wordmark({ className = '' }) {
   return (
-    <span className={`text-2xl font-bold tracking-tight text-foreground ${className}`}>
+    <span className={`text-xl font-medium tracking-[0.16em] text-foreground ${className}`}>
       KEYZ<span className="text-red-500">AI</span>
     </span>
   )
