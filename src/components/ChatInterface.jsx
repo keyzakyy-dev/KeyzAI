@@ -524,7 +524,7 @@ export function ChatInterface() {
             </div>
           ) : (
             <OptionsContext.Provider value={optionsValue}>
-            <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col space-y-7 px-4 py-8 font-mono sm:px-8 sm:py-10">
+            <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col border border-foreground/10 bg-background/60 px-4 py-8 font-mono sm:px-8 sm:py-10">
               {messages.map((msg, i) => (
                 <ChatMessage
                   key={msg.id}
@@ -594,7 +594,9 @@ export function ChatInterface() {
           </div>
         )}
         <div className="flex-shrink-0 bg-background px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2">
+          <div className="mx-auto w-full max-w-5xl">
           <ChatInput onSend={handleSend} loading={loading} onStop={stop} showDisclaimer={messages.length > 0} model={model} onModelChange={changeModel} />
+          </div>
         </div>
       </main>
 
