@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { MeshCanvas } from './MeshCanvas'
+import { AnnouncementDialog } from './AnnouncementDialog'
 import { ConfirmDialog } from './ui/confirm-dialog'
 import { PreferencesDialog } from './PreferencesDialog'
 import { LoginDialog } from './LoginDialog'
-import { X, PanelRight, Plus, FileText, MessageSquare, Trash2, User } from 'lucide-react'
+import { X, ArrowDown, PanelRight, Plus, FileText, MessageSquare, Trash2, User } from 'lucide-react'
 
 import { useAuth } from '../hooks/useAuth'
 import { useChatStore } from '../hooks/useChatStore'
@@ -54,6 +55,18 @@ export function AppSidebar({
   const [panelTab, setPanelTab] = useState('menu')
   // Aside jadi drawer di mobile agar kolom konten tidak tertutup.
   const [panelOpen, setPanelOpen] = useState(false)
+  // Announcement "sedang dalam pengembangan": sekali per sesi browser
+  // (kunci sessionStorage yang sama dengan /chat).
+  const [announceOpen, setAnnounceOpen] = useState(() => {
+    try {
+      return sessionStorage.getItem('keyzai-announced') !== '1'
+    } catch {
+      return false
+    }
+  })
+  // Posisi scroll kanvas output untuk tombol gulir-ke-bawah.
+  const scrollAreaRef = useRef(null)
+  const [atBottom, setAtBottom] = useState(true)
 
   const { prefs, saving, error: prefsError, refresh: refreshPrefs, update: updatePrefs, saveDisplayName, reset: resetPrefs } =
     usePreferences({})
@@ -127,6 +140,28 @@ export function AppSidebar({
 
   const handleExportAll = () => downloadAll(state.convs.map(serializeConv))
 
+  const closeAnnounce = (open) => {
+    setAnnounceOpen(open)
+    if (!open) {
+      try {
+        sessionStorage.setItem('keyzai-announced', '1')
+      } catch {
+        // sessionStorage unavailable (private mode) — popup tidak akan ulang sesi ini
+      }
+    }
+  }
+
+  const scrollToBottom = () => {
+    const el = scrollAreaRef.current
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+  }
+
+  const handleScroll = () => {
+    const el = scrollAreaRef.current
+    if (!el) return
+    setAtBottom(el.scrollHeight - el.scrollTop - el.clientHeight < 150)
+  }
+
   // ---------- panel project (cermin panel session di /chat)
   const stepIndex = projectMeta.stepIndex ?? 0
   const totalSteps = projectMeta.totalSteps ?? 5
@@ -149,9 +184,17 @@ export function AppSidebar({
       <main className="flex min-h-0 min-w-0 flex-col gap-3 lg:h-full lg:min-h-0">
         <div className="tui-panel relative z-20 flex h-10 flex-shrink-0 items-center justify-between gap-3 px-4">
           {header}
-          <button type="button" onClick={() => setPanelOpen((o) => !o)} aria-label="Buka/tutup panel" aria-expanded={panelOpen} className="flex h-6 w-6 items-center justify-center border border-foreground/15 text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground lg:hidden">
-            <PanelRight className="h-3 w-3" />
-          </button>
+          <div className="flex flex-shrink-0 items-center gap-2 text-xs">
+            <button type="button" onClick={onNewPrd} aria-label="PRD baru" className="flex h-6 w-6 items-center justify-center border border-foreground/15 text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground">
+              <Plus className="h-3 w-3" />
+            </button>
+            <button type="button" onClick={() => setPrefsOpen(true)} aria-label="Pengaturan" className="text-muted-foreground transition-colors hover:text-foreground">
+              Settings
+            </button>
+            <button type="button" onClick={() => setPanelOpen((o) => !o)} aria-label="Buka/tutup panel" aria-expanded={panelOpen} className="flex h-6 w-6 items-center justify-center border border-foreground/15 text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground lg:hidden">
+              <PanelRight className="h-3 w-3" />
+            </button>
+          </div>
         </div>
 
         <div className="tui-panel relative flex min-h-0 flex-1 flex-col">
@@ -161,13 +204,31 @@ export function AppSidebar({
               {stepper}
             </div>
           )}
-          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-6 sm:px-6">
+          <div
+            ref={scrollAreaRef}
+            onScroll={handleScroll}
+            className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-6 sm:px-6"
+          >
             {children}
           </div>
+
+          {!atBottom && (
+            <button
+              onClick={() => {
+                setAtBottom(true)
+                scrollToBottom()
+              }}
+              aria-label="Gulir ke bawah"
+              className="absolute bottom-4 left-1/2 z-10 flex h-9 w-9 -translate-x-1/2 items-center justify-center rounded-sm border border-foreground/25 bg-background text-foreground transition-colors hover:border-foreground/40"
+            >
+              <ArrowDown className="h-4 w-4" />
+            </button>
+          )}
         </div>
 
         {actionBar && (
-          <div className="tui-panel relative flex-shrink-0 px-3 pb-2 pt-3">
+          <div className={`tui-panel relative flex-shrink-0 px-3 pb-2 pt-3 ${working ? 'tui-queued' : ''}`}>
+            <span className={`tui-inset-title ${working ? 'tui-inset-accent' : ''}`} aria-hidden="true">{working ? 'queued' : 'aksi'}</span>
             {actionBar}
           </div>
         )}
@@ -308,6 +369,7 @@ export function AppSidebar({
         error={loginErr}
         reason="manual"
       />
+      <AnnouncementDialog open={announceOpen} onOpenChange={closeAnnounce} />
       <ConfirmDialog
         open={!!confirm}
         onOpenChange={(o) => !o && setConfirm(null)}

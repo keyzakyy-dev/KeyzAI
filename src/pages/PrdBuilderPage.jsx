@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, ArrowRight, Download, FileJson, Plus, RotateCcw, SkipForward } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Download, FileJson, RotateCcw, SkipForward } from 'lucide-react'
 
 import { Button } from '../components/ui/button'
 import { CopyButton } from '../lib/copy-button'
@@ -404,10 +404,17 @@ export function PrdBuilderPage() {
     )
 
   const statusBar = (
-    <div className="relative flex flex-shrink-0 items-center gap-2 px-1 py-1 text-[11px] leading-relaxed text-muted-foreground lg:col-span-2" aria-live="polite">
+    <div className="relative flex flex-shrink-0 items-center gap-x-2 gap-y-0.5 px-1 py-1 text-[11px] leading-relaxed text-muted-foreground lg:col-span-2" aria-live="polite">
+      <span className="inline-flex items-center gap-1" aria-hidden="true">
+        <span className={`inline-block h-1.5 w-1.5 ${isWorking ? 'bg-orange-400' : 'bg-emerald-400'}`} />
+        <span className={`inline-block h-1.5 w-1.5 ${isWorking ? 'bg-orange-400/60' : 'bg-foreground/25'}`} />
+        <span className="inline-block h-1.5 w-1.5 bg-foreground/25" />
+      </span>
       <span className={`px-1 py-px text-[10px] font-bold uppercase tracking-wider ${isWorking ? 'tui-badge-working' : 'tui-badge-idle'}`}>
         {isWorking ? 'working' : 'idle'}
       </span>
+      <span className="tui-accent font-semibold">keyzai</span>
+      <span className="text-muted-foreground">·</span>
       <span className="min-w-0 flex-1 truncate">
         {isWorking ? (loadingMessage || 'bekerja…') : 'idle · siap'}
       </span>
@@ -427,24 +434,17 @@ export function PrdBuilderPage() {
   }
 
   const headerNode = (
-    <>
-      <div className="flex min-w-0 items-center gap-2 text-xs">
-        <Button variant="ghost" size="sm" onClick={handleBackToChat} className="gap-1.5">
-          <ArrowLeft className="h-3.5 w-3.5" />
-          <span className="hidden sm:inline">Kembali ke chat</span>
-          <span className="sm:hidden">Chat</span>
-        </Button>
-        <span className="shrink-0 select-none text-muted-foreground/50" aria-hidden="true">·</span>
-        <p className="min-w-0 truncate text-muted-foreground">
-          {project?.projectName || 'PRD Builder'}
-        </p>
-      </div>
-      <div className="flex flex-shrink-0 items-center gap-2">
-        <button type="button" onClick={handleNewPrd} aria-label="PRD baru" className="flex h-6 w-6 items-center justify-center border border-foreground/15 text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground">
-          <Plus className="h-3 w-3" />
-        </button>
-      </div>
-    </>
+    <div className="flex min-w-0 items-center gap-2 text-xs">
+      <Button variant="ghost" size="sm" onClick={handleBackToChat} className="gap-1.5">
+        <ArrowLeft className="h-3.5 w-3.5" />
+        <span className="hidden sm:inline">Kembali ke chat</span>
+        <span className="sm:hidden">Chat</span>
+      </Button>
+      <span className="shrink-0 select-none text-muted-foreground/50" aria-hidden="true">·</span>
+      <p className="min-w-0 truncate text-muted-foreground">
+        {project?.projectName || 'PRD Builder'}
+      </p>
+    </div>
   )
 
   return (
