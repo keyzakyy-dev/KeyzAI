@@ -143,7 +143,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false }) {
             }}
             onKeyDown={handleKeyDown}
             placeholder="Ada yang bisa dibantu?"
-            className="max-h-40 min-h-[24px] flex-1 resize-none overflow-y-auto border-0 bg-transparent py-0.5 font-mono text-sm leading-relaxed text-foreground placeholder:font-mono placeholder:text-sm placeholder:text-muted-foreground/60 focus-visible:ring-0 focus-visible:ring-offset-0"
+            className="max-h-40 min-h-[24px] flex-1 resize-none overflow-y-auto border-0 bg-transparent py-0.5 text-sm leading-relaxed text-foreground placeholder:text-sm placeholder:text-muted-foreground/60 focus-visible:ring-0 focus-visible:ring-offset-0"
             rows={1}
           />
           {loading ? (

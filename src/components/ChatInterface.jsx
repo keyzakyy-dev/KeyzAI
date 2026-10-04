@@ -452,7 +452,7 @@ export function ChatInterface() {
   )
 
   return (
-    <div className="tui-root grid h-dvh grid-cols-1 grid-rows-[minmax(0,1fr)_auto] gap-3 overflow-hidden bg-background p-3 font-mono text-foreground lg:grid-cols-[minmax(0,1fr)_360px] lg:grid-rows-[minmax(0,1fr)_auto]">
+    <div className="tui-root grid h-dvh grid-cols-1 grid-rows-[minmax(0,1fr)_auto] gap-3 overflow-hidden bg-background p-3 text-foreground lg:grid-cols-[minmax(0,1fr)_360px] lg:grid-rows-[minmax(0,1fr)_auto]">
       {/* TUI: menu dipindah ke panel kanan (kolom Agents) */}
       {/* TUI: recent chat dipindah ke panel kanan (kolom Agents) */}
       <main className="flex min-h-0 min-w-0 flex-col gap-3 lg:h-full lg:min-h-0">
@@ -568,19 +568,19 @@ export function ChatInterface() {
           {messages.length === 0 ? (
             <div className="flex flex-1 items-center justify-center px-4 py-8 sm:py-12">
               <div className="w-full max-w-2xl space-y-3 text-center">
-                <p className="flex items-center justify-center gap-2 font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+                <p className="flex items-center justify-center gap-2 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
                   <span className="inline-block h-1.5 w-1.5 bg-emerald-400" aria-hidden="true" />
                   session ready
                 </p>
-                <h1 className="font-serif text-2xl font-medium tracking-tight text-foreground sm:text-3xl md:text-4xl">
+                <h1 className="text-2xl font-medium tracking-tight text-foreground sm:text-3xl md:text-4xl">
                   {greeting}
                 </h1>
-                <p className="font-mono text-xs text-muted-foreground/70">
+                <p className="text-xs text-muted-foreground/70">
                   <span className="tui-prompt font-bold" aria-hidden="true">› </span>
                   ketik di bawah · Enter untuk kirim
                 </p>
                 {!user && (
-                  <button type="button" onClick={() => { setLoginErr(null); setLoginReason('manual'); setPendingPreview(null); setLoginOpen(true) }} className="font-mono text-xs text-muted-foreground underline decoration-dotted underline-offset-4 transition-colors hover:text-foreground">
+                  <button type="button" onClick={() => { setLoginErr(null); setLoginReason('manual'); setPendingPreview(null); setLoginOpen(true) }} className="text-xs text-muted-foreground underline decoration-dotted underline-offset-4 transition-colors hover:text-foreground">
                     masuk untuk menyimpan riwayat
                   </button>
                 )}
@@ -588,7 +588,7 @@ export function ChatInterface() {
             </div>
           ) : (
             <OptionsContext.Provider value={optionsValue}>
-            <div className="flex w-full flex-1 flex-col gap-6 font-mono">
+            <div className="flex w-full flex-1 flex-col gap-6">
               {messages.map((msg, i) => (
                 <ChatMessage
                   key={msg.id}

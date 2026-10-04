@@ -27,7 +27,7 @@ function ThinkingIndicator() {
       </span>
       <div
         key={i}
-        className="font-serif text-foreground thinking-fade"
+        className="text-foreground thinking-fade"
       >
         {THINKING_WORDS[i]}
       </div>
@@ -77,7 +77,7 @@ export function ChatMessage({ role, content, timestamp, streaming, aborted = fal
           <span className={`select-none font-mono text-sm ${isUser ? 'tui-prompt font-bold' : 'text-muted-foreground'}`} aria-hidden="true">
             {isUser ? '›' : '·'}
           </span>
-          <div className={`min-w-0 flex-1 ${isUser ? 'font-mono text-foreground' : 'text-foreground'}`}>
+          <div className={`min-w-0 flex-1 text-foreground`}>
 
           {isUser && editing ? (
             <textarea
