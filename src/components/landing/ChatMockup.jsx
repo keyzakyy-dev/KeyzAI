@@ -64,7 +64,7 @@ export function ChatMockup() {
         {/* Kolom utama */}
         <main className="flex min-h-0 min-w-0 flex-col gap-2">
           {/* Top bar */}
-          <div className="tui-panel flex h-8 flex-shrink-0 items-center justify-between gap-2 px-3 text-[11px]">
+          <div className="tui-panel flex h-8 flex-shrink-0 items-center justify-between gap-2 px-3 text-[10px]">
             <div className="flex min-w-0 items-center gap-1.5">
               <span className="shrink-0 font-semibold tracking-tight text-foreground">keyzai</span>
               <span className="shrink-0 select-none text-muted-foreground/50">·</span>
@@ -116,7 +116,7 @@ export function ChatMockup() {
           </div>
 
           {/* Input */}
-          <div className="tui-panel tui-queued relative flex-shrink-0 px-2 pb-1 pt-1.5">
+          <div className="tui-panel tui-queued relative flex-shrink-0 px-2 py-1.5">
             <span className="tui-inset-title tui-inset-accent">queued</span>
             <div className="w-full">
               <div className="relative">
@@ -131,9 +131,6 @@ export function ChatMockup() {
                 <span className="tui-prompt pointer-events-none absolute left-2.5 top-1 select-none text-[12px]">
                   ›
                 </span>
-              </div>
-              <div className="mt-1.5 text-[9px] leading-none text-muted-foreground/70">
-                <span>KeyzAI bisa keliru. Cek kembali info penting.</span>
               </div>
             </div>
           </div>
