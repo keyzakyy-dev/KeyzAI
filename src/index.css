@@ -411,6 +411,15 @@
   --tui-accent: #ff3b30;
   --tui-warn: #ff3b30;
 }
+/* Desktop: seluruh UI chat diskala +6% (teks px & rem + layout seragam).
+   Zoom menyesuaikan lebar auto otomatis; tinggi dikompensasi agar hasil
+   render tetap pas 100dvh tanpa overflow. */
+@media (min-width: 1024px) {
+  .tui-root {
+    zoom: 1.06;
+    height: calc(100dvh / 1.06);
+  }
+}
 .tui-panel {
   position: relative;
   border: 1px solid var(--tui-border);
