@@ -340,7 +340,7 @@ function PrdBuilder({ navigate }) {
           <div className="feature-grid relative grid grid-cols-1 md:grid-cols-3">
           {/* Hero Card - spans 2 cols on lg */}
           <Reveal from="up" className="sm:col-span-2 lg:col-span-2 lg:row-span-2">
-            <div className="feature-card group relative flex h-full flex-col justify-between overflow-hidden bg-background p-8 sm:p-10">
+            <div className="feature-card group relative flex h-full flex-col justify-between overflow-hidden p-8 sm:p-10">
               <div className="relative space-y-4">
                 <h3 className="text-xl font-medium text-foreground sm:text-2xl">
                   AI yang memahami visimu
@@ -363,7 +363,7 @@ function PrdBuilder({ navigate }) {
           {/* Step Cards */}
           {steps.map((step, i) => (
             <Reveal key={step.label} from="up" delay={100 + i * 50}>
-              <div className="feature-card h-full bg-background p-7 sm:p-8">
+              <div className="feature-card h-full p-7 sm:p-8">
                 <div className="flex items-center gap-4">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-foreground">
                     <step.icon className="h-5 w-5 text-primary" />
