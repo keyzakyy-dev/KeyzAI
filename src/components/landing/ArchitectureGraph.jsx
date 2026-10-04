@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Database } from 'lucide-react'
 import { LogoImg } from '../../lib/logo-img'
 import { MODELS } from '../../lib/models'
@@ -46,6 +46,21 @@ const NODES = [
 export function ArchitectureGraph() {
   const [activeNode, setActiveNode] = useState('qwen')
   const [isHovering, setIsHovering] = useState(false)
+  const graphRef = useRef(null)
+  const [hasEntered, setHasEntered] = useState(false)
+
+  useEffect(() => {
+    const element = graphRef.current
+    if (!element) return
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setHasEntered(true)
+        observer.disconnect()
+      }
+    }, { threshold: 0.25 })
+    observer.observe(element)
+    return () => observer.disconnect()
+  }, [])
 
   // Auto-cycle through nodes if not hovering
   useEffect(() => {
@@ -94,7 +109,8 @@ export function ArchitectureGraph() {
 
   return (
     <div
-      className="relative mx-auto flex w-full max-w-[520px] flex-col items-center justify-center p-2"
+      ref={graphRef}
+      className={`relative mx-auto flex w-full max-w-[520px] flex-col items-center justify-center p-2 ${hasEntered ? 'architecture-entered' : ''}`}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
