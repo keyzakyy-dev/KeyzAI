@@ -628,7 +628,8 @@ export function ChatInterface() {
           <span className="tui-accent font-semibold">keyzai</span>
           <span className="text-muted-foreground">·</span>
           <ModelPicker model={model} onModelChange={changeModel} />
-          <span className="ml-auto hidden shrink-0 text-muted-foreground/60 sm:inline">Esc stop · Enter kirim</span>
+          <span className="ml-auto shrink-0 tabular-nums text-muted-foreground/70">{messages.length} msgs · {sessionTokenEstimate.toLocaleString('en-US')} tok</span>
+          <span className="hidden shrink-0 text-muted-foreground/60 sm:inline">Esc stop · Enter kirim</span>
         </div>
       </div>
 
