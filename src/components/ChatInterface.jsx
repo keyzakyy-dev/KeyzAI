@@ -455,7 +455,7 @@ export function ChatInterface() {
           sedikit transparan via .chat-mesh .tui-panel), non-interaktif. */}
       <MeshCanvas
         label="Decorative animated network mesh background."
-        className="pointer-events-none absolute inset-0 -z-10 h-full w-full"
+        className="pointer-events-none absolute inset-0 h-full w-full"
       />
       {/* TUI: menu dipindah ke panel kanan (kolom Agents) */}
       {/* TUI: recent chat dipindah ke panel kanan (kolom Agents) */}
@@ -652,7 +652,7 @@ export function ChatInterface() {
         </div>
       </main>
 
-      <div className="flex flex-col gap-1 px-1 pb-[max(0.25rem,env(safe-area-inset-bottom))] text-[11px] leading-relaxed lg:col-span-2" aria-live="polite">
+      <div className="relative flex flex-col gap-1 px-1 pb-[max(0.25rem,env(safe-area-inset-bottom))] text-[11px] leading-relaxed lg:col-span-2" aria-live="polite">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
           <span className="inline-flex items-center gap-1" aria-hidden="true">
             <span className={`inline-block h-1.5 w-1.5 ${loading ? 'bg-orange-400' : 'bg-emerald-400'}`} />
