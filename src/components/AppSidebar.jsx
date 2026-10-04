@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { Sidebar } from './Sidebar'
+import { MeshCanvas } from './MeshCanvas'
 import { ConfirmDialog } from './ui/confirm-dialog'
 import { PreferencesDialog } from './PreferencesDialog'
 import { LoginDialog } from './LoginDialog'
@@ -150,7 +151,15 @@ export function AppSidebar({ children, collapsed, mobileOpen, onMobileClose, sho
   const handleExportAll = () => downloadAll(state.convs.map(serializeConv))
 
   return (
-    <div className="flex h-dvh bg-background text-foreground" style={{ '--sidebar-w': `${sidebarW}px` }}>
+    <div className="relative flex h-dvh bg-background text-foreground" style={{ '--sidebar-w': `${sidebarW}px` }}>
+      {/* Mesh latar seperti halaman chat: di atas background root,
+          di bawah konten (konten transparan mengikuti halaman chat). */}
+      <MeshCanvas
+        label="Decorative animated network mesh background."
+        className="pointer-events-none absolute inset-0 h-full w-full"
+        strength={1.5}
+        density={1.15}
+      />
       <Sidebar
         conversations={state.convs}
         currentId={state.activeId}

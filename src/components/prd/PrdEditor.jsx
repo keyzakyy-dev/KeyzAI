@@ -106,7 +106,7 @@ export function PrdEditor({
                     {/* basis-48 memaksa baris aksi turun di layar sempit, jadi
                         tombol tetap 44px tanpa memangsa judul. */}
                     <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 px-5 pb-2 pt-4">
-                      <h3 className="min-w-0 flex-1 basis-48 truncate font-serif text-[15px] font-medium text-foreground">{s.title}</h3>
+                      <h3 className="min-w-0 flex-1 basis-48 truncate text-[15px] font-medium text-foreground">{s.title}</h3>
                       {s.status === SECTION_STATUS.NEEDS && (
                         <span className="flex-shrink-0 rounded-md border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-700 dark:text-amber-400">
                           Belum ditentukan

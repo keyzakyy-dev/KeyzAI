@@ -56,7 +56,7 @@ export function IdeaInput({ initialIdea = '', initialLanguage = 'id', loading, l
   return (
     <div className="mx-auto w-full max-w-2xl">
       <div className="space-y-3 text-center">
-        <h1 className="font-serif text-2xl font-medium tracking-tight text-foreground sm:text-3xl md:text-4xl">
+        <h1 className="text-2xl font-medium tracking-tight text-foreground sm:text-3xl md:text-4xl">
           Mau bikin apa?
         </h1>
         <p className="mx-auto max-w-md text-sm leading-relaxed text-muted-foreground">
@@ -146,7 +146,7 @@ export function IdeaInput({ initialIdea = '', initialLanguage = 'id', loading, l
                 onClick={() => setIdea(ex)}
                 className="group flex items-baseline gap-3 rounded-lg border border-border bg-background px-3.5 py-3 text-left transition-colors hover:border-foreground/30 hover:bg-accent/30 sm:py-2.5"
               >
-                <span className="flex-shrink-0 font-serif text-[11px] tabular-nums text-muted-foreground group-hover:text-foreground">
+                <span className="flex-shrink-0 text-[11px] tabular-nums text-muted-foreground group-hover:text-foreground">
                   0{i + 1}
                 </span>
                 <span className="min-w-0 flex-1 text-xs text-muted-foreground transition-colors group-hover:text-foreground sm:text-[13px]">

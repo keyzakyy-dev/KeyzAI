@@ -41,7 +41,7 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onNewPrd, o
     <>
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 z-40 flex h-dvh w-64 flex-col border-r border-foreground/10 bg-background transition-transform duration-300 lg:w-[var(--sidebar-w)] ${
+        className={`fixed left-0 top-0 z-40 flex h-dvh w-64 flex-col border-r border-foreground/10 bg-background transition-transform duration-300 lg:w-[var(--sidebar-w)] lg:bg-transparent ${
           open ? 'translate-x-0' : '-translate-x-full'
         } ${collapsed ? 'lg:-translate-x-full' : 'lg:translate-x-0'}`}
       >

@@ -34,7 +34,7 @@ export function Stepper({ stepIndex, maxIndex, disabled = false, onJump }) {
                     <Check className="h-3 w-3 text-muted-foreground" />
                   ) : (
                     <span
-                      className={`font-serif text-[13px] tabular-nums ${
+                      className={`text-[13px] tabular-nums ${
                         state === 'active' ? 'text-foreground' : 'text-muted-foreground/40'
                       }`}
                     >
@@ -70,7 +70,7 @@ export function Stepper({ stepIndex, maxIndex, disabled = false, onJump }) {
 
       <div className="flex items-center justify-between md:hidden">
         <p className="text-sm text-foreground">
-          <span className="font-serif tabular-nums">0{stepIndex + 1}</span>
+          <span className="tabular-nums">0{stepIndex + 1}</span>
           <span className="text-muted-foreground"> · {STEP_LABELS[PRD_STEPS[stepIndex]]}</span>
         </p>
         <p className="text-xs tabular-nums text-muted-foreground">

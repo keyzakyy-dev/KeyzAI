@@ -11,7 +11,7 @@ export function StepHeader({ step, label, title, description }) {
   return (
     <div className="space-y-2.5">
       <p className="flex items-baseline gap-2">
-        {step && <span className="font-serif text-sm tabular-nums text-foreground">{step}</span>}
+        {step && <span className="text-sm tabular-nums text-foreground">{step}</span>}
         <span className="text-xs font-medium text-muted-foreground">{label}</span>
       </p>
       <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">{title}</h2>

@@ -11,7 +11,7 @@ export function StageLoading({ message = 'Memproses…' }) {
       <span className="shrink-0 text-primary">
         <KeyMark className="h-4 w-4" />
       </span>
-      <span key={message} className="font-serif text-foreground thinking-fade">
+      <span key={message} className="text-foreground thinking-fade">
         {message}
       </span>
     </div>

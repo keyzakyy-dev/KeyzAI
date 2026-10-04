@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, ChevronLeft, ChevronRight, Menu, X } from 'lucide-react'
-import { ThemeIcon } from '../components/theme-icon'
 
 import { Button } from '../components/ui/button'
 import { LoginDialog } from '../components/LoginDialog'
@@ -14,7 +13,6 @@ import { Structure } from '../components/prd/Structure'
 import { PrdEditor } from '../components/prd/PrdEditor'
 import { usePrdProject } from '../hooks/usePrdProject'
 import { useAuth } from '../hooks/useAuth'
-import { useTheme } from '../lib/use-theme'
 import { usePageMeta } from '../lib/seo'
 
 import { loadModel } from '../lib/models'
@@ -35,7 +33,6 @@ const STEP_NAMES = ['idea', 'clarify', 'tech', 'structure', 'prd']
 export function PrdBuilderPage() {
   const { projectId } = useParams()
   const navigate = useNavigate()
-  const [theme, , toggleTheme] = useTheme()
   const model = useMemo(loadModel, [])
   const { loginWithGoogle } = useAuth()
 
@@ -336,7 +333,7 @@ export function PrdBuilderPage() {
       onAfterDeletePrd={handlePrdRemoved}
       onNewPrd={handleNewPrd}
     >
-      <header className="relative z-20 flex-shrink-0 border-b border-border bg-background">
+      <header className="relative z-20 flex-shrink-0 border-b border-border bg-transparent">
         <div className="flex h-14 items-center justify-between gap-2 px-4 sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <Button
@@ -356,14 +353,6 @@ export function PrdBuilderPage() {
           </div>
 
           <div className="flex flex-shrink-0 items-center gap-1.5">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleTheme}
-              aria-label="Ganti tema"
-            >
-              <ThemeIcon theme={theme} />
-            </Button>
             <Button
               variant="ghost"
               size="icon"
