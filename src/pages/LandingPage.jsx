@@ -179,6 +179,10 @@ function Hero({ navigate }) {
         label="Decorative background: hero-only triangle mesh that bends around the cursor and ripples on click."
         className="pointer-events-none absolute inset-0"
       />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-32 left-1/2 h-[26rem] w-[min(70rem,120vw)] -translate-x-1/2 rounded-full bg-red-500/10 blur-[140px]"
+      />
       <div className="relative mx-auto w-full max-w-7xl px-4 sm:px-6">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
           <div className="min-w-0 lg:col-span-6 xl:col-span-5">
