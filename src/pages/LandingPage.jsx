@@ -206,13 +206,14 @@ function Hero({ navigate }) {
           <div className="min-w-0 lg:col-span-6 xl:col-span-5">
             <a
               href="#models"
-              className="animate-rise group mb-6 inline-flex max-w-full items-center gap-2.5 rounded-full border border-border bg-card/85 py-1.5 pl-1.5 pr-4 text-sm font-medium text-foreground shadow-sm backdrop-blur transition-colors hover:border-foreground/40"
+              className="animate-rise group mb-6 inline-flex max-w-full items-center gap-3 rounded-full border border-emerald-500/20 bg-emerald-500/[0.06] py-1.5 pl-2 pr-3.5 text-sm text-foreground shadow-sm backdrop-blur transition-colors hover:border-emerald-500/40 hover:bg-emerald-500/[0.1]"
             >
-              <span className="shrink-0 rounded-full bg-emerald-600/90 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-white dark:bg-emerald-400/90 dark:text-emerald-950">
-                Free
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-500 dark:text-emerald-400">
+                <Check className="size-3.5" strokeWidth={2.5} aria-hidden="true" />
               </span>
               <span className="truncate text-muted-foreground">
-                Semua model gratis, tanpa kartu kredit
+                <strong className="font-medium text-foreground">Gratis untuk semua.</strong>{' '}
+                Tanpa kartu kredit
               </span>
               <ArrowRight
                 className="size-3.5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5"
