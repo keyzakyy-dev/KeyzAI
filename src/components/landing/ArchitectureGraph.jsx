@@ -101,20 +101,19 @@ export function ArchitectureGraph() {
 
             return (
               <g key={`line-${node.id}`}>
-                {/* Background track — rope curve */}
                 <path
                   d={path}
-                  className="stroke-border/60 transition-colors duration-500 fill-none"
-                  strokeWidth="0.5"
+                  className="stroke-foreground/15 fill-none"
+                  strokeWidth="0.35"
+                  strokeDasharray="1 2"
                 />
-
-                {/* Active beam — solid rope curve */}
                 <path
                   d={path}
-                  className={`stroke-primary transition-opacity duration-500 fill-none ${
+                  className={`stroke-foreground/70 fill-none transition-opacity duration-500 ${
                     highlight ? 'opacity-100' : 'opacity-0'
                   }`}
-                  strokeWidth="0.5"
+                  strokeWidth="0.7"
+                  strokeLinecap="round"
                 />
               </g>
             )
