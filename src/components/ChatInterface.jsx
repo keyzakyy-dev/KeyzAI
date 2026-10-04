@@ -420,6 +420,17 @@ export function ChatInterface() {
   const sessionCtxPct = Math.min(99, Math.round((sessionTokenEstimate / 256000) * 100))
   const sessionCtxFilled = Math.min(28, Math.round((sessionTokenEstimate / 256000) * 28))
   const tuiUserLabel = user?.name ? user.name.split(' ')[0].toLowerCase() : 'tamu'
+  // ---------- TUI: tab inset panel kanan menggulir ke grupnya.
+  const agentsScrollRef = useRef(null)
+  const recentRef = useRef(null)
+  const menuRef = useRef(null)
+  const accountRef = useRef(null)
+  const scrollAgentTo = (ref) => {
+    const box = agentsScrollRef.current
+    const el = ref?.current
+    if (!box || !el) return
+    box.scrollTo({ top: el.offsetTop - 8, behavior: 'smooth' })
+  }
 
   const lastMessage = messages[messages.length - 1]
   const optionsValue = useMemo(
@@ -653,8 +664,14 @@ export function ChatInterface() {
         </section>
 
         <section className="tui-panel relative flex min-h-[46dvh] flex-col px-4 pb-5 pt-6 text-xs leading-relaxed lg:min-h-0 lg:flex-1" aria-label="Agents dan riwayat">
-          <span className="tui-inset-title" aria-hidden="true"><span className="tui-accent font-bold">menu</span><span> · recent · account</span></span>
-          <div className="min-h-0 flex-1 space-y-6 overflow-y-auto pt-1">
+          <nav className="tui-inset-title" aria-label="Navigasi panel">
+            <button type="button" onClick={() => scrollAgentTo(menuRef)} className="tui-accent font-bold transition-opacity hover:opacity-70">menu</button>
+            <span aria-hidden="true"> · </span>
+            <button type="button" onClick={() => scrollAgentTo(recentRef)} className="transition-colors hover:text-foreground">recent</button>
+            <span aria-hidden="true"> · </span>
+            <button type="button" onClick={() => scrollAgentTo(accountRef)} className="transition-colors hover:text-foreground">account</button>
+          </nav>
+          <div ref={agentsScrollRef} className="relative min-h-0 flex-1 space-y-6 overflow-y-auto pt-1">
             <div>
               <p className="font-bold uppercase tracking-wider text-muted-foreground">status</p>
               <p className="mt-0.5 text-muted-foreground">{loading ? 'menunggu model…' : 'idle · siap menerima perintah'}</p>
@@ -663,7 +680,7 @@ export function ChatInterface() {
               <p className="font-bold uppercase tracking-wider text-muted-foreground">model</p>
               <p className="mt-0.5 text-foreground">KeyzAI <span className="tui-accent font-semibold">›{currentModelMeta.label}</span></p>
             </div>
-            <div>
+            <div ref={recentRef} className="scroll-mt-2">
               <p className="font-bold uppercase tracking-wider text-muted-foreground">recent</p>
               {recentConvs.length === 0 ? (
                 <div className="mt-1">
@@ -686,7 +703,7 @@ export function ChatInterface() {
                 </ul>
               )}
             </div>
-            <div>
+            <div ref={menuRef} className="scroll-mt-2">
               <p className="font-bold uppercase tracking-wider text-muted-foreground">menu</p>
               <div className="mt-1 space-y-0.5">
                 <button type="button" onClick={handleNewChat} className="flex w-full items-center gap-2 px-1 py-1 text-left text-foreground/80 transition-colors hover:text-foreground">
@@ -697,7 +714,7 @@ export function ChatInterface() {
                 </Link>
               </div>
             </div>
-            <div>
+            <div ref={accountRef} className="scroll-mt-2">
               <p className="font-bold uppercase tracking-wider text-muted-foreground">account</p>
               {!user ? (
                 <button type="button" onClick={() => { setLoginErr(null); setLoginOpen(true) }} className="mt-1 flex w-full items-center gap-2 px-1 py-1 text-left transition-colors hover:text-foreground">
