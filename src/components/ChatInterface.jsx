@@ -686,29 +686,29 @@ export function ChatInterface() {
                   <FileText className="h-3 w-3 shrink-0 opacity-40" /> PRD Builder <span className="text-muted-foreground/60">[Beta]</span>
                 </Link>
               </div>
-            </div>
-            <div ref={recentRef} className="scroll-mt-2">
-              <p className="font-bold uppercase tracking-wider text-muted-foreground">recent</p>
-              {recentConvs.length === 0 ? (
-                <div className="mt-1">
-                  <p className="text-foreground">Belum ada percakapan</p>
-                  <p className="text-muted-foreground/70">Mulai lewat “Chat baru” di atas.</p>
-                </div>
-              ) : (
-                <ul className="mt-1 space-y-0.5">
-                  {recentConvs.map((conv) => (
-                    <li key={conv.id} className={`group flex items-center gap-1 ${state.activeId === conv.id ? 'tui-row-active' : ''}`}>
-                      <button type="button" onClick={() => handleSelectConv(conv.id)} title={conv.title || undefined} className="flex min-w-0 flex-1 items-center gap-2 px-1 py-1 text-left text-foreground/80 transition-colors hover:text-foreground">
-                        <MessageSquare className="h-3 w-3 shrink-0 opacity-40" />
-                        <span className="min-w-0 flex-1 truncate">{conv.title || 'Percakapan'}</span>
-                      </button>
-                      <button type="button" onClick={() => handleDeleteConv(conv.id)} aria-label="Hapus percakapan" className="shrink-0 p-1 text-muted-foreground opacity-0 transition-opacity hover:text-destructive focus-visible:opacity-100 group-hover:opacity-100">
-                        <Trash2 className="h-3 w-3" />
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
+              <div ref={recentRef} className="scroll-mt-2 pt-3">
+                <p className="font-bold uppercase tracking-wider text-muted-foreground">recent</p>
+                {recentConvs.length === 0 ? (
+                  <div className="mt-1">
+                    <p className="text-foreground">Belum ada percakapan</p>
+                    <p className="text-muted-foreground/70">Mulai lewat “Chat baru” di atas.</p>
+                  </div>
+                ) : (
+                  <ul className="mt-1 space-y-0.5">
+                    {recentConvs.map((conv) => (
+                      <li key={conv.id} className={`group flex items-center gap-1 ${state.activeId === conv.id ? 'tui-row-active' : ''}`}>
+                        <button type="button" onClick={() => handleSelectConv(conv.id)} title={conv.title || undefined} className="flex min-w-0 flex-1 items-center gap-2 px-1 py-1 text-left text-foreground/80 transition-colors hover:text-foreground">
+                          <MessageSquare className="h-3 w-3 shrink-0 opacity-40" />
+                          <span className="min-w-0 flex-1 truncate">{conv.title || 'Percakapan'}</span>
+                        </button>
+                        <button type="button" onClick={() => handleDeleteConv(conv.id)} aria-label="Hapus percakapan" className="shrink-0 p-1 text-muted-foreground opacity-0 transition-opacity hover:text-destructive focus-visible:opacity-100 group-hover:opacity-100">
+                          <Trash2 className="h-3 w-3" />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </div>
             <div ref={accountRef} className="scroll-mt-2">
               <p className="font-bold uppercase tracking-wider text-muted-foreground">account</p>
