@@ -93,6 +93,23 @@ export function MeshCanvas({
         ctx.stroke(paths[i])
       }
 
+      if (pointer.active) {
+        const nearby = nodes
+          .map((node) => ({ node, distance: Math.hypot(node.x - pointer.x, node.y - pointer.y) }))
+          .filter(({ distance }) => distance > 20 && distance < 260)
+          .sort((a, b) => a.distance - b.distance)
+          .slice(0, 5)
+
+        for (const { node, distance } of nearby) {
+          const alpha = Math.max(0, (1 - distance / 260) * 0.2)
+          ctx.strokeStyle = `rgba(${INK}, ${alpha})`
+          ctx.beginPath()
+          ctx.moveTo(node.x, node.y)
+          ctx.lineTo(pointer.x, pointer.y)
+          ctx.stroke()
+        }
+      }
+
       for (const node of nodes) {
         const alpha = (node.hub ? 0.38 : 0.22) + node.influence * 0.55
         ctx.fillStyle = `rgba(${INK}, ${alpha})`
