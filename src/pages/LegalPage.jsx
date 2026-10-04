@@ -1,8 +1,7 @@
 import { Link } from 'react-router-dom'
 import { usePageMeta } from '../lib/seo'
-import { ArrowRight } from 'lucide-react'
-
-import { Wordmark } from '../lib/logo-img'
+import { Reveal } from '../lib/reveal'
+import { DocShell } from '../components/DocShell'
 
 const UPDATED = '17 September 2026'
 
@@ -104,47 +103,30 @@ const TERMS = {
 function LegalLayout({ doc, other }) {
   usePageMeta({ title: doc.title, description: doc.intro, path: doc.slug })
   return (
-    <div className="min-h-screen bg-background text-foreground antialiased">
-      <header className="border-b border-border">
-        <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4 sm:px-6">
-          <Link to="/" aria-label="Kembali ke beranda" className="rounded-xl transition-opacity hover:opacity-80">
-            <Wordmark />
-          </Link>
-          <Link
-            to="/chat"
-            className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-          >
-            Kembali ke chat
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
-      </header>
-
-      <main className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
-        <h1 className="text-3xl font-bold tracking-tighter text-foreground sm:text-4xl">{doc.title}</h1>
-        <p className="mt-2 text-xs text-muted-foreground">Berlaku sejak {UPDATED}</p>
-        <p className="mt-6 text-base leading-relaxed text-muted-foreground">{doc.intro}</p>
-
-        {doc.sections.map((s) => (
-          <section key={s.h} className="mt-10">
-            <h2 className="text-lg font-semibold tracking-tight text-foreground">{s.h}</h2>
-            {s.p.map((para, i) => (
-              <p key={i} className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                {para}
-              </p>
-            ))}
-          </section>
+    <DocShell eyebrow="Dokumen" title={doc.title} description={doc.intro} meta={`Berlaku sejak ${UPDATED}`}>
+      <div className="feature-grid flex flex-col gap-6">
+        {doc.sections.map((s, i) => (
+          <Reveal key={s.h} from="up" delay={i * 60}>
+            <section className="feature-card p-6 sm:p-8" style={{ '--card-line-delay': `${i * 90}ms` }}>
+              <h2 className="text-base font-medium tracking-tight text-foreground sm:text-lg">{s.h}</h2>
+              {s.p.map((para, j) => (
+                <p key={j} className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                  {para}
+                </p>
+              ))}
+            </section>
+          </Reveal>
         ))}
+      </div>
 
-        <p className="mt-12 text-sm text-muted-foreground">
-          Ini halaman {doc.title.toLowerCase()}.{' '}
-          <Link to={other.slug} className="font-medium text-foreground underline-offset-4 hover:underline">
-            Baca {other.title}
-          </Link>
-          .
-        </p>
-      </main>
-    </div>
+      <p className="mt-12 text-sm text-muted-foreground">
+        Ini halaman {doc.title.toLowerCase()}.{' '}
+        <Link to={other.slug} className="font-medium text-foreground underline-offset-4 hover:underline">
+          Baca {other.title}
+        </Link>
+        .
+      </p>
+    </DocShell>
   )
 }
 
