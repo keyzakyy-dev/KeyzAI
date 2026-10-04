@@ -306,11 +306,11 @@ function PrdBuilder({ navigate }) {
         </div>
 
         {/* Bento Grid */}
-        <div className="grid grid-cols-1 gap-px overflow-hidden sm:grid-cols-2 lg:grid-cols-3">
+        <Reveal from="up" className="feature-grid-reveal">
+          <div className="feature-grid relative grid grid-cols-1 md:grid-cols-3">
           {/* Hero Card - spans 2 cols on lg */}
           <Reveal from="up" className="sm:col-span-2 lg:col-span-2 lg:row-span-2">
-            <div className="group relative flex h-full flex-col justify-between overflow-hidden bg-background p-6 sm:p-8">
-              
+            <div className="feature-card group relative flex h-full flex-col justify-between overflow-hidden bg-background p-6 sm:p-8">
               <div className="relative space-y-4">
                 <h3 className="text-lg font-medium text-foreground sm:text-xl">
                   AI yang memahami visimu
@@ -356,7 +356,7 @@ function PrdBuilder({ navigate }) {
           {/* Step Cards */}
           {steps.map((step, i) => (
             <Reveal key={step.label} from="up" delay={100 + i * 50}>
-              <div className="h-full bg-background p-5">
+              <div className="feature-card h-full bg-background p-5">
                 <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full text-foreground">
                   <step.icon className="h-5 w-5 text-primary" />
                 </div>
@@ -367,7 +367,8 @@ function PrdBuilder({ navigate }) {
               </div>
             </Reveal>
           ))}
-        </div>
+          </div>
+        </Reveal>
       </div>
     </section>
   )
