@@ -93,7 +93,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
 
   return (
     <header
-      className={`relative z-50 border-b border-transparent transition-colors duration-300 ${
+      className={`relative z-50 bg-transparent border-b border-transparent transition-colors duration-300 ${
         open ? 'border-foreground/10' : ''
       }`}
     >
@@ -136,7 +136,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
             type="button"
             onClick={toggleTheme}
             aria-label="Ganti tema"
-            className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            className="flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-transparent hover:text-foreground"
           >
             <ThemeIcon theme={theme} />
           </button>
