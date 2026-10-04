@@ -324,7 +324,6 @@ function PrdBuilder({ navigate }) {
         <div className="mb-10 flex flex-col justify-between gap-4 border-b border-foreground/10 pb-6 sm:flex-row sm:items-end">
           <div>
             <span className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-              <FileText className="h-3 w-3" />
               Beta
             </span>
             <h2 className="mt-3 text-2xl font-medium tracking-tight text-foreground sm:text-3xl lg:text-4xl">
