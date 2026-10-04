@@ -16,7 +16,7 @@ import { PreferencesDialog } from './PreferencesDialog'
 import { OptionsContext } from './OptionCard'
 import { applyPageMeta } from '../lib/seo'
 import { loadModel, saveModel, isModelStored } from '../lib/models'
-import { pickGreeting } from '../lib/greetings'
+import { KEYZAI_ART } from '../lib/asciiArt'
 import { downloadConversation, downloadAll } from '../lib/backup'
 import { useChatStore } from '../hooks/useChatStore'
 import { useChatStream } from '../hooks/useChatStream'
@@ -96,17 +96,6 @@ export function ChatInterface() {
     usePreferences({ onHydrated: applyPrefsDefaults })
   // ---------------------------------------------------------------
 
-  // ---------------------------------------------------------------
-  // Sapaan halaman kosong: berganti setiap "Chat baru", stabil saat mengetik.
-  const lastGreeting = useRef(null)
-  const [greeting, setGreeting] = useState(() =>
-    pickGreeting({ previous: lastGreeting.current, name: user?.name }),
-  )
-  const nextGreeting = () => {
-    const g = pickGreeting({ previous: lastGreeting.current, name: user?.name })
-    lastGreeting.current = g
-    setGreeting(g)
-  }
   // ---------------------------------------------------------------
 
   const changeModel = (id) => { setModel(id); saveModel(id) }
@@ -214,7 +203,6 @@ export function ChatInterface() {
 
   // ---------- percakapan
   const startNewChat = () => {
-    nextGreeting()
     dispatch({ type: 'NEW_CHAT', convId: newId('conv') })
     setSidebarOpen(false)
     setEditingId(null)
@@ -570,12 +558,12 @@ export function ChatInterface() {
             <div className="flex flex-1 items-center justify-center px-4 py-8 sm:py-12">
               <div className="w-full max-w-2xl space-y-3 text-center">
                 <p className="flex items-center justify-center gap-2 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-                  <span className="inline-block h-1.5 w-1.5 bg-emerald-400" aria-hidden="true" />
+                  <span className="inline-block h-1.5 w-1.5 bg-red-400" aria-hidden="true" />
                   session ready
                 </p>
-                <h1 className="text-2xl font-medium tracking-tight text-foreground sm:text-3xl md:text-4xl">
-                  {greeting}
-                </h1>
+                <pre className="mx-auto w-fit max-w-full overflow-x-auto whitespace-pre font-mono text-left text-[10px] leading-[1.3] text-foreground sm:text-xs">
+                  {KEYZAI_ART}
+                </pre>
                 <p className="text-xs text-muted-foreground/70">
                   <span className="tui-prompt font-bold" aria-hidden="true">› </span>
                   ketik di bawah · Enter untuk kirim
@@ -657,8 +645,8 @@ export function ChatInterface() {
       <div className="relative flex flex-col gap-1 px-1 pb-[max(0.25rem,env(safe-area-inset-bottom))] text-[11px] leading-relaxed lg:col-span-2" aria-live="polite">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
           <span className="inline-flex items-center gap-1" aria-hidden="true">
-            <span className={`inline-block h-1.5 w-1.5 ${loading ? 'bg-orange-400' : 'bg-emerald-400'}`} />
-            <span className={`inline-block h-1.5 w-1.5 ${loading ? 'bg-orange-400/60' : 'bg-foreground/25'}`} />
+            <span className={`inline-block h-1.5 w-1.5 ${loading ? 'bg-red-500' : 'bg-foreground/25'}`} />
+            <span className={`inline-block h-1.5 w-1.5 ${loading ? 'bg-red-500/60' : 'bg-foreground/25'}`} />
             <span className="inline-block h-1.5 w-1.5 bg-foreground/25" />
           </span>
           {loading ? (
