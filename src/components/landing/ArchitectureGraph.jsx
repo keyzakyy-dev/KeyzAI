@@ -132,7 +132,11 @@ export function ArchitectureGraph() {
               key={node.id}
               type="button"
               className={`absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-1.5 transition-all duration-300 z-10 ${
-                isActive ? 'scale-110' : 'scale-100 opacity-80 hover:opacity-100'
+                isActive
+                  ? 'scale-110'
+                  : isCore
+                  ? 'scale-100'
+                  : 'scale-100 opacity-80 hover:opacity-100'
               }`}
               style={{ left: `${node.pos.x}%`, top: `${node.pos.y}%` }}
               onClick={() => setActiveNode(node.id)}
