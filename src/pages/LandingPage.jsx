@@ -306,10 +306,10 @@ function PrdBuilder({ navigate }) {
         </div>
 
         {/* Bento Grid */}
-        <div className="grid gap-px overflow-hidden border border-foreground/10 bg-foreground/10 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-px overflow-hidden sm:grid-cols-2 lg:grid-cols-3">
           {/* Hero Card - spans 2 cols on lg */}
           <Reveal from="up" className="sm:col-span-2 lg:col-span-2 lg:row-span-2">
-            <div className="group relative h-full overflow-hidden border border-transparent bg-background p-6 transition-colors hover:border-foreground/25 sm:p-8">
+            <div className="group relative h-full overflow-hidden bg-background p-6 sm:p-8">
               <div className="absolute right-0 top-0 h-64 w-64 rounded-full bg-primary/5 blur-3xl" />
               <div className="relative space-y-4">
                 <h3 className="text-xl font-bold text-foreground sm:text-2xl">
@@ -328,7 +328,7 @@ function PrdBuilder({ navigate }) {
                 </button>
               </div>
               {/* Mini PRD preview */}
-              <div className="relative mt-8 overflow-hidden rounded-2xl border border-border/50 bg-background/80 backdrop-blur-sm">
+              <div className="relative mt-8 overflow-hidden rounded-2xl bg-background/80 backdrop-blur-sm">
                 <div className="flex items-center gap-2 border-b border-border/50 bg-muted/40 px-3 py-2">
                   <span className="flex gap-1" aria-hidden="true">
                     <span className="size-2 rounded-full bg-foreground/20" />
@@ -356,7 +356,7 @@ function PrdBuilder({ navigate }) {
           {/* Step Cards */}
           {steps.map((step, i) => (
             <Reveal key={step.label} from="up" delay={100 + i * 50}>
-              <div className="h-full border border-transparent bg-background p-5 transition-colors hover:border-foreground/25">
+              <div className="h-full bg-background p-5">
                 <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
                   <step.icon className="h-5 w-5 text-primary" />
                 </div>
