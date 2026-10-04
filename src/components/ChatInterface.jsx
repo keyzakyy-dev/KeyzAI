@@ -16,7 +16,7 @@ import { PreferencesDialog } from './PreferencesDialog'
 import { OptionsContext } from './OptionCard'
 import { applyPageMeta } from '../lib/seo'
 import { loadModel, saveModel, isModelStored } from '../lib/models'
-import { KEYZAI_ART } from '../lib/asciiArt'
+import { AsciiLogo } from './AsciiLogo'
 import { downloadConversation, downloadAll } from '../lib/backup'
 import { useChatStore } from '../hooks/useChatStore'
 import { useChatStream } from '../hooks/useChatStream'
@@ -561,17 +561,7 @@ export function ChatInterface() {
                   <span className="inline-block h-1.5 w-1.5 bg-red-400" aria-hidden="true" />
                   session ready
                 </p>
-                <div className="relative mx-auto w-fit max-w-full overflow-x-auto pb-1">
-                  <pre aria-hidden="true" className="absolute inset-0 translate-y-[0.3em] font-mono text-left text-[10px] leading-[1.3] whitespace-pre text-[#3d0a00] sm:text-xs">
-                    {KEYZAI_ART}
-                  </pre>
-                  <pre aria-hidden="true" className="absolute inset-0 translate-y-[0.15em] font-mono text-left text-[10px] leading-[1.3] whitespace-pre text-[#8a1a00] sm:text-xs">
-                    {KEYZAI_ART}
-                  </pre>
-                  <pre className="relative font-mono text-left text-[10px] leading-[1.3] whitespace-pre text-[#FF0000] [text-shadow:0.06em_0_0_#140d02,-0.06em_0_0_#140d02,0_0.06em_0_#140d02,0_-0.06em_0_#140d02,0.06em_0.06em_0_#8a2000] sm:text-xs">
-                    {KEYZAI_ART}
-                  </pre>
-                </div>
+                <AsciiLogo />
                 <p className="text-xs text-muted-foreground/70">
                   <span className="tui-prompt font-bold" aria-hidden="true">› </span>
                   ketik di bawah · Enter untuk kirim
