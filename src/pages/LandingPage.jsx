@@ -202,17 +202,17 @@ function Hero({ navigate }) {
           <div className="min-w-0 lg:col-span-6 xl:col-span-5">
             <a
               href="#models"
-              className="animate-rise group mb-6 inline-flex max-w-full items-center gap-3 rounded-full border border-foreground/15 bg-transparent py-1.5 pl-2 pr-3.5 text-sm text-foreground transition-colors hover:border-foreground/35"
+              className="animate-rise group mb-5 inline-flex max-w-full items-center gap-2 rounded-full border border-foreground/15 bg-transparent py-1 pl-1.5 pr-3 text-xs text-foreground transition-colors hover:border-foreground/35 sm:mb-6 sm:gap-3 sm:py-1.5 sm:pl-2 sm:pr-3.5 sm:text-sm"
             >
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-full border border-red-500/35 text-red-500 dark:text-red-400">
-                <Check className="size-3.5" strokeWidth={2.5} aria-hidden="true" />
+              <span className="flex size-5 shrink-0 items-center justify-center rounded-full border border-red-500/35 text-red-500 dark:text-red-400 sm:size-6">
+                <Check className="size-3 sm:size-3.5" strokeWidth={2.5} aria-hidden="true" />
               </span>
               <span className="truncate text-muted-foreground">
                 <strong className="font-medium text-foreground">Gratis untuk semua.</strong>{' '}
                 Tanpa kartu kredit
               </span>
               <ArrowRight
-                className="size-3.5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5"
+                className="size-3 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 sm:size-3.5"
                 aria-hidden="true"
               />
             </a>
@@ -238,14 +238,14 @@ function Hero({ navigate }) {
               <button
                 type="button"
                 onClick={() => navigate('/chat')}
-                className="group inline-flex h-12 items-center justify-center gap-2 rounded-full bg-primary px-6 text-[15px] font-medium text-primary-foreground shadow-[0_8px_24px_hsl(var(--foreground)/0.12)] transition-all hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-[0_10px_28px_hsl(var(--foreground)/0.18)]"
+                className="group inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-medium text-primary-foreground shadow-[0_8px_24px_hsl(var(--foreground)/0.12)] transition-all hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-[0_10px_28px_hsl(var(--foreground)/0.18)] sm:h-12 sm:px-6 sm:text-[15px]"
               >
                 Buka chat
                 <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
               </button>
               <a
                 href="#prd-builder"
-                className="inline-flex h-12 items-center justify-center rounded-full border border-foreground/15 bg-transparent px-6 text-[15px] font-medium text-foreground transition-all hover:-translate-y-0.5 hover:border-foreground/40 hover:bg-foreground/[0.04]"
+                className="inline-flex h-11 items-center justify-center rounded-full border border-foreground/15 bg-transparent px-5 text-sm font-medium text-foreground transition-all hover:-translate-y-0.5 hover:border-foreground/40 hover:bg-foreground/[0.04] sm:h-12 sm:px-6 sm:text-[15px]"
               >
                 Dari ide jadi PRD
               </a>
