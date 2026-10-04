@@ -1,7 +1,6 @@
 ﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { X, ArrowDown, CircleX, RotateCcw, ChevronDown, Pin, Pencil, Trash2, Download, Plus, FileText, MessageSquare, User, PanelRight } from 'lucide-react'
-import { ThemeIcon } from './theme-icon'
 import { LogoImg } from '../lib/logo-img'
 import { MODELS } from '../lib/models'
 
@@ -14,7 +13,6 @@ import { AnnouncementDialog } from './AnnouncementDialog'
 import { LoginDialog } from './LoginDialog'
 import { PreferencesDialog } from './PreferencesDialog'
 import { OptionsContext } from './OptionCard'
-import { useTheme } from '../lib/use-theme'
 import { applyPageMeta } from '../lib/seo'
 import { loadModel, saveModel, isModelStored } from '../lib/models'
 import { pickGreeting } from '../lib/greetings'
@@ -36,7 +34,6 @@ export function ChatInterface() {
   const { toast, notify, dismiss } = useToast()
   const { width: sidebarW, resizing, onDragStart, setWidth: setSidebarWidth, hasStoredWidth } = useResizableSidebar()
 
-  const [theme, , toggleTheme] = useTheme()
   const [model, setModel] = useState(loadModel)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
@@ -531,8 +528,6 @@ export function ChatInterface() {
           </div>
 
           <div className="flex flex-shrink-0 items-center gap-2 text-xs">
-            <span className="tui-tab-active px-1.5 py-0.5 font-semibold">Chat</span>
-            <span className="select-none text-muted-foreground/40" aria-hidden="true">·</span>
             {!user ? (
               <button type="button" onClick={() => { setLoginErr(null); setLoginReason('manual'); setPendingPreview(null); setLoginOpen(true) }} aria-label="Masuk" className="tui-tab-active px-1.5 py-0.5 font-semibold">
                 masuk
@@ -545,9 +540,6 @@ export function ChatInterface() {
             <span className="select-none text-muted-foreground/40" aria-hidden="true">·</span>
             <button type="button" onClick={() => setPrefsOpen(true)} aria-label="Pengaturan" className="text-muted-foreground transition-colors hover:text-foreground">
               Settings
-            </button>
-            <button type="button" onClick={toggleTheme} aria-label="Ganti tema" className="flex items-center text-muted-foreground transition-colors hover:text-foreground">
-              <ThemeIcon theme={theme} />
             </button>
             <button type="button" onClick={handleNewChat} aria-label="Chat baru" className="flex h-6 w-6 items-center justify-center border border-foreground/15 text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground">
               <Plus className="h-3 w-3" />
