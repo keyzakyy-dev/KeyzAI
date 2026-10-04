@@ -381,7 +381,7 @@ function Models() {
 
           <div className="feature-grid relative grid grid-cols-1 md:grid-cols-3">
             {MODELS.map((m, index) => (
-              <div key={m.id} className="feature-card" style={{ '--card-line-delay': `${index * 100}ms` }}>
+              <div key={m.id} className="feature-card relative p-7 sm:p-8" style={{ '--card-line-delay': `${index * 100}ms` }}>
                 <ModelCard model={m} copied={copied} onCopy={copyId} />
               </div>
             ))}
@@ -394,7 +394,7 @@ function Models() {
 
 function ModelCard({ model, copied, onCopy }) {
   return (
-    <div className="group relative overflow-hidden bg-background p-0 transition-colors duration-200">
+    <div className="group relative overflow-hidden bg-background transition-colors duration-200">
       {/* Watermark logo: brand glyph besar dan samar di belakang */}
       <img
         src={model.logo}

@@ -185,6 +185,19 @@
   box-shadow: none !important;
 }
 
+.feature-grid .feature-card::before {
+  content: '';
+  box-sizing: border-box;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  border: 1px solid hsl(var(--foreground) / 0.25);
+  clip-path: polygon(0 0, 0 0, 0 0, 0 0);
+  animation: feature-line-draw 1.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: var(--card-line-delay, 0ms);
+}
+
 .feature-grid-reveal[data-revealed] .feature-card::before {
   animation-delay: var(--card-line-delay, 0ms);
 }
