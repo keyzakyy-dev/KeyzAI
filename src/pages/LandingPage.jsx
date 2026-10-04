@@ -401,7 +401,7 @@ function Hero({ navigate }) {
               className="animate-rise text-balance text-[2.25rem] font-bold leading-[1.02] tracking-[-0.03em] text-foreground sm:text-5xl lg:text-[3.5rem]"
               style={{ animationDelay: '60ms' }}
             >
-              Semua model AI gratis, dalam satu chat.
+              Akses semua AI favorit, gratis.
             </h1>
 
             <p
