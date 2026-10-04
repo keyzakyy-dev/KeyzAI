@@ -496,8 +496,11 @@ export function ChatInterface() {
           <div className="flex flex-shrink-0 items-center gap-2 text-xs">
             <span className="tui-tab-active px-1.5 py-0.5 font-semibold">Chat</span>
             <span className="select-none text-muted-foreground/40" aria-hidden="true">·</span>
-            <button type="button" onClick={toggleTheme} aria-label="Ganti tema" className="text-muted-foreground transition-colors hover:text-foreground">
+            <button type="button" onClick={() => setPrefsOpen(true)} aria-label="Pengaturan" className="text-muted-foreground transition-colors hover:text-foreground">
               Settings
+            </button>
+            <button type="button" onClick={toggleTheme} aria-label="Ganti tema" className="flex items-center text-muted-foreground transition-colors hover:text-foreground">
+              <ThemeIcon theme={theme} />
             </button>
             <button type="button" onClick={handleNewChat} aria-label="Chat baru" className="flex h-6 w-6 items-center justify-center border border-foreground/15 text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground">
               <Plus className="h-3 w-3" />
