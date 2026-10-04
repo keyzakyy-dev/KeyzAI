@@ -46,6 +46,10 @@ export function ChatInterface() {
   const [renameOpen, setRenameOpen] = useState(false)
   const [prefsOpen, setPrefsOpen] = useState(false)
   const [confirm, setConfirm] = useState(null)
+  // ---------- TUI: tab inset panel kanan (menu / recent / account).
+  const [panelTab, setPanelTab] = useState('menu')
+  // Panel kanan jadi drawer di mobile agar kolom input tidak tertutup.
+  const [panelOpen, setPanelOpen] = useState(false)
   // Announcement "sedang dalam pengembangan": sekali per sesi browser.
   const [announceOpen, setAnnounceOpen] = useState(() => {
     try {
@@ -426,10 +430,6 @@ export function ChatInterface() {
   const sessionCtxPct = Math.min(99, Math.round((sessionTokenEstimate / 256000) * 100))
   const sessionCtxFilled = Math.min(28, Math.round((sessionTokenEstimate / 256000) * 28))
   const tuiUserLabel = user?.name ? user.name.split(' ')[0].toLowerCase() : 'tamu'
-  // ---------- TUI: tab inset panel kanan (menu / recent / account).
-  const [panelTab, setPanelTab] = useState('menu')
-  // Panel kanan jadi drawer di mobile agar kolom input tidak tertutup.
-  const [panelOpen, setPanelOpen] = useState(false)
 
   const lastMessage = messages[messages.length - 1]
   const optionsValue = useMemo(
