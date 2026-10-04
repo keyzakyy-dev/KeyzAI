@@ -41,7 +41,7 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onNewPrd, o
     <>
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 z-40 flex h-dvh w-64 flex-col border-r border-border bg-background transition-transform duration-300 lg:w-[var(--sidebar-w)] ${
+        className={`fixed left-0 top-0 z-40 flex h-dvh w-64 flex-col border-r border-foreground/10 bg-background transition-transform duration-300 lg:w-[var(--sidebar-w)] ${
           open ? 'translate-x-0' : '-translate-x-full'
         } ${collapsed ? 'lg:-translate-x-full' : 'lg:translate-x-0'}`}
       >
@@ -54,28 +54,28 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onNewPrd, o
           />
         )}
         {/* Brand */}
-        <div className="flex h-14 flex-shrink-0 items-center px-4">
+        <div className="flex h-16 flex-shrink-0 items-center border-b border-foreground/10 px-5">
           <Link to="/" aria-label="Kembali ke beranda" className="rounded-xl transition-opacity hover:opacity-80">
             <LogoImg className="h-9 w-auto" />
           </Link>
         </div>
 
         {/* New Chat / New PRD (PRD Builder) */}
-        <div className="space-y-1 px-2">
+        <div className="space-y-1 border-b border-foreground/10 px-3 py-4">
           <Button
             onClick={onNewPrd || onNew}
             variant="ghost"
-            className="h-8 w-full justify-start gap-2 px-3 font-medium text-muted-foreground hover:text-foreground"
+            className="h-9 w-full justify-start gap-2 rounded-md px-3 font-medium text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
           >
-            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border/70 bg-foreground/5">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-foreground/10 bg-transparent">
               <Plus />
             </span>
             {onNewPrd ? 'PRD baru' : 'Chat baru'}
           </Button>
           {onNewPrd && (
-            <Button asChild variant="ghost" className="h-8 w-full justify-start gap-2 px-3 font-medium text-muted-foreground hover:text-foreground">
+            <Button asChild variant="ghost" className="h-9 w-full justify-start gap-2 rounded-md px-3 font-medium text-muted-foreground hover:bg-foreground/5 hover:text-foreground">
               <Link to="/chat">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border/70 bg-foreground/5">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-foreground/10 bg-transparent">
                   <MessageSquare className="h-3.5 w-3.5" />
                 </span>
                 Chat
@@ -83,9 +83,9 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onNewPrd, o
             </Button>
           )}
           {!onNewPrd && (
-            <Button asChild variant="ghost" className="h-8 w-full justify-start gap-2 px-3 font-medium text-muted-foreground hover:text-foreground">
+            <Button asChild variant="ghost" className="h-9 w-full justify-start gap-2 rounded-md px-3 font-medium text-muted-foreground hover:bg-foreground/5 hover:text-foreground">
               <Link to="/prd-builder">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border/70 bg-foreground/5">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-foreground/10 bg-transparent">
                   <FileText className="h-3.5 w-3.5" />
                 </span>
                 PRD Builder
@@ -98,7 +98,7 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onNewPrd, o
         </div>
 
         {/* Conversations + Riwayat PRD */}
-        <div className="flex-1 overflow-y-auto px-2 pb-3">
+        <div className="flex-1 overflow-y-auto px-3 pb-4">
           {sortedPrd.length === 0 && conversations.length === 0 ? (
             <div className="px-3 pt-10 text-center">
               <p className="text-sm font-medium text-muted-foreground">
@@ -118,10 +118,10 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onNewPrd, o
                     {g.items.map((conv) => (
                       <div
                         key={conv.id}
-                        className={`group flex items-center gap-1 rounded-md pr-1 text-sm transition-colors ${
+                        className={`group flex items-center gap-1 rounded-md border border-transparent pr-1 text-sm transition-colors ${
                           currentId === conv.id
-                            ? 'bg-accent/70 text-foreground'
-                            : 'text-muted-foreground hover:bg-accent/40 hover:text-foreground'
+                            ? 'border-foreground/10 bg-foreground/5 text-foreground'
+                            : 'text-muted-foreground hover:bg-foreground/5 hover:text-foreground'
                         }`}
                       >
                         <button
@@ -170,10 +170,10 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onNewPrd, o
                         {g.items.map((m) => (
                           <div
                             key={m.id}
-                            className={`group flex items-center gap-1 rounded-md pr-1 text-sm transition-colors ${
+                            className={`group flex items-center gap-1 rounded-md border border-transparent pr-1 text-sm transition-colors ${
                               currentPrdId === m.id
-                                ? 'bg-accent/70 text-foreground'
-                                : 'text-muted-foreground hover:bg-accent/40 hover:text-foreground'
+                                ? 'border-foreground/10 bg-foreground/5 text-foreground'
+                                : 'text-muted-foreground hover:bg-foreground/5 hover:text-foreground'
                             }`}
                           >
                             <button
@@ -203,7 +203,7 @@ export function Sidebar({ conversations, currentId, onSelect, onNew, onNewPrd, o
         </div>
 
         {/* Footer */}
-        <div className="space-y-0.5 border-t border-border p-2">
+        <div className="space-y-0.5 border-t border-foreground/10 p-3">
           {!user ? (
             <button
               type="button"
