@@ -1,49 +1,51 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import { X } from 'lucide-react'
 import { GoogleSignInButton } from './GoogleSignInButton'
-import { LogoImg } from '../lib/logo-img'
 
 // Popup login yang muncul saat user mencoba mengirim pesan tanpa session.
-// Disengaja tanpa "benefit list": satu tujuan, satu tombol, langsung bisa.
+// Satu tujuan, satu tombol, langsung bisa — dibungkus gaya TUI halaman chat.
 export function LoginDialog({ open, onOpenChange, onIdToken, loading = false, error = null }) {
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay className="announcement-fade fixed inset-0 z-50 bg-black/50 backdrop-blur-sm" />
-        <Dialog.Content className="announcement-pop fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-border bg-background p-6 shadow-xl focus:outline-none sm:p-7">
+        <Dialog.Overlay className="announcement-fade fixed inset-0 z-50 bg-black/70 backdrop-blur-sm" />
+        <Dialog.Content className="tui-panel announcement-pop fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2 bg-background px-5 pb-4 pt-5 font-mono shadow-xl focus:outline-none">
+          <span className="tui-inset-title" aria-hidden="true">auth</span>
           <Dialog.Close asChild>
             <button
               type="button"
               aria-label="Tutup"
-              className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-sm border border-foreground/15 text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground"
             >
-              <X className="h-4 w-4" />
+              <X className="h-3 w-3" />
             </button>
           </Dialog.Close>
 
-          <div className="space-y-1.5 pr-8">
-            <LogoImg className="h-7 w-auto" />
-            <Dialog.Title className="pt-1 text-xl font-bold tracking-tight text-foreground">
-              Simpan chat-mu
+          <div className="pr-8">
+            <Dialog.Title className="text-sm text-foreground">
+              <span className="tui-prompt font-bold" aria-hidden="true">› </span>
+              masuk · keyzai
             </Dialog.Title>
-            <Dialog.Description className="text-sm leading-relaxed text-muted-foreground">
-              Masuk dengan Google. Riwayat tersimpan dan bisa dilanjutkan dari perangkat lain.
+            <Dialog.Description className="mt-1 font-mono text-xs leading-relaxed text-muted-foreground">
+              Riwayat tersimpan dan lanjut di perangkat lain.
             </Dialog.Description>
           </div>
 
-          <div className="mt-6 space-y-3">
-            <GoogleSignInButton
-              onIdToken={onIdToken}
-              disabled={loading}
-              onError={() => {}}
-              label={loading ? 'Memproses…' : 'Lanjutkan dengan Google'}
-            />
+          <div className="mt-4 space-y-2">
+            <div className="rounded-sm border border-foreground/10 p-2">
+              <GoogleSignInButton
+                onIdToken={onIdToken}
+                disabled={loading}
+                onError={() => {}}
+                label={loading ? 'Memproses…' : 'Lanjutkan dengan Google'}
+              />
+            </div>
             {error && (
               <p
-                className="w-full rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-center text-xs text-destructive"
+                className="w-full font-mono text-xs text-destructive"
                 role="alert"
               >
-                {error}
+                <span aria-hidden="true">! </span>{error}
               </p>
             )}
           </div>
@@ -51,9 +53,9 @@ export function LoginDialog({ open, onOpenChange, onIdToken, loading = false, er
           <Dialog.Close asChild>
             <button
               type="button"
-              className="mx-auto mt-5 block rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              className="mx-auto mt-3 block font-mono text-[11px] text-muted-foreground transition-colors hover:text-foreground"
             >
-              Lewati
+              esc / lewati
             </button>
           </Dialog.Close>
         </Dialog.Content>
