@@ -57,7 +57,7 @@ export function ChatMockup() {
   return (
     <div
       aria-hidden="true"
-      className="tui-root w-full max-w-[640px] select-none text-[11px] leading-relaxed text-foreground"
+      className="tui-root chat-mockup w-full max-w-[640px] select-none text-[11px] leading-relaxed text-foreground"
     >
       <div className="grid grid-cols-[minmax(0,1fr)_168px] grid-rows-[minmax(0,1fr)_auto] gap-2">
         {/* Kolom utama */}

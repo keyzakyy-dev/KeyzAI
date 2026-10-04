@@ -440,6 +440,12 @@
 .tui-inset-accent {
   color: var(--tui-warn);
 }
+/* Hero mockup: miniatur chat, judul inset + tab dibuat lebih kecil
+   agar proporsional. Scoped ke .chat-mockup supaya chat asli tidak ikut. */
+.chat-mockup .tui-inset-title {
+  font-size: 9px;
+  letter-spacing: 0.06em;
+}
 .tui-queued {
   border-color: color-mix(in srgb, var(--tui-warn) 65%, transparent);
 }
