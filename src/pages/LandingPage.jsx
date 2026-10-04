@@ -398,7 +398,7 @@ function Hero({ navigate }) {
             </a>
 
             <h1
-              className="animate-rise text-balance text-[2.25rem] font-bold leading-[1.02] tracking-[-0.03em] text-foreground sm:text-5xl lg:text-[3.5rem]"
+              className="animate-rise text-balance text-[2.75rem] font-bold leading-[1.02] tracking-[-0.03em] text-foreground sm:text-6xl lg:text-[4.5rem]"
               style={{ animationDelay: '60ms' }}
             >
               Akses semua AI favorit, gratis.
