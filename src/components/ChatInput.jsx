@@ -53,7 +53,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
   const currentModel = MODELS.find((m) => m.id === model) || MODELS[0]
 
   return (
-    <div className="w-full max-w-3xl">
+    <div className="w-full max-w-5xl">
       <div className="border-y border-foreground/10 bg-background transition-colors focus-within:border-foreground/25">
         <Textarea
           ref={textareaRef}
