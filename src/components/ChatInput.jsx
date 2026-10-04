@@ -30,7 +30,7 @@ export function ModelPicker({ model, onModelChange }) {
     return (
       <div
         title={currentModel.id}
-        className="inline-flex h-7 shrink-0 items-center gap-1.5 rounded-sm border border-foreground/10 bg-transparent px-2 text-[11px] font-medium text-muted-foreground"
+        className="inline-flex h-6 shrink-0 items-center gap-1.5 rounded-sm border border-foreground/10 bg-transparent px-2 text-[11px] font-medium text-muted-foreground"
       >
         <KeyMark className="h-3 w-3" />
         <span className="truncate">{currentModel.label}</span>
@@ -46,7 +46,7 @@ export function ModelPicker({ model, onModelChange }) {
         aria-haspopup="listbox"
         aria-expanded={modelOpen}
         aria-label="Pilih model"
-        className="inline-flex h-7 items-center gap-1.5 rounded-sm border border-foreground/10 bg-transparent px-2 text-[11px] font-medium text-muted-foreground transition-colors hover:border-foreground/25 hover:text-foreground"
+        className="inline-flex h-6 items-center gap-1.5 rounded-sm border border-foreground/10 bg-transparent px-2 text-[11px] font-medium text-muted-foreground transition-colors hover:border-foreground/25 hover:text-foreground"
       >
         <KeyMark className="h-3 w-3" />
         <span className="max-w-36 truncate">{currentModel.label}</span>
@@ -137,12 +137,12 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false }) {
           }}
           onKeyDown={handleKeyDown}
           placeholder="Ada yang bisa dibantu?"
-          className="min-h-[56px] max-h-40 resize-none overflow-y-auto border-0 bg-transparent py-3 pl-8 pr-4 font-mono text-sm leading-relaxed text-foreground placeholder:font-mono placeholder:text-sm placeholder:text-muted-foreground/60 focus-visible:ring-0 focus-visible:ring-offset-0"
+          className="min-h-[28px] max-h-40 resize-none overflow-y-auto border-0 bg-transparent py-1.5 pl-8 pr-4 font-mono text-sm leading-relaxed text-foreground placeholder:font-mono placeholder:text-sm placeholder:text-muted-foreground/60 focus-visible:ring-0 focus-visible:ring-offset-0"
           rows={1}
         />
-        <span aria-hidden="true" className="tui-prompt pointer-events-none absolute left-3 top-3 select-none text-sm">›</span>
+        <span aria-hidden="true" className="tui-prompt pointer-events-none absolute left-3 top-1.5 select-none text-sm">›</span>
 
-        <div className="flex items-center justify-between gap-3 px-1 pb-1 pt-2">
+        <div className="flex items-center justify-between gap-3 px-1 pt-1">
           <span className="flex min-w-0 items-center gap-1.5 text-[11px] text-muted-foreground">
             {nearLimit && (
               <span className={`tabular-nums ${charCount > 1950 ? 'text-destructive' : ''}`}>
@@ -156,7 +156,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false }) {
               onClick={onStop}
               size="icon"
               variant="destructive"
-              className="h-9 w-9 flex-shrink-0 rounded-md"
+              className="h-7 w-7 flex-shrink-0 rounded-md"
               aria-label="Hentikan generasi"
             >
               <Square className="h-3 w-3 fill-current" />
@@ -166,7 +166,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false }) {
               onClick={handleSend}
               disabled={!message.trim()}
               size="icon"
-              className="h-9 w-9 flex-shrink-0 rounded-md"
+              className="h-7 w-7 flex-shrink-0 rounded-md"
               aria-label="Kirim pesan"
             >
               <ArrowUp className="h-4 w-4" />
