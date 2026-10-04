@@ -316,7 +316,7 @@ function PrdBuilder({ navigate }) {
 
   return (
     <section id="prd-builder" className="relative scroll-mt-20 py-12 sm:py-14 lg:py-20">
-      <div className="absolute left-1/2 top-0 h-96 w-[min(800px,100vw)] -translate-x-1/2 rounded-full bg-primary/5 blur-[140px] hidden lg:block" />
+      <div className="pointer-events-none absolute -top-28 left-[8%] h-[26rem] w-[min(52rem,80vw)] rounded-full bg-red-500/10 blur-[140px] hidden lg:block" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         <div className="mb-10 flex flex-col justify-between gap-4 border-b border-foreground/10 pb-6 sm:flex-row sm:items-end">
