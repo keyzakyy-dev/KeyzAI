@@ -77,21 +77,25 @@ export function ChatMessage({ role, content, timestamp, streaming, aborted = fal
           <span className={`select-none font-mono text-sm ${isUser ? 'tui-prompt font-bold' : 'text-muted-foreground'}`} aria-hidden="true">
             {isUser ? '›' : '·'}
           </span>
-          <div className={`min-w-0 flex-1 text-foreground`}>
+          <div className={`min-w-0 ${isUser ? 'w-fit max-w-full' : 'flex-1 border-l-2 border-red-500/50 pl-3'}`}>
 
           {isUser && editing ? (
-            <textarea
-              ref={taRef}
-              autoFocus
-              value={draft}
-              maxLength={2000}
-              onChange={(e) => setDraft(e.target.value)}
-              onKeyDown={handleKeyDown}
-              rows={1}
-              className="block resize-none overflow-hidden bg-transparent text-base text-secondary-foreground focus:outline-none sm:text-[15px] [field-sizing:content]"
-            />
+            <div className="border border-foreground/15 px-3 py-2">
+              <textarea
+                ref={taRef}
+                autoFocus
+                value={draft}
+                maxLength={2000}
+                onChange={(e) => setDraft(e.target.value)}
+                onKeyDown={handleKeyDown}
+                rows={1}
+                className="block resize-none overflow-hidden bg-transparent text-base text-foreground focus:outline-none sm:text-[15px] [field-sizing:content]"
+              />
+            </div>
           ) : isUser ? (
-            <p className="whitespace-pre-wrap break-words">{content}</p>
+            <div className="border border-foreground/15 px-3 py-2">
+              <p className="whitespace-pre-wrap break-words text-foreground">{content}</p>
+            </div>
           ) : streaming && !content ? (
             <ThinkingIndicator />
           ) : (
