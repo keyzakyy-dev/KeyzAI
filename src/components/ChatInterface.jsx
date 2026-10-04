@@ -434,10 +434,10 @@ export function ChatInterface() {
   )
 
   return (
-    <div className="tui-root grid h-dvh grid-cols-1 gap-3 overflow-hidden bg-background p-3 font-mono text-foreground lg:grid-cols-[minmax(0,1fr)_360px]">
+    <div className="tui-root grid h-dvh grid-cols-1 gap-3 overflow-y-auto bg-background p-3 font-mono text-foreground lg:grid-cols-[minmax(0,1fr)_360px] lg:grid-rows-[minmax(0,1fr)_auto] lg:overflow-hidden">
       {/* TUI: menu dipindah ke panel kanan (kolom Agents) */}
       {/* TUI: recent chat dipindah ke panel kanan (kolom Agents) */}
-      <main className="flex min-h-0 min-w-0 flex-1 flex-col gap-2">
+      <main className="flex min-h-0 min-w-0 flex-col gap-3 lg:h-full lg:min-h-0">
         <div className="tui-panel relative z-20 flex h-10 flex-shrink-0 items-center justify-between gap-3 px-4">
           <div className="flex min-w-0 items-center gap-2 text-xs">
             <Link to="/" className="shrink-0 font-semibold tracking-tight text-foreground hover:opacity-80">keyzai</Link>
@@ -608,30 +608,31 @@ export function ChatInterface() {
           <span className="tui-inset-title tui-inset-accent" aria-hidden="true">{loading ? 'queued' : 'input'}</span>
           <ChatInput onSend={handleSend} loading={loading} onStop={stop} showDisclaimer={messages.length > 0} />
         </div>
-        <div className="flex flex-shrink-0 flex-col gap-1 px-1 pb-[max(0.25rem,env(safe-area-inset-bottom))] text-[11px] leading-relaxed" aria-live="polite">
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-            <span className="inline-flex items-center gap-1" aria-hidden="true">
-              <span className={`inline-block h-1.5 w-1.5 ${loading ? 'bg-orange-400' : 'bg-emerald-400'}`} />
-              <span className={`inline-block h-1.5 w-1.5 ${loading ? 'bg-orange-400/60' : 'bg-foreground/25'}`} />
-              <span className="inline-block h-1.5 w-1.5 bg-foreground/25" />
-            </span>
-            {loading ? (
-              <span><span className="text-foreground">Waiting for the model</span><span className="text-muted-foreground"> · Esc to stop</span></span>
-            ) : (
-              <span className="text-muted-foreground">siap · Enter untuk kirim · Shift+Enter baris baru</span>
-            )}
-          </div>
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-            <span className={`px-1 py-px text-[10px] font-bold uppercase tracking-wider ${loading ? 'tui-badge-working' : 'tui-badge-idle'}`}>{loading ? 'working' : 'idle'}</span>
-            <span className="tui-accent font-semibold">keyzai</span>
-            <span className="text-muted-foreground">·</span>
-            <ModelPicker model={model} onModelChange={changeModel} />
-            <span className="ml-auto hidden shrink-0 text-muted-foreground/60 sm:inline">Esc stop · Enter kirim</span>
-          </div>
-        </div>
       </main>
 
-      <aside className="flex min-h-0 min-w-0 flex-col gap-3 lg:h-full" aria-label="Panel info">
+      <div className="flex flex-col gap-1 px-1 pb-[max(0.25rem,env(safe-area-inset-bottom))] text-[11px] leading-relaxed lg:col-span-2" aria-live="polite">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+          <span className="inline-flex items-center gap-1" aria-hidden="true">
+            <span className={`inline-block h-1.5 w-1.5 ${loading ? 'bg-orange-400' : 'bg-emerald-400'}`} />
+            <span className={`inline-block h-1.5 w-1.5 ${loading ? 'bg-orange-400/60' : 'bg-foreground/25'}`} />
+            <span className="inline-block h-1.5 w-1.5 bg-foreground/25" />
+          </span>
+          {loading ? (
+            <span><span className="text-foreground">Waiting for the model</span><span className="text-muted-foreground"> · Esc to stop</span></span>
+          ) : (
+            <span className="text-muted-foreground">siap · Enter untuk kirim · Shift+Enter baris baru</span>
+          )}
+        </div>
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+          <span className={`px-1 py-px text-[10px] font-bold uppercase tracking-wider ${loading ? 'tui-badge-working' : 'tui-badge-idle'}`}>{loading ? 'working' : 'idle'}</span>
+          <span className="tui-accent font-semibold">keyzai</span>
+          <span className="text-muted-foreground">·</span>
+          <ModelPicker model={model} onModelChange={changeModel} />
+          <span className="ml-auto hidden shrink-0 text-muted-foreground/60 sm:inline">Esc stop · Enter kirim</span>
+        </div>
+      </div>
+
+      <aside className="flex min-h-0 min-w-0 flex-col gap-3 lg:h-full lg:row-start-1 lg:col-start-2" aria-label="Panel info">
         <section className="tui-panel relative shrink-0 px-4 pb-5 pt-6 text-xs leading-relaxed" aria-label="Session">
           <span className="tui-inset-title" aria-hidden="true">session</span>
           <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5">
@@ -654,7 +655,7 @@ export function ChatInterface() {
           </dl>
         </section>
 
-        <section className="tui-panel relative flex min-h-[24dvh] flex-col px-4 pb-5 pt-6 text-xs leading-relaxed lg:min-h-0" aria-label="Panel menu">
+        <section className="tui-panel relative flex min-h-[24dvh] flex-col px-4 pb-5 pt-6 text-xs leading-relaxed lg:min-h-0 lg:flex-1" aria-label="Panel menu">
           <nav className="tui-inset-title" aria-label="Navigasi panel">
             <button type="button" onClick={() => setPanelTab('menu')} aria-selected={panelTab === 'menu'} role="tab" className={panelTab === 'menu' ? 'tui-accent font-bold transition-opacity hover:opacity-70' : 'transition-colors hover:text-foreground'}>menu</button>
             <span aria-hidden="true"> · </span>
