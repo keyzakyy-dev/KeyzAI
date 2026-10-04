@@ -3,7 +3,6 @@ import { X } from 'lucide-react'
 
 import { CopyButton } from '../lib/copy-button'
 import { visibleDonations, DONATION_NOTE } from '../lib/donate'
-import { LogoImg } from '../lib/logo-img'
 
 /**
  * Announcement + ajakan dukungan/donasi. Muncul sekali per sesi browser
@@ -15,51 +14,52 @@ export function AnnouncementDialog({ open, onOpenChange }) {
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay className="announcement-fade fixed inset-0 z-50 bg-black/50 backdrop-blur-sm" />
-        <Dialog.Content className="announcement-pop fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-border bg-background p-6 shadow-xl focus:outline-none sm:p-7">
+        <Dialog.Overlay className="announcement-fade fixed inset-0 z-50 bg-black/70 backdrop-blur-sm" />
+        <Dialog.Content className="tui-panel announcement-pop fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2 bg-background px-5 pb-4 pt-5 font-mono shadow-xl focus:outline-none">
+          <span className="tui-inset-title" aria-hidden="true">support</span>
           <Dialog.Close asChild>
             <button
               type="button"
               aria-label="Tutup"
-              className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-sm border border-foreground/15 text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground"
             >
-              <X className="h-4 w-4" />
+              <X className="h-3 w-3" />
             </button>
           </Dialog.Close>
 
-          <div className="space-y-1.5 pr-8">
-            <LogoImg className="h-7 w-auto" />
-            <Dialog.Title className="pt-1 text-xl font-bold tracking-tight text-foreground">
-              Suka KeyzAI?
+          <div className="pr-8">
+            <Dialog.Title className="text-sm text-foreground">
+              <span className="tui-prompt font-bold" aria-hidden="true">› </span>
+              suka keyzai?
             </Dialog.Title>
-            <Dialog.Description className="text-sm leading-relaxed text-muted-foreground">
-              Masih versi pengembangan dan gratis. Kalau membantumu, dukung biar tetap jalan.
+            <Dialog.Description className="mt-1 font-mono text-xs leading-relaxed text-muted-foreground">
+              Masih pengembangan dan gratis. Kalau terbantu, dukung biar tetap jalan.
             </Dialog.Description>
           </div>
 
           {items.length > 0 && (
-            <div className="mt-5 divide-y divide-border rounded-xl border border-border">
+            <div className="mt-4 divide-y divide-foreground/10 rounded-sm border border-foreground/10">
               {items.map((d) => (
-                <div key={d.label} className="flex items-center justify-between gap-3 px-4 py-3">
-                  <div className="flex min-w-0 items-center gap-2.5">
+                <div key={d.label} className="flex items-center justify-between gap-3 px-3 py-2.5">
+                  <div className="flex min-w-0 items-center gap-2">
                     {d.logo && (
                       <img
                         src={d.logo}
                         alt=""
-                        className="h-7 w-7 shrink-0 rounded object-contain"
+                        className="h-6 w-6 shrink-0 rounded-sm object-contain"
                         onError={(e) => e.currentTarget.remove()}
                       />
                     )}
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-foreground">{d.label}</p>
-                      <p className="text-[11px] text-muted-foreground">{d.type}</p>
+                      <p className="truncate text-xs font-medium text-foreground">{d.label}</p>
+                      <p className="font-mono text-[10px] text-muted-foreground">{d.type}</p>
                     </div>
                   </div>
                   <div className="flex shrink-0 items-center gap-1.5">
-                    <code className="font-mono text-sm text-foreground">{d.value}</code>
+                    <code className="font-mono text-xs text-foreground">{d.value}</code>
                     <CopyButton
                       text={d.value}
-                      className="h-7 w-7 items-center justify-center rounded-md border border-border bg-card"
+                      className="h-6 w-6 items-center justify-center rounded-sm border border-foreground/15 bg-transparent"
                     />
                   </div>
                 </div>
@@ -68,19 +68,19 @@ export function AnnouncementDialog({ open, onOpenChange }) {
           )}
 
           {items.length === 0 && !DONATION_NOTE && (
-            <p className="mt-5 text-sm text-muted-foreground">Metode donasi segera hadir.</p>
+            <p className="mt-4 font-mono text-xs text-muted-foreground">Metode donasi segera hadir.</p>
           )}
 
           {DONATION_NOTE && (
-            <p className="mt-4 text-xs leading-relaxed text-muted-foreground">{DONATION_NOTE}</p>
+            <p className="mt-3 font-mono text-[11px] leading-relaxed text-muted-foreground">{DONATION_NOTE}</p>
           )}
 
           <Dialog.Close asChild>
             <button
               type="button"
-              className="mx-auto mt-6 block rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              className="mx-auto mt-3 block font-mono text-[11px] text-muted-foreground transition-colors hover:text-foreground"
             >
-              Lanjut chat
+              esc / lanjut chat
             </button>
           </Dialog.Close>
         </Dialog.Content>
