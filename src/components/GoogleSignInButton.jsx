@@ -66,6 +66,7 @@ export function GoogleSignInButton({
   const wrapperRef = useRef(null)
   const overlayRef = useRef(null)
   const [ready, setReady] = useState(false)
+  const [loadError, setLoadError] = useState(null)
 
   const callbackRef = useRef(onIdToken)
   useEffect(() => {
@@ -104,7 +105,7 @@ export function GoogleSignInButton({
           client_id: CLIENT_ID,
           callback: (resp) => {
             if (resp?.credential) callbackRef.current?.(resp.credential)
-            else errorRef.current?.('Login dibatalkan')
+            else errorRef.current?.('Login dibatalkan. Coba lagi.')
           },
           use_fedcm_for_prompt: true,
         })
@@ -115,7 +116,12 @@ export function GoogleSignInButton({
         }
         setReady(true)
       })
-      .catch((e) => errorRef.current?.(e.message || 'GSI gagal dimuat'))
+      .catch((e) => {
+        if (cancelled) return
+        const msg = e.message || 'Tidak bisa memuat login Google. Periksa koneksi lalu coba lagi.'
+        setLoadError(msg)
+        errorRef.current?.(msg)
+      })
     return () => {
       cancelled = true
       ro?.disconnect()
@@ -130,6 +136,23 @@ export function GoogleSignInButton({
     )
   }
 
+  if (loadError) {
+    return (
+      <div className="mx-auto w-full max-w-[400px] rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-center">
+        <p className="text-sm text-destructive">{loadError}</p>
+        <button
+          type="button"
+          onClick={() => window.location.reload()}
+          className="mt-1.5 text-sm font-medium text-foreground underline underline-offset-4"
+        >
+          Muat ulang halaman
+        </button>
+      </div>
+    )
+  }
+
+  const busy = disabled || !ready
+
   return (
     <div
       id={id}
@@ -140,19 +163,26 @@ export function GoogleSignInButton({
       <div
         aria-hidden="true"
         className={`flex h-12 w-full items-center justify-center gap-2.5 rounded-full border border-border bg-background px-5 text-[15px] font-medium text-foreground shadow-sm transition-colors ${
-          disabled ? 'opacity-60' : ''
+          busy ? 'opacity-70' : 'hover:border-foreground/30'
         }`}
       >
-        <GoogleG />
-        <span>{label}</span>
+        {busy ? (
+          <span
+            className="h-5 w-5 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-foreground"
+            role="presentation"
+          />
+        ) : (
+          <GoogleG />
+        )}
+        <span>{ready ? label : 'Menyiapkan login Google…'}</span>
       </div>
 
       {/* Tombol GIS asli: transparan tapi menangkap klik & fokus keyboard */}
       <div
         ref={overlayRef}
-        className={`absolute inset-0 opacity-0 transition-opacity ${ready ? 'focus-within:opacity-100' : ''}`}
-        aria-disabled={disabled}
-        style={disabled ? { pointerEvents: 'none' } : undefined}
+        className="absolute inset-0 opacity-0"
+        aria-disabled={busy}
+        style={busy ? { pointerEvents: 'none' } : undefined}
       />
     </div>
   )

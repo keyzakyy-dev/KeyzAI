@@ -76,6 +76,8 @@ export function ChatInterface() {
     ackAuthExpired()
     logoutReset()
     setLoginErr('Sesi berakhir. Silakan masuk kembali.')
+    setLoginReason('expired')
+    setPendingPreview(null)
     setLoginOpen(true)
   }, [authExpired, ackAuthExpired, logoutReset])
 
@@ -115,6 +117,8 @@ export function ChatInterface() {
   const [loginOpen, setLoginOpen] = useState(false)
   const [loginLoading, setLoginLoading] = useState(false)
   const [loginErr, setLoginErr] = useState(null)
+  const [loginReason, setLoginReason] = useState('send')
+  const [pendingPreview, setPendingPreview] = useState(null)
 
   // Isi yang "ditunda" sampai login selesai (mis. prompt ?q= dari halaman
   // fitur). Teks yang diketik user mengikuti jalur ChatInput (tidak di-snatch).
@@ -135,6 +139,7 @@ export function ChatInterface() {
       const freshId = (await refreshHistory(true)) || null
       const pending = pendingRef.current
       pendingRef.current = null
+      setPendingPreview(null)
       setLoginOpen(false)
       if (pending) {
         sendRef.current?.({ content: pending, mode: 'new', model, convId: freshId || undefined })
@@ -170,6 +175,8 @@ export function ChatInterface() {
       if (loading) return false
       if (!user) {
         setLoginErr(null)
+        setLoginReason('send')
+        setPendingPreview(null)
         setLoginOpen(true)
         return false // kolom tetap menyimpan teks
       }
@@ -363,6 +370,9 @@ export function ChatInterface() {
     if (!userRef.current) {
       // Belum login? Prompt fitur jadi "pending" dan popup login yang muncul.
       pendingRef.current = q
+      setPendingPreview(q)
+      setLoginErr(null)
+      setLoginReason('send')
       setLoginOpen(true)
       return
     }
@@ -524,7 +534,7 @@ export function ChatInterface() {
             <span className="tui-tab-active px-1.5 py-0.5 font-semibold">Chat</span>
             <span className="select-none text-muted-foreground/40" aria-hidden="true">·</span>
             {!user ? (
-              <button type="button" onClick={() => { setLoginErr(null); setLoginOpen(true) }} aria-label="Masuk" className="tui-tab-active px-1.5 py-0.5 font-semibold">
+              <button type="button" onClick={() => { setLoginErr(null); setLoginReason('manual'); setPendingPreview(null); setLoginOpen(true) }} aria-label="Masuk" className="tui-tab-active px-1.5 py-0.5 font-semibold">
                 masuk
               </button>
             ) : (
@@ -570,7 +580,7 @@ export function ChatInterface() {
                   ketik di bawah · Enter untuk kirim
                 </p>
                 {!user && (
-                  <button type="button" onClick={() => { setLoginErr(null); setLoginOpen(true) }} className="font-mono text-xs text-muted-foreground underline decoration-dotted underline-offset-4 transition-colors hover:text-foreground">
+                  <button type="button" onClick={() => { setLoginErr(null); setLoginReason('manual'); setPendingPreview(null); setLoginOpen(true) }} className="font-mono text-xs text-muted-foreground underline decoration-dotted underline-offset-4 transition-colors hover:text-foreground">
                     masuk untuk menyimpan riwayat
                   </button>
                 )}
@@ -747,7 +757,7 @@ export function ChatInterface() {
               <div>
                 <p className="font-bold uppercase tracking-wider text-muted-foreground">account</p>
                 {!user ? (
-                  <button type="button" onClick={() => { setLoginErr(null); setLoginOpen(true) }} className="mt-1 flex w-full items-center gap-2 px-1 py-1 text-left transition-colors hover:text-foreground">
+                  <button type="button" onClick={() => { setLoginErr(null); setLoginReason('manual'); setPendingPreview(null); setLoginOpen(true) }} className="mt-1 flex w-full items-center gap-2 px-1 py-1 text-left transition-colors hover:text-foreground">
                     <span className="flex h-6 w-6 shrink-0 items-center justify-center border border-dashed border-foreground/25 text-muted-foreground">
                       <User className="h-3 w-3" />
                     </span>
@@ -810,11 +820,14 @@ export function ChatInterface() {
             // popup ditutup tanpa login → buang pending total, jangan
             // terlanjur terkirim di login berikutnya.
             pendingRef.current = null
+            setPendingPreview(null)
           }
         }}
         onIdToken={handleLoginToken}
         loading={loginLoading}
         error={loginErr}
+        reason={loginReason}
+        pendingMessage={pendingPreview}
       />
       <ConfirmDialog
         open={!!confirm}

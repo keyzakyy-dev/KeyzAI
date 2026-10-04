@@ -412,6 +412,8 @@ export function PrdBuilderPage() {
         onIdToken={handleLoginToken}
         loading={loginLoading}
         error={loginErr}
+        reason="prd"
+        pendingMessage={pendingAction.current?.idea || pendingIdea}
       />
     </AppSidebar>
   )

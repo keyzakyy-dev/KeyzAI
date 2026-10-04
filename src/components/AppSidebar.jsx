@@ -198,6 +198,7 @@ export function AppSidebar({ children, collapsed, mobileOpen, onMobileClose, sho
         onIdToken={handleLoginToken}
         loading={loginLoading}
         error={loginErr}
+        reason="manual"
       />
       <ConfirmDialog
         open={!!confirm}
