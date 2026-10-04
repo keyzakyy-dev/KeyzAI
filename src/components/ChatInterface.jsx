@@ -402,21 +402,7 @@ export function ChatInterface() {
 
   return (
     <div className="flex h-dvh bg-background text-foreground" style={{ '--sidebar-w': `${sidebarW}px` }}>
-      <Sidebar
-        conversations={state.convs}
-        currentId={state.activeId}
-        onSelect={handleSelectConv}
-        onNew={handleNewChat}
-        onDelete={handleDeleteConv}
-        open={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-        collapsed={collapsed}
-        onDragStart={onDragStart}
-        user={user}
-        onLogin={() => { setLoginErr(null); setLoginOpen(true) }}
-        onOpenSettings={() => setPrefsOpen(true)}
-      />
-      <main className={`flex min-w-0 flex-1 flex-col ${collapsed || resizing ? '' : 'transition-[margin] duration-300'} ${collapsed ? '' : 'lg:ml-[var(--sidebar-w)]'}`}>
+      <main className={`flex min-w-0 flex-1 flex-col ${collapsed || resizing ? '' : 'transition-[margin] duration-300'} `}>
         <header className="relative z-20 flex h-14 flex-shrink-0 items-center justify-between bg-background/80 px-4 backdrop-blur-sm sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <Button
@@ -602,7 +588,7 @@ export function ChatInterface() {
           /* Latar composer: sarang lebah tipis (hex-surface, lihat index.css).
              Polanya ada di sini, bukan di dalam kartu input, supaya kolomnya
              sendiri tetap polos dan teksnya tidak berebut kontras. */
-          <div className="flex-shrink-0 bg-background px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2 lg:pl-[calc(var(--sidebar-w)+1rem)]">
+          <div className="flex-shrink-0 bg-background px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2">
             <div className="w-full max-w-3xl">
                <ChatInput onSend={handleSend} loading={loading} onStop={stop} showDisclaimer model={model} onModelChange={changeModel} />
              </div>
