@@ -1,4 +1,4 @@
-import { MessageSquare, Code, Pencil, Lock, BookOpen, Sparkles, Zap, GitBranch } from 'lucide-react'
+import { MessageSquare, Code, Pencil, Lock, GitBranch } from 'lucide-react'
 import { Reveal } from '../../lib/reveal'
 
 const FEATURES = [

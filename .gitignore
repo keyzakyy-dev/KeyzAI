@@ -5,3 +5,15 @@ dist/
 .DS_Store
 *.log
 temp.txt
+
+# Scratch debug: butuh worker/.dev.vars (berisi API key), tidak boleh di-commit
+test/_repro.mjs
+
+# Aset eksperimen logo (belum dipakai app)
+Logo Baru.svg
+logo baru disini.png
+logo lightmode.png
+
+# Catatan referensi desain (bukan bagian dari build)
+apmix-hero-pattern.md
+opencode.json

@@ -138,21 +138,29 @@ Debounced sync: localStorage (always) + D1 PUT /api/conversations (signed-in)
 ```
 KeyzAI/
 ├── src/
-│   ├── components/        # ChatInterface, ChatMessage, ChatInput, Sidebar,
-│   │                      # LoginDialog, PreferencesDialog, OptionCard, ui/*
+│   ├── components/
+│   │   ├── landing/       # ArchitectureGraph, FeaturesBento (hanya dipakai LandingPage)
+│   │   ├── prd/           # Stepper, IdeaInput, Clarify, TechPref, Structure, PrdEditor, dll
+│   │   ├── ui/            # primitif shadcn: button, input, textarea, confirm/rename dialog
+│   │   ├── ChatInterface.jsx / ChatMessage.jsx / ChatInput.jsx
+│   │   ├── Sidebar.jsx / AppSidebar.jsx   # Sidebar = chat, AppSidebar = wrapper PRD
+│   │   └── LoginDialog, PreferencesDialog, OptionCard, ModelMarquee, MeshCanvas, dll
 │   ├── hooks/             # useChatStore, useChatStream, useAuth, usePreferences,
-│   │                      # useResizableSidebar, useToast
+│   │                      # useResizableSidebar, usePrdProject, usePrdHistory, useToast
 │   ├── lib/               # auth, sync, markdown, options, models, preferences,
-│   │                      # backup, greetings, donate, seo, utils
-│   ├── state/             # tree.js (message tree), chat-reducer.js, persistence.js, ids.js
-│   ├── pages/LandingPage.jsx
+│   │                      # backup, greetings, donate, seo, prd-api, prd-export, utils
+│   ├── state/             # tree.js (message tree), chat-reducer.js, persistence.js,
+│   │                      # prd-model.js, prd-persistence.js, ids.js
+│   ├── pages/             # LandingPage, PrdBuilderPage, LegalPage, ChangelogPage
 │   └── api.js             # sendMessage / sendMessageStream / generateTitle
 ├── worker/
-│   ├── src/               # index.js (routes), db.js (D1), crypto.js (JWT + Google verify)
+│   ├── src/               # index.js (routes), db.js (D1), crypto.js (JWT + Google verify),
+│   │                      # prd.js (prompt per-stage)
 │   ├── migrations/        # 0001_init.sql, 0002_preferences.sql
 │   ├── test/validation.mjs
 │   └── wrangler.toml      # D1 binding, vars, production env
-├── test/                  # state-tree, chat-reducer, chat-flow, options, preferences
+├── test/                  # state-tree, chat-reducer, chat-flow, options, preferences,
+│                          # greetings, usage, prd-model, prd-pipeline, theme-wipe, smoke-render
 ├── vite.config.js / tailwind.config.js / postcss.config.js
 └── index.html
 ```

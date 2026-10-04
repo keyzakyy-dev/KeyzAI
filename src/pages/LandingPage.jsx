@@ -13,18 +13,12 @@ import {
   ArrowUp,
   MessageSquare,
   Code,
-  Pencil,
-  Lock,
-  BookOpen,
   CircleHelp,
   Menu,
   X,
   FileText,
   Copy,
   Check,
-  Zap,
-  Sparkles,
-  GitBranch,
 } from 'lucide-react'
 import { MeshCanvas } from '../components/MeshCanvas'
 import { ArchitectureGraph } from '../components/landing/ArchitectureGraph'
@@ -392,7 +386,7 @@ function PrdBuilder({ navigate }) {
   )
 }
 
-function Models({ navigate }) {
+function Models() {
   const [copied, setCopied] = useState(null)
   const copyId = (id) => {
     navigator.clipboard.writeText(id).then(() => {
@@ -418,7 +412,7 @@ function Models({ navigate }) {
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {MODELS.map((m) => (
-              <ModelCard key={m.id} model={m} navigate={navigate} copied={copied} onCopy={copyId} />
+              <ModelCard key={m.id} model={m} copied={copied} onCopy={copyId} />
             ))}
           </div>
         </Reveal>
@@ -427,7 +421,7 @@ function Models({ navigate }) {
   )
 }
 
-function ModelCard({ model, navigate, copied, onCopy }) {
+function ModelCard({ model, copied, onCopy }) {
   return (
     <div className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card p-5 transition-colors duration-200 hover:border-foreground/30 hover:bg-accent/50">
       {/* Watermark logo: brand glyph besar dan samar di belakang */}
@@ -550,7 +544,7 @@ export function LandingPage() {
           <ModelMarqueeSection />
           <FeaturesBento />
           <PrdBuilder navigate={navigate} />
-          <Models navigate={navigate} />
+          <Models />
         </main>
         <Footer />
       </div>

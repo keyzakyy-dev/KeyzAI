@@ -1,51 +1,45 @@
 import { useState, useEffect } from 'react'
 import { Database } from 'lucide-react'
 import { LogoImg } from '../../lib/logo-img'
+import { MODELS } from '../../lib/models'
 
+// Posisi dalam persen terhadap kotak aspect-square. Label ada di bawah node,
+// jadi y Research geser sedikit supaya garis tampak meet the icon, bukan teks.
 const NODES = [
   {
     id: 'engine',
     label: 'KeyzAI Engine',
     sub: 'Cloudflare Edge',
     isKeyzaiLogo: true,
-    pos: { x: 50, y: 50 },
-    role: 'core',
+    pos: { x: 50, y: 46 },
   },
   {
     id: 'qwen',
     label: 'Qwen 3.8 Flash',
     sub: 'Fast Reasoning',
-    image: '/models/qwen.png',
-    pos: { x: 88, y: 20 },
-    role: 'model',
-    specs: ['Latency: ~20ms', 'Context: 32k'],
+    image: MODELS[0].logo,
+    pos: { x: 86, y: 20 },
   },
   {
     id: 'deepseek',
-    label: 'DeepSeek V4',
+    label: 'DeepSeek V4 Flash',
     sub: 'Complex Logic',
-    image: '/models/deepseek.png',
-    pos: { x: 82, y: 82 },
-    role: 'model',
-    specs: ['Latency: ~45ms', 'Context: 64k'],
+    image: MODELS[1].logo,
+    pos: { x: 82, y: 80 },
   },
   {
     id: 'atria',
-    label: 'Atria Dawn',
-    sub: 'Experimental',
-    image: '/models/atria.png',
+    label: 'Atria Dawn Preview',
+    sub: 'Next-Gen Experiment',
+    image: MODELS[2].logo,
     pos: { x: 18, y: 18 },
-    role: 'model',
-    specs: ['Next-Gen', 'Context: 8k'],
   },
   {
     id: 'sync',
     label: 'D1 State Sync',
     sub: 'Tree Branching',
     icon: Database,
-    pos: { x: 12, y: 80 },
-    role: 'feature',
-    specs: ['Zero Data Loss', 'Edge Native'],
+    pos: { x: 12, y: 78 },
   },
 ]
 
