@@ -310,9 +310,9 @@ function PrdBuilder({ navigate }) {
           <div className="feature-grid relative grid grid-cols-1 md:grid-cols-3">
           {/* Hero Card - spans 2 cols on lg */}
           <Reveal from="up" className="sm:col-span-2 lg:col-span-2 lg:row-span-2">
-            <div className="feature-card group relative flex h-full flex-col justify-between overflow-hidden bg-background p-6 sm:p-8">
+            <div className="feature-card group relative flex h-full flex-col justify-between overflow-hidden bg-background p-8 sm:p-10">
               <div className="relative space-y-4">
-                <h3 className="text-lg font-medium text-foreground sm:text-xl">
+                <h3 className="text-xl font-medium text-foreground sm:text-2xl">
                   AI yang memahami visimu
                 </h3>
                 <p className="max-w-lg text-sm leading-relaxed text-muted-foreground">
@@ -333,11 +333,11 @@ function PrdBuilder({ navigate }) {
           {/* Step Cards */}
           {steps.map((step, i) => (
             <Reveal key={step.label} from="up" delay={100 + i * 50}>
-              <div className="feature-card h-full bg-background p-5">
+              <div className="feature-card h-full bg-background p-7 sm:p-8">
                 <div className="mb-8 flex h-10 w-10 items-center justify-center rounded-full text-foreground">
                   <step.icon className="h-5 w-5 text-primary" />
                 </div>
-                <h4 className="text-lg font-medium text-foreground sm:text-xl">{step.label}</h4>
+                <h4 className="text-base font-medium text-foreground sm:text-lg">{step.label}</h4>
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                   {step.desc}
                 </p>
