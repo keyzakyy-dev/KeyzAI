@@ -613,7 +613,7 @@ export function ChatInterface() {
       </main>
 
       <aside className="flex min-h-0 min-w-0 flex-col gap-2 lg:h-full" aria-label="Panel info">
-        <section className="tui-panel relative shrink-0 px-4 pb-3 pt-4 text-xs leading-relaxed" aria-label="Session">
+        <section className="tui-panel relative shrink-0 px-4 pb-5 pt-6 text-xs leading-relaxed" aria-label="Session">
           <span className="tui-inset-title" aria-hidden="true">session</span>
           <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5">
             <dt className="text-muted-foreground">context</dt>
@@ -635,9 +635,9 @@ export function ChatInterface() {
           </dl>
         </section>
 
-        <section className="tui-panel relative flex min-h-[46dvh] flex-col px-4 pb-3 pt-4 text-xs leading-relaxed lg:min-h-0 lg:flex-1" aria-label="Agents dan riwayat">
+        <section className="tui-panel relative flex min-h-[46dvh] flex-col px-4 pb-5 pt-6 text-xs leading-relaxed lg:min-h-0 lg:flex-1" aria-label="Agents dan riwayat">
           <span className="tui-inset-title" aria-hidden="true"><span className="tui-accent font-bold">agents</span><span> · tools · skills · log</span></span>
-          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto">
+          <div className="min-h-0 flex-1 space-y-6 overflow-y-auto pt-1">
             <div>
               <p className="font-bold uppercase tracking-wider text-muted-foreground">delegated</p>
               <p className="mt-0.5 text-muted-foreground">{loading ? 'menunggu model…' : 'Nothing delegated yet.'}</p>
