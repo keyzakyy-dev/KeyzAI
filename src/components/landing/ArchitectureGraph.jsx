@@ -105,7 +105,7 @@ export function ArchitectureGraph() {
                 <path
                   d={path}
                   className="stroke-border/60 transition-colors duration-500 fill-none"
-                  strokeWidth="1"
+                  strokeWidth="0.5"
                 />
 
                 {/* Active beam — solid rope curve */}
@@ -114,7 +114,7 @@ export function ArchitectureGraph() {
                   className={`stroke-primary transition-opacity duration-500 fill-none ${
                     highlight ? 'opacity-100' : 'opacity-0'
                   }`}
-                  strokeWidth="1"
+                  strokeWidth="0.5"
                 />
               </g>
             )
