@@ -408,8 +408,7 @@ function Hero({ navigate }) {
               className="animate-rise mt-6 max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg"
               style={{ animationDelay: '140ms' }}
             >
-              Tulis, debug, dan belajar tanpa pindah aplikasi. Edit pesan atau
-              buat ulang jawaban kapan saja — versi lama tetap bisa dibuka.
+              Satu tempat untuk semua kebutuhan AI. Chat, edit, dan eksplorasi tanpa batas.
             </p>
 
             <div
