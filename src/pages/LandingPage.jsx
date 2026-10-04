@@ -19,7 +19,7 @@ import {
   Check,
 } from 'lucide-react'
 import { MeshCanvas } from '../components/MeshCanvas'
-import { ArchitectureGraph } from '../components/landing/ArchitectureGraph'
+import { ChatMockup } from '../components/landing/ChatMockup'
 import { FeaturesBento } from '../components/landing/FeaturesBento'
 
 function GithubMark({ className, ...props }) {
@@ -172,8 +172,8 @@ function Navbar({ navigate }) {
 function Hero({ navigate }) {
   return (
     /* Tinggi = viewport dikurangi header fixed (h-16) supaya isi hero tepat
-       satu layar tanpa memaksa scroll. Kolom kanan sengaja kosong — mesh
-       heksagon di belakang mengisi ruang itu, mockup sudah dihapus. */
+       satu layar tanpa memaksa scroll. Kolom kanan berisi mockup chat TUI
+       yang dekoratif (disembunyikan di mobile). */
     <section className="relative overflow-hidden py-16 sm:py-20 lg:flex lg:min-h-[calc(100svh-4rem)] lg:items-center lg:py-24">
       <MeshCanvas
         label="Decorative background: hero-only triangle mesh that bends around the cursor and ripples on click."
@@ -250,9 +250,9 @@ function Hero({ navigate }) {
             </ul>
           </div>
 
-          {/* Kolom kanan: Architecture Graph */}
+          {/* Kolom kanan: mockup chat TUI (dekoratif, hidden di mobile) */}
           <div className="hidden lg:col-span-6 lg:flex lg:items-center lg:justify-center xl:col-span-7">
-            <ArchitectureGraph />
+            <ChatMockup />
           </div>
 
         </div>
