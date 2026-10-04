@@ -470,13 +470,14 @@
   border-radius: 4px;
 }
 
-/* Chat: MeshCanvas sebagai latar (seperti hero landing). Panel dibuat sedikit
-   transparan + blur supaya mesh terlihat samar tanpa mengganggu keterbacaan.
-   Scoped ke .chat-mesh agar panel/dialog di halaman lain tidak ikut berubah. */
+/* Chat: MeshCanvas sebagai latar (seperti hero landing). Panel dibuat
+   transparan penuh agar mesh terlihat jelas; border panel tetap ada sebagai
+   struktur. Scoped ke .chat-mesh agar panel/dialog di halaman lain tidak
+   ikut berubah. */
 .chat-mesh .tui-panel {
-  background: hsl(var(--background) / 0.5);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 /* iOS Safari auto-zoom saat fokus ke kolom teks berfont <16px.

@@ -456,8 +456,8 @@ export function ChatInterface() {
       <MeshCanvas
         label="Decorative animated network mesh background."
         className="pointer-events-none absolute inset-0 h-full w-full"
-        strength={2.2}
-        density={1.25}
+        strength={1.5}
+        density={1.15}
       />
       {/* TUI: menu dipindah ke panel kanan (kolom Agents) */}
       {/* TUI: recent chat dipindah ke panel kanan (kolom Agents) */}
