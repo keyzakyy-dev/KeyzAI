@@ -14,8 +14,9 @@ export function AnnouncementDialog({ open, onOpenChange }) {
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay className="announcement-fade fixed inset-0 z-50 bg-black/70 backdrop-blur-sm" />
-        <Dialog.Content className="tui-panel announcement-pop fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2 bg-background px-5 pb-4 pt-5 font-mono shadow-xl focus:outline-none">
+        <Dialog.Overlay className="login-fade fixed inset-0 z-50 bg-black/70 backdrop-blur-sm" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto p-4">
+        <Dialog.Content className="tui-panel login-pop relative max-h-[90dvh] w-full max-w-sm overflow-y-auto bg-background px-5 pb-4 pt-5 font-mono shadow-xl focus:outline-none">
           <span className="tui-inset-title" aria-hidden="true">support</span>
           <Dialog.Close asChild>
             <button
@@ -84,6 +85,7 @@ export function AnnouncementDialog({ open, onOpenChange }) {
             </button>
           </Dialog.Close>
         </Dialog.Content>
+        </div>
       </Dialog.Portal>
     </Dialog.Root>
   )
