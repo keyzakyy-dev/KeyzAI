@@ -86,11 +86,11 @@ export function ArchitectureGraph() {
 
   return (
     <div
-      className="relative flex w-full max-w-[480px] flex-col items-center justify-center mx-auto"
+      className="relative mx-auto flex w-full max-w-[520px] flex-col items-center justify-center p-6"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      <div className="relative aspect-square w-full">
+      <div className="relative aspect-square w-full max-w-[440px]">
         {/* SVG Connections */}
         <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full pointer-events-none" aria-hidden="true">
           {satellites.map((node) => {
@@ -155,8 +155,8 @@ export function ArchitectureGraph() {
                 <div
                   className={`relative flex items-center justify-center rounded-2xl border transition-all duration-300 overflow-hidden ${
                     isCore
-                      ? 'h-16 w-16 border-foreground bg-card bg-opacity-100 p-2 shadow-lg'
-                      : 'h-12 w-12 border-border bg-background p-2'
+                      ? 'h-16 w-16 border-foreground/50 bg-background p-2 shadow-lg'
+                      : 'h-11 w-11 border-foreground/15 bg-transparent p-2'
                   } ${isActive ? 'border-primary ring-2 ring-primary/20 shadow-md' : ''} ${
                     isActive && !isCore ? 'node-breathe' : ''
                   }`}
@@ -198,7 +198,7 @@ export function ArchitectureGraph() {
               >
                 <p
                   className={`text-[11px] font-bold ${
-                    isActive ? 'text-foreground' : 'text-muted-foreground'
+                    isActive ? 'text-foreground' : 'text-muted-foreground/70'
                   }`}
                 >
                   {node.label}
