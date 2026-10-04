@@ -32,6 +32,7 @@ export function ChatMockup() {
       i += 1
       setChars(i)
       if (i >= AI_TEXT.length) {
+        clearInterval(timer)
         setWorking(false)
         hold = setTimeout(() => {
           i = 0
