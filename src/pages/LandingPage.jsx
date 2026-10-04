@@ -372,6 +372,10 @@ function Hero({ navigate }) {
        satu layar tanpa memaksa scroll. Kolom kanan sengaja kosong — mesh
        heksagon di belakang mengisi ruang itu, mockup sudah dihapus. */
     <section className="relative overflow-hidden py-16 sm:py-20 lg:flex lg:min-h-[calc(100svh-4rem)] lg:items-center lg:py-24">
+      <MeshCanvas
+        label="Decorative background: hero-only honeycomb that bends around the cursor and ripples on click."
+        className="pointer-events-none absolute inset-0"
+      />
       <div className="relative mx-auto w-full max-w-7xl px-4 sm:px-6">
         {/* Kolom kiri 6/12 di tablet, 5/12 di xl — 5/12 bikin heading 3.5rem
             jadi terlalu banyak baris di tablet. Kolom kanan jadi 6/7. */}
@@ -721,11 +725,6 @@ export function LandingPage() {
 
   return (
     <div className="relative min-h-dvh bg-background text-foreground antialiased">
-      <MeshCanvas
-        parallax
-        label="Decorative background: full-page honeycomb that drifts with scroll, bends around the cursor, and ripples on click."
-        className="pointer-events-none fixed inset-0"
-      />
       <div className="relative">
         <Navbar navigate={navigate} theme={theme} toggleTheme={toggleTheme} />
         <main>
