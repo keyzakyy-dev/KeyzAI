@@ -181,7 +181,7 @@ function Hero({ navigate }) {
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_18%,rgba(255,255,255,0.08),transparent_58%)] dark:bg-[radial-gradient(ellipse_at_50%_18%,rgba(255,255,255,0.045),transparent_58%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_18%,rgba(255,255,255,0.03),transparent_58%)] dark:bg-[radial-gradient(ellipse_at_50%_18%,rgba(255,255,255,0.015),transparent_58%)]"
       />
       <div className="relative mx-auto w-full max-w-7xl px-4 sm:px-6">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
