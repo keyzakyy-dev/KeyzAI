@@ -1,7 +1,7 @@
 ﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { X, ArrowDown, CircleX, RotateCcw, ChevronDown, Pin, Pencil, Trash2, Download, Plus, FileText, MessageSquare, User, PanelRight } from 'lucide-react'
-import { LogoImg } from '../lib/logo-img'
+import { LogoImg, Wordmark } from '../lib/logo-img'
 import { MODELS } from '../lib/models'
 
 import { ChatMessage } from './ChatMessage'
@@ -452,7 +452,9 @@ export function ChatInterface() {
       <main className="flex min-h-0 min-w-0 flex-col gap-3 lg:h-full lg:min-h-0">
         <div className="tui-panel relative z-20 flex h-10 flex-shrink-0 items-center justify-between gap-3 px-4">
           <div className="flex min-w-0 items-center gap-2 text-xs">
-            <Link to="/" className="shrink-0 font-semibold tracking-tight text-foreground hover:opacity-80">keyzai</Link>
+            <Link to="/" aria-label="Kembali ke beranda" className="shrink-0 rounded hover:opacity-80">
+              <Wordmark className="text-base" />
+            </Link>
             <span className="shrink-0 select-none text-muted-foreground/50" aria-hidden="true">·</span>
             <span className="min-w-0 truncate text-muted-foreground">{tuiUserLabel}</span>
             {activeConv || messages.length > 0 ? (
