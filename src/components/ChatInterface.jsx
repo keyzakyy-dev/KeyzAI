@@ -417,7 +417,7 @@ export function ChatInterface() {
         onOpenSettings={() => setPrefsOpen(true)}
       />
       <main className={`flex min-w-0 flex-1 flex-col ${collapsed || resizing ? '' : 'transition-[margin] duration-300'} ${collapsed ? '' : 'lg:ml-[var(--sidebar-w)]'}`}>
-        <header className="relative z-20 flex h-16 flex-shrink-0 items-center justify-between border-b border-foreground/10 bg-transparent px-4 sm:px-6">
+        <header className="relative z-20 flex h-14 flex-shrink-0 items-center justify-between bg-background/80 px-4 backdrop-blur-sm sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <Button
               variant="ghost"
@@ -539,7 +539,7 @@ export function ChatInterface() {
             </div>
           ) : (
             <OptionsContext.Provider value={optionsValue}>
-            <div className="mx-auto w-full max-w-4xl flex-1 space-y-8 px-4 py-10 sm:px-8 sm:py-12">
+            <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col space-y-6 px-4 py-8 sm:px-6 sm:py-10">
               {messages.map((msg, i) => (
                 <ChatMessage
                   key={msg.id}
@@ -602,7 +602,7 @@ export function ChatInterface() {
           /* Latar composer: sarang lebah tipis (hex-surface, lihat index.css).
              Polanya ada di sini, bukan di dalam kartu input, supaya kolomnya
              sendiri tetap polos dan teksnya tidak berebut kontras. */
-          <div className="hex-surface flex-shrink-0 border-t border-foreground/10 bg-transparent p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <div className="flex-shrink-0 bg-background p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
             <ChatInput onSend={handleSend} loading={loading} onStop={stop} showDisclaimer model={model} onModelChange={changeModel} />
           </div>
         )}

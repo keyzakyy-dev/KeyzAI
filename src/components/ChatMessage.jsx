@@ -72,11 +72,11 @@ export function ChatMessage({ role, content, timestamp, streaming, aborted = fal
 
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-      <div className={`min-w-0 space-y-2 ${isUser ? 'max-w-[82%]' : 'w-full'}`}>
+      <div className={`min-w-0 space-y-1.5 ${isUser ? 'max-w-[90%]' : 'w-full'}`}>
         <div
           className={`text-[15px] leading-relaxed ${
             isUser
-              ? 'rounded-xl rounded-tr-sm border border-foreground/10 bg-foreground/[0.04] px-4 py-3 text-secondary-foreground sm:px-5'
+              ? 'rounded-2xl rounded-tr-md bg-secondary px-4 py-2 text-secondary-foreground sm:px-5'
               : 'font-serif text-foreground'
           }`}
         >
