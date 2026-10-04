@@ -36,7 +36,12 @@ function Tile({ model }) {
 function Row({ reverse = false }) {
   return (
     <div
-      className={`flex w-max py-3 hover:[animation-play-state:paused] ${
+      // Hook `.mq-row` dipakai blok reduced-motion di index.css untuk
+      // menyembunyikan salinan kedua + baris kedua (terlalu banyak isi
+      // kalau cuma dibekukan di tengah animasi).
+      // Gap 40px di row (bukan mr-10 per-copy) supaya row = 2×copy + 1 gap.
+      // Keyframe menggeser -(50% + 20px) — lihat tailwind.config.js.
+      className={`mq-row flex w-max gap-10 py-3 hover:[animation-play-state:paused] ${
         reverse ? 'animate-marquee-reverse' : 'animate-marquee'
       }`}
     >
@@ -46,7 +51,9 @@ function Row({ reverse = false }) {
           // Salinan kedua disembunyikan dari a11y tree — bukan "dipakai dua
           // kali", cuma mengisi ruang setelah sambungan loop.
           aria-hidden={copy === 1 ? 'true' : undefined}
-          className="flex shrink-0 items-center gap-10 pr-10"
+          // Jarak antar-logo di dalam satu salinan: gap-10. Jarak antar
+          // salinan datang dari `gap-10` di .mq-row (lihat komentar atas).
+          className="flex shrink-0 items-center gap-10"
         >
           {MODELS.map((m) => (
             <Tile key={m.id} model={m} />

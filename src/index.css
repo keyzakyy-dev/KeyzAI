@@ -282,12 +282,20 @@
   .animate-rise {
     animation: none !important;
   }
-  /* Salinan kedua marquee (konten digabung 2x demi sambungan loop) tetap
-     ada di DOM, jadi setelah animasi dimatikan isinya masih terbaca normal
-     — yang tadinya duplikat tak terlihat jadi sekadar daftar model. */
+  /* Marquee: `animation: none` saja membekukan baris di offset acak — isi
+     terpotong di tengah dan duplikat jadi kelihatan. Lebih baik tampilkan
+     satu baris statis: salinan kedua disembunyikan (itu cuma pengisi
+     sambungan loop) dan gap di .mq-row ikut dibuang supaya tidak ada ruang
+     kosong di ujung. */
   .animate-marquee,
   .animate-marquee-reverse {
     animation: none !important;
+  }
+  .mq-row > div:nth-child(2) {
+    display: none;
+  }
+  .mq-row {
+    gap: 0 !important;
   }
   html {
     scroll-behavior: auto;
