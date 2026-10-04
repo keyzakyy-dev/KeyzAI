@@ -170,15 +170,40 @@ function Navbar({ navigate }) {
 }
 
 function Hero({ navigate }) {
+  const meshRef = useRef(null)
+
+  // Parallax: mesh bergeser 20% dari kecepatan scroll (lebih lambat dari
+  // konten). Ditulis langsung ke DOM via rAF, tanpa re-render. Hero di
+  // puncak halaman, jadi tepi atas mesh selalu di luar viewport — tanpa
+  // gap. Dihormati prefers-reduced-motion.
+  useEffect(() => {
+    const el = meshRef.current
+    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    let raf = 0
+    const update = () => {
+      raf = 0
+      el.style.transform = `translate3d(0, ${window.scrollY * 0.2}px, 0)`
+    }
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update) }
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      cancelAnimationFrame(raf)
+    }
+  }, [])
+
   return (
     /* Tinggi = viewport dikurangi header fixed (h-16) supaya isi hero tepat
        satu layar tanpa memaksa scroll. Kolom kanan berisi mockup chat TUI
        yang dekoratif (disembunyikan di mobile). */
     <section className="relative overflow-hidden py-16 sm:py-20 lg:flex lg:min-h-[calc(100svh-4rem)] lg:items-center lg:py-24">
-      <MeshCanvas
-        label="Decorative background: hero-only triangle mesh that bends around the cursor and ripples on click."
-        className="pointer-events-none absolute inset-0"
-      />
+      <div ref={meshRef} className="pointer-events-none absolute inset-0 will-change-transform">
+        <MeshCanvas
+          label="Decorative background: hero-only triangle mesh that bends around the cursor and ripples on click."
+          className="pointer-events-none absolute inset-0"
+        />
+      </div>
       <div
         aria-hidden="true"
         className="pointer-events-none absolute left-[10%] top-1/2 h-[28rem] w-[min(38rem,70vw)] -translate-y-1/2 rounded-full bg-red-500/10 blur-[140px]"
