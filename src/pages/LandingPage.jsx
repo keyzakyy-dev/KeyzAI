@@ -334,11 +334,11 @@ function PrdBuilder({ navigate }) {
           {steps.map((step, i) => (
             <Reveal key={step.label} from="up" delay={100 + i * 50}>
               <div className="feature-card h-full bg-background p-5">
-                <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full text-foreground">
+                <div className="mb-8 flex h-10 w-10 items-center justify-center rounded-full text-foreground">
                   <step.icon className="h-5 w-5 text-primary" />
                 </div>
-                <h4 className="text-base font-medium text-foreground">{step.label}</h4>
-                <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                <h4 className="text-lg font-medium text-foreground sm:text-xl">{step.label}</h4>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                   {step.desc}
                 </p>
               </div>
