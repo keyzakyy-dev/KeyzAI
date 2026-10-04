@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ArrowUp } from 'lucide-react'
-import { LogoImg } from '../../lib/logo-img'
+import { Wordmark } from '../../lib/logo-img'
 
 export function GithubMark({ className, ...props }) {
   return (
@@ -10,56 +10,111 @@ export function GithubMark({ className, ...props }) {
   )
 }
 
+const GROUPS = [
+  {
+    h: 'Produk',
+    links: [
+      { to: '/chat', label: 'Buka chat' },
+      { to: '/prd-builder', label: 'PRD Builder', chip: 'Beta' },
+      { to: '/changelog', label: 'Changelog' },
+    ],
+  },
+  {
+    h: 'Legal',
+    links: [
+      { to: '/privacy', label: 'Kebijakan Privasi' },
+      { to: '/terms', label: 'Syarat & Ketentuan' },
+    ],
+  },
+  {
+    h: 'Lainnya',
+    links: [
+      { to: 'https://github.com/keyzakyy-dev', label: 'GitHub', external: true, icon: true },
+    ],
+  },
+]
+
 // Footer bersama: dipakai landing, halaman legal, dan changelog.
 export function Footer() {
   const toTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
-  const linkCls =
-    'inline-flex min-h-9 items-center gap-1.5 rounded-full border border-transparent px-3 text-xs font-medium text-muted-foreground transition-colors hover:border-foreground/15 hover:text-foreground'
 
   return (
-    <footer className="border-t border-foreground/10 py-6 sm:py-8">
-      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex items-center gap-3">
-          <span className="flex size-8 items-center justify-center rounded-full border border-foreground/15">
-            <LogoImg className="h-5 w-auto" />
-          </span>
+    <footer className="border-t border-foreground/10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="grid gap-10 py-12 sm:grid-cols-12 sm:py-14">
+          {/* Brand */}
+          <div className="sm:col-span-5">
+            <Link to="/" aria-label="Kembali ke beranda" className="inline-flex rounded-lg transition-opacity hover:opacity-80">
+              <Wordmark className="text-lg" />
+            </Link>
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
+              Akses semua AI favorit, gratis. Chat, kode, dan ubah ide jadi PRD — satu tempat.
+            </p>
+          </div>
+
+          {/* Grup link */}
+          <nav className="grid grid-cols-2 gap-8 sm:col-span-7 sm:grid-cols-3 sm:justify-self-end sm:pl-8">
+            {GROUPS.map((g) => (
+              <div key={g.h}>
+                <h3 className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground/70">
+                  {g.h}
+                </h3>
+                <ul className="mt-3 space-y-1">
+                  {g.links.map((l) => (
+                    <li key={l.label}>
+                      {l.external ? (
+                        <a
+                          href={l.to}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex min-h-8 items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                        >
+                          {l.icon && <GithubMark className="h-3.5 w-3.5" />}
+                          {l.label}
+                        </a>
+                      ) : (
+                        <Link
+                          to={l.to}
+                          className="inline-flex min-h-8 items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                        >
+                          {l.label}
+                          {l.chip && (
+                            <span className="rounded-md bg-primary/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                              {l.chip}
+                            </span>
+                          )}
+                        </Link>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </nav>
+        </div>
+
+        {/* Bar bawah */}
+        <div className="flex flex-col-reverse gap-4 border-t border-foreground/10 py-5 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-muted-foreground">
             © 2026 KeyzAI · oleh{' '}
             <a
               href="https://github.com/keyzakyy-dev"
               target="_blank"
               rel="noopener noreferrer"
-              className="transition-colors hover:text-foreground"
+              className="font-medium text-foreground/80 transition-colors hover:text-foreground"
             >
               Keyzakyy
             </a>
           </p>
-        </div>
-
-        <nav className="flex flex-wrap items-center gap-1">
-          <Link to="/privacy" className={linkCls}>
-            Kebijakan Privasi
-          </Link>
-          <Link to="/terms" className={linkCls}>
-            Syarat &amp; Ketentuan
-          </Link>
-          <Link to="/changelog" className={linkCls}>
-            Changelog
-          </Link>
-          <a
-            href="https://github.com/keyzakyy-dev"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={linkCls}
+          <button
+            type="button"
+            onClick={toTop}
+            className="inline-flex h-9 w-fit items-center gap-1.5 rounded-full border border-foreground/15 bg-transparent px-4 text-sm font-medium text-foreground transition-colors hover:border-foreground/40 hover:bg-foreground/[0.04]"
           >
-            <GithubMark className="h-3.5 w-3.5" />
-            GitHub
-          </a>
-          <button type="button" onClick={toTop} className={linkCls}>
             Ke atas
-            <ArrowUp className="h-3 w-3" />
+            <ArrowUp className="h-3.5 w-3.5" aria-hidden="true" />
           </button>
-        </nav>
+        </div>
       </div>
     </footer>
   )
