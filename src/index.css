@@ -178,9 +178,11 @@
   75% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
   100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
 }
+.feature-card,
 .feature-card:hover,
 .feature-card:focus-within {
-  border-color: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
 }
 
 .feature-grid-reveal[data-revealed] .feature-card::before {

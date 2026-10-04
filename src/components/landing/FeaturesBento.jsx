@@ -68,7 +68,7 @@ export function FeaturesBento() {
             const Icon = item.icon
             return (
               <Reveal key={item.id} from="up" delay={index * 60} className={item.span} style={{ '--card-line-delay': `${index * 100}ms` }}>
-                <div className="feature-card group relative flex h-full flex-col justify-between overflow-hidden border-0 bg-background p-6 transition-colors duration-300 sm:p-8">
+                <div className="feature-card group relative flex h-full flex-col justify-between overflow-hidden bg-background p-6 sm:p-8">
                   <div>
                     <div className="mb-8 flex items-center justify-between">
                       <div className="flex size-10 items-center justify-center rounded-full border border-foreground/15 text-foreground ">
