@@ -539,7 +539,7 @@ export function ChatInterface() {
             </div>
           ) : (
             <OptionsContext.Provider value={optionsValue}>
-            <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col space-y-7 px-4 py-8 font-mono sm:px-8 sm:py-10">
+            <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col space-y-7 px-4 py-8 sm:px-8 sm:py-10">
               {messages.map((msg, i) => (
                 <ChatMessage
                   key={msg.id}
