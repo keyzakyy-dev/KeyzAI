@@ -5,7 +5,7 @@ import { Textarea } from './ui/textarea'
 import { MODELS } from '../lib/models'
 
 function FreeBadge() {
-  return <span className="text-[10px] font-medium text-emerald-600/90 dark:text-emerald-400/90">Free</span>
+  return <span className="text-[10px] font-medium text-red-600/90 dark:text-red-400/90">Free</span>
 }
 
 export function ModelPicker({ model, onModelChange }) {
@@ -92,7 +92,7 @@ export function ModelPicker({ model, onModelChange }) {
   )
 }
 
-export function ChatInput({ onSend, loading, onStop, showDisclaimer = false }) {
+export function ChatInput({ onSend, loading, onStop }) {
   const [message, setMessage] = useState('')
   const textareaRef = useRef(null)
 
@@ -174,20 +174,6 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false }) {
           </span>
         )}
       </div>
-      {showDisclaimer && (
-        <div className="mt-2 flex items-center justify-between gap-3 text-[10px] leading-none text-muted-foreground/70">
-          <span className="hidden sm:block">KeyzAI bisa keliru. Cek kembali info penting.</span>
-          <span className="sm:hidden">KeyzAI adalah AI dan bisa keliru.</span>
-          <a
-            href="https://github.com/keyzakyy-dev"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="shrink-0 transition-colors hover:text-foreground"
-          >
-            by Keyzakyy.
-          </a>
-        </div>
-      )}
     </div>
   )
 }

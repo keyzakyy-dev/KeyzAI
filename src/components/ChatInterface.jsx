@@ -638,8 +638,22 @@ export function ChatInterface() {
 
         <div className="tui-panel tui-queued relative flex-shrink-0 px-3 pb-1.5 pt-1.5">
           <span className="tui-inset-title tui-inset-accent" aria-hidden="true">{loading ? 'queued' : 'input'}</span>
-          <ChatInput onSend={handleSend} loading={loading} onStop={stop} showDisclaimer={messages.length > 0} />
+          <ChatInput onSend={handleSend} loading={loading} onStop={stop} />
         </div>
+        {messages.length > 0 && (
+          <div className="flex items-center justify-between gap-3 px-1 text-[10px] leading-none text-muted-foreground/70">
+            <span className="hidden sm:block">KeyzAI bisa keliru. Cek kembali info penting.</span>
+            <span className="sm:hidden">KeyzAI adalah AI dan bisa keliru.</span>
+            <a
+              href="https://github.com/keyzakyy-dev"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 transition-colors hover:text-foreground"
+            >
+              by Keyzakyy.
+            </a>
+          </div>
+        )}
       </main>
 
       <div className="relative flex flex-col gap-1 px-1 pb-[max(0.25rem,env(safe-area-inset-bottom))] text-[11px] leading-relaxed lg:col-span-2" aria-live="polite">
