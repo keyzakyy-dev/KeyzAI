@@ -420,17 +420,8 @@ export function ChatInterface() {
   const sessionCtxPct = Math.min(99, Math.round((sessionTokenEstimate / 256000) * 100))
   const sessionCtxFilled = Math.min(28, Math.round((sessionTokenEstimate / 256000) * 28))
   const tuiUserLabel = user?.name ? user.name.split(' ')[0].toLowerCase() : 'tamu'
-  // ---------- TUI: tab inset panel kanan menggulir ke grupnya.
-  const agentsScrollRef = useRef(null)
-  const recentRef = useRef(null)
-  const menuRef = useRef(null)
-  const accountRef = useRef(null)
-  const scrollAgentTo = (ref) => {
-    const box = agentsScrollRef.current
-    const el = ref?.current
-    if (!box || !el) return
-    box.scrollTo({ top: el.offsetTop - 8, behavior: 'smooth' })
-  }
+  // ---------- TUI: tab inset panel kanan (menu / recent / account).
+  const [panelTab, setPanelTab] = useState('menu')
 
   const lastMessage = messages[messages.length - 1]
   const optionsValue = useMemo(
@@ -663,38 +654,42 @@ export function ChatInterface() {
           </dl>
         </section>
 
-        <section className="tui-panel relative flex min-h-[46dvh] flex-col px-4 pb-5 pt-6 text-xs leading-relaxed lg:min-h-0 lg:flex-1" aria-label="Agents dan riwayat">
+        <section className="tui-panel relative flex min-h-[24dvh] flex-col px-4 pb-5 pt-6 text-xs leading-relaxed lg:min-h-0" aria-label="Panel menu">
           <nav className="tui-inset-title" aria-label="Navigasi panel">
-            <button type="button" onClick={() => scrollAgentTo(menuRef)} className="tui-accent font-bold transition-opacity hover:opacity-70">menu</button>
+            <button type="button" onClick={() => setPanelTab('menu')} aria-selected={panelTab === 'menu'} role="tab" className={panelTab === 'menu' ? 'tui-accent font-bold transition-opacity hover:opacity-70' : 'transition-colors hover:text-foreground'}>menu</button>
             <span aria-hidden="true"> · </span>
-            <button type="button" onClick={() => scrollAgentTo(recentRef)} className="transition-colors hover:text-foreground">recent</button>
+            <button type="button" onClick={() => setPanelTab('recent')} aria-selected={panelTab === 'recent'} role="tab" className={panelTab === 'recent' ? 'tui-accent font-bold transition-opacity hover:opacity-70' : 'transition-colors hover:text-foreground'}>recent</button>
             <span aria-hidden="true"> · </span>
-            <button type="button" onClick={() => scrollAgentTo(accountRef)} className="transition-colors hover:text-foreground">account</button>
+            <button type="button" onClick={() => setPanelTab('account')} aria-selected={panelTab === 'account'} role="tab" className={panelTab === 'account' ? 'tui-accent font-bold transition-opacity hover:opacity-70' : 'transition-colors hover:text-foreground'}>account</button>
           </nav>
-          <div ref={agentsScrollRef} className="relative min-h-0 flex-1 space-y-6 overflow-y-auto pt-1">
-            <div className="border-b border-foreground/10 pb-4">
-              <p className="text-muted-foreground">{loading ? 'menunggu model…' : 'idle · siap menerima perintah'}</p>
-              <p className="mt-1 text-foreground">KeyzAI <span className="tui-accent font-semibold">›{currentModelMeta.label}</span></p>
-            </div>
-            <div ref={menuRef} className="scroll-mt-2">
-              <p className="font-bold uppercase tracking-wider text-muted-foreground">menu</p>
-              <div className="mt-1 space-y-0.5">
-                <button type="button" onClick={handleNewChat} className="flex w-full items-center gap-2 px-1 py-1 text-left text-foreground/80 transition-colors hover:text-foreground">
-                  <Plus className="h-3 w-3 shrink-0 opacity-40" /> Chat baru
-                </button>
-                <Link to="/prd-builder" className="flex w-full items-center gap-2 px-1 py-1 text-left text-foreground/80 transition-colors hover:text-foreground">
-                  <FileText className="h-3 w-3 shrink-0 opacity-40" /> PRD Builder <span className="text-muted-foreground/60">[Beta]</span>
-                </Link>
+          <div className="border-b border-foreground/10 pb-4">
+            <p className="text-muted-foreground">{loading ? 'menunggu model…' : 'idle · siap menerima perintah'}</p>
+            <p className="mt-1 text-foreground">KeyzAI <span className="tui-accent font-semibold">›{currentModelMeta.label}</span></p>
+          </div>
+          <div className="min-h-0 pt-4">
+            {panelTab === 'menu' && (
+              <div>
+                <p className="font-bold uppercase tracking-wider text-muted-foreground">menu</p>
+                <div className="mt-1 space-y-0.5">
+                  <button type="button" onClick={handleNewChat} className="flex w-full items-center gap-2 px-1 py-1 text-left text-foreground/80 transition-colors hover:text-foreground">
+                    <Plus className="h-3 w-3 shrink-0 opacity-40" /> Chat baru
+                  </button>
+                  <Link to="/prd-builder" className="flex w-full items-center gap-2 px-1 py-1 text-left text-foreground/80 transition-colors hover:text-foreground">
+                    <FileText className="h-3 w-3 shrink-0 opacity-40" /> PRD Builder <span className="text-muted-foreground/60">[Beta]</span>
+                  </Link>
+                </div>
               </div>
-              <div ref={recentRef} className="scroll-mt-2 pt-3">
+            )}
+            {panelTab === 'recent' && (
+              <div>
                 <p className="font-bold uppercase tracking-wider text-muted-foreground">recent</p>
                 {recentConvs.length === 0 ? (
                   <div className="mt-1">
                     <p className="text-foreground">Belum ada percakapan</p>
-                    <p className="text-muted-foreground/70">Mulai lewat “Chat baru” di atas.</p>
+                    <p className="text-muted-foreground/70">Buka tab menu, tekan “Chat baru”.</p>
                   </div>
                 ) : (
-                  <ul className="mt-1 space-y-0.5">
+                  <ul className="mt-1 max-h-64 space-y-0.5 overflow-y-auto">
                     {recentConvs.map((conv) => (
                       <li key={conv.id} className={`group flex items-center gap-1 ${state.activeId === conv.id ? 'tui-row-active' : ''}`}>
                         <button type="button" onClick={() => handleSelectConv(conv.id)} title={conv.title || undefined} className="flex min-w-0 flex-1 items-center gap-2 px-1 py-1 text-left text-foreground/80 transition-colors hover:text-foreground">
@@ -709,7 +704,9 @@ export function ChatInterface() {
                   </ul>
                 )}
               </div>
-              <div ref={accountRef} className="scroll-mt-2 pt-3">
+            )}
+            {panelTab === 'account' && (
+              <div>
                 <p className="font-bold uppercase tracking-wider text-muted-foreground">account</p>
                 {!user ? (
                   <button type="button" onClick={() => { setLoginErr(null); setLoginOpen(true) }} className="mt-1 flex w-full items-center gap-2 px-1 py-1 text-left transition-colors hover:text-foreground">
@@ -739,7 +736,7 @@ export function ChatInterface() {
                   </button>
                 )}
               </div>
-            </div>
+            )}
           </div>
         </section>
 
