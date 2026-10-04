@@ -14,21 +14,15 @@ const LABEL = MODELS.map((m) => m.label).join(', ')
 
 function Tile({ model }) {
   return (
-    <div className="flex shrink-0 items-center gap-3">
+    <div className="flex shrink-0 items-center gap-2.5 rounded-full border border-foreground/10 px-3 py-2 transition-colors hover:border-foreground/25">
       <img
         src={model.logo}
         alt=""
         loading="lazy"
-        className="size-7 shrink-0 rounded-md object-contain"
+        className="size-6 shrink-0 rounded-md object-contain"
       />
-      <div className="flex min-w-0 flex-col leading-none">
-        <span className="truncate text-sm font-medium text-foreground">
-          {model.label}
-        </span>
-        <span className="mt-1 truncate text-[11px] text-muted-foreground">
-          {model.provider}
-        </span>
-      </div>
+      <span className="truncate text-sm font-medium text-foreground">{model.label}</span>
+      <span className="text-[10px] text-muted-foreground">{model.provider}</span>
     </div>
   )
 }
@@ -41,7 +35,7 @@ function Row({ reverse = false }) {
       // kalau cuma dibekukan di tengah animasi).
       // Gap 40px di row (bukan mr-10 per-copy) supaya row = 2×copy + 1 gap.
       // Keyframe menggeser -(50% + 20px) — lihat tailwind.config.js.
-      className={`mq-row flex w-max gap-10 py-3 hover:[animation-play-state:paused] ${
+      className={`mq-row flex w-max gap-3 py-3 hover:[animation-play-state:paused] ${
         reverse ? 'animate-marquee-reverse' : 'animate-marquee'
       }`}
     >
@@ -53,7 +47,7 @@ function Row({ reverse = false }) {
           aria-hidden={copy === 1 ? 'true' : undefined}
           // Jarak antar-logo di dalam satu salinan: gap-10. Jarak antar
           // salinan datang dari `gap-10` di .mq-row (lihat komentar atas).
-          className="flex shrink-0 items-center gap-10"
+          className="flex shrink-0 items-center gap-3"
         >
           {MODELS.map((m) => (
             <Tile key={m.id} model={m} />

@@ -285,8 +285,12 @@ function Hero({ navigate }) {
 
 function ModelMarqueeSection() {
   return (
-    <section className="py-8 sm:py-10">
+    <section className="border-y border-foreground/10 py-3 sm:py-4">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="mb-1 flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+          <span className="size-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
+          Model tersedia
+        </div>
         <ModelMarquee />
       </div>
     </section>
