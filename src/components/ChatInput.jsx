@@ -54,7 +54,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
 
   return (
     <div className="mx-auto w-full max-w-3xl">
-      <div className="rounded-2xl border border-border bg-card shadow-sm">
+      <div className="rounded-xl border border-foreground/15 bg-transparent transition-colors focus-within:border-foreground/30">
         <Textarea
           ref={textareaRef}
           value={message}
@@ -65,11 +65,11 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
           }}
           onKeyDown={handleKeyDown}
           placeholder="Ada yang bisa dibantu?"
-          className="min-h-[52px] max-h-40 resize-none overflow-y-auto border-0 bg-transparent px-4 pt-3.5 pb-1 text-base text-foreground placeholder:font-serif placeholder:text-sm placeholder:text-muted-foreground/80 focus-visible:ring-0 focus-visible:ring-offset-0"
+          className="min-h-[56px] max-h-40 resize-none overflow-y-auto border-0 bg-transparent px-5 pt-4 pb-2 text-base leading-relaxed text-foreground placeholder:text-sm placeholder:text-muted-foreground/60 focus-visible:ring-0 focus-visible:ring-offset-0"
           rows={1}
         />
 
-        <div className="flex items-center justify-between gap-3 px-3 pb-2.5">
+        <div className="flex items-center justify-between gap-3 px-4 pb-3">
           <div className="flex min-w-0 items-center gap-2">
             {model && onModelChange &&
               (MODELS.length > 1 ? (
@@ -80,7 +80,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
                     aria-haspopup="listbox"
                     aria-expanded={modelOpen}
                     aria-label="Pilih model"
-                    className="inline-flex h-7 items-center gap-1.5 rounded-full border border-border bg-background px-2.5 text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+                    className="inline-flex h-8 items-center gap-1.5 rounded-md border border-foreground/10 bg-transparent px-2.5 text-[11px] font-medium text-muted-foreground transition-colors hover:border-foreground/25 hover:text-foreground"
                   >
                     <KeyMark className="h-3 w-3" />
                     <span className="truncate">{currentModel.label}</span>
@@ -129,7 +129,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
                 // nama model + label gratis, tanpa dead-weight dropdown.
                 <div
                   title={currentModel.id}
-                  className="inline-flex h-7 items-center gap-1.5 rounded-full border border-border bg-background px-2.5 text-[11px] font-medium text-muted-foreground"
+                  className="inline-flex h-8 items-center gap-1.5 rounded-md border border-foreground/10 bg-transparent px-2.5 text-[11px] font-medium text-muted-foreground"
                 >
                   <KeyMark className="h-3 w-3" />
                   <span className="truncate">{currentModel.label}</span>
@@ -150,7 +150,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
               onClick={onStop}
               size="icon"
               variant="destructive"
-              className="h-8 w-8 flex-shrink-0 rounded-full"
+              className="h-9 w-9 flex-shrink-0 rounded-md"
               aria-label="Hentikan generasi"
             >
               <Square className="h-3 w-3 fill-current" />
@@ -160,7 +160,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
               onClick={handleSend}
               disabled={!message.trim()}
               size="icon"
-              className="h-8 w-8 flex-shrink-0 rounded-full"
+              className="h-9 w-9 flex-shrink-0 rounded-md"
               aria-label="Kirim pesan"
             >
               <ArrowUp className="h-4 w-4" />
