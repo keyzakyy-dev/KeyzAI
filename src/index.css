@@ -282,10 +282,28 @@
   background: transparent;
 }
 
+/* Hero: ArchitectureGraph. Kotak model yang ditunjuk garis berdenyut —
+   membesar lalu mengecil berulang (utility .node-breathe). Animasi dipasang
+   di kotak ikon, bukan di <button> pembungkus, karena button itu juga memuat
+   label teks: scale di button akan ikut membesarakan teksnya.
+   Murni CSS, jadi dimatikan di blok reduced-motion di bawah. */
+@keyframes node-breathe {
+  0%,
+  100% { transform: scale(1); }
+  50%      { transform: scale(1.12); }
+}
+.node-breathe {
+  animation: node-breathe 1.8s ease-in-out infinite;
+  will-change: transform;
+}
+
 /* Hero: animasi rise murni CSS (utility .animate-rise), jadi cukup dimatikan
    di sini — komponen tidak perlu cek prefers-reduced-motion sendiri. */
 @media (prefers-reduced-motion: reduce) {
   .animate-rise {
+    animation: none !important;
+  }
+  .node-breathe {
     animation: none !important;
   }
   /* Marquee: `animation: none` saja membekukan baris di offset acak — isi

@@ -127,41 +127,53 @@ export function ArchitectureGraph() {
               onMouseEnter={() => setActiveNode(node.id)}
               aria-label={node.label}
             >
-              <div
-                className={`relative flex items-center justify-center rounded-2xl border transition-all duration-300 overflow-hidden ${
-                  isCore
-                    ? 'h-16 w-16 border-foreground/30 bg-card p-2 shadow-lg'
-                    : 'h-12 w-12 border-border bg-background p-2'
-                } ${isActive ? 'border-primary ring-2 ring-primary/20 shadow-md' : ''}`}
-              >
+              {/* Wrapper relatif khusus kotak ikon, bukan button-nya: button
+                  juga berisi label teks di bawah, jadi denyut scale di button
+                  akan ikut membesarakan teksnya. */}
+              <span className="relative flex shrink-0 items-center justify-center">
+                {/* Kotak model yang ditunjuk garis berdenyut (membesar-mengecil).
+                    Animasi ada di kotak ikon; scale-110 di button tetap jalan
+                    sebagai penekanan statis, bukan pengganti denyut. Node core
+                    punya denyut sendiri (animate-ping di bawah) jadi dikecualikan
+                    agar tidak berdenyut dua kali. */}
+                <div
+                  className={`relative flex items-center justify-center rounded-2xl border transition-all duration-300 overflow-hidden ${
+                    isCore
+                      ? 'h-16 w-16 border-foreground/30 bg-card p-2 shadow-lg'
+                      : 'h-12 w-12 border-border bg-background p-2'
+                  } ${isActive ? 'border-primary ring-2 ring-primary/20 shadow-md' : ''} ${
+                    isActive && !isCore ? 'node-breathe' : ''
+                  }`}
+                >
                 {node.isKeyzaiLogo ? (
-                  <LogoImg className="h-8 w-auto object-contain" />
-                ) : node.image ? (
-                  <img
-                    src={node.image}
-                    alt={node.label}
-                    className="h-full w-full object-contain"
-                  />
-                ) : Icon ? (
-                  <Icon
-                    className={`transition-colors duration-300 h-5 w-5 ${
-                      isActive ? 'text-primary' : 'text-muted-foreground'
-                    }`}
-                  />
-                ) : null}
+                    <LogoImg className="h-8 w-auto object-contain" />
+                  ) : node.image ? (
+                    <img
+                      src={node.image}
+                      alt={node.label}
+                      className="h-full w-full object-contain"
+                    />
+                  ) : Icon ? (
+                    <Icon
+                      className={`transition-colors duration-300 h-5 w-5 ${
+                        isActive ? 'text-primary' : 'text-muted-foreground'
+                      }`}
+                    />
+                  ) : null}
 
-                {/* Core pulse effect */}
-                {isCore && (
-                  <div
-                    className="absolute inset-0 -z-10 animate-ping rounded-2xl bg-foreground/10 opacity-70"
-                    style={{ animationDuration: '3s' }}
-                  />
-                )}
-                {/* Active node glow */}
-                {isActive && !isCore && (
-                  <div className="absolute inset-0 -z-10 rounded-2xl bg-primary/20 blur-md" />
-                )}
-              </div>
+                  {/* Core pulse effect */}
+                  {isCore && (
+                    <div
+                      className="absolute inset-0 -z-10 animate-ping rounded-2xl bg-foreground/10 opacity-70"
+                      style={{ animationDuration: '3s' }}
+                    />
+                  )}
+                  {/* Active node glow */}
+                  {isActive && !isCore && (
+                    <div className="absolute inset-0 -z-10 rounded-2xl bg-primary/20 blur-md" />
+                  )}
+                </div>
+              </span>
 
               <div
                 className={`text-center transition-opacity duration-300 ${
