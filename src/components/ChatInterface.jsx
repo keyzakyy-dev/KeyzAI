@@ -442,7 +442,7 @@ export function ChatInterface() {
   )
 
   return (
-    <div className="tui-root grid h-dvh grid-cols-1 gap-3 overflow-y-auto bg-background p-3 font-mono text-foreground lg:grid-cols-[minmax(0,1fr)_360px] lg:grid-rows-[minmax(0,1fr)_auto] lg:overflow-hidden">
+    <div className="tui-root grid h-dvh grid-cols-1 grid-rows-[minmax(0,1fr)_auto] gap-3 overflow-hidden bg-background p-3 font-mono text-foreground lg:grid-cols-[minmax(0,1fr)_360px] lg:grid-rows-[minmax(0,1fr)_auto]">
       {/* TUI: menu dipindah ke panel kanan (kolom Agents) */}
       {/* TUI: recent chat dipindah ke panel kanan (kolom Agents) */}
       <main className="flex min-h-0 min-w-0 flex-col gap-3 lg:h-full lg:min-h-0">
@@ -538,7 +538,7 @@ export function ChatInterface() {
           </div>
         </div>
 
-        <div className="tui-panel relative flex h-[50dvh] min-h-0 shrink-0 flex-col lg:h-auto lg:min-h-0 lg:flex-1">
+        <div className="tui-panel relative flex min-h-0 flex-1 flex-col">
           <span className="tui-inset-title" aria-hidden="true">output</span>
           <div
             ref={scrollAreaRef}
