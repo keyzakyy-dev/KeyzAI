@@ -256,22 +256,28 @@ function Hero({ navigate }) {
             </div>
 
             <ul
-              className="animate-rise mt-10 flex flex-col gap-3 text-sm font-medium text-muted-foreground"
+              className="animate-rise mt-10 grid max-w-xl gap-2 sm:grid-cols-3 sm:gap-3"
               style={{ animationDelay: '300ms' }}
             >
               {[
-                'Masuk dengan Google, riwayat otomatis tersimpan',
-                'Jawaban mengalir saat diketik, tidak perlu ditunggu',
-                'Bisa ganti model kapan saja',
-              ].map((item) => (
-                <li key={item} className="flex items-start gap-2.5">
+                ['Google login', 'Riwayat tersimpan otomatis'],
+                ['Jawaban realtime', 'Tanpa menunggu selesai'],
+                ['Model fleksibel', 'Ganti kapan saja'],
+              ].map(([title, detail]) => (
+                <li
+                  key={title}
+                  className="group flex items-center gap-3 rounded-xl border border-foreground/10 px-3.5 py-3 transition-colors hover:border-foreground/25"
+                >
                   <span
-                    className="mt-px grid size-4 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground"
+                    className="grid size-7 shrink-0 place-items-center rounded-full border border-emerald-500/30 text-emerald-500 dark:text-emerald-400"
                     aria-hidden="true"
                   >
-                    <Check className="size-2.5" />
+                    <Check className="size-3.5" strokeWidth={2.5} />
                   </span>
-                  <span className="text-foreground/90">{item}</span>
+                  <span className="min-w-0">
+                    <span className="block text-xs font-medium text-foreground">{title}</span>
+                    <span className="mt-0.5 block text-[11px] leading-tight text-muted-foreground">{detail}</span>
+                  </span>
                 </li>
               ))}
             </ul>
