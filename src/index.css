@@ -446,6 +446,12 @@
   font-size: 9px;
   letter-spacing: 0.06em;
 }
+/* Panel transparan agar mesh hero terlihat di belakang (border tetap ada
+   sebagai struktur). Inset title sengaja tetap solid supaya garis
+   border terpotong rapi seperti chat asli. */
+.chat-mockup .tui-panel {
+  background: transparent;
+}
 .tui-queued {
   border-color: color-mix(in srgb, var(--tui-warn) 65%, transparent);
 }
