@@ -80,8 +80,8 @@ function Navbar({ navigate }) {
 
   return (
     <header
-      className={`absolute inset-x-0 top-0 z-50 border-b border-transparent bg-transparent transition-colors duration-300 ${
-        open ? 'border-foreground/10' : ''
+      className={`absolute inset-x-0 top-0 z-50 border-b transition-colors duration-300 ${
+        open ? 'border-foreground/10 bg-background/95 backdrop-blur-md' : 'border-transparent'
       }`}
     >
       {/* Hairline progress baca */}
@@ -137,10 +137,10 @@ function Navbar({ navigate }) {
       {open && (
         <div
           id="landing-mobile-nav"
-          className="animate-fade-up border-t border-foreground/10 bg-transparent md:hidden"
+          className="animate-fade-up border-t border-foreground/10 md:hidden"
           style={{ animationDuration: '220ms' }}
         >
-          <nav className="mx-auto max-w-7xl px-4 py-2">
+          <nav className="mx-auto max-w-7xl px-4 pb-3 pt-1">
             <button
               type="button"
               onClick={() => {
