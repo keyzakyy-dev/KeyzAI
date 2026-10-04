@@ -362,15 +362,15 @@ function Models() {
     })
   }
   return (
-    <section id="models" className="scroll-mt-20 py-12 sm:py-14 lg:py-16">
+    <section id="models" className="relative scroll-mt-20 py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <Reveal from="up" className="mx-auto max-w-5xl">
+        <Reveal from="up" className="mx-auto max-w-7xl">
           <div className="mb-10 flex flex-col justify-between gap-4 border-b border-foreground/10 pb-6 sm:flex-row sm:items-end">
             <div>
               <span className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
                 Model AI
               </span>
-              <h2 className="mt-3 text-3xl font-medium tracking-tight text-foreground sm:text-4xl">
+              <h2 className="mt-3 text-3xl font-medium tracking-tight text-foreground sm:text-4xl lg:text-5xl">
                 Beragam model, semua gratis
               </h2>
             </div>
@@ -392,7 +392,7 @@ function Models() {
 
 function ModelCard({ model, copied, onCopy }) {
   return (
-    <div className="group relative overflow-hidden border border-transparent bg-background p-5 transition-colors duration-200 hover:border-foreground/25">
+    <div className="group relative overflow-hidden bg-background p-7 sm:p-8 transition-colors duration-200">
       {/* Watermark logo: brand glyph besar dan samar di belakang */}
       <img
         src={model.logo}
