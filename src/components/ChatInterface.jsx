@@ -709,36 +709,36 @@ export function ChatInterface() {
                   </ul>
                 )}
               </div>
-            </div>
-            <div ref={accountRef} className="scroll-mt-2">
-              <p className="font-bold uppercase tracking-wider text-muted-foreground">account</p>
-              {!user ? (
-                <button type="button" onClick={() => { setLoginErr(null); setLoginOpen(true) }} className="mt-1 flex w-full items-center gap-2 px-1 py-1 text-left transition-colors hover:text-foreground">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center border border-dashed border-foreground/25 text-muted-foreground">
-                    <User className="h-3 w-3" />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-foreground">Masuk</span>
-                    <span className="block truncate text-muted-foreground/70">Riwayat belum tersimpan</span>
-                  </span>
-                  <span className="shrink-0 text-muted-foreground/60" aria-hidden="true">›</span>
-                </button>
-              ) : (
-                <button type="button" onClick={() => setPrefsOpen(true)} className="mt-1 flex w-full items-center gap-2 px-1 py-1 text-left transition-colors hover:text-foreground">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden border border-foreground/20 text-foreground">
-                    {user.picture ? (
-                      <img src={user.picture} alt={user.name || 'Akun'} className="h-full w-full object-cover" referrerPolicy="no-referrer" />
-                    ) : (
-                      <span className="text-[11px] font-semibold">{(user.name || user.email || '?').charAt(0).toUpperCase()}</span>
-                    )}
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-foreground">{user.name || 'Pengguna'}</span>
-                    {user.email && <span className="block truncate text-muted-foreground/70">{user.email}</span>}
-                  </span>
-                  <span className="shrink-0 text-muted-foreground/60" aria-hidden="true">›</span>
-                </button>
-              )}
+              <div ref={accountRef} className="scroll-mt-2 pt-3">
+                <p className="font-bold uppercase tracking-wider text-muted-foreground">account</p>
+                {!user ? (
+                  <button type="button" onClick={() => { setLoginErr(null); setLoginOpen(true) }} className="mt-1 flex w-full items-center gap-2 px-1 py-1 text-left transition-colors hover:text-foreground">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center border border-dashed border-foreground/25 text-muted-foreground">
+                      <User className="h-3 w-3" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-foreground">Masuk</span>
+                      <span className="block truncate text-muted-foreground/70">Riwayat belum tersimpan</span>
+                    </span>
+                    <span className="shrink-0 text-muted-foreground/60" aria-hidden="true">›</span>
+                  </button>
+                ) : (
+                  <button type="button" onClick={() => setPrefsOpen(true)} className="mt-1 flex w-full items-center gap-2 px-1 py-1 text-left transition-colors hover:text-foreground">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden border border-foreground/20 text-foreground">
+                      {user.picture ? (
+                        <img src={user.picture} alt={user.name || 'Akun'} className="h-full w-full object-cover" referrerPolicy="no-referrer" />
+                      ) : (
+                        <span className="text-[11px] font-semibold">{(user.name || user.email || '?').charAt(0).toUpperCase()}</span>
+                      )}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-foreground">{user.name || 'Pengguna'}</span>
+                      {user.email && <span className="block truncate text-muted-foreground/70">{user.email}</span>}
+                    </span>
+                    <span className="shrink-0 text-muted-foreground/60" aria-hidden="true">›</span>
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </section>
