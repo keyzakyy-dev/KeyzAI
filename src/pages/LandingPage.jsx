@@ -472,100 +472,90 @@ function ModelMarqueeSection() {
 
 function PrdBuilder({ navigate }) {
   const steps = [
-    { icon: MessageSquare, label: 'Ide' },
-    { icon: CircleHelp, label: 'Klarifikasi' },
-    { icon: Code, label: 'Teknologi' },
-    { icon: FileText, label: 'Struktur' },
-    { icon: FileText, label: 'PRD' },
+    { icon: MessageSquare, label: 'Ide', desc: 'Ceritakan konsep produkmu' },
+    { icon: CircleHelp, label: 'Klarifikasi', desc: 'AI menggali detail penting' },
+    { icon: Code, label: 'Teknologi', desc: 'Rekomendasi stack yang tepat' },
+    { icon: FileText, label: 'Struktur', desc: 'Susunan fitur & arsitektur' },
+    { icon: FileText, label: 'PRD', desc: 'Dokumen siap pakai' },
   ]
 
   return (
-    <section id="prd-builder" className="relative scroll-mt-20 py-12 sm:py-14 lg:py-16">
-      {/* Soft glow blob */}
-      <div className="absolute left-1/2 top-0 h-72 w-[min(600px,100vw)] -translate-x-1/2 rounded-full bg-foreground/5 blur-[120px] hidden lg:block" />
+    <section id="prd-builder" className="relative scroll-mt-20 py-12 sm:py-14 lg:py-20">
+      <div className="absolute left-1/2 top-0 h-96 w-[min(800px,100vw)] -translate-x-1/2 rounded-full bg-primary/5 blur-[140px] hidden lg:block" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="grid items-center gap-12 lg:grid-cols-2">
-          {/* Left: headline + pipeline + CTA */}
-          <Reveal from="up" className="space-y-5">
-            <span className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              <FileText className="h-3.5 w-3.5" />
-              Beta
-            </span>
-            <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
-              Dari ide jadi PRD
-              <br />
-              <span className="text-muted-foreground">dalam hitungan menit</span>
-            </h2>
-            <p className="max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">
-              Ceritakan idemu, AI akan menanyakan hal-hal penting, merekomendasikan teknologi, menyusun struktur produk, sampai PRD siap pakai. Semua bagiannya bisa diedit.
-            </p>
+        <div className="mb-10 text-center">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
+            <FileText className="h-3 w-3" />
+            Beta
+          </span>
+          <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+            Dari ide jadi PRD dalam hitungan menit
+          </h2>
+        </div>
 
-            {/* Pipeline preview: horizontal flow of 5 steps */}
-            <div className="flex flex-wrap items-center gap-1">
-              {steps.map((s, i) => (
-                <div key={s.label} className="flex items-center gap-1">
-                  <div className="flex items-center gap-1.5 rounded-lg border border-border/60 bg-card px-2.5 py-1.5">
-                    <s.icon className="h-3.5 w-3.5 text-muted-foreground" />
-                    <span className="text-xs font-medium text-foreground">{s.label}</span>
+        {/* Bento Grid */}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
+          {/* Hero Card - spans 2 cols on lg */}
+          <Reveal from="up" className="sm:col-span-2 lg:col-span-2 lg:row-span-2">
+            <div className="group relative h-full overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-card to-muted/30 p-6 shadow-sm transition-all hover:shadow-md sm:p-8">
+              <div className="absolute right-0 top-0 h-64 w-64 rounded-full bg-primary/5 blur-3xl" />
+              <div className="relative space-y-4">
+                <h3 className="text-xl font-bold text-foreground sm:text-2xl">
+                  AI yang memahami visimu
+                </h3>
+                <p className="max-w-lg text-sm leading-relaxed text-muted-foreground sm:text-base">
+                  Ceritakan idemu, AI akan menanyakan hal-hal penting, merekomendasikan teknologi, menyusun struktur produk, sampai PRD siap pakai. Semua bagiannya bisa diedit.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => navigate('/prd-builder')}
+                  className="mt-6 inline-flex h-12 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 hover:gap-3"
+                >
+                  Coba sekarang
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              </div>
+              {/* Mini PRD preview */}
+              <div className="relative mt-8 overflow-hidden rounded-2xl border border-border/50 bg-background/80 backdrop-blur-sm">
+                <div className="flex items-center gap-2 border-b border-border/50 bg-muted/40 px-3 py-2">
+                  <span className="flex gap-1" aria-hidden="true">
+                    <span className="size-2 rounded-full bg-foreground/20" />
+                    <span className="size-2 rounded-full bg-foreground/20" />
+                    <span className="size-2 rounded-full bg-foreground/20" />
+                  </span>
+                  <span className="ml-1 font-mono text-[10px] text-muted-foreground">prd.md</span>
+                </div>
+                <div className="space-y-3 p-4">
+                  <div className="h-2 w-24 rounded bg-foreground/10" />
+                  <div className="space-y-1.5">
+                    <div className="h-1.5 w-full rounded bg-foreground/5" />
+                    <div className="h-1.5 w-4/5 rounded bg-foreground/5" />
                   </div>
-                  {i < steps.length - 1 && (
-                    <ArrowRight className="h-3 w-3 shrink-0 text-muted-foreground/40" />
-                  )}
-                </div>
-              ))}
-            </div>
-
-            <button
-              type="button"
-              onClick={() => navigate('/prd-builder')}
-              className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-            >
-              <FileText className="h-4 w-4" aria-hidden="true" />
-              Coba PRD Builder
-              <ArrowRight className="h-4 w-4" />
-            </button>
-          </Reveal>
-
-          {/* Right: PRD document mockup, shell window yang sama dengan mock chat */}
-          <Reveal from="up" delay={150} className="relative mx-auto w-full max-w-md lg:mx-0 lg:max-w-none">
-            <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-              <div className="flex items-center gap-2 border-b border-border bg-muted/40 px-3 py-2.5">
-                <span className="flex items-center gap-1.5" aria-hidden="true">
-                  <span className="size-2.5 rounded-full bg-destructive/75 ring-1 ring-foreground/10" />
-                  <span className="size-2.5 rounded-full bg-foreground/15 ring-1 ring-foreground/10" />
-                  <span className="size-2.5 rounded-full bg-foreground/25 ring-1 ring-foreground/10" />
-                </span>
-                <span className="ml-2 font-mono text-xs text-muted-foreground">prd.md</span>
-              </div>
-              <div className="flex min-h-[22rem] flex-col justify-center space-y-4 p-5">
-                <div>
-                  <div className="h-2.5 w-28 rounded bg-foreground/10" />
-                  <div className="mt-1.5 h-2 w-44 rounded bg-foreground/8" />
-                </div>
-                <div className="space-y-1.5">
-                  <div className="h-1.5 w-full rounded bg-foreground/6" />
-                  <div className="h-1.5 w-5/6 rounded bg-foreground/6" />
-                  <div className="h-1.5 w-4/6 rounded bg-foreground/6" />
-                </div>
-                <div className="space-y-1.5">
-                  <div className="h-1.5 w-32 rounded bg-foreground/8" />
-                  <div className="h-1.5 w-full rounded bg-foreground/6" />
-                  <div className="h-1.5 w-3/4 rounded bg-foreground/6" />
-                </div>
-                <div className="space-y-1.5">
-                  <div className="h-1.5 w-28 rounded bg-foreground/8" />
-                  <div className="h-1.5 w-full rounded bg-foreground/6" />
-                  <div className="h-1.5 w-5/6 rounded bg-foreground/6" />
-                </div>
-                <div className="space-y-1.5">
-                  <div className="h-1.5 w-36 rounded bg-foreground/8" />
-                  <div className="h-1.5 w-full rounded bg-foreground/6" />
-                  <div className="h-1.5 w-2/3 rounded bg-foreground/6" />
+                  <div className="space-y-1.5">
+                    <div className="h-1.5 w-20 rounded bg-foreground/8" />
+                    <div className="h-1.5 w-full rounded bg-foreground/5" />
+                    <div className="h-1.5 w-3/4 rounded bg-foreground/5" />
+                  </div>
                 </div>
               </div>
             </div>
           </Reveal>
+
+          {/* Step Cards */}
+          {steps.map((step, i) => (
+            <Reveal key={step.label} from="up" delay={100 + i * 50}>
+              <div className="h-full rounded-2xl border border-border bg-card p-5 shadow-sm transition-all hover:shadow-md">
+                <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                  <step.icon className="h-5 w-5 text-primary" />
+                </div>
+                <h4 className="text-sm font-semibold text-foreground">{step.label}</h4>
+                <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+                  {step.desc}
+                </p>
+              </div>
+            </Reveal>
+          ))}
         </div>
       </div>
     </section>
