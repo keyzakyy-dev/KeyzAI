@@ -373,7 +373,7 @@ function Hero({ navigate }) {
        heksagon di belakang mengisi ruang itu, mockup sudah dihapus. */
     <section className="relative overflow-hidden py-16 sm:py-20 lg:flex lg:min-h-[calc(100svh-4rem)] lg:items-center lg:py-24">
       <MeshCanvas
-        label="Decorative background: hero-only honeycomb that bends around the cursor and ripples on click."
+        label="Decorative background: hero-only triangle mesh that bends around the cursor and ripples on click."
         className="pointer-events-none absolute inset-0"
       />
       <div className="relative mx-auto w-full max-w-7xl px-4 sm:px-6">

@@ -1,35 +1,28 @@
 import { useEffect, useRef } from 'react'
 
-// Sarang lebah heksagon (pointy-top), full-page + parallax scroll, ditekuk
-// menjauhi kursor dan memencar saat diklik. R = jari-jari heksagon — 52px →
-// ~90px antar pusat, cukup rapat untuk terbaca sebagai pola tapi tidak padat.
-// Margin 2 baris di semua sisi agar geseran parallax/pointer tidak pernah
-// meninggalkan lubang di tepi layar.
-const R = 52
-const COL = Math.sqrt(3) * R // jarak horizontal antar pusat
-const ROW = 1.5 * R // jarak vertikal antar pusat baris
-const SCROLL_RATE = 0.08 // px grid bergeser per px scroll → kesan kedalaman
-const DRIFT_AMP = 4 // ayunan idle, px
+// Grid segitiga sama sisi, full-page + parallax scroll, ditekuk menjauhi
+// kursor dan memencar saat diklik. SIZE = panjang sisi segitiga.
+const SIZE = 80
+const H_SPACING = SIZE * Math.sqrt(3) / 2 // tinggi segitiga
+const V_SPACING = SIZE / 2 // offset vertikal antar baris
+const SCROLL_RATE = 0.08
+const DRIFT_AMP = 4
 const POINTER_R = 240
 const POINTER_PUSH = 10
 const ALPHA_BASE = 0.055
 const ALPHA_HOVER = 0.32
 const BUCKETS = 6
 
-// Riak saat klik: cincin yang melebar dari titik klik, heksagon dalam band's
-// terdorong ke luar. Amplitudo meredup seiring waktu laluoyo.
-const PULSE_SPEED = 620 // px per detik
-const PULSE_LIFE = 1.6 // detik sampai lenyap
-const PULSE_BAND = 90 // lebar cincin, px
-const PULSE_PUSH = 16 // dorongan puncak, px
-
-// Titik sudut heksagon relatif ke pusat — trig dihitung sekali di module scope.
-const VX = Array.from({ length: 6 }, (_, k) => Math.cos((Math.PI / 180) * (60 * k - 90)))
-const VY = Array.from({ length: 6 }, (_, k) => Math.sin((Math.PI / 180) * (60 * k - 90)))
+// Riak saat klik: cincin yang melebar dari titik klik, segitiga dalam band
+// terdorong ke luar. Amplitudo meredup seiring waktu.
+const PULSE_SPEED = 620
+const PULSE_LIFE = 1.6
+const PULSE_BAND = 90
+const PULSE_PUSH = 16
 
 export function MeshCanvas({
   className = 'block h-full w-full',
-  label = 'Decorative background: full-page honeycomb that drifts with scroll, bends around your cursor, and ripples when you click.',
+  label = 'Decorative background: triangle mesh that drifts with scroll, bends around your cursor, and ripples when you click.',
   parallax = false,
 }) {
   const canvasRef = useRef(null)
@@ -83,19 +76,31 @@ export function MeshCanvas({
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
       cells = []
-      let row = -2
-      for (let y = -2 * ROW; y < H + 2 * ROW; y += ROW, row++) {
-        const offset = row % 2 ? COL / 2 : 0
-        for (let x = -COL; x < W + 2 * COL; x += COL) {
-          cells.push({ x: x + offset, y })
+      let row = 0
+      for (let y = -H_SPACING; y < H + H_SPACING; y += H_SPACING, row++) {
+        const xStart = -SIZE
+        const xEnd = W + SIZE
+        for (let x = xStart; x <= xEnd; x += SIZE) {
+          // Segitiga pointing up
+          cells.push({ x, y, up: true })
+          // Segitiga pointing down (offset setengah SIZE ke kanan)
+          cells.push({ x: x + SIZE / 2, y: y + H_SPACING, up: false })
         }
       }
     }
 
     // ---- DRAW ----
-    function hex(p, cx, cy, r) {
-      p.moveTo(cx + r * VX[0], cy + r * VY[0])
-      for (let k = 1; k < 6; k++) p.lineTo(cx + r * VX[k], cy + r * VY[k])
+    function triangle(p, cx, cy, size, up) {
+      const h = size * Math.sqrt(3) / 2
+      if (up) {
+        p.moveTo(cx, cy - h * 2/3)
+        p.lineTo(cx - size / 2, cy + h / 3)
+        p.lineTo(cx + size / 2, cy + h / 3)
+      } else {
+        p.moveTo(cx, cy + h * 2/3)
+        p.lineTo(cx - size / 2, cy - h / 3)
+        p.lineTo(cx + size / 2, cy - h / 3)
+      }
       p.closePath()
     }
 
@@ -124,7 +129,7 @@ export function MeshCanvas({
         const cx = c.x + shiftX
         const cy = c.y + shiftY
         let a = ALPHA_BASE
-        let r = R
+        let scale = 1
         let ox = 0
         let oy = 0
         if (pointer.active && !reduced) {
@@ -134,7 +139,7 @@ export function MeshCanvas({
           if (d < POINTER_R && d > 0.5) {
             const e = (1 - d / POINTER_R) ** 2
             a += ALPHA_HOVER * e
-            r = R * (1 + 0.08 * e)
+            scale = 1 + 0.08 * e
             ox = (dx / d) * POINTER_PUSH * e
             oy = (dy / d) * POINTER_PUSH * e
           }
@@ -147,14 +152,14 @@ export function MeshCanvas({
           if (band < PULSE_BAND && d > 0.5) {
             const e = 1 - band / PULSE_BAND
             a += ALPHA_HOVER * 0.7 * e
-            r = R * (1 + 0.05 * e)
+            scale = Math.max(scale, 1 + 0.05 * e)
             const s = e * e * p.amp
             ox += (dx / d) * s
             oy += (dy / d) * s
           }
         }
         const b = Math.min(BUCKETS - 1, Math.floor(((a - ALPHA_BASE) / ALPHA_HOVER) * BUCKETS))
-        hex(paths[b], cx + ox, cy + oy, r)
+        triangle(paths[b], cx + ox, cy + oy, SIZE * scale, c.up)
       }
 
       for (let b = 0; b < BUCKETS; b++) {
