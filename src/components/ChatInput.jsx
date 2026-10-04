@@ -145,7 +145,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false }) {
               type="button"
               onClick={onStop}
               aria-label="Hentikan generasi"
-              className="flex h-6 w-6 shrink-0 items-center justify-center rounded-sm border border-destructive/60 text-destructive transition-colors hover:bg-destructive hover:text-destructive-foreground"
+              className="relative flex h-6 w-6 shrink-0 items-center justify-center rounded-sm border border-destructive/60 text-destructive transition-colors after:absolute after:-inset-2 after:content-[''] hover:bg-destructive hover:text-destructive-foreground"
             >
               <Square className="h-2.5 w-2.5 fill-current" />
             </button>
@@ -155,7 +155,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false }) {
               onClick={handleSend}
               disabled={!message.trim()}
               aria-label="Kirim pesan"
-              className="flex h-6 w-6 shrink-0 items-center justify-center rounded-sm border border-foreground/25 text-foreground transition-colors hover:border-foreground hover:bg-foreground hover:text-background disabled:opacity-30 disabled:hover:border-foreground/25 disabled:hover:bg-transparent disabled:hover:text-foreground"
+              className="relative flex h-6 w-6 shrink-0 items-center justify-center rounded-sm border border-foreground/25 text-foreground transition-colors after:absolute after:-inset-2 after:content-[''] hover:border-foreground hover:bg-foreground hover:text-background disabled:opacity-30 disabled:hover:border-foreground/25 disabled:hover:bg-transparent disabled:hover:text-foreground"
             >
               <ArrowUp className="h-3 w-3" />
             </button>

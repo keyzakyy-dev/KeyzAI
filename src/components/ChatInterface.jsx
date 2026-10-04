@@ -444,7 +444,7 @@ export function ChatInterface() {
             <span className="shrink-0 select-none text-muted-foreground/50" aria-hidden="true">·</span>
             <span className="min-w-0 truncate text-muted-foreground">{tuiUserLabel}</span>
             {activeConv || messages.length > 0 ? (
-              <div className="relative flex min-w-0 items-center gap-1">
+              <div className="relative hidden min-w-0 items-center gap-1 min-[480px]:flex">
                 <span className="shrink-0 select-none text-muted-foreground/50" aria-hidden="true">·</span>
                 <p className="min-w-0 truncate text-xs text-muted-foreground">
                   {currentTitle || 'Chat baru'}
@@ -527,7 +527,7 @@ export function ChatInterface() {
           </div>
         </div>
 
-        <div className="tui-panel relative flex h-[62dvh] min-h-0 shrink-0 flex-col lg:h-auto lg:min-h-0 lg:flex-1">
+        <div className="tui-panel relative flex h-[50dvh] min-h-0 shrink-0 flex-col lg:h-auto lg:min-h-0 lg:flex-1">
           <span className="tui-inset-title" aria-hidden="true">output</span>
           <div
             ref={scrollAreaRef}
@@ -645,7 +645,7 @@ export function ChatInterface() {
           <span className="tui-inset-title" aria-hidden="true">session</span>
           <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5">
             <dt className="text-muted-foreground">context</dt>
-            <dd className="truncate text-right"><span className="tui-accent font-bold">~{sessionCtxPct}%</span> <span className="text-muted-foreground/40">{'▓'.repeat(sessionCtxFilled)}{'░'.repeat(28 - sessionCtxFilled)}</span></dd>
+            <dd className="truncate text-right"><span className="tui-accent font-bold">~{sessionCtxPct}%</span> <span className="hidden text-muted-foreground/40 min-[420px]:inline">{'▓'.repeat(sessionCtxFilled)}{'░'.repeat(28 - sessionCtxFilled)}</span></dd>
             <dt className="text-muted-foreground">tokens</dt>
             <dd className="text-right text-foreground">~{sessionTokenEstimate.toLocaleString('en-US')} / 256,000</dd>
             <dt className="text-muted-foreground">used</dt>
@@ -705,7 +705,7 @@ export function ChatInterface() {
                           <MessageSquare className="h-3 w-3 shrink-0 opacity-40" />
                           <span className="min-w-0 flex-1 truncate">{conv.title || 'Percakapan'}</span>
                         </button>
-                        <button type="button" onClick={() => handleDeleteConv(conv.id)} aria-label="Hapus percakapan" className="shrink-0 p-1 text-muted-foreground opacity-0 transition-opacity hover:text-destructive focus-visible:opacity-100 group-hover:opacity-100">
+                        <button type="button" onClick={() => handleDeleteConv(conv.id)} aria-label="Hapus percakapan" className="shrink-0 p-1 text-muted-foreground opacity-0 transition-opacity hover:text-destructive focus-visible:opacity-100 group-hover:opacity-100 max-lg:opacity-100">
                           <Trash2 className="h-3 w-3" />
                         </button>
                       </li>

@@ -403,6 +403,11 @@
   border-radius: 6px;
   background: hsl(var(--background));
 }
+.tui-inset-title button {
+  /* Area sentuh lebih besar tanpa mengubah tampilan (penting di mobile). */
+  padding: 8px 4px;
+  margin: -8px 0;
+}
 .tui-inset-title {
   position: absolute;
   top: -8px;
