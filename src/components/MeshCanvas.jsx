@@ -14,6 +14,18 @@ const ALPHA_BASE = 0.18
 const ALPHA_HOVER = 0.55
 const BUCKETS = 8
 
+// Konversi alpha relatif -> indeks bucket [0, BUCKETS-1].
+// Nilai bisa negatif (alpha di bawah ALPHA_BASE saat node menjauh dari
+// kamera) dan bisa > BUCKETS, jadi harus di-clamp dua sisi.
+// Tanpa ini, indeks -1 membuat paths[-1] undefined -> TypeError.
+function clampBucket(v) {
+  if (!Number.isFinite(v)) return 0
+  const i = Math.floor(v)
+  if (i < 0) return 0
+  if (i >= BUCKETS) return BUCKETS - 1
+  return i
+}
+
 export function MeshCanvas({
   className = 'block h-full w-full',
   label = 'Decorative background: connected hexagonal mesh with subtle 3D perspective, bends around cursor.',
@@ -207,7 +219,10 @@ export function MeshCanvas({
           }
         }
 
-        const bIdx = Math.min(BUCKETS - 1, Math.floor(((alpha - ALPHA_BASE) / (ALPHA_HOVER || 1)) * BUCKETS))
+        // avgScale bisa < 1 (node menjauh dari kamera), jadi alpha bisa turun di
+        // bawah ALPHA_BASE dan hasil perhitungan jadi negatif. Clamp dua sisi:
+        // tanpa clamp bawah, bIdx = -1 dan paths[-1] undefined -> TypeError.
+        const bIdx = clampBucket(((alpha - ALPHA_BASE) / (ALPHA_HOVER || 1)) * BUCKETS)
         paths[bIdx].moveTo(a.x, a.y)
         paths[bIdx].lineTo(b.x, b.y)
       }
@@ -224,7 +239,7 @@ export function MeshCanvas({
             a += ALPHA_HOVER * e * p.scale
           }
         }
-        const b = Math.min(BUCKETS - 1, Math.floor(((alpha - ALPHA_BASE) / (ALPHA_HOVER || 1)) * BUCKETS))
+        const b = clampBucket(((alpha - ALPHA_BASE) / (ALPHA_HOVER || 1)) * BUCKETS)
         const r = NODE_R * p.scale
         nodePaths[b].moveTo(p.x + r, p.y)
         nodePaths[b].arc(p.x, p.y, r, 0, Math.PI * 2)
