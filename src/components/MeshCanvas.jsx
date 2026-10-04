@@ -1,28 +1,22 @@
 import { useEffect, useRef } from 'react'
 
-// Grid segitiga sama sisi, full-page + parallax scroll, ditekuk menjauhi
-// kursor dan memencar saat diklik. SIZE = panjang sisi segitiga.
-const SIZE = 80
-const H_SPACING = SIZE * Math.sqrt(3) / 2 // tinggi segitiga
-const V_SPACING = SIZE / 2 // offset vertikal antar baris
-const SCROLL_RATE = 0.08
-const DRIFT_AMP = 4
-const POINTER_R = 240
-const POINTER_PUSH = 10
-const ALPHA_BASE = 0.055
-const ALPHA_HOVER = 0.32
-const BUCKETS = 6
-
-// Riak saat klik: cincin yang melebar dari titik klik, segitiga dalam band
-// terdorong ke luar. Amplitudo meredup seiring waktu.
-const PULSE_SPEED = 620
-const PULSE_LIFE = 1.6
-const PULSE_BAND = 90
-const PULSE_PUSH = 16
+// Connected mesh: hexagonal grid with lines between nodes + dots at vertices.
+// Subtle 3D perspective (Y rotation). Mouse repels nearby nodes.
+const SPACING = 72
+const NODE_R = 1.8
+const LINE_W = 0.6
+const PERSPECTIVE = 420 // focal length for 3D
+const ROT_Y = -0.18 // radians, subtle Y rotation
+const DRIFT_SPEED = 0.00035
+const POINTER_R = 260
+const POINTER_PUSH = 18
+const ALPHA_BASE = 0.18
+const ALPHA_HOVER = 0.55
+const BUCKETS = 8
 
 export function MeshCanvas({
   className = 'block h-full w-full',
-  label = 'Decorative background: triangle mesh that drifts with scroll, bends around your cursor, and ripples when you click.',
+  label = 'Decorative background: connected hexagonal mesh with subtle 3D perspective, bends around cursor.',
   parallax = false,
 }) {
   const canvasRef = useRef(null)
@@ -39,27 +33,25 @@ export function MeshCanvas({
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
     let reduced = motionQuery.matches
 
-    // Resolve HSL token (format: "H S% L%")
     const getInk = () => getComputedStyle(canvas).getPropertyValue('--foreground').trim()
 
     // ---- state ----
     let W = 0, H = 0, dpr = 1
-    let cells = []
+    let nodes = [] // { x, y, z, baseX, baseY }
+    let edges = [] // [i, j]
     const pointer = { x: -1e4, y: -1e4, tx: -1e4, ty: -1e4, active: false }
-    const pulses = []
     let raf = 0, running = false, visible = true, lastTime = 0, time = 0
     let scrollShift = 0, scrollTarget = 0
 
-    const onScroll = () => { scrollTarget = -window.scrollY * SCROLL_RATE }
+    const onScroll = () => { scrollTarget = -window.scrollY * 0.06 }
     if (parallax) {
       window.addEventListener('scroll', onScroll, { passive: true })
-      scrollTarget = scrollShift = -window.scrollY * SCROLL_RATE
+      scrollTarget = scrollShift = -window.scrollY * 0.06
     }
 
-    // ---- LAYOUT ----
+    // ---- LAYOUT: hexagonal grid ----
     function layout() {
       if (parallax) {
-        // canvas fixed inset-0: ukuran = viewport, bukan tinggi dokumen
         W = window.innerWidth
         H = window.innerHeight
       } else {
@@ -75,97 +67,183 @@ export function MeshCanvas({
       canvas.style.height = `${H}px`
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
-      cells = []
+      // hex grid spacing
+      const h = SPACING * Math.sqrt(3) / 2 // vertical spacing
+      const v = SPACING * 1.5 // horizontal row spacing
+
+      nodes = []
+      const nodeMap = new Map() // "row,col" -> index
+
+      // generate nodes
       let row = 0
-      for (let y = -H_SPACING; y < H + H_SPACING; y += H_SPACING, row++) {
-        const xStart = -SIZE
-        const xEnd = W + SIZE
-        for (let x = xStart; x <= xEnd; x += SIZE) {
-          // Segitiga pointing up
-          cells.push({ x, y, up: true })
-          // Segitiga pointing down (offset setengah SIZE ke kanan)
-          cells.push({ x: x + SIZE / 2, y: y + H_SPACING, up: false })
+      for (let y = -h; y < H + h; y += h, row++) {
+        const xOffset = (row % 2) * (SPACING / 2)
+        for (let x = -SPACING + xOffset; x < W + SPACING; x += SPACING) {
+          const idx = nodes.length
+          const baseX = x
+          const baseY = y
+          // initial z variation for subtle terrain
+          const z = (Math.sin(x * 0.01) * Math.cos(y * 0.01)) * 40
+          nodes.push({ x, y, z, baseX, baseY, vx: 0, vy: 0, vz: 0 })
+          nodeMap.set(`${row},${(x + SPACING - xOffset) / SPACING}`, idx)
         }
+      }
+
+      // generate edges (6 neighbors in hex grid)
+      edges = []
+      row = 0
+      for (let y = -h; y < H + h; y += h, row++) {
+        const xOffset = (row % 2) * (SPACING / 2)
+        let col = 0
+        for (let x = -SPACING + xOffset; x < W + SPACING; x += SPACING, col++) {
+          const idx = nodeMap.get(`${row},${col}`)
+          if (idx === undefined) continue
+
+          // 6 neighbor directions in axial-ish coordinates
+          const dirs = [
+            [0, -1],   // up
+            [1, -1],   // up-right
+            [1, 0],    // right
+            [0, 1],    // down
+            [-1, 1],   // down-left
+            [-1, 0],   // left
+          ]
+          for (const [dr, dc] of dirs) {
+            const nIdx = nodeMap.get(`${row + dr},${col + dc}`)
+            if (nIdx !== undefined && idx < nIdx) {
+              edges.push([idx, nIdx])
+            }
+          }
+        }
+      }
+    }
+
+    // project 3D -> 2D with perspective
+    function project(node) {
+      const cx = W / 2
+      const cy = H / 2
+      const dx = node.x - cx
+      const dy = node.y - cy
+      // rotate Y
+      const cos = Math.cos(ROT_Y)
+      const sin = Math.sin(ROT_Y)
+      const rx = dx * cos - node.z * sin
+      const rz = dx * sin + node.z * cos
+      // perspective
+      const scale = PERSPECTIVE / (PERSPECTIVE + rz)
+      return {
+        x: cx + rx * scale,
+        y: node.y * scale + cy * (1 - scale) + scrollShift,
+        z: rz,
+        scale,
       }
     }
 
     // ---- DRAW ----
-    function triangle(p, cx, cy, size, up) {
-      const h = size * Math.sqrt(3) / 2
-      if (up) {
-        p.moveTo(cx, cy - h * 2/3)
-        p.lineTo(cx - size / 2, cy + h / 3)
-        p.lineTo(cx + size / 2, cy + h / 3)
-      } else {
-        p.moveTo(cx, cy + h * 2/3)
-        p.lineTo(cx - size / 2, cy - h / 3)
-        p.lineTo(cx + size / 2, cy - h / 3)
-      }
-      p.closePath()
-    }
-
     function draw() {
       ctx.clearRect(0, 0, W, H)
-      ctx.lineWidth = 1
+
       const ink = getInk()
-      const shiftY = reduced ? 0 : scrollShift + Math.sin(time) * DRIFT_AMP
-      const shiftX = reduced ? 0 : Math.cos(time * 0.7) * DRIFT_AMP
-
-      // Bucket per level alpha → 6 stroke call, bukan ratusan.
       const paths = Array.from({ length: BUCKETS }, () => new Path2D())
+      const nodePaths = Array.from({ length: BUCKETS }, () => new Path2D())
 
-      // Riak klik: untuk setiap pulse yang masih hidup, pre-compute radius
-      // cincin + amplitudo yang meredup. Tanpa ini tiap sel akan menghitung
-      // hypot ke tiap pulse (N sel × M pulse per frame).
-      const now = performance.now()
-      const live = []
-      for (let n = pulses.length - 1; n >= 0; n--) {
-        const age = (now - pulses[n].t) / 1000
-        if (age > PULSE_LIFE) { pulses.splice(n, 1); continue }
-        live.push({ ...pulses[n], wave: age * PULSE_SPEED, amp: (1 - age / PULSE_LIFE) * PULSE_PUSH })
+      // animate nodes
+      for (const n of nodes) {
+        // drift
+        n.x = n.baseX + Math.sin(time + n.baseX * 0.008) * 12
+        n.y = n.baseY + Math.cos(time * 0.7 + n.baseY * 0.008) * 10 + scrollShift
+        n.z = Math.sin(time * 0.3 + n.baseX * 0.005) * Math.cos(time * 0.2 + n.baseY * 0.005) * 35
       }
 
-      for (const c of cells) {
-        const cx = c.x + shiftX
-        const cy = c.y + shiftY
-        let a = ALPHA_BASE
-        let scale = 1
-        let ox = 0
-        let oy = 0
-        if (pointer.active && !reduced) {
-          const dx = cx - pointer.x
-          const dy = cy - pointer.y
+      // pointer influence
+      if (pointer.active && !reduced) {
+        for (const n of nodes) {
+          const dx = n.x - pointer.x
+          const dy = n.y - pointer.y
           const d = Math.hypot(dx, dy)
           if (d < POINTER_R && d > 0.5) {
             const e = (1 - d / POINTER_R) ** 2
-            a += ALPHA_HOVER * e
-            scale = 1 + 0.08 * e
-            ox = (dx / d) * POINTER_PUSH * e
-            oy = (dy / d) * POINTER_PUSH * e
+            const push = POINTER_PUSH * e
+            n.vx += (dx / d) * push * 0.15
+            n.vy += (dy / d) * push * 0.15
           }
         }
-        for (const p of live) {
-          const dx = cx - p.x
-          const dy = cy - p.y
-          const d = Math.hypot(dx, dy)
-          const band = Math.abs(d - p.wave)
-          if (band < PULSE_BAND && d > 0.5) {
-            const e = 1 - band / PULSE_BAND
-            a += ALPHA_HOVER * 0.7 * e
-            scale = Math.max(scale, 1 + 0.05 * e)
-            const s = e * e * p.amp
-            ox += (dx / d) * s
-            oy += (dy / d) * s
-          }
-        }
-        const b = Math.min(BUCKETS - 1, Math.floor(((a - ALPHA_BASE) / ALPHA_HOVER) * BUCKETS))
-        triangle(paths[b], cx + ox, cy + oy, SIZE * scale, c.up)
       }
 
+      // apply velocity with damping
+      for (const n of nodes) {
+        n.x += n.vx
+        n.y += n.vy
+        n.vx *= 0.88
+        n.vy *= 0.88
+        // spring back to base
+        n.vx += (n.baseX - n.x) * 0.012
+        n.vy += (n.baseY - n.y) * 0.012
+      }
+
+      // project all nodes
+      const projected = nodes.map(project)
+
+      // draw edges (lines)
+      for (const [i, j] of edges) {
+        const a = projected[i]
+        const b = projected[j]
+        if (!a || !b) continue
+
+        // alpha based on average depth (closer = brighter)
+        const avgScale = (a.scale + b.scale) / 2
+        let alpha = ALPHA_BASE * avgScale
+
+        // pointer highlight on edges near cursor
+        if (pointer.active && !reduced) {
+          const mx = (a.x + b.x) / 2
+          const my = (a.y + b.y) / 2
+          const dx = mx - pointer.x
+          const dy = my - pointer.y
+          const d = Math.hypot(dx, dy)
+          if (d < POINTER_R * 1.2) {
+            const e = (1 - d / (POINTER_R * 1.2)) ** 1.5
+            alpha += ALPHA_HOVER * e * avgScale
+          }
+        }
+
+        const bIdx = Math.min(BUCKETS - 1, Math.floor(((alpha - ALPHA_BASE) / (ALPHA_HOVER || 1)) * BUCKETS))
+        paths[bIdx].moveTo(a.x, a.y)
+        paths[bIdx].lineTo(b.x, b.y)
+      }
+
+      // draw nodes (dots)
+      for (const p of projected) {
+        let a = ALPHA_BASE * 1.4 * p.scale
+        if (pointer.active && !reduced) {
+          const dx = p.x - pointer.x
+          const dy = p.y - pointer.y
+          const d = Math.hypot(dx, dy)
+          if (d < POINTER_R) {
+            const e = (1 - d / POINTER_R) ** 2
+            a += ALPHA_HOVER * e * p.scale
+          }
+        }
+        const b = Math.min(BUCKETS - 1, Math.floor(((alpha - ALPHA_BASE) / (ALPHA_HOVER || 1)) * BUCKETS))
+        const r = NODE_R * p.scale
+        nodePaths[b].moveTo(p.x + r, p.y)
+        nodePaths[b].arc(p.x, p.y, r, 0, Math.PI * 2)
+      }
+
+      // stroke edges
+      ctx.lineWidth = LINE_W
+      ctx.lineCap = 'round'
       for (let b = 0; b < BUCKETS; b++) {
         const a = ALPHA_BASE + (ALPHA_HOVER * (b + 0.5)) / BUCKETS
         ctx.strokeStyle = `hsl(${ink} / ${a.toFixed(3)})`
         ctx.stroke(paths[b])
+      }
+
+      // fill nodes
+      for (let b = 0; b < BUCKETS; b++) {
+        const a = ALPHA_BASE * 1.4 + (ALPHA_HOVER * (b + 0.5)) / BUCKETS
+        ctx.fillStyle = `hsl(${ink} / ${Math.min(1, a).toFixed(3)})`
+        ctx.fill(nodePaths[b])
       }
     }
 
@@ -182,8 +260,8 @@ export function MeshCanvas({
         pointer.y += (pointer.ty - pointer.y) * Math.min(1, 0.22 * dt)
       }
 
-      time += 0.006 * dt
-      scrollShift += (scrollTarget - scrollShift) * Math.min(1, 0.08 * dt)
+      time += DRIFT_SPEED * dt * 1000
+      scrollShift += (scrollTarget - scrollShift) * Math.min(1, 0.06 * dt)
 
       draw()
       raf = requestAnimationFrame(step)
@@ -219,15 +297,6 @@ export function MeshCanvas({
       if (reduced) draw()
     }
     const onOut = (e) => { if (e.relatedTarget === null) onLeave() }
-    const onUpTouch = (e) => { if (e.pointerType === 'touch') onLeave() }
-    const onDown = (e) => {
-      if (reduced) return
-      const { x, y } = toLocal(e)
-      // Abaikan klik yang jatuh di luar kanvas (mis. di elemen sticky).
-      if (x < 0 || y < 0 || x > W || y > H) return
-      pulses.push({ x, y, t: performance.now() })
-      if (pulses.length > 6) pulses.shift()
-    }
 
     const onVisibility = () => { document.hidden ? stop() : start() }
 
@@ -237,22 +306,21 @@ export function MeshCanvas({
         scrollShift = 0
         draw()
         stop()
-      }
-      else start()
+      } else start()
     }
 
-    // theme change → re-draw (ink token may change)
+    // theme change → re-draw
     const colorObserver = new MutationObserver(() => draw())
     colorObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
 
-    // resize (debounce via rAF)
+    // resize
     let resizeRaf = 0
     const resizeObserver = new ResizeObserver(() => {
       if (resizeRaf) return
       resizeRaf = requestAnimationFrame(() => { resizeRaf = 0; layout(); draw() })
     })
 
-    // pause saat off-screen
+    // pause when off-screen
     const intersectObserver = new IntersectionObserver(
       (entries) => { visible = entries.some((e) => e.isIntersecting); visible ? start() : stop() },
       { rootMargin: '80px' }
@@ -264,9 +332,6 @@ export function MeshCanvas({
     intersectObserver.observe(canvas)
 
     window.addEventListener('pointermove', onMove, { passive: true })
-    window.addEventListener('pointerdown', onDown, { passive: true })
-    window.addEventListener('pointerup', onUpTouch, { passive: true })
-    window.addEventListener('pointercancel', onUpTouch, { passive: true })
     window.addEventListener('pointerout', onOut, { passive: true })
     window.addEventListener('blur', onLeave)
     document.addEventListener('visibilitychange', onVisibility)
@@ -280,9 +345,6 @@ export function MeshCanvas({
       colorObserver.disconnect()
       intersectObserver.disconnect()
       window.removeEventListener('pointermove', onMove)
-      window.removeEventListener('pointerdown', onDown)
-      window.removeEventListener('pointerup', onUpTouch)
-      window.removeEventListener('pointercancel', onUpTouch)
       window.removeEventListener('pointerout', onOut)
       window.removeEventListener('blur', onLeave)
       document.removeEventListener('visibilitychange', onVisibility)
