@@ -89,12 +89,12 @@ function Navbar({ navigate, theme, toggleTheme }) {
   }, [])
 
   const ctaClass =
-    'inline-flex h-8 items-center gap-1.5 rounded-lg bg-primary px-3.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90'
+    'inline-flex h-9 items-center gap-1.5 rounded-full border border-foreground/15 bg-transparent px-4 text-sm font-medium text-foreground transition-colors hover:border-foreground/40 hover:bg-foreground/[0.04]'
 
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 border-b border-transparent transition-colors duration-300 ${
-        open ? 'border-border/70 bg-background' : ''
+        open ? 'border-foreground/10 bg-background/95 backdrop-blur-xl' : 'bg-background/70 backdrop-blur-md'
       }`}
     >
       {/* Hairline progress baca */}
@@ -110,7 +110,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
           type="button"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           aria-label="Kembali ke atas"
-          className="shrink-0 rounded-xl transition-opacity hover:opacity-80"
+          className="shrink-0 rounded-full transition-opacity hover:opacity-80"
         >
           <Logo />
         </button>
@@ -121,7 +121,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
             type="button"
             onClick={toggleTheme}
             aria-label="Ganti tema"
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-foreground/[0.06] hover:text-foreground"
           >
             <ThemeIcon theme={theme} />
           </button>
