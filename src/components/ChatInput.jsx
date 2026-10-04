@@ -108,7 +108,13 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false }) {
       // onSend boleh mengembalikan false untuk menandakan pesan belum benar-benar
       // terkirim (mis. muncul popup login) — teks dipertahankan di kolom.
       const sent = onSend(message)
-      if (sent !== false) setMessage('')
+      if (sent !== false) {
+        setMessage('')
+        // Collapse eksplisit: jangan andalkan efek resize berikutnya saja,
+        // supaya tinggi sisa konten lama tidak tertinggal.
+        const el = textareaRef.current
+        if (el) el.style.height = 'auto'
+      }
     }
   }
 
