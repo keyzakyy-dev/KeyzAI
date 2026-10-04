@@ -669,7 +669,7 @@ export function ChatInterface() {
           </div>
           <div className="min-h-0 pt-4">
             {panelTab === 'menu' && (
-              <div className="rounded-sm border border-foreground/10 p-3">
+              <div>
                 <p className="font-bold uppercase tracking-wider text-muted-foreground">menu</p>
                 <div className="mt-1 space-y-0.5">
                   <button type="button" onClick={handleNewChat} className="flex w-full items-center gap-2 px-1 py-1 text-left text-foreground/80 transition-colors hover:text-foreground">
@@ -682,7 +682,7 @@ export function ChatInterface() {
               </div>
             )}
             {panelTab === 'recent' && (
-              <div className="rounded-sm border border-foreground/10 p-3">
+              <div>
                 <p className="font-bold uppercase tracking-wider text-muted-foreground">recent</p>
                 {recentConvs.length === 0 ? (
                   <div className="mt-1">
@@ -707,7 +707,7 @@ export function ChatInterface() {
               </div>
             )}
             {panelTab === 'account' && (
-              <div className="rounded-sm border border-foreground/10 p-3">
+              <div>
                 <p className="font-bold uppercase tracking-wider text-muted-foreground">account</p>
                 {!user ? (
                   <button type="button" onClick={() => { setLoginErr(null); setLoginOpen(true) }} className="mt-1 flex w-full items-center gap-2 px-1 py-1 text-left transition-colors hover:text-foreground">
