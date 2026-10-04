@@ -287,6 +287,21 @@ export function ChatInterface() {
     })
   }
 
+  // ---------- Esc menghentikan streaming (sesuai hint di status bar).
+  // Aman dari mode edit: edit pesan tidak bisa dibuka saat loading.
+  const loadingRef = useRef(loading)
+  useEffect(() => { loadingRef.current = loading }, [loading])
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'Escape' && loadingRef.current) {
+        e.preventDefault()
+        stop()
+      }
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [stop])
+
   // ---------- scroll
   const scrollToBottom = () => {
     const el = scrollAreaRef.current
@@ -402,7 +417,7 @@ export function ChatInterface() {
       return Math.round(chars / 4)
     } catch { return 0 }
   }, [messages])
-  const tuiUserLabel = user?.name ? user.name.split(' ')[0].toLowerCase() : 'iyokz'
+  const tuiUserLabel = user?.name ? user.name.split(' ')[0].toLowerCase() : 'tamu'
 
   const lastMessage = messages[messages.length - 1]
   const optionsValue = useMemo(
@@ -421,9 +436,9 @@ export function ChatInterface() {
       <main className="flex min-h-0 min-w-0 flex-1 flex-col gap-2">
         <div className="tui-panel relative z-20 flex h-10 flex-shrink-0 items-center justify-between gap-3 px-4">
           <div className="flex min-w-0 items-center gap-2 text-xs">
-            <Link to="/" className="shrink-0 font-semibold tracking-tight text-foreground hover:opacity-80">{tuiUserLabel}</Link>
+            <Link to="/" className="shrink-0 font-semibold tracking-tight text-foreground hover:opacity-80">keyzai</Link>
             <span className="shrink-0 select-none text-muted-foreground/50" aria-hidden="true">·</span>
-            <span className="min-w-0 truncate text-muted-foreground">s</span>
+            <span className="min-w-0 truncate text-muted-foreground">{tuiUserLabel}</span>
             {activeConv || messages.length > 0 ? (
               <div className="relative flex min-w-0 items-center gap-1">
                 <span className="shrink-0 select-none text-muted-foreground/50" aria-hidden="true">·</span>
@@ -586,7 +601,7 @@ export function ChatInterface() {
         </div>
 
         <div className="tui-panel tui-queued relative flex-shrink-0 px-4 pb-3 pt-3">
-          <span className="tui-inset-title tui-inset-accent" aria-hidden="true">queued</span>
+          <span className="tui-inset-title tui-inset-accent" aria-hidden="true">{loading ? 'queued' : 'input'}</span>
           <ChatInput onSend={handleSend} loading={loading} onStop={stop} showDisclaimer={messages.length > 0} model={model} onModelChange={changeModel} />
         </div>
         <div className="flex flex-shrink-0 flex-col gap-1 px-1 pb-[max(0.25rem,env(safe-area-inset-bottom))] text-[11px] leading-relaxed" aria-live="polite">
@@ -604,10 +619,10 @@ export function ChatInterface() {
           </div>
           <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
             <span className={`px-1 py-px text-[10px] font-bold uppercase tracking-wider ${loading ? 'tui-badge-working' : 'tui-badge-idle'}`}>{loading ? 'working' : 'idle'}</span>
-            <span className="tui-accent font-semibold">Orchestrator</span>
+            <span className="tui-accent font-semibold">keyzai</span>
             <span className="text-muted-foreground">·</span>
             <span className="min-w-0 truncate text-muted-foreground">{currentModelMeta.label}{currentModelMeta.free ? ' · free' : ''}</span>
-            <span className="ml-auto hidden shrink-0 text-muted-foreground/60 sm:inline">Ctrl+C stop · Ctrl+S send now</span>
+            <span className="ml-auto hidden shrink-0 text-muted-foreground/60 sm:inline">Esc stop · Enter kirim</span>
           </div>
         </div>
       </main>
@@ -626,24 +641,24 @@ export function ChatInterface() {
             <dd className="text-right text-foreground">$0.0000</dd>
             <dt className="text-muted-foreground">tools</dt>
             <dd className="text-right text-foreground">0 calls</dd>
-            <dt className="text-muted-foreground">memory</dt>
+            <dt className="text-muted-foreground">chats</dt>
             <dd className="text-right text-foreground">{state.convs.length} chats</dd>
-            <dt className="text-muted-foreground">cpu</dt>
+            <dt className="text-muted-foreground">status</dt>
             <dd className="text-right text-foreground">{loading ? 'working' : 'idle'}</dd>
-            <dt className="text-muted-foreground">on disk</dt>
+            <dt className="text-muted-foreground">messages</dt>
             <dd className="text-right text-foreground">{messages.length} msgs</dd>
           </dl>
         </section>
 
         <section className="tui-panel relative flex min-h-[46dvh] flex-col px-4 pb-5 pt-6 text-xs leading-relaxed lg:min-h-0 lg:flex-1" aria-label="Agents dan riwayat">
-          <span className="tui-inset-title" aria-hidden="true"><span className="tui-accent font-bold">agents</span><span> · tools · skills · log</span></span>
+          <span className="tui-inset-title" aria-hidden="true"><span className="tui-accent font-bold">menu</span><span> · recent · account</span></span>
           <div className="min-h-0 flex-1 space-y-6 overflow-y-auto pt-1">
             <div>
-              <p className="font-bold uppercase tracking-wider text-muted-foreground">delegated</p>
-              <p className="mt-0.5 text-muted-foreground">{loading ? 'menunggu model…' : 'Nothing delegated yet.'}</p>
+              <p className="font-bold uppercase tracking-wider text-muted-foreground">status</p>
+              <p className="mt-0.5 text-muted-foreground">{loading ? 'menunggu model…' : 'idle · siap menerima perintah'}</p>
             </div>
             <div>
-              <p className="font-bold uppercase tracking-wider text-muted-foreground">lead</p>
+              <p className="font-bold uppercase tracking-wider text-muted-foreground">model</p>
               <p className="mt-0.5 text-foreground">KeyzAI <span className="tui-accent font-semibold">›{currentModelMeta.label}</span></p>
             </div>
             <div>
@@ -714,8 +729,8 @@ export function ChatInterface() {
         </section>
 
         <p className="hidden shrink-0 items-center justify-end gap-4 px-1 text-[11px] text-muted-foreground/60 lg:flex" aria-hidden="true">
-          <span>Ctrl+C stop</span>
-          <span>Ctrl+S send now</span>
+          <span>Esc stop</span>
+          <span>Enter kirim</span>
         </p>
       </aside>
 
