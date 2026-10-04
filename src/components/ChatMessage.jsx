@@ -73,13 +73,12 @@ export function ChatMessage({ role, content, timestamp, streaming, aborted = fal
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
       <div className={`min-w-0 space-y-1.5 ${isUser ? 'max-w-[90%]' : 'w-full'}`}>
-        <div
-          className={`text-[15px] leading-relaxed ${
-            isUser
-              ? 'rounded-2xl rounded-tr-md bg-secondary px-4 py-2 text-secondary-foreground sm:px-5'
-              : 'font-serif text-foreground'
-          }`}
-        >
+        <div className="flex gap-3 text-[15px] leading-relaxed">
+          <span className={`select-none font-mono text-sm ${isUser ? 'text-primary' : 'text-muted-foreground'}`} aria-hidden="true">
+            {isUser ? '›' : '·'}
+          </span>
+          <div className={`min-w-0 flex-1 ${isUser ? 'font-mono text-foreground' : 'text-foreground'}`}>
+
           {isUser && editing ? (
             <textarea
               ref={taRef}
@@ -102,6 +101,7 @@ export function ChatMessage({ role, content, timestamp, streaming, aborted = fal
               streaming={streaming}
             />
           )}
+          </div>
         </div>
 
         {isUser && editing ? (

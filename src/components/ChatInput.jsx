@@ -54,7 +54,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
 
   return (
     <div className="mx-auto w-full max-w-3xl">
-      <div className="rounded-xl border border-foreground/15 bg-transparent transition-colors focus-within:border-foreground/30">
+      <div className="border-y border-foreground/10 bg-background transition-colors focus-within:border-foreground/25">
         <Textarea
           ref={textareaRef}
           value={message}
@@ -64,8 +64,8 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
             }
           }}
           onKeyDown={handleKeyDown}
-          placeholder="Ada yang bisa dibantu?"
-          className="min-h-[56px] max-h-40 resize-none overflow-y-auto border-0 bg-transparent px-5 pt-4 pb-2 text-base leading-relaxed text-foreground placeholder:text-sm placeholder:text-muted-foreground/60 focus-visible:ring-0 focus-visible:ring-offset-0"
+          placeholder="ketik perintah atau pertanyaan..."
+          className="min-h-[56px] max-h-40 resize-none overflow-y-auto border-0 bg-transparent py-4 pl-10 pr-5 font-mono text-sm leading-relaxed text-foreground placeholder:font-mono placeholder:text-sm placeholder:text-muted-foreground/60 focus-visible:ring-0 focus-visible:ring-offset-0"
           rows={1}
         />
 
