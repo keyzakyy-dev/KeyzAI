@@ -293,7 +293,7 @@
   50%      { transform: scale(1.12); }
 }
 .node-breathe {
-  animation: node-breathe 1.8s ease-in-out infinite;
+  animation: node-breathe 1.2s ease-in-out infinite;
   will-change: transform;
 }
 
