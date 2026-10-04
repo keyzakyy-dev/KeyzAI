@@ -645,9 +645,9 @@ export function ChatInterface() {
           <span className="tui-inset-title" aria-hidden="true">session</span>
           <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5">
             <dt className="text-muted-foreground">context</dt>
-            <dd className="truncate text-right"><span className="tui-accent font-bold">{sessionCtxPct}%</span> <span className="text-muted-foreground/40">{'▓'.repeat(sessionCtxFilled)}{'░'.repeat(28 - sessionCtxFilled)}</span></dd>
+            <dd className="truncate text-right"><span className="tui-accent font-bold">~{sessionCtxPct}%</span> <span className="text-muted-foreground/40">{'▓'.repeat(sessionCtxFilled)}{'░'.repeat(28 - sessionCtxFilled)}</span></dd>
             <dt className="text-muted-foreground">tokens</dt>
-            <dd className="text-right text-foreground">{sessionTokenEstimate.toLocaleString('en-US')} / 256,000</dd>
+            <dd className="text-right text-foreground">~{sessionTokenEstimate.toLocaleString('en-US')} / 256,000</dd>
             <dt className="text-muted-foreground">used</dt>
             <dd className="text-right text-foreground">in {messages.filter((m) => m.role === 'user').length} · out {messages.filter((m) => m.role === 'assistant').length}</dd>
             <dt className="text-muted-foreground">cost</dt>
