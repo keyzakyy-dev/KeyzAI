@@ -72,10 +72,10 @@ export function FeaturesBento() {
                 <div className="feature-card group relative flex h-full flex-col justify-between overflow-hidden p-4 sm:p-6 md:p-8">
                   <div>
                     <div className="mb-4 flex flex-col items-start gap-2.5 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
-                      <div className="flex size-9 items-center justify-center rounded-full text-foreground sm:size-10">
+                      <div className="flex size-9 items-center justify-center text-foreground sm:size-10">
                         <Icon className="size-5 sm:size-6" />
                       </div>
-                      <span className="rounded-full bg-background px-2.5 py-0.5 font-mono text-[11px] font-medium text-muted-foreground sm:px-3 sm:py-1">
+                      <span className="bg-background px-2.5 py-0.5 font-mono text-[11px] font-medium text-muted-foreground sm:px-3 sm:py-1">
                         {item.badge}
                       </span>
                     </div>

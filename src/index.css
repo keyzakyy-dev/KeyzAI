@@ -462,6 +462,13 @@
 .chat-mockup .tui-panel {
   background: transparent;
 }
+/* Mockup hero: sudut siku penuh (desain landing tanpa rounded corner). */
+.chat-mockup .tui-panel,
+.chat-mockup .tui-tab-active,
+.chat-mockup .tui-badge-working,
+.chat-mockup .tui-badge-idle {
+  border-radius: 0;
+}
 .tui-queued {
   border-color: color-mix(in srgb, var(--tui-warn) 65%, transparent);
 }

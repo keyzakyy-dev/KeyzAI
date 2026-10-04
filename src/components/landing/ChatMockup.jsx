@@ -124,7 +124,7 @@ export function ChatMockup() {
                   <p className="min-h-[18px] flex-1 text-[12px] leading-relaxed text-muted-foreground/60">
                     Ada yang bisa dibantu?
                   </p>
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-sm border border-destructive/60 text-destructive">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center border border-destructive/60 text-destructive">
                     <Square className="h-2 w-2 fill-current" />
                   </span>
                 </div>
@@ -199,8 +199,8 @@ export function ChatMockup() {
         <div className="relative col-span-2 flex flex-col gap-0.5 px-1 text-[10px] leading-relaxed">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-px">
             <span className="inline-flex items-center gap-1">
-              <span className="inline-block h-1.5 w-1.5 bg-orange-400" />
-              <span className="inline-block h-1.5 w-1.5 bg-orange-400/60" />
+              <span className="inline-block h-1.5 w-1.5 bg-red-500" />
+              <span className="inline-block h-1.5 w-1.5 bg-red-500/60" />
               <span className="inline-block h-1.5 w-1.5 bg-foreground/25" />
             </span>
             <span>
@@ -214,10 +214,10 @@ export function ChatMockup() {
             </span>
             <span className="tui-accent font-semibold">keyzai</span>
             <span className="text-muted-foreground">·</span>
-            <span className="inline-flex h-5 shrink-0 items-center gap-1 rounded-sm border border-foreground/10 px-1.5 text-[10px] font-medium text-muted-foreground">
+            <span className="inline-flex h-5 shrink-0 items-center gap-1 border border-foreground/10 px-1.5 text-[10px] font-medium text-muted-foreground">
               <KeyMark className="h-2.5 w-2.5" />
               <span className="max-w-24 truncate">{MODEL_LABEL}</span>
-              <span className="text-[9px] font-medium text-emerald-600/90 dark:text-emerald-400/90">
+              <span className="text-[9px] font-medium text-red-600/90 dark:text-red-400/90">
                 Free
               </span>
               <ChevronDown className="h-2.5 w-2.5" />

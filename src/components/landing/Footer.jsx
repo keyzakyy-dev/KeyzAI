@@ -44,7 +44,7 @@ export function Footer() {
         <div className="grid gap-10 py-12 sm:grid-cols-12 sm:py-14">
           {/* Brand */}
           <div className="sm:col-span-5">
-            <Link to="/" aria-label="Kembali ke beranda" className="inline-flex rounded-lg transition-opacity hover:opacity-80">
+            <Link to="/" aria-label="Kembali ke beranda" className="inline-flex transition-opacity hover:opacity-80">
               <Wordmark className="text-lg" />
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
@@ -79,7 +79,7 @@ export function Footer() {
                         >
                           {l.label}
                           {l.chip && (
-                            <span className="rounded-md bg-primary/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                            <span className="bg-primary/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
                               {l.chip}
                             </span>
                           )}
@@ -109,7 +109,7 @@ export function Footer() {
           <button
             type="button"
             onClick={toTop}
-            className="inline-flex h-9 w-fit items-center gap-1.5 rounded-full border border-foreground/15 bg-transparent px-4 text-sm font-medium text-foreground transition-colors hover:border-foreground/40 hover:bg-foreground/[0.04]"
+            className="inline-flex h-9 w-fit items-center gap-1.5 border border-foreground/15 bg-transparent px-4 text-sm font-medium text-foreground transition-colors hover:border-foreground/40 hover:bg-foreground/[0.04]"
           >
             Ke atas
             <ArrowUp className="h-3.5 w-3.5" aria-hidden="true" />

@@ -76,7 +76,7 @@ function Navbar({ navigate }) {
   }, [])
 
   const ctaClass =
-    'inline-flex h-9 items-center gap-1.5 rounded-full border border-foreground/15 bg-transparent px-4 text-sm font-medium text-foreground transition-colors hover:border-foreground/40 hover:bg-foreground/[0.04]'
+    'inline-flex h-9 items-center gap-1.5 border border-foreground/15 bg-transparent px-4 text-sm font-medium text-foreground transition-colors hover:border-foreground/40 hover:bg-foreground/[0.04]'
 
   return (
     <header
@@ -97,7 +97,7 @@ function Navbar({ navigate }) {
           type="button"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           aria-label="Kembali ke atas"
-          className="shrink-0 rounded-full transition-opacity hover:opacity-80"
+          className="shrink-0 transition-opacity hover:opacity-80"
         >
           <Logo />
         </button>
@@ -117,7 +117,7 @@ function Navbar({ navigate }) {
             aria-label={open ? 'Tutup menu' : 'Buka menu'}
             aria-expanded={open}
             aria-controls="landing-mobile-nav"
-            className="relative flex h-11 w-11 items-center justify-center rounded-full text-foreground transition-colors hover:bg-foreground/[0.06]"
+            className="relative flex h-11 w-11 items-center justify-center text-foreground transition-colors hover:bg-foreground/[0.06]"
           >
             <Menu
               className={`h-4 w-4 transition-all duration-300 ${
@@ -147,7 +147,7 @@ function Navbar({ navigate }) {
                 setOpen(false)
                 navigate('/chat')
               }}
-              className="my-3 h-11 w-full rounded-lg bg-primary text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              className="my-3 h-11 w-full bg-primary text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               {user ? 'Buka chat' : 'Masuk dengan Google'}
             </button>
@@ -202,9 +202,9 @@ function Hero({ navigate }) {
           <div className="min-w-0 lg:col-span-6 xl:col-span-5">
             <a
               href="#models"
-              className="animate-rise group mb-5 inline-flex max-w-full items-center gap-2 rounded-full border border-foreground/15 bg-transparent py-1 pl-1.5 pr-3 text-xs text-foreground transition-colors hover:border-foreground/35 sm:mb-6 sm:gap-3 sm:py-1.5 sm:pl-2 sm:pr-3.5 sm:text-sm"
+              className="animate-rise group mb-5 inline-flex max-w-full items-center gap-2 border border-foreground/15 bg-transparent py-1 pl-1.5 pr-3 text-xs text-foreground transition-colors hover:border-foreground/35 sm:mb-6 sm:gap-3 sm:py-1.5 sm:pl-2 sm:pr-3.5 sm:text-sm"
             >
-              <span className="flex size-5 shrink-0 items-center justify-center rounded-full border border-red-500/35 text-red-500 dark:text-red-400 sm:size-6">
+              <span className="flex size-5 shrink-0 items-center justify-center border border-red-500/35 text-red-500 dark:text-red-400 sm:size-6">
                 <Check className="size-3 sm:size-3.5" strokeWidth={2.5} aria-hidden="true" />
               </span>
               <span className="truncate text-muted-foreground">
@@ -238,14 +238,14 @@ function Hero({ navigate }) {
               <button
                 type="button"
                 onClick={() => navigate('/chat')}
-                className="group inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-medium text-primary-foreground shadow-[0_8px_24px_hsl(var(--foreground)/0.12)] transition-all hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-[0_10px_28px_hsl(var(--foreground)/0.18)] sm:h-12 sm:px-6 sm:text-[15px]"
+                className="group inline-flex h-11 items-center justify-center gap-2 bg-primary px-5 text-sm font-medium text-primary-foreground shadow-[0_8px_24px_hsl(var(--foreground)/0.12)] transition-all hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-[0_10px_28px_hsl(var(--foreground)/0.18)] sm:h-12 sm:px-6 sm:text-[15px]"
               >
                 Buka chat
                 <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
               </button>
               <a
                 href="#prd-builder"
-                className="inline-flex h-11 items-center justify-center rounded-full border border-foreground/15 bg-transparent px-5 text-sm font-medium text-foreground transition-all hover:-translate-y-0.5 hover:border-foreground/40 hover:bg-foreground/[0.04] sm:h-12 sm:px-6 sm:text-[15px]"
+                className="inline-flex h-11 items-center justify-center border border-foreground/15 bg-transparent px-5 text-sm font-medium text-foreground transition-all hover:-translate-y-0.5 hover:border-foreground/40 hover:bg-foreground/[0.04] sm:h-12 sm:px-6 sm:text-[15px]"
               >
                 Dari ide jadi PRD
               </a>
@@ -284,7 +284,7 @@ function ModelMarqueeSection() {
     <section className="border-y border-foreground/10 py-3 sm:py-4">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="mb-1 flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
-          <span className="size-1.5 rounded-full bg-red-500" aria-hidden="true" />
+          <span className="size-1.5 bg-red-500" aria-hidden="true" />
           Model tersedia
         </div>
         <ModelMarquee />
@@ -341,7 +341,7 @@ function PrdBuilder({ navigate }) {
                 <button
                   type="button"
                   onClick={() => navigate('/prd-builder')}
-                  className="mt-4 inline-flex h-10 items-center gap-2 rounded-full bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:mt-6 sm:h-11"
+                  className="mt-4 inline-flex h-10 items-center gap-2 bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:mt-6 sm:h-11"
                 >
                   Coba sekarang
                   <ArrowRight className="h-4 w-4" />
@@ -355,7 +355,7 @@ function PrdBuilder({ navigate }) {
             <Reveal key={step.label} from="up" delay={100 + i * 50}>
               <div className="feature-card h-full p-4 sm:p-6 md:p-8">
                 <div className="flex items-center gap-2.5 sm:gap-4">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-foreground sm:h-10 sm:w-10">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center text-foreground sm:h-10 sm:w-10">
                     <step.icon className="h-4 w-4 text-primary sm:h-5 sm:w-5" />
                   </div>
                   <h4 className="text-sm font-medium text-foreground sm:text-base md:text-lg">{step.label}</h4>
@@ -425,7 +425,7 @@ function ModelCard({ model, copied, onCopy }) {
       />
       <div className="relative z-10 flex flex-col gap-3">
         <div className="flex items-center gap-2">
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-background ring-1 ring-border">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden bg-background ring-1 ring-border">
             <img src={model.logo} alt="" className="h-full w-full object-contain" />
           </span>
           <span className="text-xs font-medium text-muted-foreground">{model.provider}</span>
@@ -434,21 +434,21 @@ function ModelCard({ model, copied, onCopy }) {
         <div className="flex items-center gap-2">
           <h3 className="text-base font-medium text-foreground">{model.label}</h3>
           {model.tagline === 'Baru & eksperimental' && (
-            <span className="rounded-md bg-primary/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+            <span className="bg-primary/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
               Baru
             </span>
           )}
         </div>
 
         <div className="flex items-center gap-1.5">
-          <span className="rounded-md bg-background/80 px-2 py-1 font-mono text-[11px] text-muted-foreground ring-1 ring-border/60">
+          <span className="bg-background/80 px-2 py-1 font-mono text-[11px] text-muted-foreground ring-1 ring-border/60">
             {model.id}
           </span>
           <button
             type="button"
             onClick={() => onCopy(model.id)}
             title="Salin id model"
-            className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            className="flex h-6 w-6 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           >
             {copied === model.id ? (
               <Check className="h-3.5 w-3.5 text-red-500" />
