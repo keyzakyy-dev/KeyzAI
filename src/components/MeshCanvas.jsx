@@ -21,6 +21,8 @@ export function MeshCanvas({
     let raf = 0
     let last = 0
     let visible = true
+    let nextPacket = 0
+    const packets = []
     const pointer = { x: -1e4, y: -1e4, targetX: -1e4, targetY: -1e4, active: false }
 
     const resize = () => {
@@ -47,6 +49,35 @@ export function MeshCanvas({
 
     const draw = (now) => {
       ctx.clearRect(0, 0, width, height)
+      if (!reduced && now > nextPacket && nodes.length) {
+        const from = nodes[Math.floor(Math.random() * nodes.length)]
+        const target = nodes
+          .filter((node) => node !== from)
+          .filter((node) => {
+            const distance = Math.hypot(node.x - from.x, node.y - from.y)
+            return distance > 45 && distance < 190
+          })[Math.floor(Math.random() * 3)]
+        if (target) packets.push({ from, target, start: now })
+        nextPacket = now + 650
+      }
+      for (let i = packets.length - 1; i >= 0; i -= 1) {
+        const packet = packets[i]
+        const progress = (now - packet.start) / 950
+        if (progress >= 1) { packets.splice(i, 1); continue }
+        const ease = progress < 0.5 ? 2 * progress ** 2 : 1 - (-2 * progress + 2) ** 2 / 2
+        const x = packet.from.x + (packet.target.x - packet.from.x) * ease
+        const y = packet.from.y + (packet.target.y - packet.from.y) * ease
+        const alpha = Math.sin(Math.PI * progress)
+        ctx.strokeStyle = `rgba(${INK}, ${0.16 * alpha})`
+        ctx.beginPath()
+        ctx.moveTo(packet.from.x, packet.from.y)
+        ctx.lineTo(packet.target.x, packet.target.y)
+        ctx.stroke()
+        ctx.fillStyle = `rgba(${INK}, ${0.85 * alpha})`
+        ctx.beginPath()
+        ctx.arc(x, y, 1.7, 0, Math.PI * 2)
+        ctx.fill()
+      }
       pointer.x += (pointer.targetX - pointer.x) * 0.12
       pointer.y += (pointer.targetY - pointer.y) * 0.12
 
