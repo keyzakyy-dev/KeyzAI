@@ -1,153 +1,126 @@
 import { useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react'
-import { KeyMark } from '../lib/key-mark'
-import { usePopIn } from '../lib/micro-anim'
 
-const USER_TXT = 'Bikinin caption singkat buat foto kopi pagi'
+const USER = 'Bikinin caption singkat buat foto kopi pagi'
 const ANSWERS = [
   'Nikmatnya pagi, satu teguk sekaligus tenang.',
   'Pagi ini punya saya: kopi hitam, sunyi, dan ide yang belum ditulis.',
 ]
 
-// Demo cabang pesan: ketik → jawaban #1 stream → regenerate → jawaban #2
-// stream → navigasi balik ke #1 → ulang. prefers-reduced-motion: tampil final.
-function useDemo() {
-  const [userLen, setUserLen] = useState(0)
-  const [branch, setBranch] = useState(0)
-  const [words, setWords] = useState(0)
-  const wordLists = useRef(ANSWERS.map((a) => a.split(' ')))
+// Satu loop, fungsi dari t. Ketik, jawaban 1, buat ulang, jawaban 2, kembali ke 1.
+const LOOP = 14500
+const TYPE_END = 1400
+const A1_END = 3200
+const REGEN = 5200
+const A2_END = 7400
+const BACK = 10400
+const FINAL = 11000
 
-  useEffect(() => {
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (reduced) {
-      setUserLen(USER_TXT.length)
-      setBranch(1)
-      setWords(wordLists.current[1].length)
-      return
-    }
-    let alive = true
-    const wait = (ms) => new Promise((r) => setTimeout(r, ms))
-    const stream = async (b) => {
-      setBranch(b)
-      setWords(0)
-      await wait(700)
-      for (let i = 0; i <= wordLists.current[b].length && alive; i++) {
-        setWords(i)
-        await wait(110)
-      }
-    }
-    ;(async () => {
-      const full = USER_TXT.length
-      while (alive) {
-        setUserLen(0)
-        setWords(0)
-        await wait(700)
-        for (let i = 0; i <= full && alive; i++) {
-          setUserLen(i)
-          await wait(34)
-        }
-        if (!alive) return
-        await wait(550)
-        await stream(0)
-        if (!alive) return
-        await wait(1600)
-        await stream(1)
-        if (!alive) return
-        await wait(1800)
-        setBranch(0)
-        setWords(wordLists.current[0].length)
-        await wait(3400)
-      }
-    })()
-    return () => {
-      alive = false
-    }
-  }, [])
+function progress(t, from, to) {
+  return Math.min(1, Math.max(0, (t - from) / (to - from)))
+}
 
+function frameAt(t) {
+  const userLen = Math.round(progress(t, 200, TYPE_END) * USER.length)
+  const sent = userLen === USER.length
+  const branch = sent && t >= REGEN && t < BACK ? 1 : 0
+  const from = branch === 1 ? REGEN + 200 : TYPE_END + 200
+  const to = branch === 1 ? A2_END : A1_END
+  const words = ANSWERS[branch].split(' ')
+  const n = sent ? Math.round(progress(t, from, to) * words.length) : 0
   return {
-    userText: USER_TXT.slice(0, userLen),
-    typingUser: userLen < USER_TXT.length,
-    answer: wordLists.current[branch].slice(0, words).join(' '),
-    answerDone: words === wordLists.current[branch].length,
+    user: USER.slice(0, userLen),
+    typing: userLen > 0 && userLen < USER.length,
+    answer: words.slice(0, n).join(' '),
+    done: n === words.length,
     branch,
   }
 }
 
+function heldFrame() {
+  const held = new URLSearchParams(window.location.search).get('t')
+  return held !== null && !Number.isNaN(Number(held)) ? Number(held) : null
+}
+
+function useClock(target) {
+  const [t, setT] = useState(() => {
+    const held = heldFrame()
+    if (held !== null) return held
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches ? FINAL : 0
+  })
+  useEffect(() => {
+    if (heldFrame() !== null) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setT(FINAL)
+      return
+    }
+    let on = true
+    let elapsed = 0
+    let last = performance.now()
+    const seen = new IntersectionObserver(([e]) => {
+      on = e.isIntersecting
+    }, { threshold: 0.1 })
+    if (target.current) seen.observe(target.current)
+    const timer = window.setInterval(() => {
+      const now = performance.now()
+      if (on && document.visibilityState === 'visible') {
+        elapsed = (elapsed + (now - last)) % LOOP
+        setT(elapsed)
+      }
+      last = now
+    }, 90)
+    return () => {
+      window.clearInterval(timer)
+      seen.disconnect()
+    }
+  }, [target])
+  return t
+}
+
 export function ChatMock() {
-  const { userText, typingUser, answer, answerDone, branch } = useDemo()
-  const userBubbleRef = useRef(null)
-  const aiBubbleRef = useRef(null)
-  const hasUser = userText.length > 0
-  const hasAnswer = answer.length > 0
-  usePopIn(userBubbleRef, hasUser)
-  usePopIn(aiBubbleRef, hasAnswer ? `b${branch}-${hasAnswer}` : false)
+  const root = useRef(null)
+  const { user, typing, answer, done, branch } = frameAt(useClock(root))
 
   return (
-    <div className="relative animate-fade-up" style={{ animationDelay: '0.3s' }}>
-      <div className="relative overflow-hidden rounded-xl border border-border bg-card shadow-lg shadow-foreground/5">
-        <div className="flex items-center justify-between border-b border-border px-4 py-3">
-          <div className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/30" />
-            <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/30" />
-            <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/30" />
-          </div>
-          <span className="flex-1" aria-hidden="true" />
-          <span className="w-12" aria-hidden="true" />
+    <div
+      ref={root}
+      role="img"
+      aria-label="Percakapan: caption foto kopi pagi, lalu dua jawaban yang bisa dibuka dengan panah."
+      className="overflow-hidden rounded-xl border border-border bg-card shadow-sm"
+    >
+      <div className="flex h-11 items-center border-b border-border px-4">
+        <p className="truncate text-sm font-medium text-foreground">Caption kopi pagi</p>
+      </div>
+
+      <div aria-hidden="true" className="space-y-5 px-4 py-5">
+        <div className="flex justify-end">
+          <p className="max-w-[85%] whitespace-pre-wrap rounded-2xl rounded-tr-md bg-secondary px-4 py-2 text-[15px] leading-relaxed text-secondary-foreground">
+            {user}
+            {typing && <span className="ml-0.5 inline-block h-3.5 w-px animate-pulse bg-secondary-foreground align-[-2px]" />}
+          </p>
         </div>
 
-        <div className="min-h-[268px] space-y-4 p-5">
-          <div className="flex justify-end">
-            <div
-              ref={userBubbleRef}
-              className="max-w-[80%] whitespace-pre-wrap rounded-lg bg-primary px-3.5 py-2 text-sm text-primary-foreground"
-              aria-label={USER_TXT}
-            >
-              {userText}
-              {typingUser && (
-                <span className="ml-0.5 inline-block h-3.5 w-0.5 animate-pulse bg-primary-foreground/80 align-[-2px]" aria-hidden="true" />
-              )}
-            </div>
+        {user.length === USER.length && (
+          <div className="space-y-1.5">
+            <p className="min-h-[3.2em] font-serif text-[15px] leading-relaxed text-foreground">
+              {answer}
+              {answer && !done && <span className="ml-0.5 inline-block h-3.5 w-px animate-pulse bg-muted-foreground align-[-2px]" />}
+            </p>
+            {done && (
+              <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                <span className="inline-flex items-center gap-0.5">
+                  <ChevronLeft className={`h-3.5 w-3.5 ${branch === 0 ? 'opacity-30' : ''}`} />
+                  <span className="tabular-nums">{branch + 1} / 2</span>
+                  <ChevronRight className={`h-3.5 w-3.5 ${branch === 1 ? 'opacity-30' : ''}`} />
+                </span>
+                <span className="inline-flex items-center gap-1 px-1">
+                  <RotateCcw className="h-3 w-3" />
+                  buat ulang
+                </span>
+              </div>
+            )}
           </div>
-
-          {userText.length === USER_TXT.length && (
-            <div className="flex gap-2.5">
-              <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border border-border">
-                <KeyMark className="h-3.5 w-3.5 text-muted-foreground" />
-              </div>
-              <div ref={aiBubbleRef} className="max-w-[85%] space-y-2">
-                <div
-                  className="whitespace-pre-wrap rounded-lg bg-muted px-3.5 py-2 text-sm leading-relaxed text-foreground"
-                  aria-label={ANSWERS[branch]}
-                >
-                  {answer || (
-                    <span className="inline-flex gap-1 align-middle" aria-hidden="true">
-                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-muted-foreground/50" />
-                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-muted-foreground/50 [animation-delay:150ms]" />
-                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-muted-foreground/50 [animation-delay:300ms]" />
-                    </span>
-                  )}
-                  {answer && !answerDone && (
-                    <span className="ml-0.5 inline-block h-3.5 w-0.5 animate-pulse bg-muted-foreground/70 align-[-2px]" aria-hidden="true" />
-                  )}
-                </div>
-
-                {answerDone && (
-                  <div className="flex items-center justify-center gap-1 text-[11px] text-muted-foreground animate-fade-up">
-                    <span className="inline-flex items-center gap-0.5 rounded-full border border-border bg-background px-1 py-0.5">
-                      <ChevronLeft className={`h-3 w-3 ${branch === 0 ? 'opacity-30' : ''}`} />
-                      <span className="font-medium tabular-nums">{branch + 1} / 2</span>
-                      <ChevronRight className="h-3 w-3" />
-                    </span>
-                    <span className="inline-flex items-center gap-1 rounded-full border border-border bg-background px-1.5 py-0.5">
-                      <RotateCcw className="h-2.5 w-2.5" />
-                      buat ulang
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
+        )}
       </div>
     </div>
   )
