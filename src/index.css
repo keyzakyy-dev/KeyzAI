@@ -455,3 +455,15 @@
   background: hsl(var(--foreground) / 0.06);
   border-radius: 4px;
 }
+
+/* iOS Safari auto-zoom saat fokus ke kolom teks berfont <16px.
+   Paksa 16px di layar sentuh saja; desktop tidak berubah.
+   !important perlu karena utility font-size (mis. text-sm) menang
+   atas selektor elemen biasa. */
+@media (pointer: coarse) {
+  input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='button']):not([type='submit']),
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
