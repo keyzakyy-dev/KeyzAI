@@ -11,6 +11,8 @@ import { MODELS } from '../lib/models'
 import { ArrowRight, ArrowUp, MessageSquare, Code, Pencil, Lock, BookOpen, CircleHelp, Menu, X, FileText, Copy, Check } from 'lucide-react'
 import { MeshCanvas } from '../components/MeshCanvas'
 
+import { ArchitectureGraph } from '../components/landing/ArchitectureGraph'
+
 // motion menambah ~40 kB gz. Section fitur ada di bawah fold, jadi di-load
 // terpisah supaya bundle awal landing page tidak ikut berat.
 const FeaturesWithPanel = lazy(() =>
@@ -377,9 +379,7 @@ function Hero({ navigate }) {
         className="pointer-events-none absolute inset-0"
       />
       <div className="relative mx-auto w-full max-w-7xl px-4 sm:px-6">
-        {/* Kolom kiri 6/12 di tablet, 5/12 di xl — 5/12 bikin heading 3.5rem
-            jadi terlalu banyak baris di tablet. Kolom kanan jadi 6/7. */}
-        <div className="grid grid-cols-1 lg:grid-cols-12">
+        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
           <div className="min-w-0 lg:col-span-6 xl:col-span-5">
             <a
               href="#models"
@@ -451,6 +451,11 @@ function Hero({ navigate }) {
                 </li>
               ))}
             </ul>
+          </div>
+
+          {/* Kolom kanan: Architecture Graph */}
+          <div className="hidden lg:col-span-6 lg:flex lg:items-center lg:justify-center xl:col-span-7">
+            <ArchitectureGraph />
           </div>
 
         </div>

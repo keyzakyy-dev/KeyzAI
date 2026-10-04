@@ -1,0 +1,232 @@
+import { useState, useEffect } from 'react'
+import { Database } from 'lucide-react'
+import { LogoImg } from '../../lib/logo-img'
+
+const NODES = [
+  {
+    id: 'engine',
+    label: 'KeyzAI Engine',
+    sub: 'Cloudflare Edge',
+    isKeyzaiLogo: true,
+    pos: { x: 50, y: 50 },
+    role: 'core',
+  },
+  {
+    id: 'qwen',
+    label: 'Qwen 3.8 Flash',
+    sub: 'Fast Reasoning',
+    image: '/models/qwen.png',
+    pos: { x: 88, y: 20 },
+    role: 'model',
+    specs: ['Latency: ~20ms', 'Context: 32k'],
+  },
+  {
+    id: 'deepseek',
+    label: 'DeepSeek V4',
+    sub: 'Complex Logic',
+    image: '/models/deepseek.png',
+    pos: { x: 82, y: 82 },
+    role: 'model',
+    specs: ['Latency: ~45ms', 'Context: 64k'],
+  },
+  {
+    id: 'atria',
+    label: 'Atria Dawn',
+    sub: 'Experimental',
+    image: '/models/atria.png',
+    pos: { x: 18, y: 18 },
+    role: 'model',
+    specs: ['Next-Gen', 'Context: 8k'],
+  },
+  {
+    id: 'sync',
+    label: 'D1 State Sync',
+    sub: 'Tree Branching',
+    icon: Database,
+    pos: { x: 12, y: 80 },
+    role: 'feature',
+    specs: ['Zero Data Loss', 'Edge Native'],
+  },
+]
+
+export function ArchitectureGraph() {
+  const [activeNode, setActiveNode] = useState('qwen')
+  const [isHovering, setIsHovering] = useState(false)
+
+  // Auto-cycle through nodes if not hovering
+  useEffect(() => {
+    if (isHovering) return
+    let i = 0
+    const interval = setInterval(() => {
+      i = (i + 1) % NODES.length
+      if (NODES[i].id === 'engine') i = (i + 1) % NODES.length
+      setActiveNode(NODES[i].id)
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [isHovering])
+
+  const core = NODES.find((n) => n.id === 'engine')
+  const satellites = NODES.filter((n) => n.id !== 'engine')
+  const activeData = NODES.find((n) => n.id === activeNode)
+
+  return (
+    <div
+      className="relative flex w-full max-w-[480px] flex-col items-center justify-center mx-auto"
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+    >
+      <div className="relative aspect-square w-full">
+        {/* SVG Connections */}
+        <svg className="absolute inset-0 h-full w-full pointer-events-none" aria-hidden="true">
+          {satellites.map((node) => {
+            const isActive = activeNode === node.id
+            const isCore = activeNode === 'engine'
+            const highlight = isActive || isCore
+
+            return (
+              <g key={`line-${node.id}`}>
+                {/* Background track */}
+                <line
+                  x1={`${core.pos.x}%`}
+                  y1={`${core.pos.y}%`}
+                  x2={`${node.pos.x}%`}
+                  y2={`${node.pos.y}%`}
+                  className="stroke-border/60 transition-colors duration-500"
+                  strokeWidth="2"
+                  strokeDasharray="4 4"
+                />
+
+                {/* Animated active beam */}
+                <line
+                  x1={`${core.pos.x}%`}
+                  y1={`${core.pos.y}%`}
+                  x2={`${node.pos.x}%`}
+                  y2={`${node.pos.y}%`}
+                  className={`stroke-primary transition-opacity duration-500 ${
+                    highlight ? 'opacity-100' : 'opacity-0'
+                  }`}
+                  strokeWidth="2"
+                  strokeDasharray="8 8"
+                  style={{
+                    animation: highlight ? 'dashMove 1s linear infinite' : 'none',
+                  }}
+                />
+              </g>
+            )
+          })}
+        </svg>
+
+        {/* Nodes */}
+        {NODES.map((node) => {
+          const isActive = activeNode === node.id
+          const isCore = node.id === 'engine'
+          const Icon = node.icon
+
+          return (
+            <button
+              key={node.id}
+              type="button"
+              className={`absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-1.5 transition-all duration-300 z-10 ${
+                isActive ? 'scale-110' : 'scale-100 opacity-80 hover:opacity-100'
+              }`}
+              style={{ left: `${node.pos.x}%`, top: `${node.pos.y}%` }}
+              onClick={() => setActiveNode(node.id)}
+              onMouseEnter={() => setActiveNode(node.id)}
+              aria-label={node.label}
+            >
+              <div
+                className={`relative flex items-center justify-center rounded-2xl border transition-all duration-300 overflow-hidden ${
+                  isCore
+                    ? 'h-16 w-16 border-foreground/30 bg-card p-2 shadow-lg'
+                    : 'h-12 w-12 border-border bg-background p-2'
+                } ${isActive ? 'border-primary ring-2 ring-primary/20 shadow-md' : ''}`}
+              >
+                {node.isKeyzaiLogo ? (
+                  <LogoImg className="h-8 w-auto object-contain" />
+                ) : node.image ? (
+                  <img
+                    src={node.image}
+                    alt={node.label}
+                    className="h-full w-full object-contain"
+                  />
+                ) : Icon ? (
+                  <Icon
+                    className={`transition-colors duration-300 h-5 w-5 ${
+                      isActive ? 'text-primary' : 'text-muted-foreground'
+                    }`}
+                  />
+                ) : null}
+
+                {/* Core pulse effect */}
+                {isCore && (
+                  <div
+                    className="absolute inset-0 -z-10 animate-ping rounded-2xl bg-foreground/10 opacity-70"
+                    style={{ animationDuration: '3s' }}
+                  />
+                )}
+                {/* Active node glow */}
+                {isActive && !isCore && (
+                  <div className="absolute inset-0 -z-10 rounded-2xl bg-primary/20 blur-md" />
+                )}
+              </div>
+
+              <div
+                className={`text-center transition-opacity duration-300 ${
+                  isActive ? 'opacity-100' : 'opacity-0 sm:opacity-100'
+                }`}
+              >
+                <p
+                  className={`text-[11px] font-bold ${
+                    isActive ? 'text-foreground' : 'text-muted-foreground'
+                  }`}
+                >
+                  {node.label}
+                </p>
+                <p className="text-[9px] text-muted-foreground hidden sm:block">{node.sub}</p>
+              </div>
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Info Card / Specs */}
+      <div className="mt-4 h-20 w-full">
+        {activeData && activeData.id !== 'engine' && (
+          <div className="animate-rise flex w-full flex-col items-center justify-center rounded-xl border border-border bg-card/60 p-3 text-center backdrop-blur-sm shadow-sm">
+            <div className="flex items-center gap-2">
+              {activeData.image && (
+                <img
+                  src={activeData.image}
+                  alt={activeData.label}
+                  className="h-4 w-4 object-contain"
+                />
+              )}
+              <h4 className="text-sm font-bold text-foreground">{activeData.label}</h4>
+            </div>
+            <p className="text-xs text-muted-foreground">{activeData.sub}</p>
+            <div className="mt-2 flex gap-2">
+              {activeData.specs.map((spec, i) => (
+                <span
+                  key={i}
+                  className="rounded-full bg-background px-2.5 py-0.5 text-[10px] font-medium text-foreground ring-1 ring-border"
+                >
+                  {spec}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+        @keyframes dashMove {
+          to { stroke-dashoffset: -16; }
+        }
+      `,
+        }}
+      />
+    </div>
+  )
+}
