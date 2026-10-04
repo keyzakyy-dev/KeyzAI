@@ -464,14 +464,7 @@ function ModelMarqueeSection() {
   return (
     <section className="py-8 sm:py-10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <Reveal from="up">
-          <div className="text-center mb-6">
-            <span className="inline-flex items-center text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              Powered by
-            </span>
-          </div>
-          <ModelMarquee />
-        </Reveal>
+        <ModelMarquee />
       </div>
     </section>
   )
