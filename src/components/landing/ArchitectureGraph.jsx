@@ -62,6 +62,28 @@ export function ArchitectureGraph() {
   const core = NODES.find((n) => n.id === 'engine')
   const satellites = NODES.filter((n) => n.id !== 'engine')
 
+  /** Kurva tali (quadratic Bézier) dari core ke node.
+      Sag proporsional jarak: 18% dari panjang garis lurus, tegak lurus.
+      Control point di sisi kiri saat core.x > node.x, kanan saat core.x < node.x —
+      supaya tali tidak saling tumpang-tindih di tengah. */
+  function ropePath(node) {
+    const x1 = core.pos.x
+    const y1 = core.pos.y
+    const x2 = node.pos.x
+    const y2 = node.pos.y
+    const dx = x2 - x1
+    const dy = y2 - y1
+    const dist = Math.hypot(dx, dy) || 1
+    // Vektor tegak lurus (rotate 90°): (-dy, dx). Normalisasi.
+    const nx = -dy / dist
+    const ny = dx / dist
+    // Sag = 18% jarak. Arah dipilih supaya tali cenderung "keluar" dari tengah.
+    const sag = dist * 0.18
+    const cx = (x1 + x2) / 2 + nx * sag
+    const cy = (y1 + y2) / 2 + ny * sag
+    return `M${x1}% ${y1}% Q${cx}% ${cy}% ${x2}% ${y2}%`
+  }
+
   return (
     <div
       className="relative flex w-full max-w-[480px] flex-col items-center justify-center mx-auto"
@@ -75,31 +97,26 @@ export function ArchitectureGraph() {
             const isActive = activeNode === node.id
             const isCore = activeNode === 'engine'
             const highlight = isActive || isCore
+            const path = ropePath(node)
 
             return (
               <g key={`line-${node.id}`}>
-                {/* Background track */}
-                <line
-                  x1={`${core.pos.x}%`}
-                  y1={`${core.pos.y}%`}
-                  x2={`${node.pos.x}%`}
-                  y2={`${node.pos.y}%`}
-                  className="stroke-border/60 transition-colors duration-500"
+                {/* Background track — rope curve */}
+                <path
+                  d={path}
+                  className="stroke-border/60 transition-colors duration-500 fill-none"
                   strokeWidth="2"
-                  strokeDasharray="4 4"
+                  strokeDasharray="6 6"
                 />
 
-                {/* Animated active beam */}
-                <line
-                  x1={`${core.pos.x}%`}
-                  y1={`${core.pos.y}%`}
-                  x2={`${node.pos.x}%`}
-                  y2={`${node.pos.y}%`}
-                  className={`stroke-primary transition-opacity duration-500 ${
+                {/* Animated active beam — rope curve */}
+                <path
+                  d={path}
+                  className={`stroke-primary transition-opacity duration-500 fill-none ${
                     highlight ? 'opacity-100' : 'opacity-0'
                   }`}
                   strokeWidth="2"
-                  strokeDasharray="8 8"
+                  strokeDasharray="10 10"
                   style={{
                     animation: highlight ? 'dashMove 1s linear infinite' : 'none',
                   }}
