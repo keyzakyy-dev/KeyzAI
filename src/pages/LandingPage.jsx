@@ -296,7 +296,7 @@ function PrdBuilder({ navigate }) {
               <FileText className="h-3 w-3" />
               Beta
             </span>
-            <h2 className="mt-3 max-w-2xl text-3xl font-medium tracking-tight text-foreground sm:text-4xl">
+            <h2 className="mt-3 text-3xl font-medium tracking-tight text-foreground sm:text-4xl lg:text-5xl">
               Dari ide jadi PRD dalam hitungan menit
             </h2>
           </div>
@@ -312,7 +312,7 @@ function PrdBuilder({ navigate }) {
           <Reveal from="up" className="sm:col-span-2 lg:col-span-2 lg:row-span-2">
             <div className="feature-card group relative flex h-full flex-col justify-between overflow-hidden bg-background p-6 sm:p-8">
               <div className="relative space-y-4">
-                <h3 className="text-base font-medium text-foreground sm:text-lg">
+                <h3 className="text-lg font-medium text-foreground sm:text-xl">
                   AI yang memahami visimu
                 </h3>
                 <p className="max-w-lg text-sm leading-relaxed text-muted-foreground">
