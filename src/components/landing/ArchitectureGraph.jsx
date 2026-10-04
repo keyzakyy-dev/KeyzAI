@@ -67,7 +67,6 @@ export function ArchitectureGraph() {
 
   const core = NODES.find((n) => n.id === 'engine')
   const satellites = NODES.filter((n) => n.id !== 'engine')
-  const activeData = NODES.find((n) => n.id === activeNode)
 
   return (
     <div
@@ -187,35 +186,6 @@ export function ArchitectureGraph() {
             </button>
           )
         })}
-      </div>
-
-      {/* Info Card / Specs */}
-      <div className="mt-4 h-20 w-full">
-        {activeData && activeData.id !== 'engine' && (
-          <div className="animate-rise flex w-full flex-col items-center justify-center rounded-xl border border-border bg-card/60 p-3 text-center backdrop-blur-sm shadow-sm">
-            <div className="flex items-center gap-2">
-              {activeData.image && (
-                <img
-                  src={activeData.image}
-                  alt={activeData.label}
-                  className="h-4 w-4 object-contain"
-                />
-              )}
-              <h4 className="text-sm font-bold text-foreground">{activeData.label}</h4>
-            </div>
-            <p className="text-xs text-muted-foreground">{activeData.sub}</p>
-            <div className="mt-2 flex gap-2">
-              {activeData.specs.map((spec, i) => (
-                <span
-                  key={i}
-                  className="rounded-full bg-background px-2.5 py-0.5 text-[10px] font-medium text-foreground ring-1 ring-border"
-                >
-                  {spec}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
 
       <style
