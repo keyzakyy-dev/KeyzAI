@@ -159,7 +159,8 @@
   to { stroke-dashoffset: 0; }
 }
 
-.feature-grid-reveal[data-revealed] .feature-grid::before {
+.feature-grid-reveal[data-revealed] .feature-grid::before,
+.feature-grid-reveal[data-revealed] .feature-card::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -174,6 +175,9 @@
   0% { clip-path: inset(0 100% 100% 0); }
   50% { clip-path: inset(0 0 100% 0); }
   100% { clip-path: inset(0 0 0 0); }
+}
+.feature-grid-reveal[data-revealed] .feature-card::before {
+  animation-delay: var(--card-line-delay, 0ms);
 }
 
 /* Scroll reveal */
