@@ -6,6 +6,7 @@ import { MODELS } from '../lib/models'
 
 import { ChatMessage } from './ChatMessage'
 import { ChatInput, ModelPicker } from './ChatInput'
+import { MeshCanvas } from './MeshCanvas'
 import { Button } from './ui/button'
 import { ConfirmDialog } from './ui/confirm-dialog'
 import { RenameDialog } from './ui/rename-dialog'
@@ -449,7 +450,13 @@ export function ChatInterface() {
   )
 
   return (
-    <div className="tui-root grid h-dvh grid-cols-1 grid-rows-[minmax(0,1fr)_auto] gap-3 overflow-hidden bg-background p-3 text-foreground lg:grid-cols-[minmax(0,1fr)_360px] lg:grid-rows-[minmax(0,1fr)_auto]">
+    <div className="tui-root chat-mesh relative grid h-dvh grid-cols-1 grid-rows-[minmax(0,1fr)_auto] gap-3 overflow-hidden bg-background p-3 text-foreground lg:grid-cols-[minmax(0,1fr)_360px] lg:grid-rows-[minmax(0,1fr)_auto]">
+      {/* Mesh latar ala hero landing: di belakang panel (panel dibuat
+          sedikit transparan via .chat-mesh .tui-panel), non-interaktif. */}
+      <MeshCanvas
+        label="Decorative animated network mesh background."
+        className="pointer-events-none absolute inset-0 -z-10 h-full w-full"
+      />
       {/* TUI: menu dipindah ke panel kanan (kolom Agents) */}
       {/* TUI: recent chat dipindah ke panel kanan (kolom Agents) */}
       <main className="flex min-h-0 min-w-0 flex-col gap-3 lg:h-full lg:min-h-0">

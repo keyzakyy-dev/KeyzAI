@@ -470,6 +470,15 @@
   border-radius: 4px;
 }
 
+/* Chat: MeshCanvas sebagai latar (seperti hero landing). Panel dibuat sedikit
+   transparan + blur supaya mesh terlihat samar tanpa mengganggu keterbacaan.
+   Scoped ke .chat-mesh agar panel/dialog di halaman lain tidak ikut berubah. */
+.chat-mesh .tui-panel {
+  background: hsl(var(--background) / 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
 /* iOS Safari auto-zoom saat fokus ke kolom teks berfont <16px.
    Paksa 16px di layar sentuh saja; desktop tidak berubah.
    !important perlu karena utility font-size (mis. text-sm) menang
