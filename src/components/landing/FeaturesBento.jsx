@@ -71,7 +71,7 @@ export function FeaturesBento() {
                 <div className="feature-card group relative flex h-full flex-col justify-between overflow-hidden border-0 bg-background p-6 transition-colors duration-300 sm:p-8">
                   <div>
                     <div className="mb-8 flex items-center justify-between">
-                      <div className="flex size-10 items-center justify-center rounded-full border border-foreground/15 text-foreground transition-colors group-hover:border-foreground/55">
+                      <div className="flex size-10 items-center justify-center rounded-full border border-foreground/15 text-foreground ">
                         <Icon className="size-6" />
                       </div>
                       <span className="rounded-full bg-background px-3 py-1 font-mono text-[11px] font-medium text-muted-foreground ring-1 ring-border">
