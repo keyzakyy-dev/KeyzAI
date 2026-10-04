@@ -1,11 +1,12 @@
 ﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { Menu, X, ArrowDown, ChevronLeft, ChevronRight, CircleX, RotateCcw, ChevronDown, Pin, Pencil, Trash2, Download } from 'lucide-react'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { X, ArrowDown, CircleX, RotateCcw, ChevronDown, Pin, Pencil, Trash2, Download, Plus, FileText, MessageSquare, User } from 'lucide-react'
 import { ThemeIcon } from './theme-icon'
+import { LogoImg } from '../lib/logo-img'
+import { MODELS } from '../lib/models'
 
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
-import { MeshCanvas } from './MeshCanvas'
 import { Button } from './ui/button'
 import { ConfirmDialog } from './ui/confirm-dialog'
 import { RenameDialog } from './ui/rename-dialog'
@@ -389,6 +390,20 @@ export function ChatInterface() {
     [messages, activeConv],
   )
 
+  // ---------- TUI panels: data turunan untuk panel kanan (SESSION + recent)
+  const currentModelMeta = MODELS.find((m) => m.id === model) || MODELS[0]
+  const recentConvs = useMemo(() => {
+    const sortKey = (c) => c.updatedAt ?? c.createdAt ?? 0
+    return [...state.convs].sort((a, b) => sortKey(b) - sortKey(a)).slice(0, 8)
+  }, [state.convs])
+  const sessionTokenEstimate = useMemo(() => {
+    try {
+      const chars = messages.reduce((n, m) => n + (m.content ? m.content.length : 0), 0)
+      return Math.round(chars / 4)
+    } catch { return 0 }
+  }, [messages])
+  const tuiUserLabel = user?.name ? user.name.split(' ')[0].toLowerCase() : 'iyokz'
+
   const lastMessage = messages[messages.length - 1]
   const optionsValue = useMemo(
     () => ({
@@ -400,40 +415,19 @@ export function ChatInterface() {
   )
 
   return (
-    <div className="flex h-dvh bg-background text-foreground">
-      {false && <aside className="hidden border-r border-foreground/10 bg-background lg:flex lg:flex-col">
-        <div className="flex h-16 items-center border-b border-foreground/10 px-5">
-          <Link to="/" aria-label="Kembali ke beranda" className="rounded-xl transition-opacity hover:opacity-80">
-            <LogoImg className="h-9 w-auto" />
-          </Link>
-        </div>
-        <div className="space-y-2 p-4">
-          <Button onClick={handleNewChat} variant="ghost" className="h-9 w-full justify-start gap-2 px-3 font-medium hover:bg-foreground/5">
-            <Plus className="h-4 w-4" /> Chat baru
-          </Button>
-          <Button asChild variant="ghost" className="h-9 w-full justify-start gap-2 px-3 font-medium hover:bg-foreground/5">
-            <Link to="/prd-builder"><FileText className="h-4 w-4" /> PRD Builder <span className="ml-auto text-[10px] text-muted-foreground">Beta</span></Link>
-          </Button>
-        </div>
-      </aside>}
-      {false && <div className="hidden border-r border-foreground/10 lg:block">
-        <Sidebar conversations={state.convs} currentId={state.activeId} onSelect={handleSelectConv} onNew={handleNewChat} onDelete={handleDeleteConv} open collapsed={false} onDragStart={null} user={user} onLogin={() => { setLoginErr(null); setLoginOpen(true) }} onOpenSettings={() => setPrefsOpen(true)} />
-      </div>}
-      <main className="flex min-w-0 flex-1 flex-col">
-        <header className="relative z-20 flex h-14 flex-shrink-0 items-center justify-between bg-background/80 px-4 backdrop-blur-sm sm:px-6">
-          <div className="flex min-w-0 items-center gap-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="hidden lg:flex -ml-2"
-              onClick={() => setCollapsed((c) => !c)}
-              aria-label={collapsed ? 'Tampilkan sidebar' : 'Sembunyikan sidebar'}
-            >
-              {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-            </Button>
+    <div className="tui-root grid h-dvh grid-cols-1 gap-2 overflow-hidden bg-background p-2 font-mono text-foreground lg:grid-cols-[minmax(0,1fr)_340px]">
+      {/* TUI: menu dipindah ke panel kanan (kolom Agents) */}
+      {/* TUI: recent chat dipindah ke panel kanan (kolom Agents) */}
+      <main className="flex min-h-0 min-w-0 flex-1 flex-col gap-2">
+        <div className="tui-panel relative z-20 flex h-10 flex-shrink-0 items-center justify-between gap-3 px-4">
+          <div className="flex min-w-0 items-center gap-2 text-xs">
+            <Link to="/" className="shrink-0 font-semibold tracking-tight text-foreground hover:opacity-80">{tuiUserLabel}</Link>
+            <span className="shrink-0 select-none text-muted-foreground/50" aria-hidden="true">·</span>
+            <span className="min-w-0 truncate text-muted-foreground">s</span>
             {activeConv || messages.length > 0 ? (
-              <div className="relative flex min-w-0 items-center gap-0.5">
-                <p className="min-w-0 truncate text-sm font-medium text-foreground">
+              <div className="relative flex min-w-0 items-center gap-1">
+                <span className="shrink-0 select-none text-muted-foreground/50" aria-hidden="true">·</span>
+                <p className="min-w-0 truncate text-xs text-muted-foreground">
                   {currentTitle || 'Chat baru'}
                 </p>
                 {activeConv && (
@@ -499,36 +493,24 @@ export function ChatInterface() {
             ) : null}
           </div>
 
-          <div className="flex flex-shrink-0 items-center gap-1.5">
-            <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Ganti tema">
-              <ThemeIcon theme={theme} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="lg:hidden"
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              aria-label="Buka/tutup sidebar"
-            >
-              {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-            </Button>
+          <div className="flex flex-shrink-0 items-center gap-2 text-xs">
+            <span className="tui-tab-active px-1.5 py-0.5 font-semibold">Chat</span>
+            <span className="select-none text-muted-foreground/40" aria-hidden="true">·</span>
+            <button type="button" onClick={toggleTheme} aria-label="Ganti tema" className="text-muted-foreground transition-colors hover:text-foreground">
+              Settings
+            </button>
+            <button type="button" onClick={handleNewChat} aria-label="Chat baru" className="flex h-6 w-6 items-center justify-center border border-foreground/15 text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground">
+              <Plus className="h-3 w-3" />
+            </button>
           </div>
-        </header>
+        </div>
 
-        <div className="relative flex-1 min-h-0">
-          {/* Latar area percakapan: sarang lebah yang sama dengan landing
-              (MeshCanvas) — heksagonnya menekuk menjauhi kursor dan memencar
-              saat diklik. Mask radial di elemen luar tetap jadi fade-nya.
-              Canvas-nya absolute (bukan di dalam scroller) supaya pola tidak
-              ikut tergeser bersama isi percakapan. */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_45%_at_50%_0%,hsl(var(--foreground)/0.035),transparent_70%)]"
-          />
+        <div className="tui-panel relative flex h-[62dvh] min-h-0 shrink-0 flex-col lg:h-auto lg:min-h-0 lg:flex-1">
+          <span className="tui-inset-title" aria-hidden="true">output</span>
           <div
             ref={scrollAreaRef}
             onScroll={handleScroll}
-            className="relative flex h-full flex-col overflow-y-auto overscroll-contain"
+            className="relative flex h-full flex-col overflow-y-auto overscroll-contain px-4 py-5"
           >
           {messages.length === 0 ? (
             <div className="flex flex-1 items-center justify-center px-4 py-8 sm:py-12">
@@ -541,7 +523,7 @@ export function ChatInterface() {
             </div>
           ) : (
             <OptionsContext.Provider value={optionsValue}>
-            <div className="flex w-full flex-1 flex-col border border-foreground/10 bg-background/60 px-4 py-8 font-mono sm:px-8 sm:py-10">
+            <div className="flex w-full flex-1 flex-col gap-6 font-mono">
               {messages.map((msg, i) => (
                 <ChatMessage
                   key={msg.id}
@@ -593,29 +575,146 @@ export function ChatInterface() {
                 scrollToBottom()
               }}
               aria-label="Gulir ke bawah"
-              className="absolute bottom-4 left-1/2 z-10 flex h-9 w-9 -translate-x-1/2 items-center justify-center rounded-full border border-foreground/15 bg-transparent text-foreground transition-colors hover:border-foreground/40"
+              className="absolute bottom-4 left-1/2 z-10 flex h-9 w-9 -translate-x-1/2 items-center justify-center rounded-sm border border-foreground/25 bg-background text-foreground transition-colors hover:border-foreground/40"
             >
               <ArrowDown className="h-4 w-4" />
             </button>
           )}
         </div>
 
-        {false && messages.length > 0 && (
-          /* Latar composer: sarang lebah tipis (hex-surface, lihat index.css).
-             Polanya ada di sini, bukan di dalam kartu input, supaya kolomnya
-             sendiri tetap polos dan teksnya tidak berebut kontras. */
-          <div className="flex-shrink-0 bg-background px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2">
-            <div className="w-full">
-               <ChatInput onSend={handleSend} loading={loading} onStop={stop} showDisclaimer model={model} onModelChange={changeModel} />
-             </div>
-          </div>
-        )}
-        <div className="flex-shrink-0 bg-background px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2">
-          <div className="w-full">
+        <div className="tui-panel tui-queued relative flex-shrink-0 px-4 pb-3 pt-3">
+          <span className="tui-inset-title tui-inset-accent" aria-hidden="true">queued</span>
           <ChatInput onSend={handleSend} loading={loading} onStop={stop} showDisclaimer={messages.length > 0} model={model} onModelChange={changeModel} />
+        </div>
+        <div className="flex flex-shrink-0 flex-col gap-1 px-1 pb-[max(0.25rem,env(safe-area-inset-bottom))] text-[11px] leading-relaxed" aria-live="polite">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            <span className="inline-flex items-center gap-1" aria-hidden="true">
+              <span className={`inline-block h-1.5 w-1.5 ${loading ? 'bg-orange-400' : 'bg-emerald-400'}`} />
+              <span className={`inline-block h-1.5 w-1.5 ${loading ? 'bg-orange-400/60' : 'bg-foreground/25'}`} />
+              <span className="inline-block h-1.5 w-1.5 bg-foreground/25" />
+            </span>
+            {loading ? (
+              <span><span className="text-foreground">Waiting for the model</span><span className="text-muted-foreground"> · Esc to stop</span></span>
+            ) : (
+              <span className="text-muted-foreground">siap · Enter untuk kirim · Shift+Enter baris baru</span>
+            )}
+          </div>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            <span className={`px-1 py-px text-[10px] font-bold uppercase tracking-wider ${loading ? 'tui-badge-working' : 'tui-badge-idle'}`}>{loading ? 'working' : 'idle'}</span>
+            <span className="tui-accent font-semibold">Orchestrator</span>
+            <span className="text-muted-foreground">·</span>
+            <span className="min-w-0 truncate text-muted-foreground">{currentModelMeta.label}{currentModelMeta.free ? ' · free' : ''}</span>
+            <span className="ml-auto hidden shrink-0 text-muted-foreground/60 sm:inline">Ctrl+C stop · Ctrl+S send now</span>
           </div>
         </div>
       </main>
+
+      <aside className="flex min-h-0 min-w-0 flex-col gap-2 lg:h-full" aria-label="Panel info">
+        <section className="tui-panel relative shrink-0 px-4 pb-3 pt-4 text-xs leading-relaxed" aria-label="Session">
+          <span className="tui-inset-title" aria-hidden="true">session</span>
+          <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5">
+            <dt className="text-muted-foreground">context</dt>
+            <dd className="truncate text-right"><span className="tui-accent font-bold">{Math.min(99, Math.round((sessionTokenEstimate / 256000) * 100))}%</span> <span className="text-muted-foreground/40">{'▓'.repeat(Math.min(28, Math.max(1, Math.round((sessionTokenEstimate / 256000) * 28))))}{'░'.repeat(28 - Math.min(28, Math.max(1, Math.round((sessionTokenEstimate / 256000) * 28))))}</span></dd>
+            <dt className="text-muted-foreground">tokens</dt>
+            <dd className="text-right text-foreground">{sessionTokenEstimate.toLocaleString('en-US')} / 256,000</dd>
+            <dt className="text-muted-foreground">used</dt>
+            <dd className="text-right text-foreground">in {messages.filter((m) => m.role === 'user').length} · out {messages.filter((m) => m.role === 'assistant').length}</dd>
+            <dt className="text-muted-foreground">cost</dt>
+            <dd className="text-right text-foreground">$0.0000</dd>
+            <dt className="text-muted-foreground">tools</dt>
+            <dd className="text-right text-foreground">0 calls</dd>
+            <dt className="text-muted-foreground">memory</dt>
+            <dd className="text-right text-foreground">{state.convs.length} chats</dd>
+            <dt className="text-muted-foreground">cpu</dt>
+            <dd className="text-right text-foreground">{loading ? 'working' : 'idle'}</dd>
+            <dt className="text-muted-foreground">on disk</dt>
+            <dd className="text-right text-foreground">{messages.length} msgs</dd>
+          </dl>
+        </section>
+
+        <section className="tui-panel relative flex min-h-[46dvh] flex-col px-4 pb-3 pt-4 text-xs leading-relaxed lg:min-h-0 lg:flex-1" aria-label="Agents dan riwayat">
+          <span className="tui-inset-title" aria-hidden="true"><span className="tui-accent font-bold">agents</span><span> · tools · skills · log</span></span>
+          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto">
+            <div>
+              <p className="font-bold uppercase tracking-wider text-muted-foreground">delegated</p>
+              <p className="mt-0.5 text-muted-foreground">{loading ? 'menunggu model…' : 'Nothing delegated yet.'}</p>
+            </div>
+            <div>
+              <p className="font-bold uppercase tracking-wider text-muted-foreground">lead</p>
+              <p className="mt-0.5 text-foreground">KeyzAI <span className="tui-accent font-semibold">›{currentModelMeta.label}</span></p>
+            </div>
+            <div>
+              <p className="font-bold uppercase tracking-wider text-muted-foreground">recent</p>
+              {recentConvs.length === 0 ? (
+                <div className="mt-1">
+                  <p className="text-foreground">Belum ada percakapan</p>
+                  <p className="text-muted-foreground/70">Mulai lewat “Chat baru” di atas.</p>
+                </div>
+              ) : (
+                <ul className="mt-1 space-y-0.5">
+                  {recentConvs.map((conv) => (
+                    <li key={conv.id} className={`group flex items-center gap-1 ${state.activeId === conv.id ? 'tui-row-active' : ''}`}>
+                      <button type="button" onClick={() => handleSelectConv(conv.id)} title={conv.title || undefined} className="flex min-w-0 flex-1 items-center gap-2 px-1 py-1 text-left text-foreground/80 transition-colors hover:text-foreground">
+                        <MessageSquare className="h-3 w-3 shrink-0 opacity-40" />
+                        <span className="min-w-0 flex-1 truncate">{conv.title || 'Percakapan'}</span>
+                      </button>
+                      <button type="button" onClick={() => handleDeleteConv(conv.id)} aria-label="Hapus percakapan" className="shrink-0 p-1 text-muted-foreground opacity-0 transition-opacity hover:text-destructive focus-visible:opacity-100 group-hover:opacity-100">
+                        <Trash2 className="h-3 w-3" />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <div>
+              <p className="font-bold uppercase tracking-wider text-muted-foreground">menu</p>
+              <div className="mt-1 space-y-0.5">
+                <button type="button" onClick={handleNewChat} className="flex w-full items-center gap-2 px-1 py-1 text-left text-foreground/80 transition-colors hover:text-foreground">
+                  <Plus className="h-3 w-3 shrink-0 opacity-40" /> Chat baru
+                </button>
+                <Link to="/prd-builder" className="flex w-full items-center gap-2 px-1 py-1 text-left text-foreground/80 transition-colors hover:text-foreground">
+                  <FileText className="h-3 w-3 shrink-0 opacity-40" /> PRD Builder <span className="text-muted-foreground/60">[Beta]</span>
+                </Link>
+              </div>
+            </div>
+            <div>
+              <p className="font-bold uppercase tracking-wider text-muted-foreground">account</p>
+              {!user ? (
+                <button type="button" onClick={() => { setLoginErr(null); setLoginOpen(true) }} className="mt-1 flex w-full items-center gap-2 px-1 py-1 text-left transition-colors hover:text-foreground">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center border border-dashed border-foreground/25 text-muted-foreground">
+                    <User className="h-3 w-3" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-foreground">Masuk</span>
+                    <span className="block truncate text-muted-foreground/70">Riwayat belum tersimpan</span>
+                  </span>
+                  <span className="shrink-0 text-muted-foreground/60" aria-hidden="true">›</span>
+                </button>
+              ) : (
+                <button type="button" onClick={() => setPrefsOpen(true)} className="mt-1 flex w-full items-center gap-2 px-1 py-1 text-left transition-colors hover:text-foreground">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden border border-foreground/20 text-foreground">
+                    {user.picture ? (
+                      <img src={user.picture} alt={user.name || 'Akun'} className="h-full w-full object-cover" referrerPolicy="no-referrer" />
+                    ) : (
+                      <span className="text-[11px] font-semibold">{(user.name || user.email || '?').charAt(0).toUpperCase()}</span>
+                    )}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-foreground">{user.name || 'Pengguna'}</span>
+                    {user.email && <span className="block truncate text-muted-foreground/70">{user.email}</span>}
+                  </span>
+                  <span className="shrink-0 text-muted-foreground/60" aria-hidden="true">›</span>
+                </button>
+              )}
+            </div>
+          </div>
+        </section>
+
+        <p className="hidden shrink-0 items-center justify-end gap-4 px-1 text-[11px] text-muted-foreground/60 lg:flex" aria-hidden="true">
+          <span>Ctrl+C stop</span>
+          <span>Ctrl+S send now</span>
+        </p>
+      </aside>
 
       <RenameDialog
         open={renameOpen}

@@ -54,7 +54,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
 
   return (
     <div className="w-full">
-      <div className="border-y border-foreground/10 bg-background transition-colors focus-within:border-foreground/25">
+      <div className="relative bg-transparent transition-colors">
         <Textarea
           ref={textareaRef}
           value={message}
@@ -64,12 +64,13 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
             }
           }}
           onKeyDown={handleKeyDown}
-          placeholder="ketik perintah atau pertanyaan..."
-          className="min-h-[56px] max-h-40 resize-none overflow-y-auto border-0 bg-transparent py-4 pl-10 pr-5 font-mono text-sm leading-relaxed text-foreground placeholder:font-mono placeholder:text-sm placeholder:text-muted-foreground/60 focus-visible:ring-0 focus-visible:ring-offset-0"
+          placeholder="Ada yang bisa dibantu?"
+          className="min-h-[56px] max-h-40 resize-none overflow-y-auto border-0 bg-transparent py-3 pl-8 pr-4 font-mono text-sm leading-relaxed text-foreground placeholder:font-mono placeholder:text-sm placeholder:text-muted-foreground/60 focus-visible:ring-0 focus-visible:ring-offset-0"
           rows={1}
         />
+        <span aria-hidden="true" className="tui-prompt pointer-events-none absolute left-3 top-3 select-none text-sm">›</span>
 
-        <div className="flex items-center justify-between gap-3 px-4 pb-3">
+        <div className="flex items-center justify-between gap-3 px-1 pb-1 pt-2">
           <div className="flex min-w-0 items-center gap-2">
             {model && onModelChange &&
               (MODELS.length > 1 ? (

@@ -388,3 +388,65 @@
     scroll-behavior: auto;
   }
 }
+
+/* Chat TUI: panel bordered + inset titles seperti referensi terminal.
+   Warna mengikuti tema (dark/light) via variabel; aksen pink/oranye
+   hanya untuk elemen chrome terminal. */
+.tui-root {
+  --tui-border: hsl(var(--foreground) / 0.16);
+  --tui-accent: #ff2d78;
+  --tui-warn: #ff9f0a;
+}
+.tui-panel {
+  position: relative;
+  border: 1px solid var(--tui-border);
+  border-radius: 6px;
+  background: hsl(var(--background));
+}
+.tui-inset-title {
+  position: absolute;
+  top: -8px;
+  left: 12px;
+  z-index: 1;
+  padding: 0 6px;
+  background: hsl(var(--background));
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 11px;
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: hsl(var(--muted-foreground));
+  white-space: nowrap;
+}
+.tui-inset-accent {
+  color: var(--tui-warn);
+}
+.tui-queued {
+  border-color: color-mix(in srgb, var(--tui-warn) 65%, transparent);
+}
+.tui-accent {
+  color: var(--tui-accent);
+}
+.tui-tab-active {
+  background: var(--tui-accent);
+  color: #0a0a0a;
+  border-radius: 2px;
+}
+.tui-badge-working {
+  background: var(--tui-warn);
+  color: #0a0a0a;
+  border-radius: 2px;
+}
+.tui-badge-idle {
+  border: 1px solid var(--tui-border);
+  color: hsl(var(--muted-foreground));
+  border-radius: 2px;
+}
+.tui-prompt {
+  color: var(--tui-accent);
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+}
+.tui-row-active {
+  background: hsl(var(--foreground) / 0.06);
+  border-radius: 4px;
+}

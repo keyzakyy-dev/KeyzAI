@@ -71,10 +71,10 @@ export function ChatMessage({ role, content, timestamp, streaming, aborted = fal
   }
 
   return (
-    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-      <div className={`min-w-0 space-y-1.5 ${isUser ? 'max-w-[90%]' : 'w-full'}`}>
+    <div className="flex justify-start">
+      <div className="min-w-0 w-full space-y-1.5">
         <div className="flex gap-3 text-[15px] leading-relaxed">
-          <span className={`select-none font-mono text-sm ${isUser ? 'text-primary' : 'text-muted-foreground'}`} aria-hidden="true">
+          <span className={`select-none font-mono text-sm ${isUser ? 'tui-prompt font-bold' : 'text-muted-foreground'}`} aria-hidden="true">
             {isUser ? '›' : '·'}
           </span>
           <div className={`min-w-0 flex-1 ${isUser ? 'font-mono text-foreground' : 'text-foreground'}`}>
