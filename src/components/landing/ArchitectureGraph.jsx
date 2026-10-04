@@ -151,7 +151,7 @@ export function ArchitectureGraph() {
                 <div
                   className={`relative flex items-center justify-center rounded-2xl border transition-all duration-300 overflow-hidden ${
                     isCore
-                      ? 'h-16 w-16 border-foreground bg-card p-2 shadow-lg'
+                      ? 'h-16 w-16 border-foreground bg-card bg-opacity-100 p-2 shadow-lg'
                       : 'h-12 w-12 border-border bg-background p-2'
                   } ${isActive ? 'border-primary ring-2 ring-primary/20 shadow-md' : ''} ${
                     isActive && !isCore ? 'node-breathe' : ''
