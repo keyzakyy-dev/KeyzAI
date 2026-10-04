@@ -407,19 +407,21 @@ function Models() {
     <section id="models" className="scroll-mt-20 py-12 sm:py-14 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <Reveal from="up" className="mx-auto max-w-5xl">
-          <div className="text-center mb-10">
-            <span className="inline-flex items-center text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              Model AI
-            </span>
-            <h2 className="mt-3 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-              Beragam model, semua gratis
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base max-w-2xl mx-auto">
+          <div className="mb-10 flex flex-col justify-between gap-4 border-b border-foreground/10 pb-6 sm:flex-row sm:items-end">
+            <div>
+              <span className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
+                Model AI
+              </span>
+              <h2 className="mt-3 text-3xl font-medium tracking-tight text-foreground sm:text-4xl">
+                Beragam model, semua gratis
+              </h2>
+            </div>
+            <p className="max-w-sm text-sm leading-relaxed text-muted-foreground sm:text-right">
               Pilih model yang paling cocok untuk tiap percakapan.
             </p>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-px overflow-hidden border border-foreground/10 bg-foreground/10 sm:grid-cols-2 lg:grid-cols-3">
             {MODELS.map((m) => (
               <ModelCard key={m.id} model={m} copied={copied} onCopy={copyId} />
             ))}
@@ -432,13 +434,13 @@ function Models() {
 
 function ModelCard({ model, copied, onCopy }) {
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card p-5 transition-colors duration-200 hover:border-foreground/30 hover:bg-accent/50">
+    <div className="group relative overflow-hidden border border-transparent bg-background p-5 transition-colors duration-200 hover:border-foreground/25">
       {/* Watermark logo: brand glyph besar dan samar di belakang */}
       <img
         src={model.logo}
         alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute right-0 top-1/2 h-[70%] w-[70%] -translate-y-1/2 object-contain opacity-[0.15]"
+        className="pointer-events-none absolute right-0 top-1/2 h-[64%] w-[64%] -translate-y-1/2 object-contain opacity-[0.08]"
       />
       <div className="relative z-10 flex flex-col gap-3">
         <div className="flex items-center gap-2">
@@ -449,7 +451,7 @@ function ModelCard({ model, copied, onCopy }) {
         </div>
 
         <div className="flex items-center gap-2">
-          <h3 className="text-base font-bold text-foreground">{model.label}</h3>
+          <h3 className="text-base font-medium text-foreground">{model.label}</h3>
           {model.tagline === 'Baru & eksperimental' && (
             <span className="rounded-md bg-primary/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
               Baru
