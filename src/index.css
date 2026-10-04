@@ -276,3 +276,13 @@
   background: transparent;
 }
 
+/* Hero: animasi rise murni CSS (utility .animate-rise), jadi cukup dimatikan
+   di sini — komponen tidak perlu cek prefers-reduced-motion sendiri. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise {
+    animation: none !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}

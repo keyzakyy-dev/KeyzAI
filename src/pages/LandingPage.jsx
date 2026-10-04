@@ -5,7 +5,6 @@ import { usePageMeta, SITE_NAME, SITE_DESC } from '../lib/seo'
 import { Reveal } from '../lib/reveal'
 import { useAuth } from '../hooks/useAuth'
 import { LogoImg } from '../lib/logo-img'
-import { ChatMock } from '../components/ChatMock'
 import { ThemeIcon } from '../components/theme-icon'
 import { MODELS } from '../lib/models'
 import { ArrowRight, ArrowUp, MessageSquare, Code, Pencil, Lock, BookOpen, CircleHelp, Menu, X, FileText, Copy, Check } from 'lucide-react'
@@ -38,9 +37,9 @@ const Media = ({ children }) => (
   </div>
 )
 
-// Bentuk ringkas dari mock chat hero (lihat components/ChatMock.jsx): chrome
-// + satu putaran bubble dan kontrolnya. Dipakai di panel 16:11 yang jauh lebih
-// pendek dari mock hero, jadi bagian yang dipangkas hanya chrome yang redundant.
+// Bentuk ringkas dari mock chat: chrome + satu putaran bubble dan kontrolnya.
+// Dipakai di panel fitur yang jauh lebih pendek dari mockup hero, jadi bagian
+// yang dipangkas hanya chrome yang redundant.
 function MockChat() {
   return (
     <div className="w-full overflow-hidden rounded-lg border border-border bg-card shadow-sm">
@@ -368,36 +367,86 @@ function Navbar({ navigate, theme, toggleTheme }) {
 
 function Hero({ navigate }) {
   return (
-    <section className="relative overflow-hidden py-16 sm:py-20 lg:py-24">
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="grid items-start gap-10 lg:grid-cols-12 lg:gap-16">
-          <div className="space-y-6 lg:col-span-7">
-            <h1 className="max-w-[16ch] text-balance text-[2rem] font-bold leading-[1.08] tracking-tight text-foreground sm:text-5xl lg:text-[3.25rem]">
-              Satu chat untuk nulis, debug, dan belajar.
+    /* Tinggi = viewport dikurangi header fixed (h-16) supaya isi hero tepat
+       satu layar tanpa memaksa scroll. Kolom kanan sengaja kosong — mesh
+       heksagon di belakang mengisi ruang itu, mockup sudah dihapus. */
+    <section className="relative overflow-hidden py-16 sm:py-20 lg:flex lg:min-h-[calc(100svh-4rem)] lg:items-center lg:py-24">
+      <div className="relative mx-auto w-full max-w-7xl px-4 sm:px-6">
+        {/* lg:col-span-6 (bukan 5) supaya heading di 3.25rem tidak jadi 6 baris
+            sempit di tablet; di xl kembali ke 5/12 seperti pola aslinya. */}
+        <div className="grid grid-cols-1 lg:grid-cols-12">
+          <div className="min-w-0 lg:col-span-6 xl:col-span-5">
+            <a
+              href="#models"
+              className="animate-rise group mb-6 inline-flex max-w-full items-center gap-2.5 rounded-full border border-border bg-card/85 py-1.5 pl-1.5 pr-4 text-sm font-medium text-foreground shadow-sm backdrop-blur transition-colors hover:border-foreground/40"
+            >
+              <span className="shrink-0 rounded-full bg-emerald-600/90 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-white dark:bg-emerald-400/90 dark:text-emerald-950">
+                Free
+              </span>
+              <span className="truncate text-muted-foreground">
+                Semua model gratis, tanpa kartu kredit
+              </span>
+              <ArrowRight
+                className="size-3.5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5"
+                aria-hidden="true"
+              />
+            </a>
+
+            <h1
+              className="animate-rise text-balance text-[2.25rem] font-bold leading-[1.02] tracking-[-0.03em] text-foreground sm:text-5xl lg:text-[3.5rem]"
+              style={{ animationDelay: '60ms' }}
+            >
+              Semua model AI gratis, dalam satu chat.
             </h1>
-            <p className="max-w-md text-base leading-relaxed text-muted-foreground sm:text-lg">
-              Jawaban mengalir saat diketik. Edit pesan atau buat ulang, versi lama tetap bisa dibuka. Masuk dengan Google supaya riwayat tersimpan.
+
+            <p
+              className="animate-rise mt-6 max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg"
+              style={{ animationDelay: '140ms' }}
+            >
+              Tulis, debug, dan belajar tanpa pindah aplikasi. Edit pesan atau
+              buat ulang jawaban kapan saja — versi lama tetap bisa dibuka.
             </p>
-            <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+
+            <div
+              className="animate-rise mt-8 flex flex-wrap gap-3"
+              style={{ animationDelay: '220ms' }}
+            >
               <button
                 type="button"
                 onClick={() => navigate('/chat')}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-base font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-[15px] font-semibold text-primary-foreground transition-colors hover:bg-primary/85"
               >
                 Buka chat
-                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                <ArrowRight className="size-4" aria-hidden="true" />
               </button>
               <a
                 href="#prd-builder"
-                className="inline-flex h-12 items-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                className="inline-flex h-12 items-center justify-center rounded-lg border border-border bg-card px-5 text-[15px] font-semibold text-foreground transition-colors hover:border-foreground/40"
               >
                 Dari ide jadi PRD
               </a>
             </div>
-          </div>
 
-          <div className="mx-auto w-full max-w-md lg:col-span-5 lg:mx-0 lg:max-w-none lg:pt-2">
-            <ChatMock />
+            <ul
+              className="animate-rise mt-10 flex flex-col gap-3 text-sm font-medium text-muted-foreground"
+              style={{ animationDelay: '300ms' }}
+            >
+              {[
+                'Masuk dengan Google, riwayat otomatis tersimpan',
+                'Jawaban mengalir saat diketik, tidak perlu ditunggu',
+                'Bisa ganti model kapan saja',
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-2.5">
+                  <span
+                    className="mt-px grid size-4 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground"
+                    aria-hidden="true"
+                  >
+                    <Check className="size-2.5" />
+                  </span>
+                  <span className="text-foreground/90">{item}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>
@@ -463,9 +512,9 @@ function PrdBuilder({ navigate }) {
             </button>
           </Reveal>
 
-          {/* Right: PRD document mockup, shell sama dengan ChatMock hero */}
+          {/* Right: PRD document mockup, shell window yang sama dengan mock chat */}
           <Reveal from="up" delay={150} className="relative mx-auto w-full max-w-md lg:mx-0 lg:max-w-none">
-            <div className="flex aspect-[16/11] w-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+            <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
               <div className="flex items-center gap-2 border-b border-border bg-muted/40 px-3 py-2.5">
                 <span className="flex items-center gap-1.5" aria-hidden="true">
                   <span className="size-2.5 rounded-full bg-destructive/75 ring-1 ring-foreground/10" />
@@ -474,7 +523,7 @@ function PrdBuilder({ navigate }) {
                 </span>
                 <span className="ml-2 font-mono text-xs text-muted-foreground">prd.md</span>
               </div>
-              <div className="flex flex-1 flex-col justify-center space-y-4 p-5">
+              <div className="flex min-h-[22rem] flex-col justify-center space-y-4 p-5">
                 <div>
                   <div className="h-2.5 w-28 rounded bg-foreground/10" />
                   <div className="mt-1.5 h-2 w-44 rounded bg-foreground/8" />

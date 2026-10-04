@@ -53,6 +53,12 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
+        // Hero: naik 14px + fade, ~80ms stagger per elemen. both fill-mode
+        // supaya elemen tidak berkedip sebelum delay-nya mulai.
+        rise: {
+          '0%': { opacity: '0', transform: 'translateY(14px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
         'fade-up': {
           '0%': { opacity: '0', transform: 'translateY(24px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
@@ -71,6 +77,7 @@ export default {
         },
       },
       animation: {
+        'rise': 'rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both',
         'fade-up': 'fade-up 0.8s ease-out both',
         float: 'float 6s ease-in-out infinite',
         'float-delayed': 'float 7s ease-in-out 1.2s infinite',
