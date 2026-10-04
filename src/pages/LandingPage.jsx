@@ -256,28 +256,17 @@ function Hero({ navigate }) {
             </div>
 
             <ul
-              className="animate-rise mt-10 grid max-w-xl gap-2 sm:grid-cols-3 sm:gap-3"
+              className="animate-rise mt-10 flex flex-col gap-2.5 text-sm text-muted-foreground"
               style={{ animationDelay: '300ms' }}
             >
               {[
-                ['Google login', 'Riwayat tersimpan otomatis'],
-                ['Jawaban realtime', 'Tanpa menunggu selesai'],
-                ['Model fleksibel', 'Ganti kapan saja'],
-              ].map(([title, detail]) => (
-                <li
-                  key={title}
-                  className="group flex items-center gap-3 rounded-xl border border-foreground/10 px-3.5 py-3 transition-colors hover:border-foreground/25"
-                >
-                  <span
-                    className="grid size-7 shrink-0 place-items-center rounded-full border border-emerald-500/30 text-emerald-500 dark:text-emerald-400"
-                    aria-hidden="true"
-                  >
-                    <Check className="size-3.5" strokeWidth={2.5} />
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block text-xs font-medium text-foreground">{title}</span>
-                    <span className="mt-0.5 block text-[11px] leading-tight text-muted-foreground">{detail}</span>
-                  </span>
+                'Masuk dengan Google, riwayat otomatis tersimpan',
+                'Jawaban mengalir saat diketik, tidak perlu ditunggu',
+                'Bisa ganti model kapan saja',
+              ].map((item) => (
+                <li key={item} className="flex items-center gap-2.5">
+                  <Check className="size-4 shrink-0 text-emerald-500 dark:text-emerald-400" strokeWidth={2.5} aria-hidden="true" />
+                  <span>{item}</span>
                 </li>
               ))}
             </ul>
