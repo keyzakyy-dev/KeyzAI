@@ -417,6 +417,8 @@ export function ChatInterface() {
       return Math.round(chars / 4)
     } catch { return 0 }
   }, [messages])
+  const sessionCtxPct = Math.min(99, Math.round((sessionTokenEstimate / 256000) * 100))
+  const sessionCtxFilled = Math.min(28, Math.round((sessionTokenEstimate / 256000) * 28))
   const tuiUserLabel = user?.name ? user.name.split(' ')[0].toLowerCase() : 'tamu'
 
   const lastMessage = messages[messages.length - 1]
@@ -632,7 +634,7 @@ export function ChatInterface() {
           <span className="tui-inset-title" aria-hidden="true">session</span>
           <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5">
             <dt className="text-muted-foreground">context</dt>
-            <dd className="truncate text-right"><span className="tui-accent font-bold">{Math.min(99, Math.round((sessionTokenEstimate / 256000) * 100))}%</span> <span className="text-muted-foreground/40">{'▓'.repeat(Math.min(28, Math.max(1, Math.round((sessionTokenEstimate / 256000) * 28))))}{'░'.repeat(28 - Math.min(28, Math.max(1, Math.round((sessionTokenEstimate / 256000) * 28))))}</span></dd>
+            <dd className="truncate text-right"><span className="tui-accent font-bold">{sessionCtxPct}%</span> <span className="text-muted-foreground/40">{'▓'.repeat(sessionCtxFilled)}{'░'.repeat(28 - sessionCtxFilled)}</span></dd>
             <dt className="text-muted-foreground">tokens</dt>
             <dd className="text-right text-foreground">{sessionTokenEstimate.toLocaleString('en-US')} / 256,000</dd>
             <dt className="text-muted-foreground">used</dt>
@@ -642,11 +644,11 @@ export function ChatInterface() {
             <dt className="text-muted-foreground">tools</dt>
             <dd className="text-right text-foreground">0 calls</dd>
             <dt className="text-muted-foreground">chats</dt>
-            <dd className="text-right text-foreground">{state.convs.length} chats</dd>
+            <dd className="text-right text-foreground">{state.convs.length}</dd>
             <dt className="text-muted-foreground">status</dt>
             <dd className="text-right text-foreground">{loading ? 'working' : 'idle'}</dd>
             <dt className="text-muted-foreground">messages</dt>
-            <dd className="text-right text-foreground">{messages.length} msgs</dd>
+            <dd className="text-right text-foreground">{messages.length}</dd>
           </dl>
         </section>
 
