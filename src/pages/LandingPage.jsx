@@ -454,18 +454,24 @@ function Hero({ navigate }) {
             </ul>
           </div>
 
-          {/* Kolom kanan: marquee model gratis — membuktikan klaim "semua model
-              gratis" di headline, bukan sekadar kebetulan. Delay 200ms
-              sesuai pola stagger hero: kolom kanan muncul sebelum checklist. */}
-          <div
-            className="animate-rise mt-12 hidden lg:col-span-6 lg:mt-0 lg:block xl:col-span-7"
-            style={{ animationDelay: '200ms' }}
-          >
-            <div className="flex h-full items-center">
-              <ModelMarquee />
-            </div>
-          </div>
         </div>
+      </div>
+    </section>
+  )
+}
+
+function ModelMarqueeSection() {
+  return (
+    <section className="py-8 sm:py-10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <Reveal from="up">
+          <div className="text-center mb-6">
+            <span className="inline-flex items-center text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              Powered by
+            </span>
+          </div>
+          <ModelMarquee />
+        </Reveal>
       </div>
     </section>
   )
@@ -729,6 +735,7 @@ export function LandingPage() {
         <Navbar navigate={navigate} theme={theme} toggleTheme={toggleTheme} />
         <main>
           <Hero navigate={navigate} />
+          <ModelMarqueeSection />
           {/* List fitur + panel media. Glow blob dibungkus di luar karena
               komponennya sendiri sudah membawa <section>-nya. Padding
               fallback disamakan dengan section aslinya supaya tidak ada
