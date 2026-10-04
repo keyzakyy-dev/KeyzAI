@@ -206,9 +206,9 @@ function Hero({ navigate }) {
           <div className="min-w-0 lg:col-span-6 xl:col-span-5">
             <a
               href="#models"
-              className="animate-rise group mb-6 inline-flex max-w-full items-center gap-3 rounded-full border border-emerald-500/20 bg-emerald-500/[0.06] py-1.5 pl-2 pr-3.5 text-sm text-foreground shadow-sm backdrop-blur transition-colors hover:border-emerald-500/40 hover:bg-emerald-500/[0.1]"
+              className="animate-rise group mb-6 inline-flex max-w-full items-center gap-3 rounded-full border border-foreground/15 bg-transparent py-1.5 pl-2 pr-3.5 text-sm text-foreground transition-colors hover:border-foreground/35"
             >
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-500 dark:text-emerald-400">
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-full border border-emerald-500/35 text-emerald-500 dark:text-emerald-400">
                 <Check className="size-3.5" strokeWidth={2.5} aria-hidden="true" />
               </span>
               <span className="truncate text-muted-foreground">
