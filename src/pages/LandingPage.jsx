@@ -93,8 +93,8 @@ function Navbar({ navigate, theme, toggleTheme }) {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 border-b border-transparent transition-colors duration-300 ${
-        open ? 'border-foreground/10 bg-background/95 backdrop-blur-xl' : 'bg-background/70 backdrop-blur-md'
+      className={`relative z-50 border-b border-transparent transition-colors duration-300 ${
+        open ? 'border-foreground/10' : ''
       }`}
     >
       {/* Hairline progress baca */}
@@ -146,7 +146,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
             aria-label={open ? 'Tutup menu' : 'Buka menu'}
             aria-expanded={open}
             aria-controls="landing-mobile-nav"
-            className="relative flex h-11 w-11 items-center justify-center rounded-lg text-foreground transition-colors hover:bg-accent"
+            className="relative flex h-11 w-11 items-center justify-center rounded-full text-foreground transition-colors hover:bg-foreground/[0.06]"
           >
             <Menu
               className={`h-4 w-4 transition-all duration-300 ${
