@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { usePageMeta, SITE_NAME, SITE_DESC } from '../lib/seo'
 import { Reveal } from '../lib/reveal'
 import { useAuth } from '../hooks/useAuth'
-import { LogoImg } from '../lib/logo-img'
+import { LogoImg, Wordmark } from '../lib/logo-img'
 import { ModelMarquee } from '../components/ModelMarquee'
 import { MODELS } from '../lib/models'
 import {
@@ -36,7 +36,7 @@ function GithubMark({ className, ...props }) {
 function Logo() {
   return (
     <div className="flex items-center gap-2.5">
-      <LogoImg className="h-8 w-auto" />
+      <Wordmark />
     </div>
   )
 }

@@ -2,14 +2,14 @@ import { Link } from 'react-router-dom'
 import { usePageMeta } from '../lib/seo'
 import { ArrowRight } from 'lucide-react'
 
-import { LogoImg } from '../lib/logo-img'
+import { Wordmark } from '../lib/logo-img'
 import { CHANGELOG } from '../lib/changelog'
 
 const TYPE_LABEL = { new: 'Baru', polish: 'Poles', fix: 'Perbaikan' }
 const TYPE_CLASS = {
-  new: 'text-emerald-600 dark:text-emerald-400',
-  polish: 'text-sky-600 dark:text-sky-400',
-  fix: 'text-amber-600 dark:text-amber-400',
+  new: 'text-red-600 dark:text-red-400',
+  polish: 'text-muted-foreground',
+  fix: 'text-muted-foreground',
 }
 
 export function ChangelogPage() {
@@ -23,7 +23,7 @@ export function ChangelogPage() {
       <header className="border-b border-border">
         <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4 sm:px-6">
           <Link to="/" aria-label="Kembali ke beranda" className="rounded-xl transition-opacity hover:opacity-80">
-            <LogoImg className="h-8 w-auto" />
+            <Wordmark />
           </Link>
           <Link
             to="/chat"
