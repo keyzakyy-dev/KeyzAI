@@ -360,8 +360,8 @@ function PrdBuilder({ navigate }) {
                 <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full text-foreground">
                   <step.icon className="h-5 w-5 text-primary" />
                 </div>
-                <h4 className="text-sm font-semibold text-foreground">{step.label}</h4>
-                <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+                <h4 className="text-base font-medium text-foreground">{step.label}</h4>
+                <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
                   {step.desc}
                 </p>
               </div>
