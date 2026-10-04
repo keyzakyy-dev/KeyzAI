@@ -159,9 +159,9 @@
   to { stroke-dashoffset: 0; }
 }
 
-.feature-grid-reveal[data-revealed] .feature-grid::before,
 .feature-grid-reveal[data-revealed] .feature-card::before {
   content: '';
+  box-sizing: border-box;
   position: absolute;
   inset: 0;
   pointer-events: none;
