@@ -1,11 +1,11 @@
 /**
- * Logika overlay wipe tema.
+ * Logika overlay fade tema.
  *
  * Diuji dengan DOM minimal (bukan jsdom — tidak ada dependency baru):
- * theme-wipe.js hanya butuh document.body, classList, style, dataset,
+ * theme-fade.js hanya butuh document.body, classList, style, dataset,
  * getComputedStyle, setTimeout, dan matchMedia. Semuanya di-stub di sini.
  *
- * Yang diuji: urutan cover -> swap -> reveal, pemilihan titik pusat,
+ * Yang diuji: urutan fadeIn -> swap -> fadeOut, warna overlay sesuai target,
  * fallback reduced-motion, dan pembersihan overlay.
  */
 import assert from 'node:assert/strict'
@@ -63,7 +63,7 @@ class El {
     this.isConnected = false
     this._attrs = {}
     this._listeners = new Map()
-    // theme-wipe memaksa style ter-compute dengan membaca offsetWidth.
+    // theme-fade memaksa style ter-compute dengan membaca offsetWidth.
     this.offsetWidth = 0
   }
   setAttribute(k, v) {
@@ -133,12 +133,12 @@ globalThis.getComputedStyle = (el) => ({
 
 // ---- Modul diuji ----------------------------------------------------------
 
-const { playThemeWipe } = await import('../src/lib/theme-wipe.js')
+const { playThemeFade } = await import('../src/lib/theme-fade.js')
 
 // ---- Helper ---------------------------------------------------------------
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
-const overlay = () => body.children.find((c) => c.className === 'theme-wipe')
+const overlay = () => body.children.find((c) => c.className === 'theme-fade')
 
 function reset({ reducedMotion = false } = {}) {
   for (const c of [...body.children]) body.removeChild(c)
@@ -147,92 +147,64 @@ function reset({ reducedMotion = false } = {}) {
   globalThis.window.matchMedia = () => ({ matches: reducedMotion })
 }
 
-function makeButton(x, y, w = 32, h = 32) {
-  const btn = new El('button')
-  btn._rect = { left: x, top: y, width: w, height: h }
-  return btn
-}
-
-function clickButton(x, y, w = 32, h = 32) {
-  const btn = makeButton(x, y, w, h)
-  document.activeElement = btn
-  return btn
-}
-
 // ---- Test -----------------------------------------------------------------
 
-test('overlay menutup, swap di tengah, lalu membuka', async () => {
+test('overlay fade masuk, swap di tengah, lalu fade keluar', async () => {
   reset()
   const events = []
 
-  playThemeWipe('light', () => {
+  playThemeFade('light', () => {
     events.push('swap')
     htmlEl.classList.toggle('dark', false)
   })
 
-  // Fase cover: overlay ada, state=cover, kelas .dark belum berubah.
+  // Fase fade-in: overlay ada, state=in, kelas .dark belum berubah.
   const el = overlay()
   assert.ok(el, 'overlay harus dibuat')
-  assert.equal(el.dataset.state, 'cover')
+  assert.equal(el.dataset.state, 'in')
   assert.equal(el.getAttribute('aria-hidden'), 'true')
-  assert.equal(el.style.getPropertyValue('--wipe-bg'), THEME_BG.light)
-  assert.ok(htmlEl.classList.contains('dark'), 'kelas .dark belum boleh berubah saat cover')
+  assert.ok(htmlEl.classList.contains('dark'), 'kelas .dark belum boleh berubah saat fade masuk')
   assert.deepEqual(events, [])
 
-  await sleep(500)
+  // Fade-in 180ms -> swap. Fade-out 220ms -> overlay dibuang.
+  await sleep(300)
 
-  // Setelah cover selesai: swap terjadi, state=reveal.
   assert.deepEqual(events, ['swap'], 'onSwap harus dipanggil sekali')
   assert.ok(!htmlEl.classList.contains('dark'), 'kelas .dark harus tertukar')
-  assert.equal(el.dataset.state, 'reveal')
+  assert.equal(el.dataset.state, 'out')
 
-  await sleep(500)
+  await sleep(300)
 
-  // Setelah reveal: overlay dibersihkan.
   assert.equal(overlay(), undefined, 'overlay harus di-remove setelah animasi selesai')
 })
 
-test('wipe ke dark memakai warna background dark', async () => {
+test('fade ke dark memakai warna background dark', async () => {
   reset()
   htmlEl.classList.remove('dark')
 
-  playThemeWipe('dark', () => htmlEl.classList.add('dark'))
+  playThemeFade('dark', () => htmlEl.classList.add('dark'))
 
-  assert.equal(overlay().style.getPropertyValue('--wipe-bg'), THEME_BG.dark)
-  await sleep(800)
+  assert.equal(overlay().style.getPropertyValue('--fade-bg'), THEME_BG.dark)
+  await sleep(700)
   assert.ok(htmlEl.classList.contains('dark'))
 })
 
-test('titik pusat wipe mengikuti posisi tombol yang diklik', async () => {
+test('fade ke light memakai warna background light', async () => {
   reset()
-  clickButton(100, 200)
 
-  playThemeWipe('light', () => htmlEl.classList.remove('dark'))
+  playThemeFade('light', () => htmlEl.classList.remove('dark'))
 
-  const el = overlay()
-  assert.equal(el.style.getPropertyValue('--wipe-x'), '116px') // 100 + 32/2
-  assert.equal(el.style.getPropertyValue('--wipe-y'), '216px') // 200 + 32/2
-  await sleep(800)
-})
-
-test('tanpa elemen fokus, titik pusat jatuh ke tengah viewport', async () => {
-  reset()
-  document.activeElement = null
-
-  playThemeWipe('light', () => htmlEl.classList.remove('dark'))
-
-  assert.equal(overlay().style.getPropertyValue('--wipe-x'), '600px')
-  assert.equal(overlay().style.getPropertyValue('--wipe-y'), '400px')
-  await sleep(800)
+  assert.equal(overlay().style.getPropertyValue('--fade-bg'), THEME_BG.light)
+  await sleep(700)
 })
 
 test('resolveTargetBg tidak meninggalkan kelas .dark dalam keadaan salah', async () => {
   reset()
   htmlEl.classList.add('dark')
 
-  playThemeWipe('light', () => htmlEl.classList.remove('dark'))
-  assert.equal(overlay().style.getPropertyValue('--wipe-bg'), THEME_BG.light)
-  await sleep(800)
+  playThemeFade('light', () => htmlEl.classList.remove('dark'))
+  assert.equal(overlay().style.getPropertyValue('--fade-bg'), THEME_BG.light)
+  await sleep(700)
   assert.ok(!htmlEl.classList.contains('dark'), 'harus berakhir di light')
 })
 
@@ -240,7 +212,7 @@ test('prefers-reduced-motion: swap langsung, tanpa overlay', async () => {
   reset({ reducedMotion: true })
   let swapped = false
 
-  playThemeWipe('light', () => {
+  playThemeFade('light', () => {
     swapped = true
     htmlEl.classList.remove('dark')
   })
@@ -253,85 +225,80 @@ test('prefers-reduced-motion: swap langsung, tanpa overlay', async () => {
 test('toggle berulang tidak menumpuk overlay', async () => {
   reset()
 
-  playThemeWipe('light', () => htmlEl.classList.remove('dark'))
+  playThemeFade('light', () => htmlEl.classList.remove('dark'))
   const first = overlay()
-  playThemeWipe('dark', () => htmlEl.classList.add('dark'))
+  playThemeFade('dark', () => htmlEl.classList.add('dark'))
 
-  const all = body.children.filter((c) => c.className === 'theme-wipe')
+  const all = body.children.filter((c) => c.className === 'theme-fade')
   assert.equal(all.length, 1, 'harus tetap satu overlay')
   assert.notEqual(all[0], first, 'overlay lama dibuang, bukan ditumpuk')
-  assert.equal(all[0].dataset.state, 'cover', 'restart dari fase cover')
-  assert.equal(all[0].style.getPropertyValue('--wipe-bg'), THEME_BG.dark, 'warna ikut target terbaru')
+  assert.equal(all[0].dataset.state, 'in', 'restart dari fase fade-in')
+  assert.equal(all[0].style.getPropertyValue('--fade-bg'), THEME_BG.dark, 'warna ikut target terbaru')
   // Swap lama harus dieksekusi seketika, bukan dibuang — kalau tidak
   // kelas .dark nyangkut dan toggle kedua tidak mengubah apa pun.
-  assert.ok(!htmlEl.classList.contains('dark'), 'swap pending harus di-flush saat wipe baru mulai')
+  assert.ok(!htmlEl.classList.contains('dark'), 'swap pending harus di-flush saat fade baru mulai')
 
-  await sleep(800)
+  await sleep(700)
   assert.equal(overlay(), undefined, 'overlay dibersihkan di akhir')
   assert.ok(htmlEl.classList.contains('dark'), 'toggle terakhir (dark) yang menang')
 })
 
-test('swap terjadi tepat di akhir cover, bukan sebelum (pakai animationend)', async () => {
+test('swap terjadi tepat di akhir fade-in, bukan sebelum (pakai animationend)', async () => {
   reset()
   const events = []
 
-  playThemeWipe('light', () => {
+  playThemeFade('light', () => {
     events.push('swap')
     htmlEl.classList.remove('dark')
   })
 
   const el = overlay()
-  assert.deepEqual(events, [], 'belum ada swap sebelum cover selesai')
+  assert.deepEqual(events, [], 'belum ada swap sebelum fade-in selesai')
 
-  // Browser memancarkan animationend saat cover selesai → swap.
-  el.dispatch('animationend', { animationName: 'theme-wipe-cover' })
-  assert.deepEqual(events, ['swap'], 'swap tepat saat cover selesai')
-  assert.equal(el.dataset.state, 'reveal')
+  // Browser memancarkan animationend saat fade-in selesai -> swap.
+  el.dispatch('animationend', { animationName: 'theme-fade-in' })
+  assert.deepEqual(events, ['swap'], 'swap tepat saat fade-in selesai')
+  assert.equal(el.dataset.state, 'out')
 
-  await sleep(1000)
-  assert.equal(overlay(), undefined, 'reveal selesai → overlay dibersihkan')
+  await sleep(700)
+  assert.equal(overlay(), undefined, 'fade-out selesai -> overlay dibersihkan')
 })
 
 test('animationend dari elemen lain diabaikan', async () => {
   reset()
   const events = []
 
-  playThemeWipe('light', () => {
+  playThemeFade('light', () => {
     events.push('swap')
     htmlEl.classList.remove('dark')
   })
 
   const el = overlay()
   const stray = new El('div')
-  el.dispatch('animationend', { animationName: 'theme-wipe-cover', target: stray })
+  el.dispatch('animationend', { animationName: 'theme-fade-in', target: stray })
 
-  assert.deepEqual(events, [], 'event dari target lain tidak boleh Memicu advance')
-  assert.equal(el.dataset.state, 'cover')
-  await sleep(800)
+  assert.deepEqual(events, [], 'event dari target lain tidak boleh memicu advance')
+  assert.equal(el.dataset.state, 'in')
+  await sleep(700)
 })
 
-test('titik pusat mengikuti trigger even, walau activeElement tidak ada', async () => {
+test('fade-out yang salah nama tidak mengakhiri animasi', async () => {
   reset()
-  document.activeElement = null
-  const btn = makeButton(300, 400)
+  const events = []
 
-  playThemeWipe('light', () => htmlEl.classList.remove('dark'), btn)
+  playThemeFade('light', () => {
+    events.push('swap')
+    htmlEl.classList.remove('dark')
+  })
 
   const el = overlay()
-  assert.equal(el.style.getPropertyValue('--wipe-x'), '316px') // 300 + 32/2
-  assert.equal(el.style.getPropertyValue('--wipe-y'), '416px') // 400 + 32/2
-  await sleep(800)
+  // animationend untuk fase yang belum dimulai harus diabaikan, kalau tidak
+  // overlay hilang sebelum swap terjadi dan tema tidak pernah berganti.
+  el.dispatch('animationend', { animationName: 'theme-fade-out' })
+  assert.deepEqual(events, [], 'fade-out tidak boleh memicu advance sebelum swap')
+  assert.equal(el.dataset.state, 'in')
+  await sleep(700)
+  assert.deepEqual(events, ['swap'], 'swap tetap terjadi lewat jalur normal')
 })
 
-test('trigger dipakai walau activeElement menunjuk elemen lain', async () => {
-  reset()
-  clickButton(10, 10) // activeElement = tombol lain (mis. focus keyboard)
-  const btn = clickButton(500, 600)
-
-  playThemeWipe('dark', () => htmlEl.classList.add('dark'), btn)
-
-  assert.equal(overlay().style.getPropertyValue('--wipe-x'), '516px')
-  await sleep(800)
-})
-
-console.log('theme wipe: OK')
+console.log('theme fade: OK')

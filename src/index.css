@@ -181,37 +181,39 @@
 /* Dialog: animasi popup (Radix mengatur data-state; keyframes menjaga
    perataan tengah -50% supaya tidak ditimpa transform animasi) */
 
-/* Tema: wipe (iris) pakai overlay biasa, tanpa View Transitions API.
-   Overlay berisi warna solid tema tujuan, jadi yang terlihat hanya
-   bentuk lingkaran yang membesar/mengecil — bukan fade.
-   Alur (lihat lib/theme-wipe.js): data-state=cover -> ganti kelas
-   .dark -> data-state=reveal. */
+/* Tema: fade pakai overlay biasa, tanpa View Transitions API.
+   Overlay berisi warna solid tema tujuan, cuma opacity yang bergerak:
+   fade masuk sampai menutup layar, kelas .dark ditukar saat sudah opaque,
+   lalu fade keluar. Alur (lihat lib/theme-fade.js):
+   data-state=in -> ganti kelas .dark -> data-state=out.
 
-.theme-wipe {
+   Durasi fade-in + fade-out sengaja tidak simetris: fade-out lebih lama
+   supaya tema baru sempat dibaca sebelum layar kembali normal. */
+.theme-fade {
   position: fixed;
   inset: 0;
   z-index: 100;
   pointer-events: none;
-  background: hsl(var(--wipe-bg));
-  /* 150% jauh melewati sudut terjauh dari titik mana pun di viewport. */
-  clip-path: circle(0% at var(--wipe-x, 50%) var(--wipe-y, 50%));
-  will-change: clip-path;
+  background: hsl(var(--fade-bg));
+  opacity: 0;
+  will-change: opacity;
 }
-.theme-wipe[data-state='cover'] {
-  animation: theme-wipe-cover 340ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+.theme-fade[data-state='in'] {
+  animation: theme-fade-in 180ms ease-out forwards;
 }
-.theme-wipe[data-state='reveal'] {
-  animation: theme-wipe-reveal 420ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+.theme-fade[data-state='out'] {
+  animation: theme-fade-out 220ms ease-in forwards;
 }
-@keyframes theme-wipe-cover {
-  to { clip-path: circle(150% at var(--wipe-x, 50%) var(--wipe-y, 50%)); }
+@keyframes theme-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
-@keyframes theme-wipe-reveal {
-  from { clip-path: circle(150% at var(--wipe-x, 50%) var(--wipe-y, 50%)); }
-  to   { clip-path: circle(0% at var(--wipe-x, 50%) var(--wipe-y, 50%)); }
+@keyframes theme-fade-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .theme-wipe { display: none; }
+  .theme-fade { display: none; }
 }
 
 /* Ikon Sun/Moon ikut berputar saat tema berganti (elemen di-mount ulang

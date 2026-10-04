@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { playThemeWipe } from './theme-wipe'
+import { playThemeFade } from './theme-fade'
 
 const STORAGE_KEY = 'keyzai-theme'
 
@@ -12,15 +12,12 @@ function getInitialTheme() {
 }
 
 /**
- * @returns {[string, (next: string | ((t: string) => string)) => void, (e?: unknown) => void]}
- *   `[theme, setTheme, toggleTheme]`. Pakai `toggleTheme` untuk tombol tema:
- *   dia membaca elemen pemicu dari event click supaya wipe mulai dari tombol,
- *   bukan dari tengah layar.
+ * @returns {[string, (next: string | ((t: string) => string)) => void, () => void]}
+ *   `[theme, setTheme, toggleTheme]`. Pakai `toggleTheme` untuk tombol tema.
  */
 export function useTheme() {
   const [theme, setTheme] = useState(getInitialTheme)
   const mounted = useRef(false)
-  const triggerRef = useRef(null)
 
   useEffect(() => {
     const root = document.documentElement
@@ -29,7 +26,7 @@ export function useTheme() {
     // Mount pertama bukan perpindahan tema — jangan animasi, langsung
     // terapkan supaya tidak ada kilatan tema lama.
     if (mounted.current) {
-      playThemeWipe(theme, swap, triggerRef.current)
+      playThemeFade(theme, swap)
     } else {
       swap()
     }
@@ -40,17 +37,11 @@ export function useTheme() {
     } catch {
       // private mode — theme just won't persist
     }
-    // Hanya dipakai sekali per perpindahan; jangan tahan elemen yang
-    // sudah lepas dari DOM.
-    triggerRef.current = null
   }, [theme])
 
-  // Dipasang langsung sebagai onClick: `onClick={toggleTheme}` membuat
-  // React mengirim SyntheticEvent, jadi currentTarget = tombol yang ditekan.
-  const toggleTheme = useCallback((event) => {
-    const el = event?.currentTarget
-    triggerRef.current =
-      el && typeof el.getBoundingClientRect === 'function' ? el : null
+  // Tanpa argumen event: fade tidak butuh titik asal, hanya state tema
+  // sekarang.
+  const toggleTheme = useCallback(() => {
     setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
   }, [])
 

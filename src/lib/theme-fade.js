@@ -1,28 +1,37 @@
-// Overlay wipe untuk perpindahan tema dark/light.
+// Overlay fade untuk perpindahan tema dark/light.
 //
 // Kenapa tidak View Transitions API: snapshot-based, hasilnya sulit
 // diprediksi (halaman bisa ter-clip atau membeku). Overlay biasa
 // lebih deterministik dan jalan di semua browser.
 //
-// Cara kerja: overlay warna solid tema tujuan diperbesar melingkar
-// dari posisi tombol, kelas .dark ditukar saat layar tertutup penuh,
-// lalu overlay dikecilkan kembali. Karena yang bergerak cuma clip-path
-// pada satu elemen, tidak ada yang mem-trigger reflow halaman.
+// Cara kerja: overlay warna solid tema tujuan memudar masuk sampai
+// menutup layar, kelas .dark ditukar saat opacity sudah 1, lalu overlay
+// memudar keluar. Karena yang bergerak cuma opacity pada satu elemen,
+// tidak ada yang mem-trigger reflow halaman.
 //
-// Fase (cover -> swap -> reveal) dipicu event `animationend`, BUKAN
-// setTimeout. Dulu durasi cover/reveal ditulis ulang di JS dan di CSS
-// sebagai dua konstanta terpisah; kalau selisih sedikit saja, swap
-// terjadi sebelum layar benar-benar tertutup dan tema lama kelihatan
-// berkedip 1 frame di tepi. Sekarang tidak ada angka durasi yang bisa
-// meleset — CSS yang menentukan, JS hanya mendengarkan.
+// Berbeda dengan wipe, fade tidak butuh titik asal maupun geometri: di
+// titik tengah animasi layar sudah tertutup penuh dari mana pun kita
+// mulai, jadi tidak ada yang perlu diukur.
+//
+// Fase (fadeIn -> swap -> fadeOut) dipicu event `animationend`, BUKAN
+// setTimeout. Dulu durasi ditulis ulang di JS dan di CSS sebagai dua
+// konstanta terpisah; kalau selisih sedikit saja, swap terjadi sebelum
+// overlay benar-benar opaque dan tema lama kelihatan berkedip 1 frame.
+// Sekarang tidak ada angka durasi yang bisa meleset — CSS yang menentukan,
+// JS hanya mendengarkan.
 
-const COVER_ANIM = 'theme-wipe-cover'
-const REVEAL_ANIM = 'theme-wipe-reveal'
+const IN_ANIM = 'theme-fade-in'
+const OUT_ANIM = 'theme-fade-out'
 
 // Jaring pengaman kalau animationend tidak pernah datang (tab tidak
 // aktif, elemen di-display:none, atau engine yang perilakunya aneh).
 // Hanya dipakai di jalur abnormal; jalur normal menunggu event.
-const FALLBACK_MS = { cover: 340, reveal: 430 }
+//
+// Nilainya disamakan dengan durasi di src/index.css. Angka meleset di sini
+// hanya bikin swap terjadi sedikit sebelum/after overlay opaque, jadi paling
+// parah tema lama kelihatan berkedip 1 frame — bukan bug fatal. Tetap saja,
+// jangan sampai meleset jauh.
+const FALLBACK_MS = { fadeIn: 180, fadeOut: 220 }
 
 let overlay = null
 let pendingSwap = null
@@ -33,7 +42,7 @@ function clearPhaseTimer() {
   phaseTimer = null
 }
 
-// Swap yang masih tertunda tetap harus dieksekusi walau wipe berikutnya
+// Swap yang masih tertunda tetap harus dieksekusi walau fade berikutnya
 // dimulai lebih dulu. Tanpa ini, toggle cepat di tengah animasi
 // membatalkan timer swap lama: kelas .dark nyangkut di tengah dan
 // animasi berjalan penuh tanpa ada perubahan tema yang terlihat.
@@ -59,26 +68,9 @@ function resolveTargetBg(target) {
   return bg
 }
 
-// Titik pusat wipe: elemen pemicu dulu (diberikan lewat event click),
-// lalu activeElement, lalu tengah viewport.
-//
-// activeElement saja tidak cukup: Safari tidak memfokuskan <button> saat
-// diklik, jadi di browser itu wipe selalu keluar dari tengah layar
-// walau di desktop yang lain keluar dari tombol.
-function origin(trigger) {
-  for (const el of [trigger, document.activeElement]) {
-    if (!el || el === document.body || typeof el.getBoundingClientRect !== 'function') continue
-    const r = el.getBoundingClientRect()
-    if (r.width || r.height) {
-      return { x: r.left + r.width / 2, y: r.top + r.height / 2 }
-    }
-  }
-  return { x: window.innerWidth / 2, y: window.innerHeight / 2 }
-}
-
 function createOverlay() {
   const el = document.createElement('div')
-  el.className = 'theme-wipe'
+  el.className = 'theme-fade'
   el.setAttribute('aria-hidden', 'true')
   document.body.appendChild(el)
   overlay = el
@@ -91,14 +83,13 @@ function destroyOverlay() {
 }
 
 /**
- * Jalankan animasi wipe lalu panggil onSwap di saat layar tertutup penuh.
+ * Jalankan animasi fade lalu panggil onSwap di saat overlay opaque penuh.
  * onSwap harus mengganti kelas .dark (satu-satunya efek samping yang terlihat).
  *
  * @param {'light'|'dark'} target tema tujuan
- * @param {() => void} onSwap satu-satunya efek samping, saat layar tertutup
- * @param {Element|null} [trigger] elemen pemicu, jadi wipe mulai dari tombol
+ * @param {() => void} onSwap satu-satunya efek samping, saat overlay opaque
  */
-export function playThemeWipe(target, onSwap, trigger) {
+export function playThemeFade(target, onSwap) {
   flushPendingSwap()
   clearPhaseTimer()
   destroyOverlay()
@@ -110,18 +101,15 @@ export function playThemeWipe(target, onSwap, trigger) {
   }
 
   const el = createOverlay()
-  const { x, y } = origin(trigger)
 
-  el.style.setProperty('--wipe-bg', resolveTargetBg(target))
-  el.style.setProperty('--wipe-x', `${x}px`)
-  el.style.setProperty('--wipe-y', `${y}px`)
+  el.style.setProperty('--fade-bg', resolveTargetBg(target))
 
   // Paksa style ter-compute sebelum animation dipasang. Elemen yang baru
   // di-insert dan langsung diberi animation kadang melompat ke frame
   // akhir tanpa interpolasi di beberapa engine.
   void el.offsetWidth
 
-  let phase = 'cover'
+  let phase = 'in'
   pendingSwap = onSwap
 
   const cleanup = () => {
@@ -134,11 +122,11 @@ export function playThemeWipe(target, onSwap, trigger) {
   const advance = () => {
     // Overlay sudah dibuang (toggle cepat) — jangan sentuh apa pun.
     if (overlay !== el) return
-    if (phase === 'cover') {
-      phase = 'reveal'
+    if (phase === 'in') {
+      phase = 'out'
       flushPendingSwap()
-      el.dataset.state = 'reveal'
-      arm(FALLBACK_MS.reveal)
+      el.dataset.state = 'out'
+      arm(FALLBACK_MS.fadeOut)
     } else {
       cleanup()
     }
@@ -151,11 +139,11 @@ export function playThemeWipe(target, onSwap, trigger) {
 
   function onEnd(e) {
     if (e.target !== el) return
-    if (phase === 'cover' && e.animationName === COVER_ANIM) advance()
-    else if (phase === 'reveal' && e.animationName === REVEAL_ANIM) advance()
+    if (phase === 'in' && e.animationName === IN_ANIM) advance()
+    else if (phase === 'out' && e.animationName === OUT_ANIM) advance()
   }
 
   el.addEventListener('animationend', onEnd)
-  el.dataset.state = 'cover'
-  arm(FALLBACK_MS.cover)
+  el.dataset.state = 'in'
+  arm(FALLBACK_MS.fadeIn)
 }

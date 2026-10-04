@@ -160,7 +160,7 @@ KeyzAI/
 │   ├── test/validation.mjs
 │   └── wrangler.toml      # D1 binding, vars, production env
 ├── test/                  # state-tree, chat-reducer, chat-flow, options, preferences,
-│                          # greetings, usage, prd-model, prd-pipeline, theme-wipe, smoke-render
+│                          # greetings, usage, prd-model, prd-pipeline, theme-fade, smoke-render
 ├── vite.config.js / tailwind.config.js / postcss.config.js
 └── index.html
 ```
