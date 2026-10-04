@@ -1,6 +1,3 @@
-import { ArrowLeft, ArrowRight, SkipForward } from 'lucide-react'
-
-import { Button } from '../ui/button'
 import { QuestionField } from './QuestionField'
 import { StageError, StageLoading } from './StageLoading'
 import { StepHeader } from './StepHeader'
@@ -19,9 +16,6 @@ export function Clarify({
   answers = {},
   index,
   onAnswer,
-  onPrev,
-  onNext,
-  onSkip,
   loading,
   loadingMessage,
   error,
@@ -34,7 +28,6 @@ export function Clarify({
   if (!q) return null
 
   const answered = normalizeAnswer(value) != null
-  const isLast = index === total - 1
   const answeredCount = questions.filter((qq) => normalizeAnswer(answers[qq.id]) != null).length
 
   return (
@@ -73,24 +66,6 @@ export function Clarify({
               Disarankan dijawab karena memengaruhi struktur produk.
             </p>
           )}
-
-          <div className="mt-6 flex flex-col gap-2 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
-            <Button variant="ghost" size="sm" onClick={onPrev} disabled={index === 0} className="h-11 gap-1.5 self-start sm:h-8 sm:self-auto">
-              <ArrowLeft className="h-3.5 w-3.5" />
-              Sebelumnya
-            </Button>
-
-            <div className="flex gap-2">
-              <Button variant="ghost" size="sm" onClick={() => onSkip(q.id)} className="h-11 gap-1.5 sm:h-8">
-                <SkipForward className="h-3.5 w-3.5" />
-                Lewati
-              </Button>
-              <Button onClick={onNext} size="sm" className="h-11 gap-1.5 sm:h-8">
-                {isLast ? 'Lanjut' : 'Berikutnya'}
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Button>
-            </div>
-          </div>
         </div>
       )}
 

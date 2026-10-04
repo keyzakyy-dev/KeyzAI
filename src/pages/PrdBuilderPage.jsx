@@ -1,11 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, ChevronLeft, ChevronRight, Menu, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Download, FileJson, Plus, RotateCcw, SkipForward } from 'lucide-react'
 
 import { Button } from '../components/ui/button'
+import { CopyButton } from '../lib/copy-button'
+import { exportJSON, exportMarkdown, projectToMarkdown } from '../lib/prd-export'
 import { LoginDialog } from '../components/LoginDialog'
 import { AppSidebar } from '../components/AppSidebar'
 import { Stepper } from '../components/prd/Stepper'
+import { StageNav } from '../components/prd/StepHeader'
 import { IdeaInput } from '../components/prd/IdeaInput'
 import { Clarify } from '../components/prd/Clarify'
 import { TechPref } from '../components/prd/TechPref'
@@ -87,8 +90,6 @@ export function PrdBuilderPage() {
   const pendingAction = useRef(null)
   const [loginLoading, setLoginLoading] = useState(false)
   const [loginErr, setLoginErr] = useState(null)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   usePageMeta({
     title: 'PRD Builder',
@@ -277,9 +278,6 @@ export function PrdBuilderPage() {
         answers={project.answers || {}}
         index={qIndex}
         onAnswer={setAnswer}
-        onPrev={() => setQIndex((i) => Math.max(0, i - 1))}
-        onNext={handleNextQ}
-        onSkip={handleSkip}
         loading={isWorking}
         loadingMessage={loadingMessage}
         error={error}
@@ -293,16 +291,12 @@ export function PrdBuilderPage() {
         onManualChange={handleManualTech}
         loading={isWorking}
         loadingMessage={loadingMessage}
-        onContinue={handleTechContinue}
-        onBack={() => gotoStep('clarify')}
       />
     ) : step === 'structure' ? (
       <Structure
         structure={project.productStructure}
         onChange={setStructure}
         onRegenerate={() => retry(runStructure)}
-        onContinue={handleStructureContinue}
-        onBack={() => gotoStep('tech')}
         loading={isWorking}
         loadingMessage={loadingMessage}
         error={error}
@@ -314,8 +308,6 @@ export function PrdBuilderPage() {
         sections={project.prd?.sections || []}
         onChangeSections={setPRDSections}
         onRegenerateSection={runRegenerateSection}
-        onBack={() => gotoStep('structure')}
-        onNew={handleNewPrd}
         loading={isWorking}
         loadingMessage={loadingMessage}
         error={error}
@@ -323,85 +315,160 @@ export function PrdBuilderPage() {
       />
     )
 
+  // ---------- komposisi layout ala /chat ------------------------------------
+  // Navigasi tiap tahap (dulu di dalam komponen step) diangkat ke panel aksi
+  // bawah. Semua state/handler sudah dimiliki halaman ini — tidak ada logika
+  // baru, hanya lokasi render yang pindah.
+  const currentQ = step === 'clarify' ? project?.questions?.[qIndex] : null
+  const isLastQ = currentQ ? qIndex >= (project?.questions?.length || 0) - 1 : false
+  const features = project?.productStructure?.features || []
+  const md = project ? projectToMarkdown(project) : ''
+
+  const actionBar =
+    step === 'idea' || !project ? (
+      <p className="flex items-center gap-2 text-xs text-muted-foreground">
+        <span className="tui-prompt font-bold" aria-hidden="true">› </span>
+        ketik ide di atas · Enter untuk mulai
+      </p>
+    ) : step === 'clarify' ? (
+      currentQ ? (
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <Button variant="ghost" size="sm" onClick={() => setQIndex((i) => Math.max(0, i - 1))} disabled={qIndex === 0} className="h-11 gap-1.5 self-start sm:h-8 sm:self-auto">
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Sebelumnya
+          </Button>
+          <div className="flex gap-2">
+            <Button variant="ghost" size="sm" onClick={() => handleSkip(currentQ.id)} className="h-11 gap-1.5 sm:h-8">
+              <SkipForward className="h-3.5 w-3.5" />
+              Lewati
+            </Button>
+            <Button onClick={handleNextQ} size="sm" className="h-11 gap-1.5 sm:h-8">
+              {isLastQ ? 'Lanjut' : 'Berikutnya'}
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <p className="flex items-center gap-2 text-xs text-muted-foreground">
+          <span className="tui-prompt font-bold" aria-hidden="true">› </span>
+          menunggu pertanyaan…
+        </p>
+      )
+    ) : step === 'tech' ? (
+      <StageNav onBack={() => gotoStep('clarify')} onNext={handleTechContinue} nextDisabled={isWorking} nextLabel={isWorking ? 'Memproses…' : 'Lanjut ke struktur'} />
+    ) : step === 'structure' ? (
+      <StageNav
+        onBack={() => gotoStep('tech')}
+        onNext={handleStructureContinue}
+        nextDisabled={isWorking || features.length === 0}
+        nextLabel="Lanjut ke PRD"
+      >
+        <Button variant="outline" size="sm" onClick={() => retry(runStructure)} disabled={isWorking} className="h-11 gap-1.5 sm:h-8">
+          <RotateCcw className="h-3.5 w-3.5" />
+          Generate ulang
+        </Button>
+      </StageNav>
+    ) : (
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <CopyButton text={md} withLabel className="h-11 rounded-sm border border-border px-4 sm:h-9" />
+          <Button variant="outline" size="sm" onClick={() => exportMarkdown(project)} className="h-11 gap-1.5 px-4 sm:h-9 sm:px-3">
+            <Download className="h-3.5 w-3.5" />
+            Markdown
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => exportJSON(project)} className="h-11 gap-1.5 px-4 sm:h-9 sm:px-3">
+            <FileJson className="h-3.5 w-3.5" />
+            JSON
+          </Button>
+          <span className="text-[11px] text-muted-foreground">
+            PDF/DOCX segera
+          </span>
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <Button variant="ghost" size="sm" onClick={() => gotoStep('structure')} className="h-11 gap-1.5 sm:h-8">
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Kembali
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleNewPrd} className="h-11 sm:h-8">
+            PRD baru
+          </Button>
+        </div>
+      </div>
+    )
+
+  const statusBar = (
+    <div className="relative flex flex-shrink-0 items-center gap-2 px-1 py-1 text-[11px] leading-relaxed text-muted-foreground lg:col-span-2" aria-live="polite">
+      <span className={`px-1 py-px text-[10px] font-bold uppercase tracking-wider ${isWorking ? 'tui-badge-working' : 'tui-badge-idle'}`}>
+        {isWorking ? 'working' : 'idle'}
+      </span>
+      <span className="min-w-0 flex-1 truncate">
+        {isWorking ? (loadingMessage || 'bekerja…') : 'idle · siap'}
+      </span>
+      <span className="shrink-0 tabular-nums">
+        tahap {stepIndex + 1}/{STEP_NAMES.length}
+      </span>
+    </div>
+  )
+
+  const projectMeta = {
+    name: project?.projectName,
+    stepIndex,
+    totalSteps: STEP_NAMES.length,
+    isWorking,
+    statusText: loadingMessage,
+    modelId: model,
+  }
+
+  const headerNode = (
+    <>
+      <div className="flex min-w-0 items-center gap-2 text-xs">
+        <Button variant="ghost" size="sm" onClick={handleBackToChat} className="gap-1.5">
+          <ArrowLeft className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">Kembali ke chat</span>
+          <span className="sm:hidden">Chat</span>
+        </Button>
+        <span className="shrink-0 select-none text-muted-foreground/50" aria-hidden="true">·</span>
+        <p className="min-w-0 truncate text-muted-foreground">
+          {project?.projectName || 'PRD Builder'}
+        </p>
+      </div>
+      <div className="flex flex-shrink-0 items-center gap-2">
+        <button type="button" onClick={handleNewPrd} aria-label="PRD baru" className="flex h-6 w-6 items-center justify-center border border-foreground/15 text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground">
+          <Plus className="h-3 w-3" />
+        </button>
+      </div>
+    </>
+  )
+
   return (
     <AppSidebar
-      collapsed={sidebarCollapsed}
-      mobileOpen={sidebarOpen}
-      onMobileClose={() => setSidebarOpen(false)}
-      showConversations={false}
+      header={headerNode}
+      panelTitle={STEP_NAMES[stepIndex] || 'idea'}
+      stepper={showStepper && (
+        <Stepper stepIndex={stepIndex} maxIndex={maxStepIndex} disabled={isWorking} onJump={(i) => gotoStep(STEP_NAMES[i])} />
+      )}
+      actionBar={actionBar}
+      statusBar={statusBar}
+      projectMeta={projectMeta}
       currentPrdId={project?.id}
       onAfterDeletePrd={handlePrdRemoved}
       onNewPrd={handleNewPrd}
     >
-      <header className="relative z-20 flex-shrink-0 border-b border-border bg-transparent">
-        <div className="flex h-14 items-center justify-between gap-2 px-4 sm:px-6">
-          <div className="flex min-w-0 items-center gap-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="hidden lg:flex -ml-2"
-              onClick={() => setSidebarCollapsed((c) => !c)}
-              aria-label={sidebarCollapsed ? 'Tampilkan sidebar' : 'Sembunyikan sidebar'}
-            >
-              {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-            </Button>
-            <Button variant="ghost" size="sm" onClick={handleBackToChat} className="gap-1.5">
-              <ArrowLeft className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Kembali ke chat</span>
-              <span className="sm:hidden">Chat</span>
-            </Button>
-          </div>
-
-          <div className="flex flex-shrink-0 items-center gap-1.5">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="lg:hidden"
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              aria-label="Buka/tutup sidebar"
-            >
-              {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-            </Button>
-          </div>
-        </div>
-
-        {showStepper && (
-          <div className="mx-auto w-full max-w-4xl px-4 pb-3 sm:px-6">
-            <Stepper stepIndex={stepIndex} maxIndex={maxStepIndex} disabled={isWorking} onJump={(i) => gotoStep(STEP_NAMES[i])} />
-          </div>
-        )}
-      </header>
-
       {/* Lebar per tahap dimiliki komponen step sendiri (satu sumber, tanpa
           cap ganda di sini). */}
-      <main className="min-h-0 flex-1 overflow-y-auto px-4 py-8 sm:px-6 sm:py-12">
-        {project ? (
+      {project ? (
+        <div className="w-full">{stepCanvas}</div>
+      ) : (
+        <div className="flex min-h-full flex-1 items-center justify-center py-6">
           <div className="w-full">{stepCanvas}</div>
-        ) : (
-          <div className="flex min-h-full flex-1 items-center justify-center py-6">
-            <div className="w-full">{stepCanvas}</div>
-          </div>
-        )}
+        </div>
+      )}
 
-        {persistError && (
-          <p className="mx-auto mt-8 max-w-2xl text-center text-xs text-destructive" role="alert">
-            {persistError}
-          </p>
-        )}
-      </main>
-
-      {/* Strip status ala halaman chat: kondisi kerja + posisi tahap. */}
-      <div className="flex flex-shrink-0 items-center gap-2 border-t border-border px-4 py-1.5 text-[11px] text-muted-foreground sm:px-6" aria-live="polite">
-        <span className={`px-1 py-px text-[10px] font-bold uppercase tracking-wider ${isWorking ? 'tui-badge-working' : 'tui-badge-idle'}`}>
-          {isWorking ? 'working' : 'idle'}
-        </span>
-        <span className="min-w-0 flex-1 truncate">
-          {isWorking ? (loadingMessage || 'bekerja…') : 'idle · siap'}
-        </span>
-        <span className="shrink-0 tabular-nums">
-          tahap {stepIndex + 1}/{STEP_NAMES.length}
-        </span>
-      </div>
+      {persistError && (
+        <p className="mx-auto mt-8 max-w-2xl text-center text-xs text-destructive" role="alert">
+          {persistError}
+        </p>
+      )}
 
       <LoginDialog
         open={needLogin}

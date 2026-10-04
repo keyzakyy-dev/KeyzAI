@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ArrowLeft, Check, Download, FileJson, Pencil, Plus, RotateCcw, Trash2, X } from 'lucide-react'
+import { Check, Pencil, Plus, RotateCcw, Trash2, X } from 'lucide-react'
 
 import { Button } from '../ui/button'
 import { Textarea } from '../ui/textarea'
@@ -9,7 +9,6 @@ import { StageError, StageLoading } from './StageLoading'
 import { StepHeader } from './StepHeader'
 import { RegenerateDialog } from './RegenerateDialog'
 import { newId } from '../../state/ids'
-import { exportJSON, exportMarkdown, projectToMarkdown } from '../../lib/prd-export'
 import { SECTION_STATUS } from '../../state/prd-model'
 
 /**
@@ -25,8 +24,6 @@ export function PrdEditor({
   sections = [],
   onChangeSections,
   onRegenerateSection,
-  onBack,
-  onNew,
   loading,
   loadingMessage,
   error,
@@ -67,8 +64,6 @@ export function PrdEditor({
       setRegenError(e.message || 'Gagal meregenerate section')
     }
   }
-
-  const md = projectToMarkdown(project)
 
   return (
     <div className="mx-auto w-full max-w-4xl space-y-8">
@@ -201,34 +196,6 @@ export function PrdEditor({
       )}
 
       {error && !loading && <StageError message={error} onRetry={onRetry} retryLabel="Coba lagi" />}
-
-      {/* Toolbar ekspor & aksi akhir */}
-      <div className="w-full space-y-4 border-t border-border pt-6">
-        <div className="flex flex-wrap items-center gap-2">
-          <CopyButton text={md} withLabel className="h-11 rounded-sm border border-border px-4 sm:h-9" />
-          <Button variant="outline" size="sm" onClick={() => exportMarkdown(project)} className="h-11 gap-1.5 px-4 sm:h-9 sm:px-3">
-            <Download className="h-3.5 w-3.5" />
-            Markdown
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => exportJSON(project)} className="h-11 gap-1.5 px-4 sm:h-9 sm:px-3">
-            <FileJson className="h-3.5 w-3.5" />
-            JSON
-          </Button>
-          <span className="text-[11px] text-muted-foreground">
-            PDF/DOCX segera
-          </span>
-        </div>
-
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <Button variant="ghost" size="sm" onClick={onBack} className="h-11 gap-1.5 sm:h-8">
-            <ArrowLeft className="h-3.5 w-3.5" />
-            Kembali
-          </Button>
-          <Button variant="outline" size="sm" onClick={onNew} className="h-11 sm:h-8">
-            PRD baru
-          </Button>
-        </div>
-      </div>
 
       <RegenerateDialog
         open={!!regenTarget}

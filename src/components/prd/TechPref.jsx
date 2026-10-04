@@ -2,7 +2,7 @@ import { Check, SlidersHorizontal } from 'lucide-react'
 
 import { Button } from '../ui/button'
 import { StageLoading } from './StageLoading'
-import { StepHeader, StageNav } from './StepHeader'
+import { StepHeader } from './StepHeader'
 import { KeyMark } from '../../lib/key-mark'
 import { TECH_KEYS } from '../../state/prd-model'
 
@@ -41,8 +41,6 @@ export function TechPref({
   onManualChange,
   loading,
   loadingMessage,
-  onContinue,
-  onBack,
 }) {
   const hasAutoStack = mode === 'auto' && Object.values(stack).some((v) => v)
 
@@ -148,7 +146,6 @@ export function TechPref({
         </div>
       )}
 
-      <StageNav onBack={onBack} onNext={onContinue} nextDisabled={loading} nextLabel={loading ? 'Memproses…' : 'Lanjut ke struktur'} />
     </div>
   )
 }

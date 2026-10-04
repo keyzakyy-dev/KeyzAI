@@ -4,7 +4,7 @@ import { ChevronDown, ChevronUp, Pencil, Plus, RotateCcw, Trash2, Check } from '
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { StageError, StageLoading } from './StageLoading'
-import { StepHeader, StageNav } from './StepHeader'
+import { StepHeader } from './StepHeader'
 import { newId } from '../../state/ids'
 
 /**
@@ -12,7 +12,7 @@ import { newId } from '../../state/ids'
  * bisa diedit: rename, tambah, hapus, reorder naik/turun. Struktur dijamin
  * spesifik per project — UI ini hanya manipulasi pohon, isi dari AI.
  */
-export function Structure({ structure = { features: [] }, onChange, onRegenerate, onContinue, onBack, loading, loadingMessage, error, onRetry }) {
+export function Structure({ structure = { features: [] }, onChange, onRegenerate, loading, loadingMessage, error, onRetry }) {
   const features = structure.features || []
   const [editing, setEditing] = useState(null) // { type:'feature'|'sub', featureId, subId }
   const [draft, setDraft] = useState('')
@@ -253,18 +253,6 @@ export function Structure({ structure = { features: [] }, onChange, onRegenerate
       )}
 
       {error && <StageError message={error} onRetry={onRetry} retryLabel="Generate ulang" />}
-
-      <StageNav
-        onBack={onBack}
-        onNext={onContinue}
-        nextDisabled={loading || features.length === 0}
-        nextLabel="Lanjut ke PRD"
-      >
-        <Button variant="outline" size="sm" onClick={onRegenerate} disabled={loading} className="h-11 gap-1.5 sm:h-8">
-          <RotateCcw className="h-3.5 w-3.5" />
-          Generate ulang
-        </Button>
-      </StageNav>
     </div>
   )
 }
