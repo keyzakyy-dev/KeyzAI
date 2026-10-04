@@ -64,7 +64,7 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false, mod
             }
           }}
           onKeyDown={handleKeyDown}
-          placeholder="Ada yang bisa dibantu?"
+          placeholder="ketik perintah atau pertanyaan..."
           className="min-h-[56px] max-h-40 resize-none overflow-y-auto border-0 bg-transparent py-4 pl-10 pr-5 font-mono text-sm leading-relaxed text-foreground placeholder:font-mono placeholder:text-sm placeholder:text-muted-foreground/60 focus-visible:ring-0 focus-visible:ring-offset-0"
           rows={1}
         />
