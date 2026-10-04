@@ -3,8 +3,7 @@
 ## Prerequisites
 
 - GitHub account + repo pushed
-- Cloudflare account (free, needs D1)
-- Vercel account (free)
+- Cloudflare account (free, needs D1 + Pages)
 - LLM API key (OpenAI-compatible, e.g. Atria)
 - Google OAuth 2.0 Client ID (Web) — authorized origins:
   `http://localhost:5173`, your Vercel domain
@@ -53,14 +52,26 @@ curl -X POST https://keyzai-worker-prod.<account>.workers.dev/api/chat \
 # {"success":false,"error":"Unauthorized"}
 ```
 
-## Step 2: Frontend → Vercel
+## Step 2: Frontend → Cloudflare Pages
 
-1. Vercel → "Add New..." → "Project" → select GitHub repo
-2. Framework: Vite, Root Directory: ./
-3. Environment Variables:
-   - `VITE_WORKER_URL` = Worker URL from Step 1.3
-   - `VITE_GOOGLE_CLIENT_ID` = your Google client ID
-4. Deploy (auto-deploys on push afterwards)
+(Migrasi dari Vercel, Okt 2026 — limit build minutes Vercel Hobby.)
+
+1. Cloudflare dashboard → Workers & Pages → Create → Pages →
+   "Connect to Git" → pilih repo GitHub `keyzakyy-dev/KeyzAI`.
+2. Build settings:
+   - Framework preset: Vite
+   - Build command: `npm run build`
+   - Build output directory: `dist`
+   - Production branch: `main`
+3. Environment Variables (settings project Pages):
+   - `VITE_WORKER_URL` = Worker URL dari Step 1.3
+   - `VITE_GOOGLE_CLIENT_ID` = Google client ID kamu
+4. Custom domain: Workers & Pages → `keyzai` → Custom domains →
+   tambah `chat.keyzakyy.com` (CNAME dibuat otomatis bila zone ada di
+   account yang sama).
+5. Setiap push ke `main` = auto build + deploy production. Branch/PR
+   lain dapat preview deployment. Deploy manual:
+   `wrangler pages deploy dist --project-name keyzai` (dari repo root).
 
 ## Step 3: Test Live
 
@@ -88,10 +99,10 @@ curl -X POST https://keyzai-worker-prod.<account>.workers.dev/api/chat \
 cd worker && npx wrangler deploy --env production
 
 # Frontend
-git push  # auto-deploys on Vercel
+git push  # auto-deploys on Cloudflare Pages
 ```
 
-Rollback: Worker → Cloudflare dashboard Versions; Vercel → previous deployment.
+Rollback: Worker → Cloudflare dashboard Versions; Frontend → Pages → Deployments.
 
 ---
 
