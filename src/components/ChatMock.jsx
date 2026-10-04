@@ -1,19 +1,23 @@
 import { useEffect, useRef, useState } from 'react'
-import { ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react'
+import { Check } from 'lucide-react'
 
-const USER = 'Bikinin caption singkat buat foto kopi pagi'
-const ANSWERS = [
-  'Nikmatnya pagi, satu teguk sekaligus tenang.',
-  'Pagi ini punya saya: kopi hitam, sunyi, dan ide yang belum ditulis.',
+const ASK = 'Aku mau mulai bisnis. Bantu aku mulai dari mana?'
+const QUESTION = 'Mau mulai dari bentuk yang mana?'
+const OPTIONS = [
+  ['Jualan barang', 'Stok, pengiriman, dan harga.'],
+  ['Jasa', 'Waktu, klien, dan cara ditagih.'],
+  ['Produk digital', 'Sekali dibuat, dijual berulang.'],
 ]
+const PICK = 2
+const REPLY = 'Mulai dari satu masalah yang sering orang bayar untuk diselesaikan. Tulis siapa pembelinya, lalu buat versi paling kecil yang bisa kamu jual minggu ini.'
 
-// Satu loop, fungsi dari t. Ketik, jawaban 1, buat ulang, jawaban 2, kembali ke 1.
-const LOOP = 14500
-const TYPE_END = 1400
-const A1_END = 3200
-const REGEN = 5200
-const A2_END = 7400
-const BACK = 10400
+// Minta, kartu muncul, satu opsi dipilih, jawaban mengalir, tahan.
+const LOOP = 16000
+const ASK_END = 1800
+const CARD = 2600
+const PICK_AT = 5200
+const REPLY_START = 6400
+const REPLY_END = 9800
 const FINAL = 11000
 
 function progress(t, from, to) {
@@ -21,19 +25,19 @@ function progress(t, from, to) {
 }
 
 function frameAt(t) {
-  const userLen = Math.round(progress(t, 200, TYPE_END) * USER.length)
-  const sent = userLen === USER.length
-  const branch = sent && t >= REGEN && t < BACK ? 1 : 0
-  const from = branch === 1 ? REGEN + 200 : TYPE_END + 200
-  const to = branch === 1 ? A2_END : A1_END
-  const words = ANSWERS[branch].split(' ')
-  const n = sent ? Math.round(progress(t, from, to) * words.length) : 0
+  const askLen = Math.round(progress(t, 200, ASK_END) * ASK.length)
+  const asked = askLen === ASK.length
+  const card = asked && t >= CARD
+  const picked = card && t >= PICK_AT
+  const words = REPLY.split(' ')
+  const n = picked ? Math.round(progress(t, REPLY_START, REPLY_END) * words.length) : 0
   return {
-    user: USER.slice(0, userLen),
-    typing: userLen > 0 && userLen < USER.length,
-    answer: words.slice(0, n).join(' '),
+    ask: ASK.slice(0, askLen),
+    typing: askLen > 0 && askLen < ASK.length,
+    card,
+    picked,
+    reply: words.slice(0, n).join(' '),
     done: n === words.length,
-    branch,
   }
 }
 
@@ -79,47 +83,62 @@ function useClock(target) {
 
 export function ChatMock() {
   const root = useRef(null)
-  const { user, typing, answer, done, branch } = frameAt(useClock(root))
+  const { ask, typing, card, picked, reply, done } = frameAt(useClock(root))
 
   return (
     <div
       ref={root}
       role="img"
-      aria-label="Percakapan: caption foto kopi pagi, lalu dua jawaban yang bisa dibuka dengan panah."
+      aria-label="Permintaan mulai bisnis dijawab dengan kartu pilihan. Setelah Produk digital dipilih, jawabannya muncul."
       className="overflow-hidden rounded-xl border border-border bg-card shadow-sm"
     >
       <div className="flex h-11 items-center border-b border-border px-4">
-        <p className="truncate text-sm font-medium text-foreground">Caption kopi pagi</p>
+        <p className="truncate text-sm font-medium text-foreground">Mulai bisnis</p>
       </div>
 
-      <div aria-hidden="true" className="space-y-5 px-4 py-5">
+      <div aria-hidden="true" className="min-h-[22rem] space-y-4 px-4 py-4">
         <div className="flex justify-end">
-          <p className="max-w-[85%] whitespace-pre-wrap rounded-2xl rounded-tr-md bg-secondary px-4 py-2 text-[15px] leading-relaxed text-secondary-foreground">
-            {user}
+          <p className="max-w-[90%] whitespace-pre-wrap rounded-2xl rounded-tr-md bg-secondary px-4 py-2 text-sm leading-relaxed text-secondary-foreground">
+            {ask}
             {typing && <span className="ml-0.5 inline-block h-3.5 w-px animate-pulse bg-secondary-foreground align-[-2px]" />}
           </p>
         </div>
 
-        {user.length === USER.length && (
-          <div className="space-y-1.5">
-            <p className="min-h-[3.2em] font-serif text-[15px] leading-relaxed text-foreground">
-              {answer}
-              {answer && !done && <span className="ml-0.5 inline-block h-3.5 w-px animate-pulse bg-muted-foreground align-[-2px]" />}
+        {card && (
+          <div className="overflow-hidden rounded-xl border border-border">
+            <p className="border-b border-border bg-muted/40 px-3 py-2.5 text-sm font-semibold leading-snug text-foreground">
+              {QUESTION}
             </p>
-            {done && (
-              <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
-                <span className="inline-flex items-center gap-0.5">
-                  <ChevronLeft className={`h-3.5 w-3.5 ${branch === 0 ? 'opacity-30' : ''}`} />
-                  <span className="tabular-nums">{branch + 1} / 2</span>
-                  <ChevronRight className={`h-3.5 w-3.5 ${branch === 1 ? 'opacity-30' : ''}`} />
-                </span>
-                <span className="inline-flex items-center gap-1 px-1">
-                  <RotateCcw className="h-3 w-3" />
-                  buat ulang
-                </span>
-              </div>
-            )}
+            <div className="divide-y divide-border">
+              {OPTIONS.map(([label, description], i) => {
+                const selected = picked && i === PICK
+                return (
+                  <div
+                    key={label}
+                    className={`flex items-center gap-3 px-3 py-2 text-left text-sm ${
+                      selected ? 'bg-accent/40 text-foreground' : 'text-muted-foreground'
+                    }`}
+                  >
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-border bg-background text-[11px] font-medium">
+                      {i + 1}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block">{label}</span>
+                      <span className="mt-0.5 block text-[11px] leading-relaxed text-muted-foreground/80">{description}</span>
+                    </span>
+                    {selected && <Check className="h-4 w-4 shrink-0" />}
+                  </div>
+                )
+              })}
+            </div>
           </div>
+        )}
+
+        {reply && (
+          <p className="font-serif text-sm leading-relaxed text-foreground">
+            {reply}
+            {!done && <span className="ml-0.5 inline-block h-3.5 w-px animate-pulse bg-muted-foreground align-[-2px]" />}
+          </p>
         )}
       </div>
     </div>
