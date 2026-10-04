@@ -1,6 +1,6 @@
 ﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { X, ArrowDown, CircleX, RotateCcw, ChevronDown, Pin, Pencil, Trash2, Download, Plus, FileText, MessageSquare, User } from 'lucide-react'
+import { X, ArrowDown, CircleX, RotateCcw, ChevronDown, Pin, Pencil, Trash2, Download, Plus, FileText, MessageSquare, User, PanelRight } from 'lucide-react'
 import { ThemeIcon } from './theme-icon'
 import { LogoImg } from '../lib/logo-img'
 import { MODELS } from '../lib/models'
@@ -287,20 +287,26 @@ export function ChatInterface() {
     })
   }
 
-  // ---------- Esc menghentikan streaming (sesuai hint di status bar).
+  // ---------- Esc: tutup drawer dulu kalau terbuka, kalau tidak
+  // menghentikan streaming (sesuai hint di status bar).
   // Aman dari mode edit: edit pesan tidak bisa dibuka saat loading.
   const loadingRef = useRef(loading)
   useEffect(() => { loadingRef.current = loading }, [loading])
   useEffect(() => {
     const onKey = (e) => {
-      if (e.key === 'Escape' && loadingRef.current) {
+      if (e.key !== 'Escape') return
+      if (panelOpen) {
+        setPanelOpen(false)
+        return
+      }
+      if (loadingRef.current) {
         e.preventDefault()
         stop()
       }
     }
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
-  }, [stop])
+  }, [stop, panelOpen])
 
   // ---------- scroll
   const scrollToBottom = () => {
@@ -422,6 +428,8 @@ export function ChatInterface() {
   const tuiUserLabel = user?.name ? user.name.split(' ')[0].toLowerCase() : 'tamu'
   // ---------- TUI: tab inset panel kanan (menu / recent / account).
   const [panelTab, setPanelTab] = useState('menu')
+  // Panel kanan jadi drawer di mobile agar kolom input tidak tertutup.
+  const [panelOpen, setPanelOpen] = useState(false)
 
   const lastMessage = messages[messages.length - 1]
   const optionsValue = useMemo(
@@ -523,6 +531,9 @@ export function ChatInterface() {
             </button>
             <button type="button" onClick={handleNewChat} aria-label="Chat baru" className="flex h-6 w-6 items-center justify-center border border-foreground/15 text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground">
               <Plus className="h-3 w-3" />
+            </button>
+            <button type="button" onClick={() => setPanelOpen((o) => !o)} aria-label="Buka/tutup panel" aria-expanded={panelOpen} className="flex h-6 w-6 items-center justify-center border border-foreground/15 text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground lg:hidden">
+              <PanelRight className="h-3 w-3" />
             </button>
           </div>
         </div>
@@ -640,7 +651,10 @@ export function ChatInterface() {
         </div>
       </div>
 
-      <aside className="flex min-h-0 min-w-0 flex-col gap-3 lg:h-full lg:row-start-1 lg:col-start-2" aria-label="Panel info">
+      {panelOpen && (
+        <div className="fixed inset-0 z-30 bg-black/50 lg:hidden" onClick={() => setPanelOpen(false)} aria-hidden="true" />
+      )}
+      <aside className={`min-w-0 flex-col gap-3 border-l border-foreground/10 bg-background p-3 transition-transform duration-300 fixed right-0 top-0 z-40 flex h-dvh w-[340px] max-w-[88vw] overflow-y-auto ${panelOpen ? 'translate-x-0' : 'translate-x-full'} lg:static lg:z-auto lg:flex lg:h-full lg:w-auto lg:max-w-none lg:translate-x-0 lg:overflow-visible lg:border-0 lg:bg-transparent lg:p-0 lg:row-start-1 lg:col-start-2`} aria-label="Panel info">
         <section className="tui-panel relative shrink-0 px-4 pb-5 pt-6 text-xs leading-relaxed" aria-label="Session">
           <span className="tui-inset-title" aria-hidden="true">session</span>
           <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5">
