@@ -583,7 +583,7 @@ export function ChatInterface() {
           )}
         </div>
 
-        {messages.length > 0 && (
+        {false && messages.length > 0 && (
           /* Latar composer: sarang lebah tipis (hex-surface, lihat index.css).
              Polanya ada di sini, bukan di dalam kartu input, supaya kolomnya
              sendiri tetap polos dan teksnya tidak berebut kontras. */
@@ -593,6 +593,9 @@ export function ChatInterface() {
              </div>
           </div>
         )}
+        <div className="flex-shrink-0 bg-background px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2">
+          <ChatInput onSend={handleSend} loading={loading} onStop={stop} showDisclaimer={messages.length > 0} model={model} onModelChange={changeModel} />
+        </div>
       </main>
 
       <RenameDialog
