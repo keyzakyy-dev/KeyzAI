@@ -48,7 +48,7 @@ export function QuestionField({ type = 'text', options = [], placeholder = '', v
               type="button"
               disabled={disabled}
               onClick={() => onChange(label)}
-              className={`flex h-11 flex-1 items-center justify-center rounded-lg border text-sm font-medium transition-colors ${
+              className={`flex h-11 flex-1 items-center justify-center rounded-sm border text-sm font-medium transition-colors ${
                 active
                   ? 'border-primary bg-primary/10 text-foreground'
                   : 'border-border text-muted-foreground hover:bg-accent/40 hover:text-foreground'
@@ -72,7 +72,7 @@ export function QuestionField({ type = 'text', options = [], placeholder = '', v
         value={Array.isArray(value) ? value[0] || '' : value || ''}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
-        className="flex h-11 w-full rounded-lg border border-input bg-background px-3 text-base text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 sm:text-sm"
+        className="flex h-11 w-full rounded-sm border border-input bg-background px-3 text-base text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 sm:text-sm"
       >
         <option value="">Pilih salah satu…</option>
         {options.map((o) => (
@@ -93,7 +93,7 @@ export function QuestionField({ type = 'text', options = [], placeholder = '', v
   }
 
   return (
-    <div role={isMulti ? 'group' : 'radiogroup'} className="divide-y divide-border overflow-hidden rounded-lg border border-border">
+    <div role={isMulti ? 'group' : 'radiogroup'} className="divide-y divide-border overflow-hidden rounded-sm border border-border">
       {options.map((o) => {
         const selected = list.includes(o)
         return (

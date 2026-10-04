@@ -474,7 +474,8 @@
    transparan penuh agar mesh terlihat jelas; border panel tetap ada sebagai
    struktur. Scoped ke .chat-mesh agar panel/dialog di halaman lain tidak
    ikut berubah. */
-.chat-mesh .tui-panel {
+.chat-mesh .tui-panel,
+.prd-mesh .tui-panel {
   background: transparent;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;

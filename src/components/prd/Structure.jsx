@@ -77,7 +77,8 @@ export function Structure({ structure = { features: [] }, onChange, onRegenerate
           title="Review struktur produk kamu"
           description="Struktur ini dibuat AI dari ide dan jawaban kamu. Ubah, tambah, atau hapus sesuai kebutuhan."
         />
-        <div className="rounded-xl border border-border bg-card p-6">
+        <div className="tui-panel p-6">
+          <span className="tui-inset-title" aria-hidden="true">struktur</span>
           <StageLoading message={loadingMessage} />
         </div>
       </div>
@@ -94,7 +95,7 @@ export function Structure({ structure = { features: [] }, onChange, onRegenerate
       />
 
       {features.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border bg-card p-12 text-center">
+        <div className="tui-panel border-dashed p-12 text-center">
           <p className="text-sm text-muted-foreground">Struktur produk belum berhasil dibuat.</p>
           <Button variant="outline" size="sm" onClick={onRegenerate} className="mt-4 h-11 gap-1.5 sm:h-8">
             <RotateCcw className="h-3.5 w-3.5" />
@@ -104,7 +105,7 @@ export function Structure({ structure = { features: [] }, onChange, onRegenerate
       ) : (
         <div className="space-y-2.5">
           {features.map((f, fi) => (
-            <div key={f.id} className="overflow-hidden rounded-xl border border-border bg-card">
+            <div key={f.id} className="tui-panel overflow-hidden">
               <div className="flex items-center gap-2 border-b border-border bg-muted/40 px-3.5 py-2">
                 {editing?.type === 'feature' && editing.featureId === f.id ? (
                   <Input
@@ -142,7 +143,7 @@ export function Structure({ structure = { features: [] }, onChange, onRegenerate
                     onClick={() => move(fi, -1)}
                     disabled={fi === 0}
                     aria-label="Naikkan fitur"
-                    className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-30 sm:h-7 sm:w-7"
+                    className="flex h-11 w-11 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-30 sm:h-7 sm:w-7"
                   >
                     <ChevronUp className="h-3.5 w-3.5" />
                   </button>
@@ -151,7 +152,7 @@ export function Structure({ structure = { features: [] }, onChange, onRegenerate
                     onClick={() => move(fi, 1)}
                     disabled={fi === features.length - 1}
                     aria-label="Turunkan fitur"
-                    className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-30 sm:h-7 sm:w-7"
+                    className="flex h-11 w-11 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-30 sm:h-7 sm:w-7"
                   >
                     <ChevronDown className="h-3.5 w-3.5" />
                   </button>
@@ -159,7 +160,7 @@ export function Structure({ structure = { features: [] }, onChange, onRegenerate
                     type="button"
                     onClick={() => delFeature(f.id)}
                     aria-label="Hapus fitur"
-                    className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive sm:h-7 sm:w-7"
+                    className="flex h-11 w-11 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive sm:h-7 sm:w-7"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -201,7 +202,7 @@ export function Structure({ structure = { features: [] }, onChange, onRegenerate
                         onClick={() => moveSub(fi, si, -1)}
                         disabled={si === 0}
                         aria-label="Naikkan sub-fitur"
-                        className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-25 sm:h-6 sm:w-6"
+                        className="flex h-11 w-11 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-25 sm:h-6 sm:w-6"
                       >
                         <ChevronUp className="h-3.5 w-3.5" />
                       </button>
@@ -210,7 +211,7 @@ export function Structure({ structure = { features: [] }, onChange, onRegenerate
                         onClick={() => moveSub(fi, si, 1)}
                         disabled={si === f.subFeatures.length - 1}
                         aria-label="Turunkan sub-fitur"
-                        className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-25 sm:h-6 sm:w-6"
+                        className="flex h-11 w-11 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-25 sm:h-6 sm:w-6"
                       >
                         <ChevronDown className="h-3.5 w-3.5" />
                       </button>
@@ -218,7 +219,7 @@ export function Structure({ structure = { features: [] }, onChange, onRegenerate
                         type="button"
                         onClick={() => delSub(f.id, s.id)}
                         aria-label="Hapus sub-fitur"
-                        className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive sm:h-6 sm:w-6"
+                        className="flex h-11 w-11 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive sm:h-6 sm:w-6"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
@@ -243,7 +244,7 @@ export function Structure({ structure = { features: [] }, onChange, onRegenerate
           <button
             type="button"
             onClick={addFeature}
-            className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-border py-3.5 text-sm font-medium text-muted-foreground transition-colors hover:border-foreground/30 hover:bg-accent/30 hover:text-foreground"
+            className="flex w-full items-center justify-center gap-1.5 rounded-sm border border-dashed border-border py-3.5 text-sm font-medium text-muted-foreground transition-colors hover:border-foreground/30 hover:bg-accent/30 hover:text-foreground"
           >
             <Plus className="h-4 w-4" />
             Tambah fitur

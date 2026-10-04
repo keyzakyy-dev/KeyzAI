@@ -151,7 +151,7 @@ export function AppSidebar({ children, collapsed, mobileOpen, onMobileClose, sho
   const handleExportAll = () => downloadAll(state.convs.map(serializeConv))
 
   return (
-    <div className="relative flex h-dvh bg-background text-foreground" style={{ '--sidebar-w': `${sidebarW}px` }}>
+    <div className="prd-mesh relative flex h-dvh bg-background text-foreground" style={{ '--sidebar-w': `${sidebarW}px` }}>
       {/* Mesh latar seperti halaman chat: di atas background root,
           di bawah konten (konten transparan mengikuti halaman chat). */}
       <MeshCanvas

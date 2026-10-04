@@ -23,13 +23,13 @@ export function StageLoading({ message = 'Memproses…' }) {
  */
 export function StageError({ message = 'Terjadi kesalahan.', onRetry, retryLabel = 'Coba lagi' }) {
   return (
-    <div className="flex flex-col items-start gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4">
+    <div className="flex flex-col items-start gap-3 rounded-sm border border-destructive/30 bg-destructive/5 p-4">
       <p className="text-sm text-foreground">{message}</p>
       {onRetry && (
         <button
           type="button"
           onClick={onRetry}
-          className="h-11 rounded-lg border border-destructive/40 px-4 text-xs font-medium text-destructive transition-colors hover:bg-destructive/10 sm:h-8"
+          className="h-11 rounded-sm border border-destructive/40 px-4 text-xs font-medium text-destructive transition-colors hover:bg-destructive/10 sm:h-8"
         >
           {retryLabel}
         </button>

@@ -14,9 +14,9 @@ const EXAMPLES = [
 const MAX_CHARS = 4000
 
 /**
- * STEP 1 — Input ide: satu kartu, textarea auto-grow, Enter kirim, pilihan
- * bahasa + tombol kirim. Nomor serif di judul dan contoh adalah motif
- * dokumen yang sama dengan stepper.
+ * STEP 1 — Input ide: satu panel TUI, textarea auto-grow, Enter kirim,
+ * pilihan bahasa + tombol kirim. Angka 01..03 pada contoh mengikuti gaya
+ * label terminal seperti stepper.
  */
 export function IdeaInput({ initialIdea = '', initialLanguage = 'id', loading, loadingMessage, onStart, error }) {
   const [idea, setIdea] = useState(initialIdea)
@@ -64,7 +64,8 @@ export function IdeaInput({ initialIdea = '', initialLanguage = 'id', loading, l
         </p>
       </div>
 
-      <div className="mt-6 rounded-xl border border-border bg-card shadow-sm">
+      <div className="tui-panel mt-6">
+        <span className="tui-inset-title" aria-hidden="true">idea</span>
         <Textarea
           ref={textareaRef}
           value={idea}
@@ -88,7 +89,7 @@ export function IdeaInput({ initialIdea = '', initialLanguage = 'id', loading, l
                 onChange={(e) => setLanguage(e.target.value)}
                 disabled={loading}
                 aria-label="Bahasa PRD"
-                className="inline-flex h-9 appearance-none items-center rounded-md border border-border bg-background pl-2.5 pr-7 text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 sm:h-7"
+                className="inline-flex h-9 appearance-none items-center rounded-sm border border-border bg-background pl-2.5 pr-7 text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 sm:h-7"
               >
                 <option value="id">Bahasa Indonesia</option>
                 <option value="en">English</option>
@@ -108,7 +109,7 @@ export function IdeaInput({ initialIdea = '', initialLanguage = 'id', loading, l
             onClick={handleStart}
             disabled={!!issue || loading}
             size="icon"
-            className="h-11 w-11 flex-shrink-0 rounded-lg sm:h-8 sm:w-8"
+            className="h-11 w-11 flex-shrink-0 rounded-sm sm:h-8 sm:w-8"
             aria-label="Mulai buat PRD"
           >
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUp className="h-4 w-4" />}
@@ -144,7 +145,7 @@ export function IdeaInput({ initialIdea = '', initialLanguage = 'id', loading, l
                 key={ex}
                 type="button"
                 onClick={() => setIdea(ex)}
-                className="group flex items-baseline gap-3 rounded-lg border border-border bg-background px-3.5 py-3 text-left transition-colors hover:border-foreground/30 hover:bg-accent/30 sm:py-2.5"
+                className="group flex items-baseline gap-3 rounded-sm border border-border bg-background px-3.5 py-3 text-left transition-colors hover:border-foreground/30 hover:bg-accent/30 sm:py-2.5"
               >
                 <span className="flex-shrink-0 text-[11px] tabular-nums text-muted-foreground group-hover:text-foreground">
                   0{i + 1}

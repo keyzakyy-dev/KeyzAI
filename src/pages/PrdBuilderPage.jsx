@@ -390,6 +390,19 @@ export function PrdBuilderPage() {
         )}
       </main>
 
+      {/* Strip status ala halaman chat: kondisi kerja + posisi tahap. */}
+      <div className="flex flex-shrink-0 items-center gap-2 border-t border-border px-4 py-1.5 text-[11px] text-muted-foreground sm:px-6" aria-live="polite">
+        <span className={`px-1 py-px text-[10px] font-bold uppercase tracking-wider ${isWorking ? 'tui-badge-working' : 'tui-badge-idle'}`}>
+          {isWorking ? 'working' : 'idle'}
+        </span>
+        <span className="min-w-0 flex-1 truncate">
+          {isWorking ? (loadingMessage || 'bekerja…') : 'idle · siap'}
+        </span>
+        <span className="shrink-0 tabular-nums">
+          tahap {stepIndex + 1}/{STEP_NAMES.length}
+        </span>
+      </div>
+
       <LoginDialog
         open={needLogin}
         onOpenChange={(o) => {

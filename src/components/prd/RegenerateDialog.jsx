@@ -23,8 +23,9 @@ export function RegenerateDialog({ open, onOpenChange, sectionTitle, onConfirm, 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay className="announcement-fade fixed inset-0 z-50 bg-black/50 backdrop-blur-sm" />
-        <Dialog.Content className="announcement-pop fixed left-1/2 top-1/2 z-50 flex max-h-[88dvh] w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-xl border border-border bg-background shadow-xl focus:outline-none">
+        <Dialog.Overlay className="login-fade fixed inset-0 z-50 bg-black/50 backdrop-blur-sm" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto p-4">
+        <Dialog.Content className="login-pop relative flex max-h-[90dvh] w-full max-w-lg flex-col overflow-hidden rounded-xl border border-border bg-background shadow-xl focus:outline-none">
           <div className="relative flex-shrink-0 p-6 pb-0">
             <Dialog.Close asChild>
               <button
@@ -78,6 +79,7 @@ export function RegenerateDialog({ open, onOpenChange, sectionTitle, onConfirm, 
             </div>
           </form>
         </Dialog.Content>
+        </div>
       </Dialog.Portal>
     </Dialog.Root>
   )

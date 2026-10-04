@@ -3,10 +3,10 @@ import { Check } from 'lucide-react'
 import { PRD_STEPS, STEP_LABELS } from '../../state/prd-model'
 
 /**
- * Progress ala draf dokumen: nomor serif 01..05 dengan segmen garis tipis.
- * Langkah yang sudah punya data (sampai maxIndex) bisa diklik — termasuk
- * ke depan, supaya mundur ke ide tidak mengunci akses ke tahap yang sudah
- * selesai. Mobile: hitungan + bar.
+ * Progress gaya panel TUI: nomor langkah + bar segmen tegas (bukan garis
+ * rambut), label uppercase. Langkah yang sudah punya data (sampai maxIndex)
+ * bisa diklik — termasuk ke depan, supaya mundur ke ide tidak mengunci akses
+ * ke tahap yang sudah selesai. Mobile: hitungan + bar.
  */
 export function Stepper({ stepIndex, maxIndex, disabled = false, onJump }) {
   const total = PRD_STEPS.length
@@ -30,6 +30,9 @@ export function Stepper({ stepIndex, maxIndex, disabled = false, onJump }) {
                 className={`group w-full ${clickable ? 'cursor-pointer' : 'cursor-default'}`}
               >
                 <span className="flex items-center gap-1.5">
+                  {state === 'active' && (
+                    <span className="tui-prompt text-[13px] font-bold" aria-hidden="true">›</span>
+                  )}
                   {state === 'done' ? (
                     <Check className="h-3 w-3 text-muted-foreground" />
                   ) : (
@@ -42,7 +45,7 @@ export function Stepper({ stepIndex, maxIndex, disabled = false, onJump }) {
                     </span>
                   )}
                   <span
-                    className={`hidden truncate text-[11px] font-medium sm:block ${
+                    className={`hidden truncate text-[10px] font-medium uppercase tracking-[0.14em] sm:block ${
                       state === 'active'
                         ? 'text-foreground'
                         : state === 'done'
@@ -54,7 +57,7 @@ export function Stepper({ stepIndex, maxIndex, disabled = false, onJump }) {
                   </span>
                 </span>
                 <span
-                  className={`mt-1.5 block h-px w-full transition-colors ${
+                  className={`mt-1.5 block h-[3px] w-full transition-colors ${
                     state === 'active'
                       ? 'bg-primary'
                       : state === 'done'
@@ -77,8 +80,8 @@ export function Stepper({ stepIndex, maxIndex, disabled = false, onJump }) {
           {stepIndex + 1}/{total}
         </p>
       </div>
-      <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-muted md:hidden">
-        <div className="h-full rounded-full bg-primary transition-all duration-300" style={{ width: `${pct}%` }} />
+      <div className="mt-2 h-1 w-full overflow-hidden rounded-[2px] bg-muted md:hidden">
+        <div className="h-full rounded-[2px] bg-primary transition-all duration-300" style={{ width: `${pct}%` }} />
       </div>
     </div>
   )

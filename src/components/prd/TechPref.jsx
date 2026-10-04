@@ -64,14 +64,14 @@ export function TechPref({
               key={m.id}
               type="button"
               onClick={() => onSelectMode(m.id)}
-              className={`relative flex flex-col items-start gap-2.5 rounded-xl border p-5 text-left transition-colors ${
+              className={`tui-panel relative flex flex-col items-start gap-2.5 p-5 text-left transition-colors ${
                 active
                   ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
-                  : 'border-border bg-card hover:border-foreground/30'
+                  : 'hover:border-foreground/30'
               }`}
             >
               <span
-                className={`flex h-9 w-9 items-center justify-center rounded-lg border transition-colors ${
+                className={`flex h-9 w-9 items-center justify-center rounded-sm border transition-colors ${
                   active ? 'border-primary/40 bg-primary/10' : 'border-border bg-background'
                 }`}
               >
@@ -90,16 +90,15 @@ export function TechPref({
       </div>
 
       {loading && (
-        <div className="rounded-xl border border-border bg-card p-5">
+        <div className="tui-panel p-5">
+          <span className="tui-inset-title" aria-hidden="true">teknologi</span>
           <StageLoading message={loadingMessage} />
         </div>
       )}
 
       {!loading && mode === 'auto' && hasAutoStack && (
-        <div className="overflow-hidden rounded-xl border border-border bg-card">
-          <div className="border-b border-border bg-muted/40 px-4 py-2.5">
-            <p className="text-xs font-medium text-muted-foreground">Rekomendasi AI</p>
-          </div>
+        <div className="tui-panel overflow-hidden">
+          <span className="tui-inset-title" aria-hidden="true">rekomendasi</span>
           <ul className="divide-y divide-border">
             {TECH_KEYS.filter((k) => stack[k]).map((k) => {
               const v = stack[k]
@@ -120,7 +119,8 @@ export function TechPref({
       )}
 
       {!loading && mode === 'manual' && (
-        <div className="space-y-3.5 rounded-xl border border-border bg-card p-4 sm:p-5">
+        <div className="tui-panel space-y-3.5 p-4 sm:p-5">
+          <span className="tui-inset-title" aria-hidden="true">manual</span>
           {TECH_KEYS.map((k) => {
             const opts = k === 'authentication' ? AUTH_OPTIONS : TECH_OPTIONS[k] || []
             const v = typeof stack[k] === 'string' ? stack[k] : stack[k]?.name || ''
@@ -133,7 +133,7 @@ export function TechPref({
                   id={`tech-${k}`}
                   value={v}
                   onChange={(e) => onManualChange(k, e.target.value)}
-                  className="flex h-11 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:h-10"
+                  className="flex h-11 w-full rounded-sm border border-input bg-background px-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:h-10"
                 >
                   <option value="">Belum dipilih</option>
                   {opts.map((o) => (

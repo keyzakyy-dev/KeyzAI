@@ -47,11 +47,13 @@ export function Clarify({
       />
 
       {loading ? (
-        <div className="rounded-xl border border-border bg-card p-6">
+        <div className="tui-panel p-6">
+          <span className="tui-inset-title" aria-hidden="true">klarifikasi</span>
           <StageLoading message={loadingMessage} />
         </div>
       ) : (
-        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
+        <div className="tui-panel p-4 sm:p-6">
+          <span className="tui-inset-title" aria-hidden="true">klarifikasi</span>
           <QuestionField
             type={q.type}
             options={q.options}
@@ -100,7 +102,7 @@ export function Clarify({
             {questions.map((qq, i) => (
               <span
                 key={qq.id}
-                className={`h-1.5 rounded-full transition-all ${
+                className={`h-1.5 rounded-[1px] transition-all ${
                   i === index ? 'w-6 bg-primary' : normalizeAnswer(answers[qq.id]) != null ? 'w-1.5 bg-primary/50' : 'w-1.5 bg-muted-foreground/25'
                 }`}
                 aria-hidden="true"
