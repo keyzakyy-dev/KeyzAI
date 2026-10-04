@@ -41,6 +41,7 @@ function frameAt(t) {
 }
 
 function heldFrame() {
+  if (typeof window === 'undefined') return null
   const held = new URLSearchParams(window.location.search).get('t')
   return held !== null && !Number.isNaN(Number(held)) ? Number(held) : null
 }
@@ -49,7 +50,8 @@ function useClock(target) {
   const [t, setT] = useState(() => {
     const held = heldFrame()
     if (held !== null) return held
-    return window.matchMedia('(prefers-reduced-motion: reduce)').matches ? FINAL : 0
+    if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return FINAL
+    return 0
   })
   useEffect(() => {
     if (heldFrame() !== null) return
@@ -89,7 +91,7 @@ export function ChatMock() {
       ref={root}
       role="img"
       aria-label="Permintaan mulai bisnis dijawab dengan kartu pilihan. Setelah Produk digital dipilih, jawabannya muncul."
-      className="overflow-hidden rounded-2xl border border-border bg-card shadow-[0_8px_32px_hsl(var(--foreground)/0.08),0_1px_3px_hsl(var(--foreground)/0.06)]"
+      className="flex aspect-[16/11] w-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
     >
       {/* window chrome */}
       <div className="flex items-center gap-2 border-b border-border bg-muted/40 px-3 py-2.5">
@@ -107,7 +109,7 @@ export function ChatMock() {
         </span>
       </div>
 
-      <div className="flex min-h-[24rem] sm:min-h-[25.5rem]">
+      <div className="flex flex-1">
         {/* sidebar, realistic app nav, hidden on very narrow hero to keep no overflow */}
         <div className="hidden w-[148px] shrink-0 flex-col border-r border-border bg-muted/25 sm:flex">
           <div className="flex flex-col gap-3 p-2.5">
@@ -170,7 +172,7 @@ export function ChatMock() {
           </div>
 
           {/* messages */}
-          <div aria-hidden="true" className="flex flex-1 flex-col gap-3 bg-card px-3 py-3 sm:px-3.5">
+          <div aria-hidden="true" className="flex flex-1 flex-col justify-center gap-3 bg-card px-3 py-3 sm:px-3.5">
             {/* user bubble */}
             <div className="flex justify-end">
               <p className="max-w-[92%] whitespace-pre-wrap rounded-2xl rounded-tr-md bg-primary px-3.5 py-2 text-[13px] leading-relaxed text-primary-foreground shadow-sm">

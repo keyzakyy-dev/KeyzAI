@@ -463,18 +463,18 @@ function PrdBuilder({ navigate }) {
             </button>
           </Reveal>
 
-          {/* Right: PRD document mockup */}
-          <Reveal from="up" delay={150} className="relative">
-            <div className="rounded-2xl border border-border/60 bg-card p-5 shadow-sm">
-              {/* Window chrome */}
-              <div className="flex items-center gap-2 border-b border-border/60 pb-3">
-                <div className="h-2.5 w-2.5 rounded-full bg-destructive/50" />
-                <div className="h-2.5 w-2.5 rounded-full bg-yellow-500/50" />
-                <div className="h-2.5 w-2.5 rounded-full bg-green-500/50" />
+          {/* Right: PRD document mockup, shell sama dengan ChatMock hero */}
+          <Reveal from="up" delay={150} className="relative mx-auto w-full max-w-md lg:mx-0 lg:max-w-none">
+            <div className="flex aspect-[16/11] w-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+              <div className="flex items-center gap-2 border-b border-border bg-muted/40 px-3 py-2.5">
+                <span className="flex items-center gap-1.5" aria-hidden="true">
+                  <span className="size-2.5 rounded-full bg-destructive/75 ring-1 ring-foreground/10" />
+                  <span className="size-2.5 rounded-full bg-foreground/15 ring-1 ring-foreground/10" />
+                  <span className="size-2.5 rounded-full bg-foreground/25 ring-1 ring-foreground/10" />
+                </span>
                 <span className="ml-2 font-mono text-xs text-muted-foreground">prd.md</span>
               </div>
-              {/* Document body */}
-              <div className="mt-4 space-y-4">
+              <div className="flex flex-1 flex-col justify-center space-y-4 p-5">
                 <div>
                   <div className="h-2.5 w-28 rounded bg-foreground/10" />
                   <div className="mt-1.5 h-2 w-44 rounded bg-foreground/8" />
