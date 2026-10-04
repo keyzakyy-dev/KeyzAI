@@ -11,8 +11,9 @@ export function MeshCanvas({
 
   useEffect(() => {
     const canvas = canvasRef.current
+    const parent = canvas?.parentElement
     const ctx = canvas?.getContext('2d')
-    if (!canvas || !ctx) return
+    if (!canvas || !parent || !ctx) return
 
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     let width = 0
@@ -26,10 +27,12 @@ export function MeshCanvas({
     const pointer = { x: -1e4, y: -1e4, targetX: -1e4, targetY: -1e4, active: false }
 
     const resize = () => {
-      const rect = canvas.getBoundingClientRect()
+      const rect = parent.getBoundingClientRect()
       const dpr = Math.min(window.devicePixelRatio || 1, 1.5)
-      width = rect.width
-      height = rect.height
+      width = Math.max(1, Math.round(rect.width))
+      height = Math.max(1, Math.round(rect.height))
+      canvas.style.width = `${width}px`
+      canvas.style.height = `${height}px`
       canvas.width = Math.round(width * dpr)
       canvas.height = Math.round(height * dpr)
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
@@ -181,7 +184,7 @@ export function MeshCanvas({
 
     resize()
     draw(performance.now())
-    observer.observe(canvas)
+    observer.observe(parent)
     intersection.observe(canvas)
     window.addEventListener('pointermove', move, { passive: true })
     document.documentElement.addEventListener('pointerleave', leave)
