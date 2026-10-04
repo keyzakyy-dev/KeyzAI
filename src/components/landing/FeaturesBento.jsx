@@ -53,7 +53,7 @@ export function FeaturesBento() {
             <span className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
               Fitur utama
             </span>
-            <h2 className="mt-3 text-3xl font-medium tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+            <h2 className="mt-3 text-2xl font-medium tracking-tight text-foreground sm:text-3xl lg:text-4xl">
               Tulis, kode,{' '}
               <span className="text-red-500">eksplorasi</span>
             </h2>
