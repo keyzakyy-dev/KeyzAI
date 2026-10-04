@@ -62,7 +62,7 @@ export function FeaturesBento() {
           </p>
         </div>
 
-        <Reveal from="mask" className="feature-grid-reveal">
+        <Reveal from="up" className="feature-grid-reveal">
           <div className="feature-grid relative grid grid-cols-1 gap-px overflow-hidden border border-foreground/10 bg-foreground/10 md:grid-cols-3">
           {FEATURES.map((item, index) => {
             const Icon = item.icon
