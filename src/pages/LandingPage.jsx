@@ -490,13 +490,15 @@ function ModelCard({ model, copied, onCopy }) {
 function Footer() {
   const toTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
   const linkCls =
-    'inline-flex min-h-11 items-center gap-1.5 rounded-md text-xs font-medium text-muted-foreground transition-colors hover:text-foreground'
+    'inline-flex min-h-9 items-center gap-1.5 rounded-full border border-transparent px-3 text-xs font-medium text-muted-foreground transition-colors hover:border-foreground/15 hover:text-foreground'
 
   return (
-    <footer className="py-5">
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-5 sm:px-6">
+    <footer className="border-t border-foreground/10 py-6 sm:py-8">
+      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center gap-3">
-          <LogoImg className="h-6 w-auto" />
+          <span className="flex size-8 items-center justify-center rounded-full border border-foreground/15">
+            <LogoImg className="h-5 w-auto" />
+          </span>
           <p className="text-xs text-muted-foreground">
             © 2026 KeyzAI · oleh{' '}
             <a
@@ -510,7 +512,7 @@ function Footer() {
           </p>
         </div>
 
-        <nav className="flex flex-wrap items-center gap-x-5 gap-y-2">
+        <nav className="flex flex-wrap items-center gap-1">
           <Link to="/privacy" className={linkCls}>
             Kebijakan Privasi
           </Link>
