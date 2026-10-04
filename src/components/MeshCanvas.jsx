@@ -57,8 +57,9 @@ export function MeshCanvas({
         const influence = pointer.active && distance < 230 ? 1 - distance / 230 : 0
         if (!reduced) {
           if (influence && distance > 1) {
-            node.vx -= (dx / distance) * 0.02 * influence
-            node.vy -= (dy / distance) * 0.02 * influence
+            const force = distance > 70 ? 0.006 : -0.02
+            node.vx += (dx / distance) * force * influence
+            node.vy += (dy / distance) * force * influence
           }
           node.vx += (node.bx - node.vx) * 0.02
           node.vy += (node.by - node.vy) * 0.02
