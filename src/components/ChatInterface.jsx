@@ -604,7 +604,7 @@ export function ChatInterface() {
           )}
         </div>
 
-        <div className="tui-panel tui-queued relative flex-shrink-0 px-4 pb-2 pt-2">
+        <div className="tui-panel tui-queued relative flex-shrink-0 px-3 pb-1.5 pt-1.5">
           <span className="tui-inset-title tui-inset-accent" aria-hidden="true">{loading ? 'queued' : 'input'}</span>
           <ChatInput onSend={handleSend} loading={loading} onStop={stop} showDisclaimer={messages.length > 0} />
         </div>

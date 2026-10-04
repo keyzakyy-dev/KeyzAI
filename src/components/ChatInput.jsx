@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { ArrowUp, Square, ChevronDown, Check } from 'lucide-react'
 import { KeyMark } from '../lib/key-mark'
-import { Button } from './ui/button'
 import { Textarea } from './ui/textarea'
 import { MODELS } from '../lib/models'
 
@@ -127,52 +126,47 @@ export function ChatInput({ onSend, loading, onStop, showDisclaimer = false }) {
   return (
     <div className="w-full">
       <div className="relative bg-transparent transition-colors">
-        <Textarea
-          ref={textareaRef}
-          value={message}
-          onChange={(e) => {
-            if (e.target.value.length <= maxChars) {
-              setMessage(e.target.value)
-            }
-          }}
-          onKeyDown={handleKeyDown}
-          placeholder="Ada yang bisa dibantu?"
-          className="min-h-[28px] max-h-40 resize-none overflow-y-auto border-0 bg-transparent py-1.5 pl-8 pr-4 font-mono text-sm leading-relaxed text-foreground placeholder:font-mono placeholder:text-sm placeholder:text-muted-foreground/60 focus-visible:ring-0 focus-visible:ring-offset-0"
-          rows={1}
-        />
-        <span aria-hidden="true" className="tui-prompt pointer-events-none absolute left-3 top-1.5 select-none text-sm">›</span>
-
-        <div className="flex items-center justify-between gap-3 px-1 pt-1">
-          <span className="flex min-w-0 items-center gap-1.5 text-[11px] text-muted-foreground">
-            {nearLimit && (
-              <span className={`tabular-nums ${charCount > 1950 ? 'text-destructive' : ''}`}>
-                {charCount}/{maxChars}
-              </span>
-            )}
-          </span>
-
+        <div className="flex items-end gap-2 py-0.5 pl-8 pr-0.5">
+          <Textarea
+            ref={textareaRef}
+            value={message}
+            onChange={(e) => {
+              if (e.target.value.length <= maxChars) {
+                setMessage(e.target.value)
+              }
+            }}
+            onKeyDown={handleKeyDown}
+            placeholder="Ada yang bisa dibantu?"
+            className="max-h-40 min-h-[24px] flex-1 resize-none overflow-y-auto border-0 bg-transparent py-0.5 font-mono text-sm leading-relaxed text-foreground placeholder:font-mono placeholder:text-sm placeholder:text-muted-foreground/60 focus-visible:ring-0 focus-visible:ring-offset-0"
+            rows={1}
+          />
           {loading ? (
-            <Button
+            <button
+              type="button"
               onClick={onStop}
-              size="icon"
-              variant="destructive"
-              className="h-7 w-7 flex-shrink-0 rounded-md"
               aria-label="Hentikan generasi"
+              className="flex h-6 w-6 shrink-0 items-center justify-center rounded-sm border border-destructive/60 text-destructive transition-colors hover:bg-destructive hover:text-destructive-foreground"
             >
-              <Square className="h-3 w-3 fill-current" />
-            </Button>
+              <Square className="h-2.5 w-2.5 fill-current" />
+            </button>
           ) : (
-            <Button
+            <button
+              type="button"
               onClick={handleSend}
               disabled={!message.trim()}
-              size="icon"
-              className="h-7 w-7 flex-shrink-0 rounded-md"
               aria-label="Kirim pesan"
+              className="flex h-6 w-6 shrink-0 items-center justify-center rounded-sm border border-foreground/25 text-foreground transition-colors hover:border-foreground hover:bg-foreground hover:text-background disabled:opacity-30 disabled:hover:border-foreground/25 disabled:hover:bg-transparent disabled:hover:text-foreground"
             >
-              <ArrowUp className="h-4 w-4" />
-            </Button>
+              <ArrowUp className="h-3 w-3" />
+            </button>
           )}
         </div>
+        <span aria-hidden="true" className="tui-prompt pointer-events-none absolute left-3 top-1 select-none text-sm">›</span>
+        {nearLimit && (
+          <span className={`pointer-events-none absolute right-9 top-1 text-[10px] tabular-nums ${charCount > 1950 ? 'text-destructive' : 'text-muted-foreground'}`}>
+            {charCount}/{maxChars}
+          </span>
+        )}
       </div>
       {showDisclaimer && (
         <div className="mt-2 flex items-center justify-between gap-3 text-[10px] leading-none text-muted-foreground/70">
