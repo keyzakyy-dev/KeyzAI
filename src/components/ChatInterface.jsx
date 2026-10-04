@@ -672,13 +672,20 @@ export function ChatInterface() {
             <button type="button" onClick={() => scrollAgentTo(accountRef)} className="transition-colors hover:text-foreground">account</button>
           </nav>
           <div ref={agentsScrollRef} className="relative min-h-0 flex-1 space-y-6 overflow-y-auto pt-1">
-            <div>
-              <p className="font-bold uppercase tracking-wider text-muted-foreground">status</p>
-              <p className="mt-0.5 text-muted-foreground">{loading ? 'menunggu model…' : 'idle · siap menerima perintah'}</p>
+            <div className="border-b border-foreground/10 pb-4">
+              <p className="text-muted-foreground">{loading ? 'menunggu model…' : 'idle · siap menerima perintah'}</p>
+              <p className="mt-1 text-foreground">KeyzAI <span className="tui-accent font-semibold">›{currentModelMeta.label}</span></p>
             </div>
-            <div>
-              <p className="font-bold uppercase tracking-wider text-muted-foreground">model</p>
-              <p className="mt-0.5 text-foreground">KeyzAI <span className="tui-accent font-semibold">›{currentModelMeta.label}</span></p>
+            <div ref={menuRef} className="scroll-mt-2">
+              <p className="font-bold uppercase tracking-wider text-muted-foreground">menu</p>
+              <div className="mt-1 space-y-0.5">
+                <button type="button" onClick={handleNewChat} className="flex w-full items-center gap-2 px-1 py-1 text-left text-foreground/80 transition-colors hover:text-foreground">
+                  <Plus className="h-3 w-3 shrink-0 opacity-40" /> Chat baru
+                </button>
+                <Link to="/prd-builder" className="flex w-full items-center gap-2 px-1 py-1 text-left text-foreground/80 transition-colors hover:text-foreground">
+                  <FileText className="h-3 w-3 shrink-0 opacity-40" /> PRD Builder <span className="text-muted-foreground/60">[Beta]</span>
+                </Link>
+              </div>
             </div>
             <div ref={recentRef} className="scroll-mt-2">
               <p className="font-bold uppercase tracking-wider text-muted-foreground">recent</p>
@@ -702,17 +709,6 @@ export function ChatInterface() {
                   ))}
                 </ul>
               )}
-            </div>
-            <div ref={menuRef} className="scroll-mt-2">
-              <p className="font-bold uppercase tracking-wider text-muted-foreground">menu</p>
-              <div className="mt-1 space-y-0.5">
-                <button type="button" onClick={handleNewChat} className="flex w-full items-center gap-2 px-1 py-1 text-left text-foreground/80 transition-colors hover:text-foreground">
-                  <Plus className="h-3 w-3 shrink-0 opacity-40" /> Chat baru
-                </button>
-                <Link to="/prd-builder" className="flex w-full items-center gap-2 px-1 py-1 text-left text-foreground/80 transition-colors hover:text-foreground">
-                  <FileText className="h-3 w-3 shrink-0 opacity-40" /> PRD Builder <span className="text-muted-foreground/60">[Beta]</span>
-                </Link>
-              </div>
             </div>
             <div ref={accountRef} className="scroll-mt-2">
               <p className="font-bold uppercase tracking-wider text-muted-foreground">account</p>
