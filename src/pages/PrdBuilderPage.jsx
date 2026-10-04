@@ -9,7 +9,7 @@ import { LoginDialog } from '../components/LoginDialog'
 import { AppSidebar } from '../components/AppSidebar'
 import { Stepper } from '../components/prd/Stepper'
 import { StageNav } from '../components/prd/StepHeader'
-import { IdeaInput } from '../components/prd/IdeaInput'
+import { IdeaIntro, IdeaComposer } from '../components/prd/IdeaInput'
 import { Clarify } from '../components/prd/Clarify'
 import { TechPref } from '../components/prd/TechPref'
 import { Structure } from '../components/prd/Structure'
@@ -90,6 +90,11 @@ export function PrdBuilderPage() {
   const pendingAction = useRef(null)
   const [loginLoading, setLoginLoading] = useState(false)
   const [loginErr, setLoginErr] = useState(null)
+  // Draf komposer ide: dimiliki halaman agar sapaan (output) dan komposer
+  // (panel aksi bawah) berbagi isi yang sama, seperti ChatInput di /chat.
+  // Diinisialisasi sekali seperti useState(initialIdea) di IdeaInput lama.
+  const [ideaDraft, setIdeaDraft] = useState(pendingIdea)
+  const [ideaLang, setIdeaLang] = useState(pendingLang)
 
   usePageMeta({
     title: 'PRD Builder',
@@ -260,17 +265,9 @@ export function PrdBuilderPage() {
 
   const stepCanvas =
     step === 'idea' || !project ? (
-      <IdeaInput
-        initialIdea={pendingIdea}
-        initialLanguage={pendingLang}
-        loading={isWorking}
-        loadingMessage={loadingMessage}
-        error={error}
-        onStart={(v) => {
-          setPendingIdea(v.idea)
-          setPendingLang(v.language)
-          handleStart(v)
-        }}
+      <IdeaIntro
+        showExamples={!isWorking && ideaDraft.length === 0}
+        onSelect={(ex) => setIdeaDraft(ex)}
       />
     ) : step === 'clarify' ? (
       <Clarify
@@ -326,10 +323,20 @@ export function PrdBuilderPage() {
 
   const actionBar =
     step === 'idea' || !project ? (
-      <p className="flex items-center gap-2 text-xs text-muted-foreground">
-        <span className="tui-prompt font-bold" aria-hidden="true">› </span>
-        ketik ide di atas · Enter untuk mulai
-      </p>
+      <IdeaComposer
+        idea={ideaDraft}
+        language={ideaLang}
+        onIdeaChange={setIdeaDraft}
+        onLanguageChange={setIdeaLang}
+        loading={isWorking}
+        loadingMessage={loadingMessage}
+        error={error}
+        onStart={(v) => {
+          setPendingIdea(v.idea)
+          setPendingLang(v.language)
+          handleStart(v)
+        }}
+      />
     ) : step === 'clarify' ? (
       currentQ ? (
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
