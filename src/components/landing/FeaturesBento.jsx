@@ -67,10 +67,10 @@ export function FeaturesBento() {
             const Icon = item.icon
             return (
               <Reveal key={item.id} from="up" delay={index * 60} className={item.span}>
-                <div className="group relative flex h-full flex-col justify-between overflow-hidden bg-background p-6 transition-colors duration-300 hover:bg-foreground/[0.03] sm:p-8">
+                <div className="group relative flex h-full flex-col justify-between overflow-hidden border border-transparent bg-background p-6 transition-colors duration-300 hover:border-foreground/25 sm:p-8">
                   <div>
                     <div className="mb-8 flex items-center justify-between">
-                      <div className="flex size-10 items-center justify-center rounded-full border border-foreground/15 text-foreground transition-colors group-hover:border-foreground/40">
+                      <div className="flex size-10 items-center justify-center rounded-full border border-foreground/15 text-foreground transition-colors group-hover:border-foreground/55">
                         <Icon className="size-6" />
                       </div>
                       <span className="rounded-full bg-background px-3 py-1 font-mono text-[11px] font-medium text-muted-foreground ring-1 ring-border">
