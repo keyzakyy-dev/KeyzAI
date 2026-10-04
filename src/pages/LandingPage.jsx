@@ -93,7 +93,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
 
   return (
     <header
-      className={`relative z-50 bg-transparent border-b border-transparent transition-colors duration-300 ${
+      className={`absolute inset-x-0 top-0 z-50 border-b border-transparent bg-transparent transition-colors duration-300 ${
         open ? 'border-foreground/10' : ''
       }`}
     >
@@ -166,7 +166,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
       {open && (
         <div
           id="landing-mobile-nav"
-          className="animate-fade-up border-t border-foreground/10 md:hidden"
+          className="animate-fade-up border-t border-foreground/10 bg-transparent md:hidden"
           style={{ animationDuration: '220ms' }}
         >
           <nav className="mx-auto max-w-7xl px-4 py-2">
