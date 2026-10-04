@@ -1,15 +1,14 @@
-﻿import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useTheme } from '../lib/use-theme'
 import { usePageMeta, SITE_NAME, SITE_DESC } from '../lib/seo'
 import { Reveal } from '../lib/reveal'
 import { useAuth } from '../hooks/useAuth'
 import { LogoImg } from '../lib/logo-img'
-import { useHeadline } from '../lib/micro-anim'
 import { ChatMock } from '../components/ChatMock'
 import { ThemeIcon } from '../components/theme-icon'
 import { MODELS } from '../lib/models'
-import { ArrowRight, ArrowUp, MessageSquare, Code, Pencil, Lock, BookOpen, CircleHelp, Menu, X, Sparkles, FileText, Copy, Check } from 'lucide-react'
+import { ArrowRight, ArrowUp, MessageSquare, Code, Pencil, Lock, BookOpen, CircleHelp, Menu, X, FileText, Copy, Check } from 'lucide-react'
 import { MeshCanvas } from '../components/MeshCanvas'
 
 // motion menambah ~40 kB gz. Section fitur ada di bawah fold, jadi di-load
@@ -83,7 +82,7 @@ function MockWriting() {
   return (
     <div className="space-y-2.5">
       <p className="font-display text-sm font-semibold text-foreground">Draf: follow-up klien</p>
-      {['Hai Bu Rina,', 'Terima kasih sudah sempat menyempatkan waktu kemarin. Saya kirim revisi', 'ringkasannya — mohon dicek bagian harga sebelum kita lanjut.'].map((t, i) => (
+      {['Hai Bu Rina,', 'Terima kasih sudah sempat menyempatkan waktu kemarin. Saya kirim revisi', 'ringkasannya. Mohon dicek bagian harga sebelum kita lanjut.'].map((t, i) => (
         <p key={i} className="text-xs leading-relaxed text-muted-foreground">{t}</p>
       ))}
       <div className="flex gap-1.5 pt-1">
@@ -140,7 +139,7 @@ function MockTopic() {
 function MockLearn() {
   return (
     <div className="space-y-2.5">
-      <p className="text-xs font-medium text-foreground">Persamaan kuadrat — langkah 2 dari 4</p>
+      <p className="text-xs font-medium text-foreground">Persamaan kuadrat, langkah 2 dari 4</p>
       <div className="h-1.5 overflow-hidden rounded-full bg-muted">
         <div className="h-full w-1/2 rounded-full bg-foreground" />
       </div>
@@ -231,7 +230,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
   // Listener untuk progress baca dan scroll-spy.
   useEffect(() => {
     const onScroll = () => {
-      // progress baca — ditulis langsung ke DOM agar tidak memicu re-render tiap frame
+      // progress baca: ditulis langsung ke DOM agar tidak memicu re-render tiap frame
       const doc = document.documentElement
       const max = doc.scrollHeight - doc.clientHeight
       if (progressRef.current) {
@@ -274,7 +273,7 @@ function Navbar({ navigate, theme, toggleTheme }) {
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 border-b border-transparent transition-colors duration-300 ${
-        open ? 'border-border/70 bg-background/95 backdrop-blur' : ''
+        open ? 'border-border/70 bg-background' : ''
       }`}
     >
       {/* Hairline progress baca */}
@@ -367,59 +366,37 @@ function Navbar({ navigate, theme, toggleTheme }) {
   )
 }
 
-function Words({ text }) {
-  const words = text.split(' ')
-  return words.map((w, i) => (
-    <span key={i} className="inline-block opacity-0" data-word>
-      {w}
-      {i < words.length - 1 ? '\u00A0' : ''}
-    </span>
-  ))
-}
-
 function Hero({ navigate }) {
-  const headlineRef = useRef(null)
-  useHeadline(headlineRef)
   return (
-    <section className="relative flex min-h-[calc(100svh-4rem)] flex-col justify-center overflow-hidden py-24 sm:py-28 lg:py-32">
-      <div className="absolute left-1/2 top-0 h-56 w-[min(520px,100vw)] -translate-x-1/2 rounded-full bg-foreground/5 blur-[100px] hidden sm:block sm:h-72 sm:w-[700px] sm:blur-[120px]" />
-
+    <section className="relative overflow-hidden py-16 sm:py-20 lg:py-24">
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="grid items-center gap-10 sm:gap-16 lg:grid-cols-2">
-          <div className="space-y-6 sm:space-y-8">
-            <h1
-              ref={headlineRef}
-              className="text-[32px] font-bold leading-[1.08] tracking-tighter text-foreground sm:text-5xl md:text-6xl xl:text-6xl"
-            >
-              <span className="block whitespace-normal sm:whitespace-nowrap">
-                <Words text="Tulis, kode, belajar." />
-              </span>
-              <span className="block whitespace-normal sm:whitespace-nowrap">
-                <Words text="Semua dibantuin." />
-              </span>
+        <div className="grid items-start gap-10 lg:grid-cols-12 lg:gap-16">
+          <div className="space-y-6 lg:col-span-7">
+            <h1 className="max-w-[16ch] text-balance text-[2rem] font-bold leading-[1.08] tracking-tight text-foreground sm:text-5xl lg:text-[3.25rem]">
+              Satu chat untuk nulis, debug, dan belajar.
             </h1>
-
-            <p className="animate-fade-up max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg" style={{ animationDelay: '0.8s' }}>
-              Jawaban AI cepat, rapi, dan gratis.
+            <p className="max-w-md text-base leading-relaxed text-muted-foreground sm:text-lg">
+              Jawaban mengalir saat diketik. Edit pesan atau buat ulang, versi lama tetap bisa dibuka. Masuk dengan Google supaya riwayat tersimpan.
             </p>
-
-            <div className="animate-fade-up space-y-2.5" style={{ animationDelay: '0.95s' }}>
+            <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
               <button
                 type="button"
                 onClick={() => navigate('/chat')}
-                className="group flex w-full max-w-md items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 text-left shadow-sm transition-colors hover:border-foreground/40"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-base font-medium text-primary-foreground transition-colors hover:bg-primary/90"
               >
-                <span className="flex-1 truncate text-sm text-muted-foreground transition-colors group-hover:text-foreground sm:text-base">
-                  Ketik pertanyaanmu di sini…
-                </span>
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground transition-transform group-hover:scale-105">
-                  <ArrowUp className="h-4 w-4" />
-                </span>
+                Buka chat
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </button>
+              <a
+                href="#prd-builder"
+                className="inline-flex h-12 items-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Dari ide jadi PRD
+              </a>
             </div>
           </div>
 
-          <div className="mx-auto hidden w-full max-w-md md:block">
+          <div className="mx-auto w-full max-w-md lg:col-span-5 lg:mx-0 lg:max-w-none lg:pt-2">
             <ChatMock />
           </div>
         </div>
@@ -460,11 +437,11 @@ function PrdBuilder({ navigate }) {
               Ceritakan idemu, AI akan menanyakan hal-hal penting, merekomendasikan teknologi, menyusun struktur produk, sampai PRD siap pakai. Semua bagiannya bisa diedit.
             </p>
 
-            {/* Pipeline preview — horizontal flow of 5 steps */}
+            {/* Pipeline preview: horizontal flow of 5 steps */}
             <div className="flex flex-wrap items-center gap-1">
               {steps.map((s, i) => (
                 <div key={s.label} className="flex items-center gap-1">
-                  <div className="flex items-center gap-1.5 rounded-lg border border-border/60 bg-card/70 px-2.5 py-1.5 backdrop-blur-sm">
+                  <div className="flex items-center gap-1.5 rounded-lg border border-border/60 bg-card px-2.5 py-1.5">
                     <s.icon className="h-3.5 w-3.5 text-muted-foreground" />
                     <span className="text-xs font-medium text-foreground">{s.label}</span>
                   </div>
@@ -480,7 +457,7 @@ function PrdBuilder({ navigate }) {
               onClick={() => navigate('/prd-builder')}
               className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
-              <Sparkles className="h-4 w-4" />
+              <FileText className="h-4 w-4" aria-hidden="true" />
               Coba PRD Builder
               <ArrowRight className="h-4 w-4" />
             </button>
@@ -488,7 +465,7 @@ function PrdBuilder({ navigate }) {
 
           {/* Right: PRD document mockup */}
           <Reveal from="up" delay={150} className="relative">
-            <div className="rounded-2xl border border-border/60 bg-card/70 p-5 backdrop-blur-sm shadow-xl">
+            <div className="rounded-2xl border border-border/60 bg-card p-5 shadow-sm">
               {/* Window chrome */}
               <div className="flex items-center gap-2 border-b border-border/60 pb-3">
                 <div className="h-2.5 w-2.5 rounded-full bg-destructive/50" />
@@ -544,8 +521,7 @@ function Models({ navigate }) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <Reveal from="up" className="mx-auto max-w-5xl">
           <div className="text-center mb-10">
-            <span className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              <Sparkles className="h-3.5 w-3.5" />
+            <span className="inline-flex items-center text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Model AI
             </span>
             <h2 className="mt-3 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
@@ -569,8 +545,8 @@ function Models({ navigate }) {
 
 function ModelCard({ model, navigate, copied, onCopy }) {
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card/70 backdrop-blur-sm p-5 transition-all duration-200 hover:border-foreground/30 hover:bg-accent/50 hover:-translate-y-0.5">
-      {/* Watermark logo — brand glyph besar & samar di belakang */}
+    <div className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card p-5 transition-colors duration-200 hover:border-foreground/30 hover:bg-accent/50">
+      {/* Watermark logo: brand glyph besar dan samar di belakang */}
       <img
         src={model.logo}
         alt=""
@@ -682,7 +658,7 @@ export function LandingPage() {
   usePageMeta({ title: SITE_NAME, description: SITE_DESC, path: '/' })
 
   return (
-    <div className="relative min-h-screen bg-background text-foreground antialiased">
+    <div className="relative min-h-dvh bg-background text-foreground antialiased">
       <MeshCanvas
         parallax
         label="Decorative background: full-page honeycomb that drifts with scroll, bends around the cursor, and ripples on click."
@@ -710,12 +686,7 @@ export function LandingPage() {
                 id="features"
                 items={FEATURES}
                 title="Tulis, kode, belajar"
-                kicker={
-                  <>
-                    <Sparkles className="h-3.5 w-3.5" />
-                    Fitur
-                  </>
-                }
+                kicker="Fitur"
               />
             </div>
           </Suspense>
