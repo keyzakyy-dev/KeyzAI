@@ -327,10 +327,10 @@ function PrdBuilder({ navigate }) {
 
         {/* Bento Grid */}
         <Reveal from="up" className="feature-grid-reveal">
-          <div className="feature-grid relative grid grid-cols-1 md:grid-cols-3">
+          <div className="feature-grid relative grid grid-cols-2 md:grid-cols-3">
           {/* Hero Card - spans 2 cols on lg */}
-          <Reveal from="up" className="sm:col-span-2 lg:col-span-2 lg:row-span-2">
-            <div className="feature-card group relative flex h-full flex-col justify-between overflow-hidden p-8 sm:p-10">
+          <Reveal from="up" className="col-span-2 sm:col-span-2 lg:col-span-2 lg:row-span-2">
+            <div className="feature-card group relative flex h-full flex-col justify-between overflow-hidden p-5 sm:p-8 lg:p-10">
               <div className="relative space-y-4">
                 <h3 className="text-xl font-medium text-foreground sm:text-2xl">
                   AI yang memahami visimu
@@ -341,7 +341,7 @@ function PrdBuilder({ navigate }) {
                 <button
                   type="button"
                   onClick={() => navigate('/prd-builder')}
-                  className="mt-6 inline-flex h-11 items-center gap-2 rounded-full bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                  className="mt-4 inline-flex h-10 items-center gap-2 rounded-full bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:mt-6 sm:h-11"
                 >
                   Coba sekarang
                   <ArrowRight className="h-4 w-4" />
@@ -353,14 +353,14 @@ function PrdBuilder({ navigate }) {
           {/* Step Cards */}
           {steps.map((step, i) => (
             <Reveal key={step.label} from="up" delay={100 + i * 50}>
-              <div className="feature-card h-full p-7 sm:p-8">
-                <div className="flex items-center gap-4">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-foreground">
-                    <step.icon className="h-5 w-5 text-primary" />
+              <div className="feature-card h-full p-4 sm:p-6 md:p-8">
+                <div className="flex items-center gap-2.5 sm:gap-4">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-foreground sm:h-10 sm:w-10">
+                    <step.icon className="h-4 w-4 text-primary sm:h-5 sm:w-5" />
                   </div>
-                  <h4 className="text-base font-medium text-foreground sm:text-lg">{step.label}</h4>
+                  <h4 className="text-sm font-medium text-foreground sm:text-base md:text-lg">{step.label}</h4>
                 </div>
-                <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:mt-5">
                   {step.desc}
                 </p>
               </div>

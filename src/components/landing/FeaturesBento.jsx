@@ -8,7 +8,7 @@ const FEATURES = [
     desc: 'Tanyakan apa saja dalam Bahasa Indonesia yang mengalir natural tanpa batasan kaku.',
     icon: MessageSquare,
     badge: 'Real-time',
-    span: 'col-span-1 md:col-span-2 lg:col-span-2',
+    span: 'col-span-2 md:col-span-2 lg:col-span-2',
   },
   {
     id: 'code',
@@ -64,31 +64,31 @@ export function FeaturesBento() {
         </div>
 
         <Reveal from="up" className="feature-grid-reveal">
-          <div className="feature-grid relative grid grid-cols-1 md:grid-cols-3">
+          <div className="feature-grid relative grid grid-cols-2 md:grid-cols-3">
           {FEATURES.map((item, index) => {
             const Icon = item.icon
             return (
               <Reveal key={item.id} from="up" delay={index * 60} className={item.span} style={{ '--card-line-delay': `${index * 100}ms` }}>
-                <div className="feature-card group relative flex h-full flex-col justify-between overflow-hidden p-6 sm:p-8">
+                <div className="feature-card group relative flex h-full flex-col justify-between overflow-hidden p-4 sm:p-6 md:p-8">
                   <div>
-                    <div className="mb-8 flex items-center justify-between">
-                      <div className="flex size-10 items-center justify-center rounded-full text-foreground">
-                        <Icon className="size-6" />
+                    <div className="mb-4 flex flex-col items-start gap-2.5 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="flex size-9 items-center justify-center rounded-full text-foreground sm:size-10">
+                        <Icon className="size-5 sm:size-6" />
                       </div>
-                      <span className="rounded-full bg-background px-3 py-1 font-mono text-[11px] font-medium text-muted-foreground">
+                      <span className="rounded-full bg-background px-2.5 py-0.5 font-mono text-[11px] font-medium text-muted-foreground sm:px-3 sm:py-1">
                         {item.badge}
                       </span>
                     </div>
 
-                    <h3 className="text-lg font-medium text-foreground sm:text-xl">
+                    <h3 className="text-base font-medium text-foreground sm:text-lg md:text-xl">
                       {item.title}
                     </h3>
-                    <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground sm:mt-3">
                       {item.desc}
                     </p>
                   </div>
 
-                  <div className="mt-6 flex items-center gap-2 pt-4 text-xs font-medium text-muted-foreground transition-colors group-hover:text-foreground">
+                  <div className="mt-5 hidden items-center gap-2 pt-3 text-xs font-medium text-muted-foreground transition-colors group-hover:text-foreground sm:mt-6 sm:flex sm:pt-4">
                     <span>Eksplorasi kemampuan</span>
                     <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
                   </div>
