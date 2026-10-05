@@ -497,6 +497,28 @@
 .chat-mockup ul {
   font-size: 12px;
 }
+
+/* Scrollbar mockup: sengaja jauh lebih ramping dari scrollbar global (10px)
+   supaya area output tetap terlihat seperti panel terminal padat, bukan
+   elemen web yang bisa di-drag. Tetap bisa di-scroll lewat trackpad/wheel. */
+.chat-mockup .mockup-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--foreground) / 0.18) transparent;
+}
+.chat-mockup .mockup-scroll::-webkit-scrollbar {
+  width: 3px;
+}
+.chat-mockup .mockup-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.chat-mockup .mockup-scroll::-webkit-scrollbar-thumb {
+  background: hsl(var(--foreground) / 0.18);
+  border: 0;
+  border-radius: 999px;
+}
+.chat-mockup .mockup-scroll::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--foreground) / 0.32);
+}
 .tui-queued {
   border-color: color-mix(in srgb, var(--tui-warn) 65%, transparent);
 }

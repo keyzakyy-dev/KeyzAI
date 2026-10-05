@@ -139,10 +139,14 @@ export function ChatMockup() {
             </div>
           </div>
 
-          {/* Output */}
-          <div className="tui-panel relative flex min-h-0 flex-1 flex-col">
+          {/* Output — tinggi tetap supaya mockup tidak bergeser selama siklus
+              animasi (thinking -> mengetik -> selesai). Hanya max_h akan
+              membiarkan tinggi ikut isi, jadi layout hero ikut bergoyang.
+              Isi di dalam scroll (sama chat asli), bukan dipotong: blok kode
+              yang exceed tetap bisa dibaca. */}
+          <div className="tui-panel relative flex h-[300px] min-h-0 flex-1 flex-col lg:h-[320px]">
             <span className="tui-inset-title" aria-hidden="true">output</span>
-            <div className="flex flex-1 flex-col gap-1.5 overflow-hidden px-4 py-3">
+            <div className="mockup-scroll flex flex-1 flex-col gap-1.5 overflow-y-auto overscroll-contain px-4 py-3">
               {/* Bubble user: kanan, garis merah di tepi kanan (sama ChatMessage) */}
               <div className="flex justify-end">
                 <div className="w-fit max-w-[90%] border-r-2 border-red-500 bg-foreground/[0.04] px-3 py-1">
