@@ -40,14 +40,14 @@ function renderInline(text) {
       node = <s key={nodes.length}>{tok.slice(2, -2)}</s>
     } else if (tok.startsWith('`')) {
       node = (
-        <code key={nodes.length} className="rounded bg-muted px-1.5 py-px font-mono text-[0.85em]">
+        <code key={nodes.length} className="border border-foreground/20 bg-foreground/[0.05] px-1.5 py-px font-mono text-[0.85em]">
           {tok.slice(1, -1)}
         </code>
       )
     } else if (tok.startsWith('![')) {
       const im = /^!\[([^\]]*)\]\(([^)\s]+)\)$/.exec(tok)
       node = im && /^https?:\/\//i.test(im[2]) ? (
-        <img key={nodes.length} src={im[2]} alt={im[1]} loading="lazy" className="my-1 block max-h-64 rounded-lg border border-border" />
+        <img key={nodes.length} src={im[2]} alt={im[1]} loading="lazy" className="my-1 block max-h-64 border border-border" />
       ) : im ? (
         im[1]
       ) : (
@@ -81,14 +81,14 @@ function renderInline(text) {
 
 function CodeBlock({ code, lang }) {
   return (
-    <div className="overflow-hidden rounded-lg border border-border">
-      <div className="flex items-center justify-between border-b border-border bg-muted px-3 py-1.5 font-sans">
-        <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+    <div className="overflow-hidden border border-border">
+      <div className="flex items-center justify-between border-b border-border bg-muted px-3 py-1 font-mono">
+        <span className="text-[11px] font-semibold lowercase tracking-wide text-muted-foreground">
           {lang || 'code'}
         </span>
         <CopyButton text={code} withLabel />
       </div>
-      <pre className="overflow-x-auto bg-muted/50 p-3 text-[13px] leading-relaxed">
+      <pre className="overflow-x-auto bg-foreground/[0.03] p-3 text-[13px] leading-relaxed">
         <code className="font-mono whitespace-pre">{code}</code>
       </pre>
     </div>
@@ -293,7 +293,7 @@ function renderMarkdown(text, ctx = {}) {
 
     // Horizontal rule
     if (HR_RE.test(line)) {
-      blocks.push(<hr key={key++} className="border-border" />)
+      blocks.push(<hr key={key++} className="my-3 border-foreground/15" />)
       i++
       continue
     }
@@ -308,7 +308,7 @@ function renderMarkdown(text, ctx = {}) {
       blocks.push(
         <blockquote
           key={key++}
-          className="space-y-1 rounded-r-lg border-l-2 border-border bg-muted/40 py-1.5 pl-3 pr-3 text-muted-foreground"
+          className="space-y-1 border-l-2 border-red-500/40 bg-foreground/[0.03] py-1.5 pl-3 pr-3 text-muted-foreground"
         >
           {buf.map((l, j) => (
             <p key={j} className="whitespace-pre-wrap">
@@ -331,8 +331,8 @@ function renderMarkdown(text, ctx = {}) {
       if (table) {
         const align = (j) => (table.aligns[j] ? { textAlign: table.aligns[j] } : undefined)
         blocks.push(
-          <div key={key++} className="overflow-x-auto rounded-lg border border-border">
-            <table className="w-full border-collapse text-[13px]">
+          <div key={key++} className="overflow-x-auto border border-border">
+            <table className="w-full border-collapse font-mono text-[12px] leading-relaxed">
               <thead>
                 <tr className="border-b border-border bg-muted/60">
                   {table.header.map((c, j) => (
