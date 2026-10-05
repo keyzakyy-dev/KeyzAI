@@ -107,10 +107,7 @@ export function GoogleSignInButton({
             if (resp?.credential) callbackRef.current?.(resp.credential)
             else errorRef.current?.('Login dibatalkan. Coba lagi.')
           },
-          // use_fedcm_for_prompt sengaja dimatikan: pada Chrome desktop,
-          // bila FedCM tidak tersedia untuk origin/client ini, klik tombol
-          // GIS mati tanpa error yang terlihat. Popup klasik selalu jalan
-          // asal origin terdaftar di Google Cloud Console.
+          use_fedcm_for_prompt: false,
         })
         renderGsi()
         if (typeof ResizeObserver !== 'undefined' && wrapperRef.current) {
