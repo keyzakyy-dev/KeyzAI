@@ -82,10 +82,15 @@ function TabBar({ active, onChange }) {
       role="tablist"
       aria-label="Bagian preferensi"
       onKeyDown={onKeyDown}
-      // gap-px + background_container memberi garis pemisah 1px yang sama
+      // gap-px + background container memberi garis pemisah 1px yang sama
       // untuk semua sel (termasuk di sebelah tab aktif), jadi tidak ada
       // garis yang tiba-tiba hilang saat tab berganti.
-      className="flex gap-px border border-foreground/15 bg-foreground/15"
+      //
+      // Di bawah sm label ditumpuk 2x2, bukan 4 sejajar: pada 390px tiap sel
+      // cuma ~79px, sedangkan "Preferensi" di mono 11px + tracking 0.08em
+      // butuh ~83px — jadi labelnya kena truncate. 2 kolom memberi ~140px
+      // per sel, cukup sampai layar sangat sempit.
+      className="grid grid-cols-2 gap-px border border-foreground/15 bg-foreground/15 sm:flex"
     >
       {TABS.map((t, i) => {
         const on = active === t.id
@@ -224,10 +229,15 @@ export function PreferencesDialog({
     <>
       <Dialog.Root open={open} onOpenChange={onOpenChange}>
         <Dialog.Portal>
-          <Dialog.Overlay className="announcement-fade fixed inset-0 z-50 bg-black/60 backdrop-blur-sm" />
+          <Dialog.Overlay className="prefs-fade fixed inset-0 z-50 bg-black/60 backdrop-blur-sm" />
+          {/* Wrapper flex yang memusatkan panel sebagai popup melayang.
+              Sengaja TIDAK memakai left-1/2 + -translate-1/2 di sini: panel
+              perlu `overflow` yang bebas supaya chip .tui-inset-title (yang
+              menjulang 8px di atas garis panel) tidak ikut terpotong. */}
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <Dialog.Content
             aria-describedby={undefined}
-            className="announcement-pop tui-panel tui-root fixed left-1/2 top-1/2 z-50 flex max-h-[88dvh] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden bg-background font-mono shadow-xl focus:outline-none"
+            className="prefs-pop tui-panel relative flex max-h-[85dvh] w-full max-w-md flex-col bg-background font-mono shadow-xl focus:outline-none"
           >
             <span className="tui-inset-title" aria-hidden="true">preferensi</span>
 
@@ -515,6 +525,7 @@ export function PreferencesDialog({
               </span>
             </div>
           </Dialog.Content>
+          </div>
         </Dialog.Portal>
       </Dialog.Root>
 
