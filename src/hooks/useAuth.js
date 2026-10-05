@@ -43,15 +43,17 @@ export function useAuth() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Tukar ID token Google (dari GIS) dengan session JWT worker.
-  const loginWithGoogle = useCallback(async (idToken) => {
+  // Tukar ID token / Access token Google dengan session JWT worker.
+  const loginWithGoogle = useCallback(async (tokenPayload) => {
     setError(null)
     setLoading(true)
     try {
+      const payload =
+        typeof tokenPayload === 'string' ? { idToken: tokenPayload } : tokenPayload
       const res = await fetch(`${API_URL}/api/auth/google`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idToken }),
+        body: JSON.stringify(payload),
       })
       const data = await res.json()
       if (!data.success || !data.token) {

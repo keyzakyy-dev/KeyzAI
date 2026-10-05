@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 let gsiPromise = null
 function loadGsi() {
   if (typeof window === 'undefined') return Promise.reject(new Error('no window'))
-  if (window.google?.accounts?.id) return Promise.resolve()
+  if (window.google?.accounts?.oauth2) return Promise.resolve()
   if (gsiPromise) return gsiPromise
   gsiPromise = new Promise((resolve, reject) => {
     const s = document.createElement('script')
@@ -12,7 +12,7 @@ function loadGsi() {
     s.async = true
     s.defer = true
     s.onload = () => {
-      if (window.google?.accounts?.id) resolve()
+      if (window.google?.accounts?.oauth2) resolve()
       else reject(new Error('GSI gagal dimuat'))
     }
     s.onerror = () => reject(new Error('GSI gagal dimuat'))
@@ -50,10 +50,8 @@ function GoogleG({ className = 'h-5 w-5' }) {
 }
 
 /**
- * Tombol "Lanjutkan dengan Google" bergaya custom (logo G + label sesuai
- * design system). Klik ditangkap oleh tombol GIS asli yang dirender transparan
- * di atasnya (opacity-0, tetap bisa diklik) sehingga popup akun Google muncul
- * normal. Tidak ada client secret di frontend.
+ * Tombol native HTML untuk login Google tanpa iframe.
+ * Menggunakan google.accounts.oauth2.initTokenClient.
  */
 export function GoogleSignInButton({
   onIdToken,
@@ -63,10 +61,9 @@ export function GoogleSignInButton({
   id = '',
   label = 'Lanjutkan dengan Google',
 }) {
-  const wrapperRef = useRef(null)
-  const overlayRef = useRef(null)
   const [ready, setReady] = useState(false)
   const [loadError, setLoadError] = useState(null)
+  const clientRef = useRef(null)
 
   const callbackRef = useRef(onIdToken)
   useEffect(() => {
@@ -80,40 +77,25 @@ export function GoogleSignInButton({
   useEffect(() => {
     if (!CLIENT_ID) return
     let cancelled = false
-    let ro = null
-
-    // Render tombol GIS transparan selebar wrapper. Width maks GIS 400px;
-    // wrapper dibatasi max-w-[400px] supaya tidak pernah kebesaran.
-    const renderGsi = () => {
-      const host = wrapperRef.current
-      const el = overlayRef.current
-      if (!host || !el || !window.google?.accounts?.id || cancelled) return
-      const w = Math.max(220, Math.min(host.clientWidth, 400))
-      window.google.accounts.id.renderButton(el, {
-        type: 'standard',
-        size: 'large',
-        shape: 'pill',
-        width: w,
-        logo_alignment: 'left',
-      })
-    }
 
     loadGsi()
       .then(() => {
         if (cancelled) return
-        window.google.accounts.id.initialize({
+        clientRef.current = window.google.accounts.oauth2.initTokenClient({
           client_id: CLIENT_ID,
+          scope: 'email profile openid',
           callback: (resp) => {
-            if (resp?.credential) callbackRef.current?.(resp.credential)
-            else errorRef.current?.('Login dibatalkan. Coba lagi.')
+            if (resp?.error) {
+              errorRef.current?.(resp.error_description || resp.error || 'Login dibatalkan.')
+              return
+            }
+            if (resp?.access_token) {
+              callbackRef.current?.({ accessToken: resp.access_token })
+            } else {
+              errorRef.current?.('Gagal mendapatkan token akses dari Google.')
+            }
           },
-          use_fedcm_for_prompt: false,
         })
-        renderGsi()
-        if (typeof ResizeObserver !== 'undefined' && wrapperRef.current) {
-          ro = new ResizeObserver(renderGsi)
-          ro.observe(wrapperRef.current)
-        }
         setReady(true)
       })
       .catch((e) => {
@@ -124,7 +106,6 @@ export function GoogleSignInButton({
       })
     return () => {
       cancelled = true
-      ro?.disconnect()
     }
   }, [])
 
@@ -154,36 +135,22 @@ export function GoogleSignInButton({
   const busy = disabled || !ready
 
   return (
-    <div
+    <button
       id={id}
-      ref={wrapperRef}
-      className={`relative mx-auto w-full max-w-[400px] ${className}`}
+      type="button"
+      disabled={busy}
+      onClick={() => clientRef.current?.requestAccessToken()}
+      className={`relative mx-auto flex h-12 w-full max-w-[400px] items-center justify-center gap-2.5 rounded-full border border-border bg-background px-5 text-[15px] font-medium text-foreground shadow-sm transition-colors hover:border-foreground/30 disabled:opacity-70 ${className}`}
     >
-      {/* Visual custom: non-interaktif, hanya tampilan */}
-      <div
-        aria-hidden="true"
-        className={`flex h-12 w-full items-center justify-center gap-2.5 rounded-full border border-border bg-background px-5 text-[15px] font-medium text-foreground shadow-sm transition-colors ${
-          busy ? 'opacity-70' : 'hover:border-foreground/30'
-        }`}
-      >
-        {busy ? (
-          <span
-            className="h-5 w-5 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-foreground"
-            role="presentation"
-          />
-        ) : (
-          <GoogleG />
-        )}
-        <span>{ready ? label : 'Menyiapkan login Google…'}</span>
-      </div>
-
-      {/* Tombol GIS asli: transparan tapi menangkap klik & fokus keyboard */}
-      <div
-        ref={overlayRef}
-        className="absolute inset-0 opacity-0"
-        aria-disabled={busy}
-        style={busy ? { pointerEvents: 'none' } : undefined}
-      />
-    </div>
+      {busy ? (
+        <span
+          className="h-5 w-5 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-foreground"
+          role="presentation"
+        />
+      ) : (
+        <GoogleG />
+      )}
+      <span>{ready ? label : 'Menyiapkan login Google…'}</span>
+    </button>
   )
 }

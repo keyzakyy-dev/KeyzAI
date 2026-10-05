@@ -89,6 +89,25 @@ export async function verifyGoogleIdToken(idToken, clientId) {
   }
 }
 
+/**
+ * Ambil profil user dari Google UserInfo endpoint via OAuth 2.0 Access Token.
+ */
+export async function fetchGoogleUserInfo(accessToken) {
+  if (!accessToken) throw new Error('missing access token')
+  const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  })
+  if (!res.ok) throw new Error('Google userinfo fetch failed')
+  const data = await res.json()
+  if (!data.sub) throw new Error('invalid userinfo response')
+  return {
+    google_sub: data.sub,
+    email: typeof data.email === 'string' ? data.email : null,
+    name: typeof data.name === 'string' ? data.name : null,
+    picture: typeof data.picture === 'string' ? data.picture : null,
+  }
+}
+
 async function hmacKey(secret) {
   if (!secret) throw new Error('SESSION_SECRET not configured')
   return crypto.subtle.importKey('raw', enc.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify'])

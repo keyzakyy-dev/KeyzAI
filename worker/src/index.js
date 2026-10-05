@@ -14,7 +14,7 @@
  * GET/PUT/DELETE /api/prd/projects/:id
  */
 
-import { verifyGoogleIdToken, signSession, verifySession } from './crypto.js'
+import { verifyGoogleIdToken, fetchGoogleUserInfo, signSession, verifySession } from './crypto.js'
 import {
   upsertUser,
   listConversations,
@@ -168,7 +168,14 @@ export default {
         return response(false, 'Bad request', 400, { error: 'Invalid JSON' }, corsHeaders(request, env))
       }
       try {
-        const profile = await verifyGoogleIdToken(body.idToken, env.GOOGLE_CLIENT_ID)
+        let profile
+        if (body.accessToken) {
+          // OAuth 2.0 access token flow: fetch userinfo from Google
+          profile = await fetchGoogleUserInfo(body.accessToken)
+        } else {
+          // Legacy ID token flow
+          profile = await verifyGoogleIdToken(body.idToken, env.GOOGLE_CLIENT_ID)
+        }
         const user = await upsertUser(env.DB, profile)
         const session = await signSession(user.id, env.SESSION_SECRET)
         return response(true, 'Login success', 200, {
