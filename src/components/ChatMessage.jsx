@@ -119,12 +119,14 @@ export function ChatMessage({ role, content, timestamp, streaming, aborted = fal
           ) : streaming && !content ? (
             <ThinkingIndicator />
           ) : (
-            <Markdown
-              text={streaming ? closeOpenFence(content) : content}
-              messageId={id}
-              streaming={streaming}
-              className="font-mono text-[13px] leading-relaxed"
-            />
+            <div className="border border-foreground/15 px-3 py-2">
+              <Markdown
+                text={streaming ? closeOpenFence(content) : content}
+                messageId={id}
+                streaming={streaming}
+                className="font-mono text-[13px] leading-relaxed"
+              />
+            </div>
           )}
           {!streaming && (
             <div className={`flex items-center gap-1 px-0 pt-1 ${isUser ? 'justify-end' : ''}`}>
