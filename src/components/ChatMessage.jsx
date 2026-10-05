@@ -74,17 +74,19 @@ export function ChatMessage({ role, content, timestamp, streaming, aborted = fal
     <div className="group/chatmsg min-w-0 w-full">
       {isUser && editing ? (
         <>
-          <div className="border-l-2 border-red-500 bg-foreground/[0.04] px-3 py-1">
-            <textarea
-              ref={taRef}
-              autoFocus
-              value={draft}
-              maxLength={2000}
-              onChange={(e) => setDraft(e.target.value)}
-              onKeyDown={handleKeyDown}
-              rows={1}
-              className="block w-full resize-none overflow-hidden bg-transparent font-mono text-[13px] font-semibold text-foreground focus:outline-none [field-sizing:content]"
-            />
+          <div className="flex justify-end">
+            <div className="w-full max-w-[90%] border-r-2 border-red-500 bg-foreground/[0.04] px-3 py-1">
+              <textarea
+                ref={taRef}
+                autoFocus
+                value={draft}
+                maxLength={2000}
+                onChange={(e) => setDraft(e.target.value)}
+                onKeyDown={handleKeyDown}
+                rows={1}
+                className="block w-full resize-none overflow-hidden bg-transparent font-mono text-[13px] font-semibold text-foreground focus:outline-none [field-sizing:content]"
+              />
+            </div>
           </div>
           <div className="flex items-center justify-end gap-1.5 px-1 pt-1">
             <button
@@ -109,8 +111,10 @@ export function ChatMessage({ role, content, timestamp, streaming, aborted = fal
       ) : (
         <>
           {isUser ? (
-            <div className="border-l-2 border-red-500 bg-foreground/[0.04] px-3 py-1">
-              <p className="whitespace-pre-wrap break-words font-mono text-[13px] font-semibold text-foreground">{content}</p>
+            <div className="flex justify-end">
+              <div className="w-fit max-w-[90%] border-r-2 border-red-500 bg-foreground/[0.04] px-3 py-1">
+                <p className="whitespace-pre-wrap break-words font-mono text-[13px] font-semibold text-foreground">{content}</p>
+              </div>
             </div>
           ) : streaming && !content ? (
             <ThinkingIndicator />
@@ -123,7 +127,7 @@ export function ChatMessage({ role, content, timestamp, streaming, aborted = fal
             />
           )}
           {!streaming && (
-            <div className="flex items-center gap-1 px-0 pt-1">
+            <div className={`flex items-center gap-1 px-0 pt-1 ${isUser ? 'justify-end' : ''}`}>
               {(canPrev || canNext) && (
                 <div className="flex items-center gap-0.5">
                   <button
