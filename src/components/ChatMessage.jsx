@@ -21,13 +21,13 @@ function ThinkingIndicator() {
     return () => clearInterval(t)
   }, [])
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 font-mono text-[13px] text-muted-foreground">
       <span ref={markRef} className="shrink-0 text-primary">
         <KeyMark className="h-4 w-4" />
       </span>
       <div
         key={i}
-        className="text-foreground thinking-fade"
+        className="thinking-fade"
       >
         {THINKING_WORDS[i]}
       </div>
@@ -71,45 +71,22 @@ export function ChatMessage({ role, content, timestamp, streaming, aborted = fal
   }
 
   return (
-    <div className="flex justify-start">
-      <div className="min-w-0 w-full space-y-1.5">
-        <div className="flex gap-3 text-[15px] leading-relaxed">
-          <span className={`select-none font-mono text-sm ${isUser ? 'tui-prompt font-bold' : 'text-muted-foreground'}`} aria-hidden="true">
-            {isUser ? '›' : '·'}
-          </span>
-          <div className={`min-w-0 ${isUser ? 'w-fit max-w-full' : 'flex-1 border-l-2 border-red-500/50 pl-3'}`}>
-
-          {isUser && editing ? (
-            <div className="border border-foreground/15 px-3 py-2">
-              <textarea
-                ref={taRef}
-                autoFocus
-                value={draft}
-                maxLength={2000}
-                onChange={(e) => setDraft(e.target.value)}
-                onKeyDown={handleKeyDown}
-                rows={1}
-                className="block resize-none overflow-hidden bg-transparent text-base text-foreground focus:outline-none sm:text-[15px] [field-sizing:content]"
-              />
-            </div>
-          ) : isUser ? (
-            <div className="border border-foreground/15 px-3 py-2">
-              <p className="whitespace-pre-wrap break-words text-foreground">{content}</p>
-            </div>
-          ) : streaming && !content ? (
-            <ThinkingIndicator />
-          ) : (
-            <Markdown
-              text={streaming ? closeOpenFence(content) : content}
-              messageId={id}
-              streaming={streaming}
+    <div className="group/chatmsg min-w-0 w-full">
+      {isUser && editing ? (
+        <>
+          <div className="border-l-2 border-red-500 bg-foreground/[0.04] px-3 py-1.5">
+            <textarea
+              ref={taRef}
+              autoFocus
+              value={draft}
+              maxLength={2000}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={handleKeyDown}
+              rows={1}
+              className="block w-full resize-none overflow-hidden bg-transparent font-mono text-[13px] font-semibold text-foreground focus:outline-none [field-sizing:content]"
             />
-          )}
           </div>
-        </div>
-
-        {isUser && editing ? (
-          <div className="flex items-center justify-end gap-1.5 px-1">
+          <div className="flex items-center justify-end gap-1.5 px-1 pt-1">
             <button
               type="button"
               onClick={() => onEditCancel?.()}
@@ -128,9 +105,25 @@ export function ChatMessage({ role, content, timestamp, streaming, aborted = fal
               Simpan
             </button>
           </div>
-        ) : (
-          !streaming && (
-            <div className={`flex items-center gap-1 px-1 ${isUser ? 'justify-end' : ''}`}>
+        </>
+      ) : (
+        <>
+          {isUser ? (
+            <div className="border-l-2 border-red-500 bg-foreground/[0.04] px-3 py-1.5">
+              <p className="whitespace-pre-wrap break-words font-mono text-[13px] font-semibold text-foreground">{content}</p>
+            </div>
+          ) : streaming && !content ? (
+            <ThinkingIndicator />
+          ) : (
+            <Markdown
+              text={streaming ? closeOpenFence(content) : content}
+              messageId={id}
+              streaming={streaming}
+              className="font-mono text-[13px] leading-relaxed"
+            />
+          )}
+          {!streaming && (
+            <div className="flex items-center gap-1 px-1 pt-0.5 opacity-0 transition-opacity focus-within:opacity-100 group-hover/chatmsg:opacity-100 max-lg:opacity-100">
               {(canPrev || canNext) && (
                 <div className="flex items-center gap-0.5">
                   <button
@@ -187,9 +180,9 @@ export function ChatMessage({ role, content, timestamp, streaming, aborted = fal
               )}
               <CopyButton text={content} />
             </div>
-          )
-        )}
-      </div>
+          )}
+        </>
+      )}
     </div>
   )
 }
