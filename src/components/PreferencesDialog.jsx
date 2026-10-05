@@ -229,7 +229,7 @@ export function PreferencesDialog({
     <>
       <Dialog.Root open={open} onOpenChange={onOpenChange}>
         <Dialog.Portal>
-          <Dialog.Overlay className="prefs-fade fixed inset-0 z-50 bg-black/60 backdrop-blur-sm" />
+          <Dialog.Overlay className="login-fade fixed inset-0 z-50 bg-black/70 backdrop-blur-sm" />
           {/* Wrapper flex yang memusatkan panel sebagai popup melayang.
               Sengaja TIDAK memakai left-1/2 + -translate-1/2 di sini: panel
               perlu `overflow` yang bebas supaya chip .tui-inset-title (yang
@@ -237,7 +237,7 @@ export function PreferencesDialog({
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <Dialog.Content
             aria-describedby={undefined}
-            className="prefs-pop tui-panel relative flex max-h-[85dvh] w-full max-w-md flex-col bg-background font-mono shadow-xl focus:outline-none"
+            className="login-pop tui-panel relative flex max-h-[85dvh] w-full max-w-md flex-col bg-background font-mono shadow-xl focus:outline-none"
           >
             <span className="tui-inset-title" aria-hidden="true">preferensi</span>
 

@@ -300,16 +300,14 @@
 @media (prefers-reduced-motion: reduce) {
   .theme-toggle-icon { animation: none; }
 }
-@keyframes announcement-in {
-  0% { opacity: 0; transform: translate(-50%, calc(-50% + 14px)) scale(0.97); }
-  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-}
-@keyframes announcement-out {
-  0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  100% { opacity: 0; transform: translate(-50%, calc(-50% + 8px)) scale(0.98); }
-}
 @keyframes overlay-fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes overlay-fade-out { from { opacity: 1; } to { opacity: 0; } }
+/* Animasi masuk/keluar untuk semua dialog (login, announcement, preferensi,
+   regenerate). Semuanya dipusatkan oleh wrapper flex `items-center`, jadi
+   keyframe di sini bebas transform -50%/-50% — keyframe yang begitu akan
+   menggeser panel ke kiri atas sebesar setengah dimensinya.
+   Nama class-nya `login-*` karena berawal dari LoginDialog, sekarang dipakai
+   bersama; rename ke `dialog-*` belum dilakukan supaya diff tetap kecil. */
 @keyframes login-in {
   from { opacity: 0; transform: scale(0.96) translateY(10px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
@@ -322,33 +320,9 @@
 .login-pop[data-state='closed'] { animation: login-out 160ms ease-in both; }
 .login-fade[data-state='open'] { animation: overlay-fade-in 200ms ease-out both; }
 .login-fade[data-state='closed'] { animation: overlay-fade-out 160ms ease-in both; }
-.announcement-pop[data-state='open'] { animation: announcement-in 240ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
-.announcement-pop[data-state='closed'] { animation: announcement-out 160ms ease-in both; }
-.announcement-fade[data-state='open'] { animation: overlay-fade-in 200ms ease-out both; }
-.announcement-fade[data-state='closed'] { animation: overlay-fade-out 160ms ease-in both; }
-/* Dialog preferensi: panel melayang, dipusatkan oleh wrapper flex — bukan
-   left-1/2 + -translate-1/2 seperti announcement/login. Karena itu keyframe-nya
-   terpisah: keyframe yang lain meng-hardcode translate(-50%, -50%) dan akan
-   menggeser panel ke kiri atas sebesar setengah dimensinya kalau dipakai di sini. */
-@keyframes prefs-in {
-  0% { opacity: 0; transform: translateY(14px) scale(0.97); }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
-}
-@keyframes prefs-out {
-  0% { opacity: 1; transform: translateY(0) scale(1); }
-  100% { opacity: 0; transform: translateY(8px) scale(0.985); }
-}
-.prefs-pop[data-state='open'] { animation: prefs-in 240ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
-.prefs-pop[data-state='closed'] { animation: prefs-out 160ms ease-in both; }
-.prefs-fade[data-state='open'] { animation: overlay-fade-in 200ms ease-out both; }
-.prefs-fade[data-state='closed'] { animation: overlay-fade-out 160ms ease-in both; }
 @media (prefers-reduced-motion: reduce) {
-  .announcement-pop,
-  .announcement-fade,
   .login-pop,
-  .login-fade,
-  .prefs-pop,
-  .prefs-fade {
+  .login-fade {
     animation: none;
   }
 }
