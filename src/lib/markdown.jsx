@@ -8,12 +8,12 @@ import { CopyButton } from './copy-button'
 import { OptionCard, OptionsPending } from '../components/OptionCard'
 import { optionsLangState, parseOptionsPayload } from './options'
 
-// Lookbehind unsupported in Safari < 16.4 — building at runtime with fallback
-// avoids a SyntaxError that would crash the whole app on parse.
+// Inline tokens: bold, italic, code, strike, image, link (with optional
+// title), autolink <https://...>, and bare https:// URLs.
 const INLINE_PATTERN =
-  '(\\*\\*[^*\\s][^*]*\\*\\*|__[^_\\s][^_]*__|(?<![\\w*])\\*[^*\\s][^*]*\\*(?![\\w*])|(?<!\\w)_[^_\\s][^_]*_(?!\\w)|`[^`]+`|~~[^~]+~~|!\\[[^\\]]*\\]\\([^)\\s]+\\)|\\[[^\\]]+\\]\\([^)\\s]+\\))'
+  '(\\*\\*[^*]+?\\*\\*|__[^_]+?__|(?<![\\w*])\\*[^*\\s][^*]*\\*(?![\\w*])|(?<!\\w)_[^_\\s][^_]*_(?!\\w)|`[^`\\n]+`|~~[^~\\n]+?~~|!\\[[^\\]]*\\]\\([^\\)]+\\)|\\[[^\\]]+\\]\\([^\\)]+\\)|<https?:\\/\\/[^>\\s]+>|https?:\\/\\/[^\\s<]+)'
 const INLINE_PATTERN_SAFE =
-  '(\\*\\*[^*\\s][^*]*\\*\\*|__[^_\\s][^_]*__|\\*[^*\\s][^*]*\\*|_[^_\\s][^_]*_|`[^`]+`|~~[^~]+~~|!\\[[^\\]]*\\]\\([^)\\s]+\\)|\\[[^\\]]+\\]\\([^)\\s]+\\))'
+  '(\\*\\*[^*]+?\\*\\*|__[^_]+?__|\\*[^*\\s][^*]*\\*|_[^_\\s][^_]*_|`[^`\\n]+`|~~[^~\\n]+?~~|!\\[[^\\]]*\\]\\([^\\)]+\\)|\\[[^\\]]+\\]\\([^\\)]+\\)|<https?:\\/\\/[^>\\s]+>|https?:\\/\\/[^\\s<]+)'
 
 function buildInlineRe() {
   try {
@@ -25,6 +25,37 @@ function buildInlineRe() {
 
 const INLINE_RE = buildInlineRe()
 
+function parseLinkTarget(inside) {
+  const s = inside.trim()
+  // URL with optional "title" or 'title' or (title)
+  const m = /^(\S+)(?:\s+["'(](.*?)["')])?$/.exec(s)
+  if (!m) return null
+  return { url: m[1], title: m[2] || undefined }
+}
+
+function isSafeUrl(url) {
+  if (!url) return false
+  if (/^(https?:\/\/|mailto:)/i.test(url)) return true
+  // Allow relative links and anchors: /docs, ./x, #section
+  if (/^(?:\/|\.\.?\/|#[^:]*)[^:]*$/.test(url) && !/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(url)) return true
+  return false
+}
+
+function stripTrailingPunct(url) {
+  const m = /^(.*?)([.,;:!?]+)$/.exec(url)
+  // Keep balanced parens: don't strip if it would unbalance
+  if (m) {
+    const open = (m[1].match(/\(/g) || []).length
+    const close = (m[1].match(/\)/g) || []).length
+    if (close < open) return { url, trail: '' }
+    return { url: m[1], trail: m[2] }
+  }
+  if (url.endsWith(')') && (url.match(/\(/g) || []).length < (url.match(/\)/g) || []).length) {
+    return { url: url.slice(0, -1), trail: ')' }
+  }
+  return { url, trail: '' }
+}
+
 function renderInline(text) {
   const nodes = []
   let last = 0
@@ -33,44 +64,84 @@ function renderInline(text) {
   while ((m = re.exec(text)) !== null) {
     if (m.index > last) nodes.push(text.slice(last, m.index))
     const tok = m[0]
+    const k = nodes.length
     let node
     if (tok.startsWith('**') || tok.startsWith('__')) {
-      node = <strong key={nodes.length} className="font-semibold">{tok.slice(2, -2)}</strong>
+      node = <strong key={k} className="font-semibold">{renderInline(tok.slice(2, -2))}</strong>
     } else if (tok.startsWith('~~')) {
-      node = <s key={nodes.length}>{tok.slice(2, -2)}</s>
+      node = <del key={k}>{renderInline(tok.slice(2, -2))}</del>
     } else if (tok.startsWith('`')) {
       node = (
-        <code key={nodes.length} className="border border-foreground/20 bg-foreground/[0.05] px-1.5 py-px font-mono text-[0.85em]">
+        <code key={k} className="rounded border border-foreground/20 bg-foreground/[0.05] px-1.5 py-px font-mono text-[0.85em] break-words">
           {tok.slice(1, -1)}
         </code>
       )
     } else if (tok.startsWith('![')) {
-      const im = /^!\[([^\]]*)\]\(([^)\s]+)\)$/.exec(tok)
-      node = im && /^https?:\/\//i.test(im[2]) ? (
-        <img key={nodes.length} src={im[2]} alt={im[1]} loading="lazy" className="my-1 block max-h-64 border border-border" />
-      ) : im ? (
+      const im = /^!\[([^\]]*)\]\((.+)\)$/.exec(tok)
+      const t = im ? parseLinkTarget(im[2]) : null
+      node = im && t && /^https?:\/\//i.test(t.url) ? (
+        <img
+          key={k}
+          src={t.url}
+          alt={im[1]}
+          title={t.title}
+          loading="lazy"
+          onError={(e) => { e.currentTarget.style.display = 'none' }}
+          className="my-1 block max-h-64 max-w-full border border-border object-contain"
+        />
+      ) : im && t ? (
         im[1]
       ) : (
         tok
       )
     } else if (tok.startsWith('[')) {
-      const lm = /^\[([^\]]+)\]\(([^)\s]+)\)$/.exec(tok)
-      // Only http(s)/mailto links — prevents javascript: URL injection
-      node = lm && /^(https?:\/\/|mailto:)/i.test(lm[2]) ? (
+      const lm = /^\[([^\]]+)\]\((.+)\)$/.exec(tok)
+      const t = lm ? parseLinkTarget(lm[2]) : null
+      // Only safe URLs — prevents javascript:/data: injection
+      node = lm && t && isSafeUrl(t.url) ? (
         <a
-          key={nodes.length}
-          href={lm[2]}
-          target="_blank"
-          rel="noreferrer"
-          className="font-medium underline underline-offset-2 decoration-muted-foreground/50 hover:decoration-foreground"
+          key={k}
+          href={t.url}
+          title={t.title}
+          target={/^https?:\/\//i.test(t.url) ? '_blank' : undefined}
+          rel={/^https?:\/\//i.test(t.url) ? 'noreferrer noopener' : undefined}
+          className="font-medium underline underline-offset-2 decoration-muted-foreground/50 hover:decoration-foreground break-words"
         >
-          {lm[1]}
+          {renderInline(lm[1])}
         </a>
       ) : (
         tok
       )
+    } else if (tok.startsWith('<http')) {
+      const url = tok.slice(1, -1)
+      node = (
+        <a
+          key={k}
+          href={url}
+          target="_blank"
+          rel="noreferrer noopener"
+          className="font-medium underline underline-offset-2 decoration-muted-foreground/50 hover:decoration-foreground break-words"
+        >
+          {url}
+        </a>
+      )
+    } else if (/^https?:\/\//i.test(tok)) {
+      const { url, trail } = stripTrailingPunct(tok)
+      node = (
+        <span key={k}>
+          <a
+            href={url}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="font-medium underline underline-offset-2 decoration-muted-foreground/50 hover:decoration-foreground break-words"
+          >
+            {url}
+          </a>
+          {trail}
+        </span>
+      )
     } else {
-      node = <em key={nodes.length}>{tok.slice(1, -1)}</em>
+      node = <em key={k}>{renderInline(tok.slice(1, -1))}</em>
     }
     nodes.push(node)
     last = re.lastIndex
@@ -88,7 +159,7 @@ function CodeBlock({ code, lang }) {
         </span>
         <CopyButton text={code} withLabel />
       </div>
-      <pre className="overflow-x-auto bg-foreground/[0.03] p-3 text-[13px] leading-relaxed">
+      <pre className="max-h-[420px] overflow-auto bg-foreground/[0.03] p-3 text-[13px] leading-relaxed">
         <code className="font-mono whitespace-pre">{code}</code>
       </pre>
     </div>
@@ -115,19 +186,48 @@ function isBlockStart(line) {
 }
 
 function parseTable(rows) {
-  const cells = (r) =>
-    r.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map((c) => c.trim())
-  const sepRow = rows.find((r) => TABLE_SEP_RE.test(r))
-  const aligns = sepRow
-    ? cells(sepRow).map((c) => {
-        const left = c.startsWith(':')
-        const right = c.endsWith(':')
-        return left && right ? 'center' : right ? 'right' : left ? 'left' : undefined
-      })
-    : []
-  const dataRows = rows.filter((r) => !TABLE_SEP_RE.test(r))
-  if (dataRows.length === 0) return null
-  return { header: cells(dataRows[0]), body: dataRows.slice(1).map(cells), aligns }
+  const splitCells = (r) => {
+    // Split on unescaped pipes: \| stays as literal |
+    const out = []
+    let cur = ''
+    for (let k = 0; k < r.length; k++) {
+      const ch = r[k]
+      if (ch === '\\' && r[k + 1] === '|') {
+        cur += '|'
+        k++
+      } else if (ch === '|') {
+        out.push(cur)
+        cur = ''
+      } else {
+        cur += ch
+      }
+    }
+    out.push(cur)
+    // Drop empty outer cells from leading/trailing pipes
+    if (out.length && out[0].trim() === '') out.shift()
+    if (out.length && out[out.length - 1].trim() === '') out.pop()
+    return out.map((c) => c.trim().replace(/\\\|/g, '|'))
+  }
+  const sepIdx = rows.findIndex((r) => TABLE_SEP_RE.test(r))
+  // A valid table needs header + separator + at least one body row
+  if (sepIdx < 0 || rows.length < 2) return null
+  const header = splitCells(rows[0])
+  if (header.length === 0) return null
+  const aligns = splitCells(rows[sepIdx]).map((c) => {
+    const left = c.startsWith(':')
+    const right = c.endsWith(':')
+    return left && right ? 'center' : right ? 'right' : left ? 'left' : undefined
+  })
+  const bodyRows = rows.filter((_, idx) => idx !== sepIdx).slice(1)
+  if (bodyRows.length === 0) return null
+  const width = header.length
+  const body = bodyRows.map((r) => {
+    const cells = splitCells(r)
+    // Normalize ragged rows to header width
+    while (cells.length < width) cells.push('')
+    return cells.slice(0, width)
+  })
+  return { header, body, aligns }
 }
 
 // Build an indent-nested tree from flat list items, then render recursively.
@@ -144,39 +244,53 @@ function ListView({ items }) {
 
   const renderLevel = (nodes, depth) => {
     if (nodes.length === 0) return null
-    const ordered = nodes[0].ordered
-    const List = ordered ? 'ol' : 'ul'
-    const listClass = ordered
-      ? 'list-decimal ml-5 space-y-1 tabular-nums marker:text-muted-foreground'
-      : depth === 0
-        ? 'list-disc ml-5 space-y-1 marker:text-red-500'
-        : 'ml-5 list-[square] space-y-1 marker:text-red-500/70'
+    // A level may mix `-` and `1.` items — group consecutive same-type
+    // items so <ul> and <ol> are never forced onto the wrong items.
+    const groups = []
+    for (const n of nodes) {
+      const g = groups[groups.length - 1]
+      if (g && g.ordered === n.ordered) g.nodes.push(n)
+      else groups.push({ ordered: n.ordered, start: n.start, nodes: [n] })
+    }
     return (
-      <List
-        start={ordered ? nodes[0].start : undefined}
-        className={listClass}
-      >
-        {nodes.map((n, j) => (
-          <li key={j} className={`break-words pl-1 leading-relaxed ${n.task != null ? '-ml-5 list-none pl-0' : ''}`}>
-            {n.task != null ? (
-              <span className="flex items-start gap-2">
-                <span
-                  aria-hidden="true"
-                  className={`mt-0.5 flex h-3.5 w-3.5 shrink-0 items-center justify-center border text-[10px] leading-none ${
-                    n.task ? 'border-red-500/60 bg-red-500/10 text-red-500' : 'border-foreground/25 text-transparent'
-                  }`}
-                >
-                  {n.task ? '✓' : '·'}
-                </span>
-                <span className="min-w-0 flex-1 whitespace-pre-wrap">{renderInline([n.content, ...n.extra].join('\n'))}</span>
-              </span>
-            ) : (
-              <span className="whitespace-pre-wrap">{renderInline([n.content, ...n.extra].join('\n'))}</span>
-            )}
-            {renderLevel(n.children, depth + 1)}
-          </li>
-        ))}
-      </List>
+      <>
+        {groups.map((g, gi) => {
+          const List = g.ordered ? 'ol' : 'ul'
+          const listClass = g.ordered
+            ? 'list-decimal ml-5 space-y-1 tabular-nums marker:text-muted-foreground'
+            : depth === 0
+              ? 'list-disc ml-5 space-y-1 marker:text-red-500'
+              : 'ml-5 list-[square] space-y-1 marker:text-red-500/70'
+          return (
+            <List
+              key={gi}
+              start={g.ordered ? g.start : undefined}
+              className={listClass}
+            >
+              {g.nodes.map((n, j) => (
+                <li key={j} className={`break-words pl-1 leading-relaxed ${n.task != null ? '-ml-5 list-none pl-0' : ''}`}>
+                  {n.task != null ? (
+                    <span className="flex items-start gap-2">
+                      <span
+                        aria-hidden="true"
+                        className={`mt-0.5 flex h-3.5 w-3.5 shrink-0 items-center justify-center border text-[10px] leading-none ${
+                          n.task ? 'border-red-500/60 bg-red-500/10 text-red-500' : 'border-foreground/25 text-transparent'
+                        }`}
+                      >
+                        {n.task ? '✓' : '·'}
+                      </span>
+                      <span className={`min-w-0 flex-1 whitespace-pre-wrap ${n.task ? 'line-through opacity-70' : ''}`}>{renderInline([n.content, ...n.extra].join('\n'))}</span>
+                    </span>
+                  ) : (
+                    <span className="whitespace-pre-wrap">{renderInline([n.content, ...n.extra].join('\n'))}</span>
+                  )}
+                  {renderLevel(n.children, depth + 1)}
+                </li>
+              ))}
+            </List>
+          )
+        })}
+      </>
     )
   }
 
@@ -270,18 +384,22 @@ function renderMarkdown(text, ctx = {}) {
       continue
     }
 
-    // Heading — diselaraskan ke ritme mono box AI (13px): H1 menonjol
-    // dengan aksen merah, H2 uppercase, H3+ menyatu sebagai sublabel.
+    // Heading — proper h1..h6 hierarchy with distinct scale inside
+    // the 13px mono chat bubble.
     const h = HEADING_RE.exec(line)
     if (h) {
-      const depth = h[1].length
-      const Tag = depth <= 1 ? 'h3' : depth === 2 ? 'h4' : 'h5'
+      const depth = Math.min(h[1].length, 6)
+      const Tag = `h${depth}`
       const cls =
-        depth <= 1
-          ? 'mt-3 border-b border-red-500/40 pb-1 text-[14px] font-bold tracking-tight text-foreground first:mt-0'
+        depth === 1
+          ? 'mt-4 border-b border-red-500/40 pb-1.5 text-[19px] font-extrabold tracking-tight text-foreground first:mt-0 scroll-mt-4 text-balance'
           : depth === 2
-            ? 'mt-3 text-[13px] font-bold uppercase tracking-wide text-foreground first:mt-0'
-            : 'mt-2 text-[13px] font-semibold text-muted-foreground first:mt-0'
+            ? 'mt-4 text-[16px] font-bold tracking-tight text-foreground first:mt-0 scroll-mt-4 text-balance'
+            : depth === 3
+              ? 'mt-3 text-[14px] font-bold tracking-tight text-foreground first:mt-0 scroll-mt-4 text-balance'
+              : depth === 4
+                ? 'mt-3 text-[13px] font-semibold uppercase tracking-wide text-foreground first:mt-0 scroll-mt-4'
+                : 'mt-2 text-[13px] font-semibold text-muted-foreground first:mt-0 scroll-mt-4'
       blocks.push(
         <Tag key={key++} className={cls}>
           {renderInline(h[2])}
@@ -293,34 +411,53 @@ function renderMarkdown(text, ctx = {}) {
 
     // Horizontal rule
     if (HR_RE.test(line)) {
-      blocks.push(<hr key={key++} className="my-3 border-foreground/15" />)
+      blocks.push(<hr key={key++} className="my-4 border-t border-foreground/20" />)
       i++
       continue
     }
 
-    // Blockquote
+    // Blockquote (supports loose multi-paragraph quotes and >> nesting)
     if (QUOTE_RE.test(line)) {
       const buf = []
-      while (i < lines.length && QUOTE_RE.test(lines[i])) {
-        buf.push(lines[i].replace(QUOTE_RE, ''))
-        i++
+      while (i < lines.length) {
+        if (QUOTE_RE.test(lines[i])) {
+          buf.push(lines[i].replace(QUOTE_RE, ''))
+          i++
+        } else if (lines[i].trim() === '') {
+          // Keep blank line only if quote continues afterwards
+          let j = i + 1
+          while (j < lines.length && lines[j].trim() === '') j++
+          if (j < lines.length && QUOTE_RE.test(lines[j])) {
+            buf.push('')
+            i = j
+          } else break
+        } else break
       }
       blocks.push(
         <blockquote
           key={key++}
           className="space-y-1 border-l-2 border-red-500/40 bg-foreground/[0.03] py-1.5 pl-3 pr-3 text-muted-foreground"
         >
-          {buf.map((l, j) => (
-            <p key={j} className="whitespace-pre-wrap">
-              {renderInline(l)}
-            </p>
-          ))}
+          {buf.map((l, j) =>
+            l.trim() === '' ? (
+              <div key={j} className="h-2" />
+            ) : l.replace(/^\s*>\s?/, '').startsWith('>') || QUOTE_RE.test(`> ${l}`) && l.startsWith('>') ? (
+              <p key={j} className="whitespace-pre-wrap border-l border-foreground/20 pl-2">
+                {renderInline(l.replace(/^>\s?/, ''))}
+              </p>
+            ) : (
+              <p key={j} className="whitespace-pre-wrap break-words">
+                {renderInline(l)}
+              </p>
+            )
+          )}
         </blockquote>
       )
       continue
     }
 
-    // Table
+    // Table — requires header + separator + body, else falls back
+    // to a plain paragraph so `|foo|` is not misrendered as a table.
     if (TABLE_ROW_RE.test(line)) {
       const rows = []
       while (i < lines.length && TABLE_ROW_RE.test(lines[i])) {
@@ -336,7 +473,7 @@ function renderMarkdown(text, ctx = {}) {
               <thead>
                 <tr className="border-b border-border bg-muted/60">
                   {table.header.map((c, j) => (
-                    <th key={j} style={align(j)} className="px-3 py-1.5 font-semibold text-foreground">
+                    <th key={j} style={align(j)} className="px-3 py-1.5 font-semibold text-foreground break-words">
                       {renderInline(c)}
                     </th>
                   ))}
@@ -344,9 +481,9 @@ function renderMarkdown(text, ctx = {}) {
               </thead>
               <tbody>
                 {table.body.map((r, ri) => (
-                  <tr key={ri} className="border-b border-border/60 last:border-0">
+                  <tr key={ri} className="border-b border-border/60 last:border-0 odd:bg-foreground/[0.02]">
                     {r.map((c, ci) => (
-                      <td key={ci} style={align(ci)} className="px-3 py-1.5">
+                      <td key={ci} style={align(ci)} className="px-3 py-1.5 break-words">
                         {renderInline(c)}
                       </td>
                     ))}
@@ -355,6 +492,13 @@ function renderMarkdown(text, ctx = {}) {
               </tbody>
             </table>
           </div>
+        )
+      } else {
+        // Not a real table — render lines as a paragraph
+        blocks.push(
+          <p key={key++} className="whitespace-pre-wrap break-words">
+            {renderInline(rows.join('\n'))}
+          </p>
         )
       }
       continue

@@ -5,9 +5,16 @@ import { Markdown } from '../lib/markdown'
 import { CopyButton } from '../lib/copy-button'
 import { useStrokeDraw } from '../lib/micro-anim'
 
-// Close an unterminated ``` fence so partial streaming text still renders formatted
+// Close an unterminated ``` fence and dangling ` span so partial
+// streaming text still renders formatted instead of raw markers.
 function closeOpenFence(s) {
-  return (s.match(/```/g)?.length || 0) % 2 === 1 ? s + '\n```' : s
+  if (!s) return s
+  let out = s
+  if ((out.match(/```/g)?.length || 0) % 2 === 1) out += '\n```'
+  // Count single backticks outside fenced blocks
+  const withoutFences = out.replace(/```[\s\S]*?```/g, '').replace(/```[\s\S]*$/g, '')
+  if ((withoutFences.match(/`/g)?.length || 0) % 2 === 1) out += '`'
+  return out
 }
 
 const THINKING_WORDS = ['Berpikir…', 'Menelusuri…', 'Menulis…', 'Memoles…']
