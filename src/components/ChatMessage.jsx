@@ -74,7 +74,7 @@ export function ChatMessage({ role, content, timestamp, streaming, aborted = fal
     <div className="group/chatmsg min-w-0 w-full">
       {isUser && editing ? (
         <>
-          <div className="border-l-2 border-red-500 bg-foreground/[0.04] px-3 py-1.5">
+          <div className="border-l-2 border-red-500 bg-foreground/[0.04] px-3 py-1">
             <textarea
               ref={taRef}
               autoFocus
@@ -109,7 +109,7 @@ export function ChatMessage({ role, content, timestamp, streaming, aborted = fal
       ) : (
         <>
           {isUser ? (
-            <div className="border-l-2 border-red-500 bg-foreground/[0.04] px-3 py-1.5">
+            <div className="border-l-2 border-red-500 bg-foreground/[0.04] px-3 py-1">
               <p className="whitespace-pre-wrap break-words font-mono text-[13px] font-semibold text-foreground">{content}</p>
             </div>
           ) : streaming && !content ? (
@@ -123,7 +123,7 @@ export function ChatMessage({ role, content, timestamp, streaming, aborted = fal
             />
           )}
           {!streaming && (
-            <div className="flex items-center gap-1 px-1 pt-0.5 opacity-0 transition-opacity focus-within:opacity-100 group-hover/chatmsg:opacity-100 max-lg:opacity-100">
+            <div className="flex items-center gap-1 px-0 pt-1">
               {(canPrev || canNext) && (
                 <div className="flex items-center gap-0.5">
                   <button

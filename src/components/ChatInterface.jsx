@@ -554,7 +554,7 @@ export function ChatInterface() {
           <div
             ref={scrollAreaRef}
             onScroll={handleScroll}
-            className="relative flex h-full flex-col overflow-y-auto overscroll-contain px-4 py-5"
+            className="relative flex h-full flex-col overflow-y-auto overscroll-contain px-4 py-3"
           >
           {messages.length === 0 ? (
             <div className="flex flex-1 items-center justify-center px-4 py-8 sm:py-12">
@@ -577,7 +577,7 @@ export function ChatInterface() {
             </div>
           ) : (
             <OptionsContext.Provider value={optionsValue}>
-            <div className="flex w-full flex-1 flex-col gap-6">
+            <div className="flex w-full flex-1 flex-col gap-1.5">
               {messages.map((msg, i) => (
                 <ChatMessage
                   key={msg.id}
