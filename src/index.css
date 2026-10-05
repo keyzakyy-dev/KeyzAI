@@ -469,6 +469,34 @@
 .chat-mockup .tui-badge-idle {
   border-radius: 0;
 }
+
+/* Mockup hero memakai renderer markdown yang sama dengan chat asli, tapi
+   panelnya hanya 640px dan font dasarnya 12px. Utilitas px di dalam
+   Markdown (code block 13px, tabel 12px, heading 19px) tidak ikut skala,
+   jadi tanpa override ini blok kode meluber keluar bubble. */
+.chat-mockup pre {
+  font-size: 11px;
+  max-height: 132px;
+}
+.chat-mockup table {
+  font-size: 10px;
+}
+.chat-mockup h1 {
+  font-size: 15px;
+}
+.chat-mockup h2 {
+  font-size: 13px;
+}
+.chat-mockup h3,
+.chat-mockup h4,
+.chat-mockup h5,
+.chat-mockup h6 {
+  font-size: 12px;
+}
+.chat-mockup ol,
+.chat-mockup ul {
+  font-size: 12px;
+}
 .tui-queued {
   border-color: color-mix(in srgb, var(--tui-warn) 65%, transparent);
 }

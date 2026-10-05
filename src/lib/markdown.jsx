@@ -535,6 +535,25 @@ function renderMarkdown(text, ctx = {}) {
   return blocks
 }
 
+/**
+ * Tutup pagar ``` yang belum tertutup DAN backtick tunggal menggantung,
+ * supaya teks parsial saat streaming tetap ter-render rapi (bukan mentah).
+ * Dipakai bersama oleh chat sungguhan dan mockup hero.
+ */
+export function closeOpenFence(s) {
+  if (!s) return s
+  let out = s
+  if ((out.match(/```/g)?.length || 0) % 2 === 1) out += '\n```'
+  const outside = out.replace(/```[\s\S]*?```/g, '').replace(/```[\s\S]*$/, '')
+  if ((outside.match(/`/g)?.length || 0) % 2 === 1) out += '`'
+  return out
+}
+
+// Apakah teks parsial sedang berada di dalam fence yang belum ditutup?
+export function insideFence(s) {
+  return (String(s || '').match(/```/g)?.length || 0) % 2 === 1
+}
+
 export function Markdown({ text = '', className = '', messageId = null, streaming = false }) {
   const blocks = useMemo(
     () => renderMarkdown(String(text), { messageId, streaming }),

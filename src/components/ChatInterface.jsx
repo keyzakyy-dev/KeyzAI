@@ -31,7 +31,14 @@ import { hasSiblings, navigateBranch, serializeConv } from '../state/tree.js'
 
 export function ChatInterface() {
   const { state, dispatch, activeConv, messages, loading, persistError, refreshHistory, logoutReset, authExpired, ackAuthExpired } = useChatStore()
-  const { send, stop } = useChatStream({ state, dispatch, loading })
+  // Flag reasoning per pesan AI: hanya untuk kosmetik indikator "thinking".
+  // Sengaja TIDAK disimpan di message tree — sync.js:35 mengirim objek conv
+  // apa adanya ke D1, jadi field di pesan akan ikut ter-persist.
+  const [reasoning, setReasoning] = useState({})
+  const markReasoning = useCallback((id) => {
+    setReasoning((prev) => (prev[id] ? prev : { ...prev, [id]: true }))
+  }, [])
+  const { send, stop } = useChatStream({ state, dispatch, loading, onStreamReasoning: markReasoning })
   const { toast, notify, dismiss } = useToast()
   const { width: sidebarW, resizing, onDragStart, setWidth: setSidebarWidth, hasStoredWidth } = useResizableSidebar()
 
@@ -411,6 +418,22 @@ export function ChatInterface() {
     [messages, activeConv],
   )
 
+  // Buang flag reasoning yang sudah tidak relevan (turn selesai / di-abort /
+  //-STREAM_EMPTY). Menahan prev saat tidak ada yang berubah supaya effect ini
+  // tidak memicu render berulang.
+  useEffect(() => {
+    const live = new Set(messages.filter((m) => m.state === 'streaming').map((m) => m.id))
+    setReasoning((prev) => {
+      const next = {}
+      let changed = false
+      for (const k of Object.keys(prev)) {
+        if (live.has(k)) next[k] = prev[k]
+        else changed = true
+      }
+      return changed ? next : prev
+    })
+  }, [messages])
+
   // ---------- TUI panels: data turunan untuk panel kanan (SESSION + recent)
   const currentModelMeta = MODELS.find((m) => m.id === model) || MODELS[0]
   const recentConvs = useMemo(() => {
@@ -588,6 +611,7 @@ export function ChatInterface() {
                   genMs={msg.genMs}
                   streaming={msg.state === 'streaming'}
                   aborted={msg.state === 'aborted'}
+                  reasoning={!!reasoning[msg.id]}
                   onEdit={startEdit}
                   editing={msg.id === editingId}
                   onEditSave={handleEditSave}

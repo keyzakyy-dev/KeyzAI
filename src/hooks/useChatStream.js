@@ -13,7 +13,7 @@ import { getContextFromAnchor, newMessage } from '../state/tree.js'
  *  - 'edit'       : ganti pesan user lama → sibling baru + AI baru
  *  - 'regenerate' : AI baru sebagai sibling jawaban lama (tanpa pesan user baru)
  */
-export function useChatStream({ state, dispatch, loading }) {
+export function useChatStream({ state, dispatch, loading, onStreamReasoning }) {
   const busyRef = useRef(null) // AbortController untuk generasi yang berjalan
 
   const send = useCallback(
@@ -99,6 +99,7 @@ export function useChatStream({ state, dispatch, loading }) {
           controller.signal,
           model,
           context,
+          () => onStreamReasoning?.(aiMsg.id),
         )
 
         if (!text) {

@@ -95,8 +95,16 @@ export async function generateTitle(userText, aiText, model) {
  * Optional `signal` lets the caller abort generation (throws AbortError).
  * Returns the full text.
  */
-export async function sendMessageStream(message, onDelta, signal, model, history) {
+export async function sendMessageStream(message, onDelta, signal, model, history, onReasoning) {
   const msg = validateMessage(message)
+  // Reasoning hanya perlu dilaporkan sekali: chunk-nya bisa ratusan, dan
+  // pemanggil memakainya hanya untuk mengganti kata status di indikator.
+  let reasoningSeen = false
+  const signalReasoning = () => {
+    if (reasoningSeen) return
+    reasoningSeen = true
+    try { onReasoning?.() } catch { /* indikator hanya kosmetik */ }
+  }
 
   if (typeof ReadableStream === 'undefined') {
     const fallback = await sendMessage(message, model, history)
@@ -137,9 +145,10 @@ export async function sendMessageStream(message, onDelta, signal, model, history
     let buffer = ''
     let full = ''
     // Model reasoning memancarkan chain-of-thought di reasoning_content sebelum
-    // content. Chunk reasoning tidak ditampilkan — bubble memakai indikator
-    // "Berpikir…" (ChatMessage) sampai content tiba. Jika content tidak pernah
-    // datang, ChatInterface membuang bubble + menampilkan pesan coba lagi.
+    // content. Isi reasoning tidak ditampilkan ke pengguna, tapi kemunculannya
+    // memberi tahu indikator bahwa model sudah mulai berpikir (bukan masih
+    // menunggu). Jika content tidak pernah datang, ChatInterface membuang
+    // bubble + menampilkan pesan coba lagi.
 
     while (true) {
       const { done, value } = await reader.read()
@@ -155,6 +164,7 @@ export async function sendMessageStream(message, onDelta, signal, model, history
         try {
           const json = JSON.parse(payload)
           const delta = json.choices?.[0]?.delta
+          if (delta?.reasoning_content || delta?.reasoning) signalReasoning()
           if (delta?.content) {
             full += delta.content
             onDelta(full)

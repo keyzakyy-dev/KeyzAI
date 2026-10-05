@@ -1,48 +1,10 @@
 import { useState, useRef, useEffect } from 'react'
 import { Pencil, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react'
-import { KeyMark } from '../lib/key-mark'
-import { Markdown } from '../lib/markdown'
+import { Markdown, closeOpenFence } from '../lib/markdown'
+import { ThinkingIndicator } from './ThinkingIndicator'
 import { CopyButton } from '../lib/copy-button'
-import { useStrokeDraw } from '../lib/micro-anim'
 
-// Close an unterminated ``` fence and dangling ` span so partial
-// streaming text still renders formatted instead of raw markers.
-function closeOpenFence(s) {
-  if (!s) return s
-  let out = s
-  if ((out.match(/```/g)?.length || 0) % 2 === 1) out += '\n```'
-  // Count single backticks outside fenced blocks
-  const withoutFences = out.replace(/```[\s\S]*?```/g, '').replace(/```[\s\S]*$/g, '')
-  if ((withoutFences.match(/`/g)?.length || 0) % 2 === 1) out += '`'
-  return out
-}
-
-const THINKING_WORDS = ['Berpikir…', 'Menelusuri…', 'Menulis…', 'Memoles…']
-
-function ThinkingIndicator() {
-  const [i, setI] = useState(0)
-  const markRef = useRef(null)
-  useStrokeDraw(markRef)
-  useEffect(() => {
-    const t = setInterval(() => setI((v) => (v + 1) % THINKING_WORDS.length), 2400)
-    return () => clearInterval(t)
-  }, [])
-  return (
-    <div className="flex items-center gap-2 font-mono text-[13px] text-muted-foreground">
-      <span ref={markRef} className="shrink-0 text-primary">
-        <KeyMark className="h-4 w-4" />
-      </span>
-      <div
-        key={i}
-        className="thinking-fade"
-      >
-        {THINKING_WORDS[i]}
-      </div>
-    </div>
-  )
-}
-
-export function ChatMessage({ role, content, timestamp, streaming, aborted = false, id, genMs, onEdit, editing = false, onEditSave, onEditCancel, onRegenerate, canPrev = false, canNext = false, onNavigate }) {
+export function ChatMessage({ role, content, timestamp, streaming, aborted = false, id, genMs, reasoning = false, onEdit, editing = false, onEditSave, onEditCancel, onRegenerate, canPrev = false, canNext = false, onNavigate }) {
   const isUser = role === 'user'
   const time = timestamp
     ? new Date(timestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -124,7 +86,7 @@ export function ChatMessage({ role, content, timestamp, streaming, aborted = fal
               </div>
             </div>
           ) : streaming && !content ? (
-            <ThinkingIndicator />
+            <ThinkingIndicator reasoning={reasoning} />
           ) : (
             <div className="border border-foreground/15 px-3 py-2">
               <Markdown
