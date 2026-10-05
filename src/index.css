@@ -434,6 +434,10 @@
   /* Area sentuh lebih besar tanpa mengubah tampilan (penting di mobile). */
   padding: 8px 4px;
   margin: -8px 0;
+  /* Preflight Tailwind menulis `button { text-transform: none }`. Nilai yang
+     dipasang langsung selalu menang atas warisan, jadi uppercase dari
+     .tui-inset-title tidak pernah sampai ke tab. `inherit`mengembalikannya. */
+  text-transform: inherit;
 }
 .tui-inset-title {
   position: absolute;
