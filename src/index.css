@@ -408,8 +408,13 @@
 
 /* Chat TUI: panel bordered + inset titles seperti referensi terminal.
    Warna mengikuti tema (dark/light) via variabel; aksen kuning
-   hanya untuk elemen chrome terminal. */
-.tui-root {
+   hanya untuk elemen chrome terminal.
+   Variabelnya di :root, bukan di .tui-root, karena dialog (announcement,
+   preferensi) dirender lewat Radix Portal ke <body> — sehingga tidak
+   punya ancestor .tui-root. Kalau hanya ada di .tui-root, `var(--tui-border)`
+   tak terdefinisi di dalam dialog dan deklarasi border jadi invalid-at-
+   computed-value-time, hasilnya panel dialog tanpa garis sama sekali. */
+:root {
   --tui-border: hsl(var(--foreground) / 0.16);
   --tui-accent: #facc15; /* yellow-400 */
   --tui-warn: #facc15;
@@ -568,6 +573,49 @@
 .tui-row-active {
   background: hsl(var(--foreground) / 0.06);
   border-radius: 4px;
+}
+
+/* Slider preferensi (lebar sidebar). Default browser memakai accent-color
+   sistem dan thumb bulat — di sini diganti track tipis + thumb kotak kuning
+   supaya sesuai bahasa TUI. Cross-browser tetap butuh pseudo::-webkit-*
+   dan ::-moz-*, jadi ditulis dua set. */
+.prefs-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 16px;
+  background: transparent;
+  cursor: pointer;
+}
+.prefs-range:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+.prefs-range::-webkit-slider-runnable-track {
+  height: 2px;
+  background: hsl(var(--foreground) / 0.18);
+}
+.prefs-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 12px;
+  width: 12px;
+  margin-top: -5px; /* tengahkan thumb di atas track 2px */
+  border-radius: 2px;
+  background: var(--tui-accent);
+}
+.prefs-range::-moz-range-track {
+  height: 2px;
+  background: hsl(var(--foreground) / 0.18);
+}
+.prefs-range::-moz-range-thumb {
+  height: 12px;
+  width: 12px;
+  border: 0;
+  border-radius: 2px;
+  background: var(--tui-accent);
+}
+.prefs-range:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
 }
 
 /* Chat: MeshCanvas sebagai latar (seperti hero landing). Panel dibuat
