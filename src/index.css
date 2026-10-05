@@ -588,3 +588,46 @@
     font-size: 16px !important;
   }
 }
+
+/* Logo ASCII di empty state chat.
+   Warnanya dulu hex literal di dalam JSX, jadi tidak pernah ikut tema. Dan
+   dari 6 lapis, 3 lapis shadow punya kontras 1.03:1 terhadap latar gelap --
+   praktis tak terlihat, jadi efek 3D-nya tidak pernah muncul. Sekarang 3
+   lapis saja (muka + 2 tepi diagonal) dan warnanya lewat custom property
+   supaya terang/gelap sama-sama benar.
+
+   Gradien di muka bergerak mendatar: amber redup di kiri -> kuning terang
+   di kanan, sehingga ujung "AI" ikut menyala. */
+.ascii-logo {
+  --ascii-face: #ca8a04;
+  --ascii-mid: #854d0e;
+  --ascii-deep: #713f12;
+  --ascii-face-image: linear-gradient(100deg, #854d0e 0%, #ca8a04 40%, #facc15 78%, #fde047 100%);
+}
+.dark .ascii-logo {
+  --ascii-face: #facc15;
+  --ascii-mid: #a16207;
+  --ascii-deep: #713f12;
+  --ascii-face-image: linear-gradient(100deg, #a16207 0%, #ca8a04 38%, #facc15 76%, #fde047 100%);
+}
+.ascii-logo .ascii-deep {
+  color: var(--ascii-deep);
+}
+.ascii-logo .ascii-mid {
+  color: var(--ascii-mid);
+}
+.ascii-logo .ascii-face {
+  color: var(--ascii-face);
+  text-shadow: 0 0 14px rgb(250 204 21 / 0.22);
+}
+/* Muka memakai gradien hanya kalau background-clip: text tersedia; kalau
+   tidak, `color` di atas yang dipakai supaya teks tidak jadi tak terlihat
+   (mis. font monospace gagal dimuat). */
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+  .ascii-logo .ascii-face {
+    background-image: var(--ascii-face-image);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
