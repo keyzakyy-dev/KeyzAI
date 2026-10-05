@@ -169,12 +169,16 @@ export default {
       }
       try {
         let profile
-        if (body.accessToken) {
+        const accessToken = body.accessToken || body.access_token
+        const idToken = body.idToken || body.id_token
+        if (accessToken) {
           // OAuth 2.0 access token flow: fetch userinfo from Google
-          profile = await fetchGoogleUserInfo(body.accessToken)
-        } else {
+          profile = await fetchGoogleUserInfo(accessToken)
+        } else if (idToken) {
           // Legacy ID token flow
-          profile = await verifyGoogleIdToken(body.idToken, env.GOOGLE_CLIENT_ID)
+          profile = await verifyGoogleIdToken(idToken, env.GOOGLE_CLIENT_ID)
+        } else {
+          throw new Error('Token Google tidak ditemukan di request')
         }
         const user = await upsertUser(env.DB, profile)
         const session = await signSession(user.id, env.SESSION_SECRET)

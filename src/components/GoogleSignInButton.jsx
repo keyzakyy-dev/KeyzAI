@@ -89,8 +89,9 @@ export function GoogleSignInButton({
               errorRef.current?.(resp.error_description || resp.error || 'Login dibatalkan.')
               return
             }
-            if (resp?.access_token) {
-              callbackRef.current?.({ accessToken: resp.access_token })
+            const token = resp?.access_token || resp?.accessToken
+            if (token) {
+              callbackRef.current?.({ accessToken: token })
             } else {
               errorRef.current?.('Gagal mendapatkan token akses dari Google.')
             }
