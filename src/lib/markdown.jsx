@@ -146,14 +146,33 @@ function ListView({ items }) {
     if (nodes.length === 0) return null
     const ordered = nodes[0].ordered
     const List = ordered ? 'ol' : 'ul'
+    const listClass = ordered
+      ? 'list-decimal ml-5 space-y-1 tabular-nums marker:text-muted-foreground'
+      : depth === 0
+        ? 'list-disc ml-5 space-y-1 marker:text-red-500'
+        : 'ml-5 list-[square] space-y-1 marker:text-red-500/70'
     return (
       <List
         start={ordered ? nodes[0].start : undefined}
-        className={`${ordered ? 'list-decimal' : 'list-disc'} ml-4 space-y-1`}
+        className={listClass}
       >
         {nodes.map((n, j) => (
-          <li key={j} className="break-words pl-0.5">
-            <span className="whitespace-pre-wrap">{renderInline([n.content, ...n.extra].join('\n'))}</span>
+          <li key={j} className={`break-words pl-1 leading-relaxed ${n.task != null ? '-ml-5 list-none pl-0' : ''}`}>
+            {n.task != null ? (
+              <span className="flex items-start gap-2">
+                <span
+                  aria-hidden="true"
+                  className={`mt-0.5 flex h-3.5 w-3.5 shrink-0 items-center justify-center border text-[10px] leading-none ${
+                    n.task ? 'border-red-500/60 bg-red-500/10 text-red-500' : 'border-foreground/25 text-transparent'
+                  }`}
+                >
+                  {n.task ? '✓' : '·'}
+                </span>
+                <span className="min-w-0 flex-1 whitespace-pre-wrap">{renderInline([n.content, ...n.extra].join('\n'))}</span>
+              </span>
+            ) : (
+              <span className="whitespace-pre-wrap">{renderInline([n.content, ...n.extra].join('\n'))}</span>
+            )}
             {renderLevel(n.children, depth + 1)}
           </li>
         ))}
@@ -182,11 +201,21 @@ function collectList(lines, start) {
     const m = LIST_ITEM_RE.exec(line)
     if (m) {
       const ordered = /\d/.test(m[2])
+      let content = m[3]
+      let task = null
+      if (!ordered) {
+        const tm = /^\[([ xX])\]\s+(.*)$/.exec(content)
+        if (tm) {
+          task = tm[1].toLowerCase() === 'x'
+          content = tm[2]
+        }
+      }
       items.push({
         indent: m[1].replace(/\t/g, '    ').length,
         ordered,
         start: ordered ? parseInt(m[2], 10) : undefined,
-        content: m[3],
+        content,
+        task,
         extra: [],
       })
       i++
@@ -241,13 +270,20 @@ function renderMarkdown(text, ctx = {}) {
       continue
     }
 
-    // Heading
+    // Heading — diselaraskan ke ritme mono box AI (13px): H1 menonjol
+    // dengan aksen merah, H2 uppercase, H3+ menyatu sebagai sublabel.
     const h = HEADING_RE.exec(line)
     if (h) {
-      const Tag = h[1].length <= 1 ? 'h3' : h[1].length === 2 ? 'h4' : 'h5'
-      const size = h[1].length <= 1 ? 'text-[17px]' : h[1].length === 2 ? 'text-[16px]' : 'text-[15px]'
+      const depth = h[1].length
+      const Tag = depth <= 1 ? 'h3' : depth === 2 ? 'h4' : 'h5'
+      const cls =
+        depth <= 1
+          ? 'mt-3 border-b border-red-500/40 pb-1 text-[14px] font-bold tracking-tight text-foreground first:mt-0'
+          : depth === 2
+            ? 'mt-3 text-[13px] font-bold uppercase tracking-wide text-foreground first:mt-0'
+            : 'mt-2 text-[13px] font-semibold text-muted-foreground first:mt-0'
       blocks.push(
-        <Tag key={key++} className={`${size} font-semibold tracking-tight`}>
+        <Tag key={key++} className={cls}>
           {renderInline(h[2])}
         </Tag>
       )
