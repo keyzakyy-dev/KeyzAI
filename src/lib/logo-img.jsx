@@ -12,12 +12,12 @@ export function LogoImg({ className = '' }) {
   )
 }
 
-// Wordmark teks: KEYZ mengikuti tema (putih di dark, gelap di light) + AI merah.
+// Wordmark teks: KEYZ mengikuti tema (putih di dark, gelap di light) + AI kuning.
 // Ukuran ditetapkan pemanggil via className (default text-xl untuk navbar).
 export function Wordmark({ className = 'text-xl' }) {
   return (
     <span className={`font-medium tracking-[0.16em] text-foreground ${className}`}>
-      KEYZ<span className="text-red-500">AI</span>
+      KEYZ<span className="text-yellow-600 dark:text-yellow-400">AI</span>
     </span>
   )
 }

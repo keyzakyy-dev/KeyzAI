@@ -60,9 +60,9 @@ export function ThinkingIndicator({ reasoning = false, elapsedMs = null, classNa
     <div className={`tui-panel flex items-center gap-2 px-3 py-1.5 font-mono text-[13px] ${className}`} role="status" aria-live="polite">
       <span className="tui-inset-title tui-inset-accent" aria-hidden="true">thinking</span>
       <span className="inline-flex shrink-0 items-center gap-1" aria-hidden="true">
-        <span className="tui-box-loading inline-block h-1.5 w-1.5 bg-red-500" />
-        <span className="tui-box-loading inline-block h-1.5 w-1.5 bg-red-500" style={{ animationDelay: '0.15s' }} />
-        <span className="tui-box-loading inline-block h-1.5 w-1.5 bg-red-500" style={{ animationDelay: '0.3s' }} />
+        <span className="tui-box-loading inline-block h-1.5 w-1.5 bg-yellow-400" />
+        <span className="tui-box-loading inline-block h-1.5 w-1.5 bg-yellow-400" style={{ animationDelay: '0.15s' }} />
+        <span className="tui-box-loading inline-block h-1.5 w-1.5 bg-yellow-400" style={{ animationDelay: '0.3s' }} />
       </span>
       <span className="min-w-0 flex-1 truncate text-foreground thinking-fade">{word}</span>
       {/* Counter disembunyikan dari screen reader: berubah 5-10x per detik,

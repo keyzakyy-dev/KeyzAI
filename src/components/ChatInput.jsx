@@ -5,7 +5,7 @@ import { Textarea } from './ui/textarea'
 import { MODELS } from '../lib/models'
 
 function FreeBadge() {
-  return <span className="text-[10px] font-medium text-red-600/90 dark:text-red-400/90">Free</span>
+  return <span className="text-[10px] font-medium text-yellow-700 dark:text-yellow-400/90">Free</span>
 }
 
 export function ModelPicker({ model, onModelChange }) {

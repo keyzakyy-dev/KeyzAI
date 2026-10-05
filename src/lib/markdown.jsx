@@ -259,8 +259,8 @@ function ListView({ items }) {
           const listClass = g.ordered
             ? 'list-decimal ml-5 space-y-1 tabular-nums marker:text-muted-foreground'
             : depth === 0
-              ? 'list-disc ml-5 space-y-1 marker:text-red-500'
-              : 'ml-5 list-[square] space-y-1 marker:text-red-500/70'
+              ? 'list-disc ml-5 space-y-1 marker:text-yellow-600'
+              : 'ml-5 list-[square] space-y-1 marker:text-yellow-600/70'
           return (
             <List
               key={gi}
@@ -274,7 +274,7 @@ function ListView({ items }) {
                       <span
                         aria-hidden="true"
                         className={`mt-0.5 flex h-3.5 w-3.5 shrink-0 items-center justify-center border text-[10px] leading-none ${
-                          n.task ? 'border-red-500/60 bg-red-500/10 text-red-500' : 'border-foreground/25 text-transparent'
+                          n.task ? 'border-yellow-400/60 bg-yellow-400/10 text-yellow-600 dark:text-yellow-400' : 'border-foreground/25 text-transparent'
                         }`}
                       >
                         {n.task ? '✓' : '·'}
@@ -392,7 +392,7 @@ function renderMarkdown(text, ctx = {}) {
       const Tag = `h${depth}`
       const cls =
         depth === 1
-          ? 'mt-4 border-b border-red-500/40 pb-1.5 text-[19px] font-extrabold tracking-tight text-foreground first:mt-0 scroll-mt-4 text-balance'
+          ? 'mt-4 border-b border-yellow-400/40 pb-1.5 text-[19px] font-extrabold tracking-tight text-foreground first:mt-0 scroll-mt-4 text-balance'
           : depth === 2
             ? 'mt-4 text-[16px] font-bold tracking-tight text-foreground first:mt-0 scroll-mt-4 text-balance'
             : depth === 3
@@ -436,7 +436,7 @@ function renderMarkdown(text, ctx = {}) {
       blocks.push(
         <blockquote
           key={key++}
-          className="space-y-1 border-l-2 border-red-500/40 bg-foreground/[0.03] py-1.5 pl-3 pr-3 text-muted-foreground"
+          className="space-y-1 border-l-2 border-yellow-400/40 bg-foreground/[0.03] py-1.5 pl-3 pr-3 text-muted-foreground"
         >
           {buf.map((l, j) =>
             l.trim() === '' ? (

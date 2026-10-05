@@ -55,7 +55,7 @@ export function FeaturesBento() {
             </span>
             <h2 className="mt-3 text-2xl font-medium tracking-tight text-foreground sm:text-3xl lg:text-4xl">
               Tulis, kode,{' '}
-              <span className="text-red-500">eksplorasi</span>
+              <span className="text-yellow-600 dark:text-yellow-400">eksplorasi</span>
             </h2>
           </div>
           <p className="max-w-sm text-sm leading-relaxed text-muted-foreground sm:text-right">

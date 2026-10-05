@@ -406,8 +406,8 @@ export function PrdBuilderPage() {
   const statusBar = (
     <div className="relative flex flex-shrink-0 items-center gap-x-2 gap-y-0.5 px-1 py-1 text-[11px] leading-relaxed text-muted-foreground lg:col-span-2" aria-live="polite">
       <span className="inline-flex items-center gap-1" aria-hidden="true">
-        <span className={`inline-block h-1.5 w-1.5 ${isWorking ? 'bg-orange-400' : 'bg-emerald-400'}`} />
-        <span className={`inline-block h-1.5 w-1.5 ${isWorking ? 'bg-orange-400/60' : 'bg-foreground/25'}`} />
+        <span className={`inline-block h-1.5 w-1.5 ${isWorking ? 'bg-yellow-400' : 'bg-foreground/25'}`} />
+        <span className={`inline-block h-1.5 w-1.5 ${isWorking ? 'bg-yellow-400/60' : 'bg-foreground/25'}`} />
         <span className="inline-block h-1.5 w-1.5 bg-foreground/25" />
       </span>
       <span className={`px-1 py-px text-[10px] font-bold uppercase tracking-wider ${isWorking ? 'tui-badge-working' : 'tui-badge-idle'}`}>

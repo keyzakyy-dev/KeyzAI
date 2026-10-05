@@ -6,6 +6,9 @@
   /* Light: abu batu (stone) — netral hangat, saturasi rendah. */
   :root {
     color-scheme: dark;
+    /* Aksen kuning (was merah). Untuk teks kecil, shade gelap yellow-600
+       dipakai supaya kontras tetap layak di latar terang; varian terang
+       yellow-400 dipasang lewat utility `dark:` di pemanggil. */
     --background: 0 0% 4%;
     --foreground: 0 0% 95%;
     --card: 0 0% 6.5%;
@@ -20,7 +23,7 @@
     --muted-foreground: 0 0% 68%;
     --accent: 0 0% 10.5%;
     --accent-foreground: 0 0% 95%;
-    --destructive: 0 65% 48%;
+    --destructive: 40.6 96.1% 40.4%;
     --destructive-foreground: 0 0% 95%;
     --border: 0 0% 10.5%;
     --input: 0 0% 10.5%;
@@ -43,7 +46,7 @@
     --muted-foreground: 0 0% 68%;
     --accent: 0 0% 10.5%;
     --accent-foreground: 0 0% 95%;
-    --destructive: 0 65% 48%;
+    --destructive: 40.6 96.1% 40.4%;
     --destructive-foreground: 0 0% 95%;
     --border: 0 0% 10.5%;
     --input: 0 0% 10.5%;
@@ -404,12 +407,12 @@
 }
 
 /* Chat TUI: panel bordered + inset titles seperti referensi terminal.
-   Warna mengikuti tema (dark/light) via variabel; aksen pink/oranye
+   Warna mengikuti tema (dark/light) via variabel; aksen kuning
    hanya untuk elemen chrome terminal. */
 .tui-root {
   --tui-border: hsl(var(--foreground) / 0.16);
-  --tui-accent: #ff3b30;
-  --tui-warn: #ff3b30;
+  --tui-accent: #facc15; /* yellow-400 */
+  --tui-warn: #facc15;
 }
 /* Desktop: seluruh UI chat diskala +6% (teks px & rem + layout seragam).
    Zoom menyesuaikan lebar auto otomatis; tinggi dikompensasi agar hasil

@@ -44,7 +44,7 @@ export function ChatMessage({ role, content, timestamp, streaming, aborted = fal
       {isUser && editing ? (
         <>
           <div className="flex justify-end">
-            <div className="w-full max-w-[90%] border-r-2 border-red-500 bg-foreground/[0.04] px-3 py-1">
+            <div className="w-full max-w-[90%] border-r-2 border-yellow-400 bg-foreground/[0.04] px-3 py-1">
               <textarea
                 ref={taRef}
                 autoFocus
@@ -81,7 +81,7 @@ export function ChatMessage({ role, content, timestamp, streaming, aborted = fal
         <>
           {isUser ? (
             <div className="flex justify-end">
-              <div className="w-fit max-w-[90%] border-r-2 border-red-500 bg-foreground/[0.04] px-3 py-1">
+              <div className="w-fit max-w-[90%] border-r-2 border-yellow-400 bg-foreground/[0.04] px-3 py-1">
                 <p className="whitespace-pre-wrap break-words font-mono text-[13px] font-semibold text-foreground">{content}</p>
               </div>
             </div>

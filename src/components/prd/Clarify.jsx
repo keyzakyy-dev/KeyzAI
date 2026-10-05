@@ -62,7 +62,7 @@ export function Clarify({
           )}
 
           {q.required && !answered && (
-            <p className="mt-2 text-[11px] text-amber-600 dark:text-amber-400">
+            <p className="mt-2 text-[11px] text-yellow-700 dark:text-yellow-400">
               Disarankan dijawab karena memengaruhi struktur produk.
             </p>
           )}

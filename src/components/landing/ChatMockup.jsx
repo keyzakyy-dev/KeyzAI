@@ -147,9 +147,9 @@ export function ChatMockup() {
           <div className="tui-panel relative flex h-[300px] min-h-0 flex-1 flex-col lg:h-[320px]">
             <span className="tui-inset-title" aria-hidden="true">output</span>
             <div className="mockup-scroll flex flex-1 flex-col gap-1.5 overflow-y-auto overscroll-contain px-4 py-3">
-              {/* Bubble user: kanan, garis merah di tepi kanan (sama ChatMessage) */}
+              {/* Bubble user: kanan, garis kuning di tepi kanan (sama ChatMessage) */}
               <div className="flex justify-end">
-                <div className="w-fit max-w-[90%] border-r-2 border-red-500 bg-foreground/[0.04] px-3 py-1">
+                <div className="w-fit max-w-[90%] border-r-2 border-yellow-400 bg-foreground/[0.04] px-3 py-1">
                   <p className="whitespace-pre-wrap break-words font-mono text-[12px] font-semibold text-foreground">
                     {USER_TEXT}
                   </p>
@@ -306,9 +306,9 @@ export function ChatMockup() {
         <div className="relative col-span-2 flex flex-col gap-1 px-1 text-[10px] leading-relaxed">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-px">
             <span className="inline-flex items-center gap-1" aria-hidden="true">
-              <span className={`tui-box-loading inline-block h-1.5 w-1.5 ${done ? 'bg-foreground/25' : 'bg-red-500'}`} />
-              <span className={`tui-box-loading inline-block h-1.5 w-1.5 ${done ? 'bg-foreground/25' : 'bg-red-500'}`} style={done ? undefined : { animationDelay: '0.15s' }} />
-              <span className={`tui-box-loading inline-block h-1.5 w-1.5 ${done ? 'bg-foreground/25' : 'bg-red-500'}`} style={done ? undefined : { animationDelay: '0.3s' }} />
+              <span className={`tui-box-loading inline-block h-1.5 w-1.5 ${done ? 'bg-foreground/25' : 'bg-yellow-400'}`} />
+              <span className={`tui-box-loading inline-block h-1.5 w-1.5 ${done ? 'bg-foreground/25' : 'bg-yellow-400'}`} style={done ? undefined : { animationDelay: '0.15s' }} />
+              <span className={`tui-box-loading inline-block h-1.5 w-1.5 ${done ? 'bg-foreground/25' : 'bg-yellow-400'}`} style={done ? undefined : { animationDelay: '0.3s' }} />
             </span>
             <span>
               {done ? (
@@ -330,7 +330,7 @@ export function ChatMockup() {
             <span className="inline-flex h-5 shrink-0 items-center gap-1 border border-foreground/10 px-1.5 font-medium text-muted-foreground">
               <KeyMark className="h-2.5 w-2.5" />
               <span className="max-w-24 truncate">{MODEL_LABEL}</span>
-              <span className="text-[9px] font-medium text-red-600/90 dark:text-red-400/90">Free</span>
+              <span className="text-[9px] font-medium text-yellow-700 dark:text-yellow-400/90">Free</span>
               <ChevronDown className="h-2.5 w-2.5" />
             </span>
             <span className="ml-auto shrink-0 tabular-nums text-muted-foreground/70">

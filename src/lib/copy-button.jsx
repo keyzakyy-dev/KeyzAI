@@ -45,7 +45,7 @@ export function CopyButton({ text, withLabel = false, className }) {
         className
       )}
     >
-      {copied ? <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+      {copied ? <Check className="h-3.5 w-3.5 text-yellow-700 dark:text-yellow-400" /> : <Copy className="h-3.5 w-3.5" />}
       {withLabel && <span>{copied ? 'Tersalin' : 'Salin'}</span>}
     </button>
   )

@@ -195,7 +195,7 @@ function Hero({ navigate }) {
       </div>
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-[10%] top-1/2 h-[28rem] w-[min(38rem,70vw)] -translate-y-1/2 rounded-full bg-red-500/10 blur-[140px]"
+        className="pointer-events-none absolute left-[10%] top-1/2 h-[28rem] w-[min(38rem,70vw)] -translate-y-1/2 rounded-full bg-yellow-400/10 blur-[140px]"
       />
       <div className="relative mx-auto w-full max-w-7xl px-4 sm:px-6">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
@@ -204,7 +204,7 @@ function Hero({ navigate }) {
               href="#models"
               className="animate-rise group mb-5 inline-flex max-w-full items-center gap-2 border border-foreground/15 bg-transparent py-1 pl-1.5 pr-3 text-xs text-foreground transition-colors hover:border-foreground/35 sm:mb-6 sm:gap-3 sm:py-1.5 sm:pl-2 sm:pr-3.5 sm:text-sm"
             >
-              <span className="flex size-5 shrink-0 items-center justify-center border border-red-500/35 text-red-500 dark:text-red-400 sm:size-6">
+              <span className="flex size-5 shrink-0 items-center justify-center border border-yellow-400/35 text-yellow-600 dark:text-yellow-400 sm:size-6">
                 <Check className="size-3 sm:size-3.5" strokeWidth={2.5} aria-hidden="true" />
               </span>
               <span className="truncate text-muted-foreground">
@@ -261,7 +261,7 @@ function Hero({ navigate }) {
                 'Bisa ganti model kapan saja',
               ].map((item) => (
                 <li key={item} className="flex items-center gap-2.5">
-                  <Check className="size-4 shrink-0 text-red-500 dark:text-red-400" strokeWidth={2.5} aria-hidden="true" />
+                  <Check className="size-4 shrink-0 text-yellow-600 dark:text-yellow-400" strokeWidth={2.5} aria-hidden="true" />
                   <span>{item}</span>
                 </li>
               ))}
@@ -284,7 +284,7 @@ function ModelMarqueeSection() {
     <section className="border-y border-foreground/10 py-3 sm:py-4">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="mb-1 flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
-          <span className="size-1.5 bg-red-500" aria-hidden="true" />
+          <span className="size-1.5 bg-yellow-400" aria-hidden="true" />
           Model tersedia
         </div>
         <ModelMarquee />
@@ -305,9 +305,9 @@ function PrdBuilder({ navigate }) {
 
   return (
     <section id="prd-builder" className="relative scroll-mt-20 py-12 sm:py-14 lg:py-20">
-      <div aria-hidden="true" className="pointer-events-none absolute -left-24 top-16 size-64 rounded-full bg-red-500/10 blur-[100px] hidden lg:block" />
-      <div aria-hidden="true" className="pointer-events-none absolute -right-20 bottom-8 size-72 rounded-full bg-red-500/10 blur-[100px] hidden lg:block" />
-      <div aria-hidden="true" className="pointer-events-none absolute right-[32%] -top-16 size-40 rounded-full bg-red-500/10 blur-[90px] hidden lg:block" />
+      <div aria-hidden="true" className="pointer-events-none absolute -left-24 top-16 size-64 rounded-full bg-yellow-400/10 blur-[100px] hidden lg:block" />
+      <div aria-hidden="true" className="pointer-events-none absolute -right-20 bottom-8 size-72 rounded-full bg-yellow-400/10 blur-[100px] hidden lg:block" />
+      <div aria-hidden="true" className="pointer-events-none absolute right-[32%] -top-16 size-40 rounded-full bg-yellow-400/10 blur-[90px] hidden lg:block" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         <div className="mb-10 flex flex-col justify-between gap-4 border-b border-foreground/10 pb-6 sm:flex-row sm:items-end">
@@ -317,7 +317,7 @@ function PrdBuilder({ navigate }) {
             </span>
             <h2 className="mt-3 text-2xl font-medium tracking-tight text-foreground sm:text-3xl lg:text-4xl">
               Dari ide jadi PRD dalam{' '}
-              <span className="text-red-500">hitungan menit</span>
+              <span className="text-yellow-600 dark:text-yellow-400">hitungan menit</span>
             </h2>
           </div>
           <p className="max-w-sm text-sm leading-relaxed text-muted-foreground sm:text-right">
@@ -392,7 +392,7 @@ function Models() {
               </span>
               <h2 className="mt-3 text-2xl font-medium tracking-tight text-foreground sm:text-3xl lg:text-4xl">
                 Beragam model,{' '}
-                <span className="text-red-500">semua gratis</span>
+                <span className="text-yellow-600 dark:text-yellow-400">semua gratis</span>
               </h2>
             </div>
             <p className="max-w-sm text-sm leading-relaxed text-muted-foreground sm:text-right">
@@ -451,7 +451,7 @@ function ModelCard({ model, copied, onCopy }) {
             className="flex h-6 w-6 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           >
             {copied === model.id ? (
-              <Check className="h-3.5 w-3.5 text-red-500" />
+              <Check className="h-3.5 w-3.5 text-yellow-600 dark:text-yellow-400" />
             ) : (
               <Copy className="h-3.5 w-3.5" />
             )}
@@ -459,7 +459,7 @@ function ModelCard({ model, copied, onCopy }) {
         </div>
 
         <div className="mt-auto flex items-center">
-          <span className="ml-auto text-[10px] font-medium text-red-600/90 dark:text-red-400/90">
+          <span className="ml-auto text-[10px] font-medium text-yellow-700 dark:text-yellow-400/90">
             Free
           </span>
         </div>

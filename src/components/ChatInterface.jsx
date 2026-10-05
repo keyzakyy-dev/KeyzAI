@@ -1,4 +1,4 @@
-﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { X, ArrowDown, CircleX, RotateCcw, ChevronDown, Pin, Pencil, Trash2, Download, Plus, FileText, MessageSquare, User, PanelRight } from 'lucide-react'
 import { LogoImg, Wordmark } from '../lib/logo-img'
@@ -583,7 +583,7 @@ export function ChatInterface() {
             <div className="flex flex-1 items-center justify-center px-4 py-8 sm:py-12">
               <div className="w-full max-w-2xl space-y-3 text-center">
                 <p className="flex items-center justify-center gap-2 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-                  <span className="inline-block h-1.5 w-1.5 bg-red-400" aria-hidden="true" />
+                  <span className="inline-block h-1.5 w-1.5 bg-yellow-300" aria-hidden="true" />
                   session ready
                 </p>
                 <AsciiLogo />
@@ -683,9 +683,9 @@ export function ChatInterface() {
       <div className="relative flex flex-col gap-1 px-1 pb-[max(0.25rem,env(safe-area-inset-bottom))] text-[11px] leading-relaxed lg:col-span-2" aria-live="polite">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
           <span className="inline-flex items-center gap-1" aria-hidden="true">
-            <span className={`inline-block h-1.5 w-1.5 ${loading ? 'tui-box-loading bg-red-500' : 'bg-foreground/25'}`} />
-            <span className={`inline-block h-1.5 w-1.5 ${loading ? 'tui-box-loading bg-red-500' : 'bg-foreground/25'}`} style={loading ? { animationDelay: '0.15s' } : undefined} />
-            <span className={`inline-block h-1.5 w-1.5 ${loading ? 'tui-box-loading bg-red-500' : 'bg-foreground/25'}`} style={loading ? { animationDelay: '0.3s' } : undefined} />
+            <span className={`inline-block h-1.5 w-1.5 ${loading ? 'tui-box-loading bg-yellow-400' : 'bg-foreground/25'}`} />
+            <span className={`inline-block h-1.5 w-1.5 ${loading ? 'tui-box-loading bg-yellow-400' : 'bg-foreground/25'}`} style={loading ? { animationDelay: '0.15s' } : undefined} />
+            <span className={`inline-block h-1.5 w-1.5 ${loading ? 'tui-box-loading bg-yellow-400' : 'bg-foreground/25'}`} style={loading ? { animationDelay: '0.3s' } : undefined} />
           </span>
           {loading ? (
             <span><span className="text-foreground">Waiting for the model</span><span className="text-muted-foreground"> · Esc to stop</span></span>

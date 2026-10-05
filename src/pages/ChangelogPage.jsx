@@ -5,7 +5,7 @@ import { CHANGELOG } from '../lib/changelog'
 
 const TYPE_LABEL = { new: 'Baru', polish: 'Poles', fix: 'Perbaikan' }
 const TYPE_CLASS = {
-  new: 'text-red-500 dark:text-red-400',
+  new: 'text-yellow-600 dark:text-yellow-400',
   polish: 'text-muted-foreground',
   fix: 'text-muted-foreground',
 }
@@ -29,7 +29,7 @@ export function ChangelogPage() {
             <div className="relative pb-8 pl-8 last:pb-0">
               <span
                 aria-hidden="true"
-                className="absolute top-[13px] left-0 h-[15px] w-[15px] rounded-full border-2 border-red-500 bg-background"
+                className="absolute top-[13px] left-0 h-[15px] w-[15px] rounded-full border-2 border-yellow-400 bg-background"
               />
               <div className="feature-grid">
                 <div className="feature-card p-6 sm:p-7" style={{ '--card-line-delay': `${i * 90}ms` }}>

@@ -27,7 +27,7 @@ export function DocShell({ eyebrow, title, description, meta, children }) {
       <main className="mx-auto w-full max-w-3xl px-4 py-14 sm:px-6 sm:py-20">
         <div className="mb-10 border-b border-foreground/10 pb-6">
           <span className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-            <span className="size-1.5 rounded-full bg-red-500" aria-hidden="true" />
+            <span className="size-1.5 rounded-full bg-yellow-400" aria-hidden="true" />
             {eyebrow}
           </span>
           <h1 className="mt-3 text-2xl font-medium tracking-tight text-foreground sm:text-3xl lg:text-4xl">{title}</h1>
