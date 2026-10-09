@@ -5,9 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
 
     <title>KeyzAI</title>
-    <!-- Inline background synchronous: mencegah FOUC (blank flash) di mobile sebelum
-         CSS bundle termuat. Value hsl(0 0% 4%) ≈ #0a0a0a. -->
-    <style>html, body { background: #0a0a0a; color: #f5f5f5; margin: 0; }</style>
+    <!-- Synchronous dark-theme CSS vars: nilai CSS var (--background dst) tidak
+         bisa di-resolve sebelum CSS bundle (async) termuat. Kalau dibiarkan,
+         browser pakai default transparent → body putih sesaat sebelum bundle
+         masuk, menyebabkan blank flash di mobile.
+         Inline style ini dipasang langsung ke <html> supaya nilai var()
+         tersedia seketika, tanpa menunggu apa pun. -->
+    <style>html{--background:0 0% 4%;--foreground:0 0% 95%;--card:0 0% 6.5%;--card-foreground:0 0% 95%;--popover:0 0% 6.5%;--popover-foreground:0 0% 95%;--primary:0 0% 95%;--primary-foreground:0 0% 8%;--secondary:0 0% 9%;--secondary-foreground:0 0% 95%;--muted:0 0% 9%;--muted-foreground:0 0% 68%;--accent:0 0% 10.5%;--accent-foreground:0 0% 95%;--destructive:40.6 96.1% 40.4%;--destructive-foreground:0 0% 95%;--border:0 0% 10.5%;--input:0 0% 10.5%;--ring:0 0% 62%}html,body{background:hsl(var(--background));color:hsl(var(--foreground));margin:0}</style>
     <meta
       name="description"
       content="KeyzAI adalah teman chat AI gratis. Masuk dengan Google, brainstorm ide, debug kode, menulis lebih cepat, pelajari topik baru, dan riwayat chatmu tersinkron di semua perangkat."
