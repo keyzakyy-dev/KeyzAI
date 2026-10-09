@@ -81,7 +81,13 @@
     </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Skeleton awal: tampil sebelum React hydrate (mencegah layar kosong di mobile lambat).
+           Dihapus otomatis begitu React mount. -->
+      <div style="display:flex;align-items:center;justify-content:center;height:100dvh;color:#f5f5f5;font-family:IBM Plex Sans,sans-serif;font-size:14px;opacity:.5">
+        memuat…
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
