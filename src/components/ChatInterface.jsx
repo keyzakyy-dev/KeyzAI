@@ -591,11 +591,7 @@ export function ChatInterface() {
                   <span className="tui-prompt font-bold" aria-hidden="true">› </span>
                   ketik di bawah · Enter untuk kirim
                 </p>
-                {!user && (
-                  <button type="button" onClick={() => { setLoginErr(null); setLoginReason('manual'); setPendingPreview(null); setLoginOpen(true) }} className="text-xs text-muted-foreground underline decoration-dotted underline-offset-4 transition-colors hover:text-foreground">
-                    masuk untuk menyimpan riwayat
-                  </button>
-                )}
+
               </div>
             </div>
           ) : (
