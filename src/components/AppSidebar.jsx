@@ -13,10 +13,11 @@ import { useChatStore } from '../hooks/useChatStore'
 import { usePrdHistory } from '../hooks/usePrdHistory'
 import { usePreferences } from '../hooks/usePreferences'
 import { useToast } from '../hooks/useToast'
+import { MODELS } from '../lib/models'
+import { Wordmark } from '../lib/logo-img'
 import { deleteAllConversations } from '../lib/sync'
 import { downloadAll } from '../lib/backup'
 import { serializeConv } from '../state/tree'
-import { MODELS } from '../lib/models'
 
 /**
  * Layout halaman non-chat (PRD Builder) dengan kerangka yang sama persis
@@ -39,6 +40,7 @@ export function AppSidebar({
   currentPrdId,
   onAfterDeletePrd,
   onNewPrd,
+  footer,
 }) {
   const { state, dispatch, refreshHistory, logoutReset, authExpired, ackAuthExpired } = useChatStore()
   const { history: prdItems, remove: removePrd, refresh: refreshPrd } = usePrdHistory()
@@ -183,8 +185,18 @@ export function AppSidebar({
       />
       <main className="flex min-h-0 min-w-0 flex-col gap-3 lg:h-full lg:min-h-0">
         <div className="tui-panel relative z-20 flex h-10 flex-shrink-0 items-center justify-between gap-3 px-4">
-          {header}
+          <div className="flex min-w-0 items-center gap-2 text-xs">
+            <Wordmark className="text-base shrink-0" />
+            <span className="shrink-0 select-none text-muted-foreground/50" aria-hidden="true">·</span>
+            {header}
+          </div>
           <div className="flex flex-shrink-0 items-center gap-2 text-xs">
+            {user && (
+              <>
+                <span className="min-w-0 max-w-24 truncate text-muted-foreground">{user.name}</span>
+                <span className="shrink-0 select-none text-muted-foreground/50" aria-hidden="true">·</span>
+              </>
+            )}
             <button type="button" onClick={onNewPrd} aria-label="PRD baru" className="flex h-6 w-6 items-center justify-center border border-foreground/15 text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground">
               <Plus className="h-3 w-3" />
             </button>
@@ -228,13 +240,29 @@ export function AppSidebar({
 
         {actionBar && (
           <div className={`tui-panel relative flex-shrink-0 px-3 pb-2 pt-3 ${working ? 'tui-queued' : ''}`}>
-            <span className={`tui-inset-title ${working ? 'tui-inset-accent' : ''}`} aria-hidden="true">{working ? 'queued' : 'aksi'}</span>
+            <span className={`tui-inset-title ${working ? 'tui-inset-accent' : ''}`} aria-hidden="true">{working ? 'queued' : 'input'}</span>
             {actionBar}
           </div>
         )}
       </main>
 
       {statusBar}
+
+      {/* Footer: peringatan & kredit — tampil di semua halaman yang pakai AppSidebar. */}
+      {footer && (
+        <div className="flex flex-shrink-0 items-center justify-between gap-3 px-1 py-1.5 text-[10px] leading-none text-muted-foreground/70">
+          <span className="hidden sm:block">{footer}</span>
+          <span className="sm:hidden">{footer}</span>
+          <a
+            href="https://github.com/keyzakyy-dev"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 transition-colors hover:text-foreground"
+          >
+            by Keyzakyy.
+          </a>
+        </div>
+      )}
 
       {panelOpen && (
         <div className="fixed inset-0 z-30 bg-black/50 lg:hidden" onClick={() => setPanelOpen(false)} aria-hidden="true" />

@@ -406,9 +406,9 @@ export function PrdBuilderPage() {
   const statusBar = (
     <div className="relative flex flex-shrink-0 items-center gap-x-2 gap-y-0.5 px-1 py-1 text-[11px] leading-relaxed text-muted-foreground lg:col-span-2" aria-live="polite">
       <span className="inline-flex items-center gap-1" aria-hidden="true">
-        <span className={`inline-block h-1.5 w-1.5 ${isWorking ? 'bg-yellow-400' : 'bg-foreground/25'}`} />
-        <span className={`inline-block h-1.5 w-1.5 ${isWorking ? 'bg-yellow-400/60' : 'bg-foreground/25'}`} />
-        <span className="inline-block h-1.5 w-1.5 bg-foreground/25" />
+        <span className={`inline-block h-1.5 w-1.5 ${isWorking ? 'tui-box-loading bg-yellow-400' : 'bg-foreground/25'}`} />
+        <span className={`inline-block h-1.5 w-1.5 ${isWorking ? 'tui-box-loading bg-yellow-400' : 'bg-foreground/25'}`} style={isWorking ? { animationDelay: '0.15s' } : undefined} />
+        <span className={`inline-block h-1.5 w-1.5 ${isWorking ? 'tui-box-loading bg-yellow-400' : 'bg-foreground/25'}`} style={isWorking ? { animationDelay: '0.3s' } : undefined} />
       </span>
       <span className={`px-1 py-px text-[10px] font-bold uppercase tracking-wider ${isWorking ? 'tui-badge-working' : 'tui-badge-idle'}`}>
         {isWorking ? 'working' : 'idle'}
@@ -416,11 +416,9 @@ export function PrdBuilderPage() {
       <span className="tui-accent font-semibold">keyzai</span>
       <span className="text-muted-foreground">·</span>
       <span className="min-w-0 flex-1 truncate">
-        {isWorking ? (loadingMessage || 'bekerja…') : 'idle · siap'}
+        {isWorking ? (loadingMessage || 'Waiting for the model') : 'siap · Enter untuk mulai'}
       </span>
-      <span className="shrink-0 tabular-nums">
-        tahap {stepIndex + 1}/{STEP_NAMES.length}
-      </span>
+      <span className="shrink-0 tabular-nums">{stepIndex + 1}/{STEP_NAMES.length}</span>
     </div>
   )
 
@@ -434,17 +432,11 @@ export function PrdBuilderPage() {
   }
 
   const headerNode = (
-    <div className="flex min-w-0 items-center gap-2 text-xs">
-      <Button variant="ghost" size="sm" onClick={handleBackToChat} className="gap-1.5">
-        <ArrowLeft className="h-3.5 w-3.5" />
-        <span className="hidden sm:inline">Kembali ke chat</span>
-        <span className="sm:hidden">Chat</span>
-      </Button>
-      <span className="shrink-0 select-none text-muted-foreground/50" aria-hidden="true">·</span>
-      <p className="min-w-0 truncate text-muted-foreground">
-        {project?.projectName || 'PRD Builder'}
-      </p>
-    </div>
+    <Button variant="ghost" size="sm" onClick={handleBackToChat} className="gap-1.5 text-xs">
+      <ArrowLeft className="h-3.5 w-3.5" />
+      <span className="hidden sm:inline">Kembali ke chat</span>
+      <span className="sm:inline">Chat</span>
+    </Button>
   )
 
   return (
@@ -460,6 +452,7 @@ export function PrdBuilderPage() {
       currentPrdId={project?.id}
       onAfterDeletePrd={handlePrdRemoved}
       onNewPrd={handleNewPrd}
+      footer="KeyzAI bisa keliru. Cek kembali info penting."
     >
       {/* Lebar per tahap dimiliki komponen step sendiri (satu sumber, tanpa
           cap ganda di sini). */}
