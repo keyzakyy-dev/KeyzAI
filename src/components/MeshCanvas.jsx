@@ -196,7 +196,9 @@ export function MeshCanvas({
     window.addEventListener('pointermove', move, { passive: true })
     document.documentElement.addEventListener('pointerleave', leave)
     document.addEventListener('visibilitychange', visibility)
-    if (!reduced) start()
+    // Animasi langsung start (tanpa requestIdleCallback delay) supaya canvas
+    // tidak menampilkan blank hitam sebelum frame pertama digambar.
+    start();
 
     return () => {
       cancelAnimationFrame(raf)

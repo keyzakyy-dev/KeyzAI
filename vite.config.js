@@ -19,6 +19,8 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
+    // Vite 8 (rolldown) tidak support manualChunks sebagai function lagi;
+    // chunking otomatis sudah optimal. Hapus manualChunks agar build lancar.
   },
 })
 
