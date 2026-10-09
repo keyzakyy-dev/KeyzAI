@@ -15,6 +15,7 @@ export function ChangelogPage() {
     title: 'Changelog',
     description: 'Riwayat pembaruan KeyzAI: fitur baru, perbaikan, dan penyegaran tampilan dari rilis ke rilis.',
     path: '/changelog',
+    robots: 'index, follow',
   })
   return (
     <DocShell

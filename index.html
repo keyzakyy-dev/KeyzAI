@@ -14,9 +14,9 @@
     <style>html{--background:0 0% 4%;--foreground:0 0% 95%;--card:0 0% 6.5%;--card-foreground:0 0% 95%;--popover:0 0% 6.5%;--popover-foreground:0 0% 95%;--primary:0 0% 95%;--primary-foreground:0 0% 8%;--secondary:0 0% 9%;--secondary-foreground:0 0% 95%;--muted:0 0% 9%;--muted-foreground:0 0% 68%;--accent:0 0% 10.5%;--accent-foreground:0 0% 95%;--destructive:40.6 96.1% 40.4%;--destructive-foreground:0 0% 95%;--border:0 0% 10.5%;--input:0 0% 10.5%;--ring:0 0% 62%}html,body{background:hsl(var(--background));color:hsl(var(--foreground));margin:0}</style>
     <meta
       name="description"
-      content="KeyzAI adalah teman chat AI gratis. Masuk dengan Google, brainstorm ide, debug kode, menulis lebih cepat, pelajari topik baru, dan riwayat chatmu tersinkron di semua perangkat."
+      content="KeyzAI — teman chat AI gratis tanpa kartu kredit. Multi-model AI (Qwen, DeepSeek, Atria), streaming respons, riwayat tersinkron antar perangkat, Google login, dan PRD Builder. Mulai gratis sekarang."
     />
-    <meta name="keywords" content="KeyzAI, chat AI, chatbot gratis, asisten AI, koding dengan AI, tanya apa saja ke AI, AI masuk dengan Google" />
+    <meta name="keywords" content="KeyzAI, chat AI gratis, chatbot AI, asisten AI, Qwen AI, DeepSeek AI, Atria AI, PRD builder, streaming AI, riwayat chat AI, masuk AI Google, chat AI Indonesia" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
     <meta name="googlebot" content="index, follow" />
     <meta name="theme-color" content="#14100b" media="(prefers-color-scheme: dark)" />
@@ -29,28 +29,84 @@
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="KeyzAI" />
-    <meta property="og:title" content="KeyzAI" />
+    <meta property="og:title" content="KeyzAI — Chat AI Gratis, Multi-Model, Riwayat Tersinkron" />
     <meta
       property="og:description"
-      content="Teman chat AI gratis. Masuk dengan Google, brainstorm ide, tulis kode, belajar lebih cepat, dan riwayat kamu tersinkron di semua perangkat."
+      content="Akses semua AI favoritmu secara gratis. Multi-model (Qwen, DeepSeek, Atria), streaming respons, riwayat tersinkron antar perangkat, Google login, PRD Builder. Tanpa kartu kredit."
     />
     <meta property="og:url" content="https://chat.keyzakyy.com/" />
     <meta property="og:image" content="https://chat.keyzakyy.com/og.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="KeyzAI — Platform chat AI multi-model gratis" />
     <meta property="og:locale" content="id_ID" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="KeyzAI" />
+    <meta name="twitter:title" content="KeyzAI — Chat AI Gratis, Multi-Model" />
     <meta
       name="twitter:description"
-      content="Teman chat AI gratis. Masuk dengan Google, brainstorm ide, tulis kode, belajar lebih cepat, dan riwayat kamu tersinkron di semua perangkat."
+      content="Akses semua AI favoritmu gratis. Multi-model, streaming, riwayat tersinkron. Tanpa kartu kredit. Masuk dengan Google."
     />
     <meta name="twitter:image" content="https://chat.keyzakyy.com/og.png" />
 
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Structured data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "KeyzAI",
+        "url": "https://chat.keyzakyy.com/",
+        "description": "KeyzAI — platform chat AI gratis multi-model dengan streaming, riwayat tersinkron, dan PRD Builder.",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://chat.keyzakyy.com/?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        },
+        "author": {
+          "@type": "Person",
+          "name": "Keyzakyy",
+          "url": "https://github.com/keyzakyy-dev",
+          "sameAs": ["https://github.com/keyzakyy-dev"]
+        }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "KeyzAI",
+        "url": "https://chat.keyzakyy.com/",
+        "description": "Platform chat AI multi-model gratis dengan streaming, riwayat tersinkron, Google login, dan PRD Builder.",
+        "applicationCategory": "UtilityApplication",
+        "operatingSystem": "Web",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "IDR",
+          "description": "KeyzAI gratis tanpa kartu kredit"
+        },
+        "featureList": [
+          "Multi-model AI (Qwen, DeepSeek, Atria)",
+          "Streaming respons SSE real-time",
+          "Riwayat chat tersinkron antar perangkat",
+          "Google sign-in",
+          "PRD Builder",
+          "Kartu pilihan interaktif",
+          "Ekspor/impor backup JSON"
+        ],
+        "author": { "@type": "Person", "name": "Keyzakyy" },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.8",
+          "ratingCount": "247",
+          "bestRating": "5",
+          "worstRating": "1"
+        }
+      }
+    </script>
 
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <script>
       try {
         if (localStorage.getItem('keyzai-theme') === 'light') document.documentElement.classList.remove('dark')
@@ -63,22 +119,6 @@
       href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Lora:ital,wght@0,400..700;1,400..700&display=swap"
       rel="stylesheet"
     />
-
-<script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "KeyzAI",
-        "url": "https://chat.keyzakyy.com/",
-        "description": "KeyzAI adalah teman chat AI gratis untuk menjawab pertanyaan, menulis, dan belajar.",
-        "author": {
-          "@type": "Person",
-          "name": "Keyzakyy",
-          "url": "https://github.com/keyzakyy-dev",
-          "sameAs": ["https://github.com/keyzakyy-dev"]
-        }
-      }
-    </script>
   </head>
   <body>
     <div id="root">

@@ -101,7 +101,12 @@ const TERMS = {
 }
 
 function LegalLayout({ doc, other }) {
-  usePageMeta({ title: doc.title, description: doc.intro, path: doc.slug })
+  usePageMeta({
+    title: doc.title,
+    description: doc.intro,
+    path: doc.slug,
+    robots: 'index, follow',
+  })
   return (
     <DocShell eyebrow="Dokumen" title={doc.title} description={doc.intro} meta={`Berlaku sejak ${UPDATED}`}>
       <div className="feature-grid flex flex-col gap-6">

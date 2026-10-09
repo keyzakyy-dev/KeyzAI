@@ -1,4 +1,13 @@
-﻿User-agent: *
+﻿# KeyzAI robots.txt
+# Halaman publik yang perlu terindeks
+User-agent: *
 Allow: /
+Allow: /prd-builder
+Allow: /changelog
+Allow: /privacy
+Allow: /terms
+
+# Halaman yang butuh auth — tidak perlu diindeks
+Disallow: /chat
 
 Sitemap: https://chat.keyzakyy.com/sitemap.xml

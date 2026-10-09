@@ -6,7 +6,7 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://chat.keyzakyy.com/chat</loc>
+    <loc>https://chat.keyzakyy.com/prd-builder</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -14,5 +14,15 @@
     <loc>https://chat.keyzakyy.com/changelog</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://chat.keyzakyy.com/privacy</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://chat.keyzakyy.com/terms</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
   </url>
 </urlset>

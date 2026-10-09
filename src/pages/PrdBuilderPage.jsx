@@ -98,7 +98,7 @@ export function PrdBuilderPage() {
 
   usePageMeta({
     title: 'PRD Builder',
-    description: 'Ubah ide aplikasi kamu menjadi Product Requirements Document lengkap bersama AI KeyzAI.',
+    description: 'Ubah ide aplikasi kamu menjadi Product Requirements Document lengkap bersama AI KeyzAI. Gratis, streaming, dan bisa ekspor Markdown/JSON.',
     path: '/prd-builder',
   })
 

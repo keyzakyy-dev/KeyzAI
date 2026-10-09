@@ -472,6 +472,60 @@ export function LandingPage() {
   const navigate = useNavigate()
   usePageMeta({ title: SITE_NAME, description: SITE_DESC, path: '/' })
 
+  useEffect(() => {
+    const faq = {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'Apakah KeyzAI gratis?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Ya, KeyzAI gratis tanpa kartu kredit. Cukup masuk dengan Google dan mulai chat AI. Semua model AI yang tersedia bisa digunakan tanpa biaya.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Model AI apa saja yang tersedia di KeyzAI?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'KeyzAI menyediakan multi-model AI termasuk Qwen, DeepSeek, dan Atria. Kamu bisa beralih antar model kapan saja saat chat.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Apakah riwayat chat tersimpan?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Ya. Riwayat chat tersinkron otomatis di semua perangkat yang kamu gunakan. Data disimpan di Cloudflare D1 dan dilindungi sesi login Google.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Apa itu PRD Builder di KeyzAI?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'PRD Builder adalah fitur yang mengubah ide aplikasi menjadi Product Requirements Document lengkap. Kamu masuk lewat chat, AI mengklarifikasi detail, merekomendasikan teknologi, dan menyusun struktur produk.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Bagaimana cara kerja streaming di KeyzAI?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'KeyzAI menggunakan SSE (Server-Sent Events) untuk streaming respons AI langsung saat model menulis, tidak perlu menunggu selesai. Kamu juga bisa berhenti kapan saja dengan tombol stop.',
+          },
+        },
+      ],
+    }
+    const el = document.createElement('script')
+    el.type = 'application/ld+json'
+    el.textContent = JSON.stringify(faq, null, 2)
+    document.head.appendChild(el)
+    return () => el.remove()
+  }, [])
+
   return (
     <div className="relative min-h-dvh bg-background text-foreground antialiased">
       <div className="relative">
