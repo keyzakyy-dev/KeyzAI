@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
 
     <title>KeyzAI</title>
+    <!-- Inline background synchronous: mencegah FOUC (blank flash) di mobile sebelum
+         CSS bundle termuat. Value hsl(0 0% 4%) ≈ #0a0a0a. -->
+    <style>html, body { background: #0a0a0a; color: #f5f5f5; margin: 0; }</style>
     <meta
       name="description"
       content="KeyzAI adalah teman chat AI gratis. Masuk dengan Google, brainstorm ide, debug kode, menulis lebih cepat, pelajari topik baru, dan riwayat chatmu tersinkron di semua perangkat."
