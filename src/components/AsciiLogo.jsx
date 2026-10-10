@@ -32,7 +32,11 @@ export function AsciiLogo({ lines = LOGO_LINES, className = '' }) {
           aria-hidden={i !== LAYERS.length - 1}
           role={i === LAYERS.length - 1 ? 'img' : undefined}
           aria-label={i === LAYERS.length - 1 ? 'KeyzAI' : undefined}
-          className={`ascii-${layer.tone} ${i === 0 ? 'relative' : 'absolute inset-x-0 top-0'} font-mono text-left text-[10px] leading-[1] whitespace-pre sm:text-xs`}
+          // font-code, bukan font-mono: logo ini dirakit dari tiga lapis grid
+          // karakter yang digeser dengan spasi, jadi setiap glyph WAJIB punya
+          // advance width sama. IBM Plex Sans (font-mono) proporsional —
+          // memakainya di sini membuat ketiga lapis tidak sejajar.
+          className={`ascii-${layer.tone} ${i === 0 ? 'relative' : 'absolute inset-x-0 top-0'} font-code text-left text-[10px] leading-[1] whitespace-pre sm:text-xs`}
         >
           {shifted(layer.dr, layer.dc)}
         </pre>
