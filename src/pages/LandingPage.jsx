@@ -358,7 +358,7 @@ function ChatMockup() {
           <div className="flex justify-end">
             <div className="max-w-[80%] rounded-sm bg-[#1a2634]/80 border border-[#4a6070]/20 px-3.5 py-2.5">
               <p className="text-[13px] leading-relaxed text-[#f5f5f4]/90">
-                帮我把这个想法写成 PRD：一个 AI 驱动的代码审查工具
+                Write me a PRD for this idea: an AI-powered code review tool
               </p>
             </div>
           </div>
@@ -371,7 +371,7 @@ function ChatMockup() {
                 <span className="font-mono text-[9px] text-[#FFD23A]/60">· streaming</span>
               </div>
               <p className="text-[13px] leading-relaxed text-[#f5f5f4]/80">
-                好的，我来帮你生成完整的 PRD。首先让我clarify几个关键问题...
+                Sure, I'll help you generate a full PRD. Let me clarify a few key points first...
               </p>
             </div>
           </div>
@@ -391,7 +391,7 @@ function ChatMockup() {
                     <span className="font-mono text-[9px] text-[#94a3b8]/40">· alternative view</span>
                   </div>
                   <p className="text-[13px] leading-relaxed text-[#f5f5f4]/70">
-                    我建议先从目标用户画像开始，这样能更精准地定义功能范围...
+                    I suggest starting with the target user persona so we can define the feature scope more precisely...
                   </p>
                 </div>
               </div>
@@ -412,7 +412,7 @@ function ChatMockup() {
         <div className="border-t border-[#4a6070]/20 px-4 py-3">
           <div className="flex items-center gap-2 rounded-sm border border-[#4a6070]/25 bg-[#0a0f18]/50 px-3 py-2">
             <span className="font-mono text-[11px] text-[#94a3b8]/40">{'>'}</span>
-            <span className="flex-1 font-mono text-[12px] text-[#94a3b8]/30">输入消息...</span>
+            <span className="flex-1 font-mono text-[12px] text-[#94a3b8]/30">type a message...</span>
             <button
               type="button"
               className="rounded-sm bg-[#FFD23A]/15 border border-[#FFD23A]/30 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#FFD23A]/80 hover:bg-[#FFD23A]/25 transition-colors"
@@ -426,7 +426,7 @@ function ChatMockup() {
 
       {/* Caption */}
       <p className="mt-3 font-mono text-[10px] text-[#94a3b8]/40 text-center">
-        编辑任意消息 · 向前重新生成 · 分支永存
+        Edit any message · regenerate forward · branches persist
       </p>
     </div>
   )
