@@ -1,0 +1,212 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-10T00:00:00Z",
+  "title": "Design System: KeyzAI",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "neutral",
+        "displayName": "Linen White",
+        "canonical": "#f5f5f4",
+        "tonalRamp": ["#0a0a0a", "#1a1a1a", "#333333", "#666666", "#999999", "#bfbfbf", "#d9d9d9", "#f5f5f4"]
+      },
+      "accent": {
+        "role": "primary",
+        "displayName": "Circuit Yellow",
+        "canonical": "#facc15",
+        "tonalRamp": ["#713f12", "#854d0e", "#a16207", "#ca8a04", "#eab308", "#facc15", "#fde047", "#fef9c3"]
+      },
+      "neutral-bg": {
+        "role": "background",
+        "displayName": "Obsidian",
+        "canonical": "#0a0a0a",
+        "tonalRamp": ["#0a0a0a", "#101010", "#1a1a1a", "#2e2e2e", "#4a4a4a", "#6e6e6e", "#999999", "#f5f5f4"]
+      },
+      "neutral-muted": {
+        "role": "neutral",
+        "displayName": "Muted",
+        "canonical": "#a8a29e",
+        "tonalRamp": ["#292524", "#44403c", "#57534e", "#78716c", "#a8a29e", "#d6d3d1", "#e7e5e4", "#fafaf9"]
+      },
+      "destructive": {
+        "role": "destructive",
+        "displayName": "Destructive Red",
+        "canonical": "#dc2626",
+        "tonalRamp": ["#7f1d1d", "#991b1b", "#b91c1c", "#dc2626", "#ef4444", "#f87171", "#fca5a5", "#fee2e2"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero headlines on the landing page only. Never in the chat app."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headings (Features, PRD Builder). Used for conversation subjects in chat."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "All prose, descriptions, chat messages. Max width 65ch."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "TUI inset titles, tab labels, badge text. Always uppercase, always mono."
+      },
+      "mono": {
+        "displayName": "Mono",
+        "purpose": "Code blocks, terminal prompts, option card values. Never for body copy."
+      }
+    },
+    "shadows": [
+      {
+        "name": "cta-lift",
+        "value": "0 8px 24px hsl(var(--foreground)/0.12)",
+        "purpose": "Primary button at rest. Directional lift, not ambient."
+      },
+      {
+        "name": "cta-lift-hover",
+        "value": "0 10px 28px hsl(var(--foreground)/0.18)",
+        "purpose": "Primary button on hover. Intensified lift with -2px translateY."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-reveal",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Scroll reveal and entrance animations."
+      },
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "Default transitions for buttons, borders, color changes."
+      },
+      {
+        "name": "architecture-line-draw",
+        "value": "cubic-bezier(0.22, 1, 0.36, 1) 1.1s forwards",
+        "purpose": "Landing page architecture line draw-on animation."
+      },
+      {
+        "name": "feature-line-draw",
+        "value": "cubic-bezier(0.22, 1, 0.36, 1) 1.8s forwards",
+        "purpose": "Feature card border draw-on via clip-path, staggered 100ms per card."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The main CTA. Dark fill, white text, subtle lift shadow on hover.",
+      "html": "<button class=\"ds-btn-primary\">Buka chat</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 20px; border-radius: 8px; background: #f5f5f4; color: #0a0a0a; font-size: 14px; font-weight: 500; border: none; cursor: pointer; box-shadow: 0 8px 24px rgba(245,245,244,0.12); transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1); } .ds-btn-primary:hover { background: #e7e5e4; transform: translateY(-2px); box-shadow: 0 10px 28px rgba(245,245,244,0.18); } .ds-btn-primary:focus-visible { outline: 2px solid #9e9e9e; outline-offset: 2px; } .ds-btn-primary:disabled { opacity: 0.5; pointer-events: none; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary action. Transparent fill, subtle border, hover fill.",
+      "html": "<button class=\"ds-btn-outline\">Dari ide jadi PRD</button>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; height: 44px; padding: 0 20px; border-radius: 8px; background: transparent; color: #f5f5f4; font-size: 14px; font-weight: 500; border: 1px solid rgba(245,245,244,0.15); cursor: pointer; transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1); } .ds-btn-outline:hover { border-color: rgba(245,245,244,0.4); background: rgba(245,245,244,0.04); transform: translateY(-2px); } .ds-btn-outline:focus-visible { outline: 2px solid #9e9e9e; outline-offset: 2px; }"
+    },
+    {
+      "name": "TUI Panel",
+      "kind": "card",
+      "refersTo": "tui-panel",
+      "description": "Terminal-inspired panel with inset title label overlapping the top border.",
+      "html": "<div class=\"ds-tui-panel\"><span class=\"ds-tui-inset-title\">CONVERSATION</span><div style=\"padding:16px;color:#f5f5f4;font-size:14px;\">Jawaban AI streaming…</div></div>",
+      "css": ".ds-tui-panel { position: relative; border: 1px solid rgba(245,245,244,0.16); border-radius: 6px; background: #0a0a0a; } .ds-tui-inset-title { position: absolute; top: -8px; left: 12px; z-index: 1; padding: 0 6px; background: #0a0a0a; font-family: 'IBM Plex Sans', ui-monospace, monospace; font-size: 11px; line-height: 1.4; text-transform: uppercase; letter-spacing: 0.08em; color: #a8a29e; white-space: nowrap; }"
+    },
+    {
+      "name": "TUI Active Tab",
+      "kind": "chip",
+      "refersTo": "tui-tab-active",
+      "description": "Yellow-filled tab indicating the active conversation branch.",
+      "html": "<button class=\"ds-tui-tab-active\">Branch A</button>",
+      "css": ".ds-tui-tab-active { display: inline-flex; align-items: center; padding: 4px 12px; background: #facc15; color: #0a0a0a; font-size: 12px; font-weight: 500; border-radius: 2px; border: none; cursor: pointer; font-family: 'IBM Plex Sans', ui-monospace, monospace; text-transform: uppercase; letter-spacing: 0.08em; } .ds-tui-tab-active:focus-visible { outline: 2px solid #9e9e9e; outline-offset: 2px; }"
+    },
+    {
+      "name": "Feature Card",
+      "kind": "card",
+      "refersTo": "feature-card",
+      "description": "Bento grid card with border draw-on animation on scroll entrance.",
+      "html": "<div class=\"ds-feature-card\"><div style=\"display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;\"><span style=\"font-size:24px;\">✦</span><span style=\"font-family:ui-monospace,monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#a8a29e;background:#0a0a0a;padding:2px 10px;\">Real-time</span></div><h3 style=\"font-size:18px;font-weight:500;color:#f5f5f4;\">Chat Bebas & Natural</h3><p style=\"font-size:14px;line-height:1.6;color:#a8a29e;margin-top:8px;\">Tanyakan apa saja dalam Bahasa Indonesia yang mengalir natural.</p></div>",
+      "css": ".ds-feature-card { position: relative; display: flex; flex-direction: column; justify-content: space-between; padding: 24px; min-height: 200px; border-radius: 0; overflow: hidden; background: transparent; } .ds-feature-card::before { content: ''; position: absolute; inset: 0; border: 1px solid rgba(245,245,244,0.25); clip-path: polygon(0 0, 0 0, 0 0, 0 0); animation: ds-feature-line-draw 1.8s cubic-bezier(0.22, 1, 0.36, 1) forwards; pointer-events: none; } @keyframes ds-feature-line-draw { 0% { clip-path: polygon(0 0, 0 0, 0 0, 0 0); } 25% { clip-path: polygon(0 0, 100% 0, 0 0, 0 0); } 50% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 0); } 75% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); } 100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); } }"
+    },
+    {
+      "name": "Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Standard text input with focus ring. 40px height, 8px radius.",
+      "html": "<input class=\"ds-input\" placeholder=\"Tulis pesan…\" />",
+      "css": ".ds-input { width: 100%; height: 40px; padding: 8px 12px; background: #0a0a0a; color: #f5f5f4; border: 1px solid #2e2e2e; border-radius: 8px; font-size: 14px; font-family: 'Inter', sans-serif; transition: border-color 0.2s, box-shadow 0.2s; } .ds-input::placeholder { color: #a8a29e; } .ds-input:focus { outline: none; border-color: #9e9e9e; box-shadow: 0 0 0 2px rgba(158,158,158,0.3); }"
+    },
+    {
+      "name": "Header Nav",
+      "kind": "nav",
+      "refersTo": "nav-header",
+      "description": "Fixed landing page header with hairline progress bar and scroll-aware background.",
+      "html": "<div class=\"ds-nav\"><div style=\"height:2px;background:linear-gradient(to right,#f5f5f4 40%,transparent 40%);\"></div><div style=\"display:flex;align-items:center;justify-content:space-between;padding:16px 24px;\"><span style=\"font-weight:600;font-size:18px;color:#f5f5f4;\">KeyzAI</span><button style=\"height:36px;padding:0 16px;border:1px solid rgba(245,245,244,0.15);background:transparent;color:#f5f5f4;border-radius:8px;font-size:14px;cursor:pointer;\">Masuk</button></div></div>",
+      "css": ".ds-nav { position: sticky; top: 0; z-index: 50; border-bottom: 1px solid rgba(245,245,244,0.1); background: rgba(10,10,10,0.95); backdrop-filter: blur(12px); }"
+    },
+    {
+      "name": "TUI Working Badge",
+      "kind": "chip",
+      "refersTo": "tui-badge-working",
+      "description": "Yellow badge indicating the AI is actively generating a response.",
+      "html": "<span class=\"ds-badge-working\">Working</span>",
+      "css": ".ds-badge-working { display: inline-flex; align-items: center; padding: 2px 8px; background: #facc15; color: #0a0a0a; font-size: 11px; font-weight: 500; border-radius: 2px; font-family: 'IBM Plex Sans', ui-monospace, monospace; text-transform: uppercase; letter-spacing: 0.08em; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Midnight Workshop",
+    "overview": "A dark-first professional workspace that feels like a well-organized toolbench at midnight: everything has its place, nothing is wasted, and the only light comes from the work itself. The terminal aesthetic is not nostalgia — it is a commitment to clarity over decoration. Every element earns its pixels. Yellow appears sparingly, like a single illuminated control on an otherwise matte surface, marking only what is active, selected, or complete.\n\nThe system balances two worlds: the chat app (dense, functional, TUI-terminal) and the landing page (spacious, architectural, demonstration-driven). They share a palette but diverge in density — the app is a workspace, the landing is a showcase.",
+    "keyCharacteristics": [
+      "Near-black backgrounds with stone-gray tonal layering",
+      "Yellow accent used exclusively for active/selected/completed states (≤10% of screen area)",
+      "Terminal-inspired panels with inset labels and monospace chrome",
+      "Hexagonal mesh as structural metaphor, not decoration",
+      "Purposeful motion: scroll reveals, line draws, breathing nodes — never decorative spin",
+      "Dark by default; light mode is a courtesy override, not a parallel identity"
+    ],
+    "rules": [
+      {
+        "name": "The One Yellow Rule",
+        "body": "The yellow accent appears on no more than 10% of any given screen. Its rarity is its signal — when yellow appears, the user knows something is active, selected, or complete.",
+        "section": "colors"
+      },
+      {
+        "name": "The Mono Rule",
+        "body": "Monospace type appears only in three contexts: TUI panel chrome (inset titles, tabs), code/output, and data labels. Never for body copy, never for decorative quotes.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "Surfaces are flat at rest. Shadows appear only in response to user action (hover, focus) or as a deliberate lift for primary CTAs. Dialogs and modals use opacity overlays, not elevation.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do keep yellow rare. It signals state, not style.",
+      "Do use mono type for TUI chrome only — inset titles, tabs, prompts, code.",
+      "Do let the hex mesh serve as atmosphere, never as content.",
+      "Do animate with purpose: reveal on scroll, draw on interaction, breathe on load.",
+      "Do respect prefers-reduced-motion — disable all non-essential animations.",
+      "Do use tonal layering (surface vs. background) for depth, not shadows."
+    ],
+    "donts": [
+      "Don't use yellow for decorative elements, backgrounds, or large fills.",
+      "Don't mix serif (Lora) into the chat app — it belongs on the landing page only for editorial accents.",
+      "Don't add shadows to panels, cards, or TUI elements. Only the primary button gets elevation.",
+      "Don't round the hero chat mockup corners — they stay square as a deliberate contrast.",
+      "Don't use more than two type families in the chat app. Three on the landing is the maximum.",
+      "Don't let the mesh canvas accept pointer events — it's texture, not interface."
+    ]
+  }
+}
