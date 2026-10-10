@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { usePageMeta, SITE_NAME, SITE_DESC } from '../lib/seo'
 import { useAuth } from '../hooks/useAuth'
 import { Wordmark } from '../lib/logo-img'
@@ -17,8 +17,6 @@ import {
   X,
 } from 'lucide-react'
 import { MeshCanvas } from '../components/MeshCanvas'
-import { ChatMockup } from '../components/landing/ChatMockup'
-import { FeaturesBento } from '../components/landing/FeaturesBento'
 import { Footer } from '../components/landing/Footer'
 import { Reveal } from '../lib/reveal'
 
@@ -33,21 +31,16 @@ function VuMeter({ label, value, delay = 0, active = true }) {
     return () => clearTimeout(t)
   }, [delay])
 
-  // Needle angle: -45° (rest) → 35° (active). Map value to angle.
-  const maxAngle = 80 // total sweep range
+  const maxAngle = 80
   const ratio = active ? Math.min(1, Math.max(0, parseFloat(value) / 10)) : 0
   const angle = swept ? -45 + ratio * maxAngle : -45
 
   return (
     <div className="flex flex-col items-center gap-2" ref={ref}>
-      <div className="relative w-16 h-24 sm:w-20 sm:h-28">
-        {/* Meter face */}
+      <div className="relative w-14 h-20 sm:w-16 sm:h-24">
         <div className="absolute inset-0 rounded-sm bg-gradient-to-b from-neutral-900 to-background border border-foreground/15 overflow-hidden">
-          {/* Scale arc marks */}
           <div className="absolute bottom-2 left-2 right-2 h-px bg-foreground/20" />
-          {/* Red zone indicator */}
           <div className="absolute top-3 right-2 w-1.5 h-1.5 rounded-full bg-yellow-400/60" />
-          {/* Needle pivot */}
           <div
             className="absolute bottom-2 left-1/2 w-0.5 origin-bottom transition-transform ease-out"
             style={{
@@ -55,12 +48,12 @@ function VuMeter({ label, value, delay = 0, active = true }) {
               transitionDuration: `${600 + delay * 0.5}ms`,
             }}
           >
-            <div className="w-0.5 h-10 sm:h-12 bg-yellow-400/80 rounded-full" />
+            <div className="w-0.5 h-8 sm:h-10 bg-yellow-400/80 rounded-full" />
             <div className="absolute -bottom-1 -left-1 w-2 h-2 rounded-full bg-yellow-400" />
           </div>
         </div>
       </div>
-      <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+      <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
         {label}
       </span>
       <span className="font-heading text-xs font-medium text-yellow-400 tabular-nums">
@@ -118,7 +111,6 @@ function Navbar({ navigate }) {
         open ? 'border-foreground/10 bg-background/95 backdrop-blur-md' : 'border-transparent'
       }`}
     >
-      {/* Hairline progress */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[2px] overflow-hidden" aria-hidden="true">
         <div
           ref={progressRef}
@@ -222,7 +214,7 @@ function Hero({ navigate }) {
       <div className="relative mx-auto w-full max-w-7xl px-4 sm:px-6">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
           {/* Left: copy + CTA */}
-          <div className="min-w-0 lg:col-span-6 xl:col-span-5">
+          <div className="min-w-0 lg:col-span-5 xl:col-span-5">
             <a
               href="#features"
               className="animate-rise group mb-5 inline-flex max-w-full items-center gap-2 border border-foreground/15 bg-transparent py-1 pl-1.5 pr-3 text-xs font-mono text-foreground transition-colors hover:border-foreground/35 sm:mb-6 sm:gap-3 sm:py-1.5 sm:pl-2 sm:pr-3.5 sm:text-sm"
@@ -288,8 +280,8 @@ function Hero({ navigate }) {
             </ul>
           </div>
 
-          {/* Right: VU Meter Bridge */}
-          <div className="hidden lg:col-span-6 xl:col-span-7 lg:flex lg:items-center lg:justify-center">
+          {/* Right: ChatMockup */}
+          <div className="hidden lg:col-span-7 xl:col-span-7 lg:flex lg:items-center lg:justify-center">
             <div className="w-full max-w-xl">
               {/* Meter bridge container */}
               <div className="relative rounded-lg border border-foreground/15 bg-neutral-900/80 p-6 backdrop-blur-sm">
@@ -346,7 +338,7 @@ function Hero({ navigate }) {
   )
 }
 
-/* ─── Features (Channel Cards) ──────────────────────────────────────────── */
+/* ─── Features (Channel Strip Cards) ──────────────────────────────────── */
 
 function FeaturesSection() {
   const FEATURES = [
@@ -357,7 +349,7 @@ function FeaturesSection() {
       icon: MessageSquare,
       badge: 'Real-time',
       span: 'col-span-2 md:col-span-2 lg:col-span-2',
-      value: '8.2',
+      meter: '8.2',
     },
     {
       id: 'code',
@@ -366,7 +358,7 @@ function FeaturesSection() {
       icon: Code,
       badge: 'Multi-lang',
       span: 'col-span-1 md:col-span-1 lg:col-span-1',
-      value: '6.4',
+      meter: '6.4',
     },
     {
       id: 'tree',
@@ -375,7 +367,7 @@ function FeaturesSection() {
       icon: GitBranch,
       badge: 'Zero-loss',
       span: 'col-span-1 md:col-span-1 lg:col-span-1',
-      value: '9.0',
+      meter: '9.0',
     },
     {
       id: 'writing',
@@ -384,7 +376,7 @@ function FeaturesSection() {
       icon: Pencil,
       badge: 'Flexible',
       span: 'col-span-1 md:col-span-1 lg:col-span-1',
-      value: '7.1',
+      meter: '7.1',
     },
     {
       id: 'privacy',
@@ -393,22 +385,27 @@ function FeaturesSection() {
       icon: Lock,
       badge: 'Secure',
       span: 'col-span-1 md:col-span-1 lg:col-span-1',
-      value: '5.0',
+      meter: '5.0',
     },
   ]
 
   return (
     <section id="features" className="relative scroll-mt-20 py-16 sm:py-20 lg:py-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+      {/* Subtle grid texture */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage: `linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)`,
+          backgroundSize: '64px 64px',
+        }}
+      />
+
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         <div className="mb-10 flex flex-col justify-between gap-4 border-b border-foreground/10 pb-6 sm:flex-row sm:items-end">
-          <div>
-            <span className="font-mono text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-              Channel mapping
-            </span>
-            <h2 className="mt-3 text-2xl font-medium tracking-tight text-foreground sm:text-3xl lg:text-4xl">
-              What each channel <span className="text-yellow-400">handles</span>
-            </h2>
-          </div>
+          <h2 className="text-2xl font-medium tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+            What each channel <span className="text-yellow-400">handles</span>
+          </h2>
           <p className="max-w-sm text-sm leading-relaxed text-muted-foreground sm:text-right">
             One workspace for thinking, making, and shipping faster.
           </p>
@@ -432,6 +429,19 @@ function FeaturesSection() {
                       </div>
                       <h3 className="text-base font-medium text-foreground sm:text-lg">{item.title}</h3>
                       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.desc}</p>
+                    </div>
+
+                    {/* Channel meter strip */}
+                    <div className="mt-5 flex items-center gap-2 pt-3 border-t border-foreground/10">
+                      <div className="flex-1 h-1 rounded-full bg-foreground/10 overflow-hidden">
+                        <div
+                          className="h-full rounded-full bg-yellow-400/70 transition-all duration-1000"
+                          style={{ width: `${(parseFloat(item.meter) / 10) * 100}%`, transitionDelay: `${index * 100 + 200}ms` }}
+                        />
+                      </div>
+                      <span className="font-mono text-[11px] tabular-nums text-yellow-400/80 shrink-0">
+                        {item.meter}
+                      </span>
                     </div>
                   </div>
                 </Reveal>
@@ -528,7 +538,7 @@ function PrdBuilder({ navigate }) {
   )
 }
 
-/* ─── Models (Channel Selector) ─────────────────────────────────────────── */
+/* ─── Models (Rack Unit Cards) ─────────────────────────────────────────── */
 
 function ModelsSection() {
   const [copied, setCopied] = useState(null)
@@ -544,14 +554,9 @@ function ModelsSection() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <Reveal from="up">
           <div className="mb-10 flex flex-col justify-between gap-4 border-b border-foreground/10 pb-6 sm:flex-row sm:items-end">
-            <div>
-              <span className="font-mono text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-                Channel selector
-              </span>
-              <h2 className="mt-3 text-2xl font-medium tracking-tight text-foreground sm:text-3xl lg:text-4xl">
-                Every model. <span className="text-yellow-400">Zero cost.</span>
-              </h2>
-            </div>
+            <h2 className="text-2xl font-medium tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+              Every model. <span className="text-yellow-400">Zero cost.</span>
+            </h2>
             <p className="max-w-sm text-sm leading-relaxed text-muted-foreground sm:text-right">
               Pick the model that fits each conversation. Switch mid-chat.
             </p>
