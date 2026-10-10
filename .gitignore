@@ -17,3 +17,19 @@ logo lightmode.png
 # Catatan referensi desain (bukan bagian dari build)
 apmix-hero-pattern.md
 opencode.json
+
+# State/log/capture hasil tooling desain (hasil kerja, bukan sumber)
+.impeccable/build/
+.impeccable/questions/
+.impeccable/review/
+.impeccable/options.json
+.impeccable/config.json
+
+# Mock eksplorasi yang kalah seleksi; yang terpilih (assigned.html) tetap di-track
+.impeccable/mocks/decision/canon.html
+.impeccable/mocks/decision/challenger-*.html
+.impeccable/mocks/decision/live-thread.html
+.impeccable/mocks/decision/model-pick.html
+.impeccable/mocks/decision/session-log.html
+.impeccable/mocks/decision/workbench.html
+.impeccable/mocks/decision/payload-session.json

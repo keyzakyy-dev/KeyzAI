@@ -72,7 +72,7 @@ function renderInline(text) {
       node = <del key={k}>{renderInline(tok.slice(2, -2))}</del>
     } else if (tok.startsWith('`')) {
       node = (
-        <code key={k} className="rounded border border-foreground/20 bg-foreground/[0.05] px-1.5 py-px font-mono text-[0.85em] break-words">
+        <code key={k} className="rounded border border-foreground/20 bg-foreground/[0.05] px-1.5 py-px font-code text-[0.85em] break-words">
           {tok.slice(1, -1)}
         </code>
       )
@@ -159,8 +159,8 @@ function CodeBlock({ code, lang }) {
         </span>
         <CopyButton text={code} withLabel />
       </div>
-      <pre className="max-h-[420px] overflow-auto bg-foreground/[0.03] p-3 text-[13px] leading-relaxed">
-        <code className="font-mono whitespace-pre">{code}</code>
+      <pre className="max-h-[420px] overflow-auto bg-foreground/[0.03] p-3 font-code text-[13px] leading-relaxed">
+        <code className="font-code whitespace-pre">{code}</code>
       </pre>
     </div>
   )

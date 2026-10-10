@@ -1,536 +1,181 @@
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ArrowRight, Check } from 'lucide-react'
 import { usePageMeta, SITE_NAME, SITE_DESC } from '../lib/seo'
-import { useAuth } from '../hooks/useAuth'
-import { Wordmark } from '../lib/logo-img'
 import { MODELS } from '../lib/models'
-import {
-  ArrowRight,
-  MessageSquare,
-  Code,
-  Pencil,
-  Lock,
-  GitBranch,
-  Check,
-  Zap,
-  Menu,
-  X,
-} from 'lucide-react'
-import { MeshCanvas } from '../components/MeshCanvas'
-import { Footer } from '../components/landing/Footer'
-import { Reveal } from '../lib/reveal'
+import { useSessionClock } from '../lib/session'
+import { SessionNav } from '../components/landing/SessionNav'
+import { TelemetryRail } from '../components/landing/TelemetryRail'
+import { EventKey, LogValue, LogProse } from '../components/landing/LogPrimitives'
 
-/* ─── VU Meter ─────────────────────────────────────────────────────────── */
+/* ─── Session open ───────────────────────────────────────────────────────── */
 
-function VuMeter({ label, value, delay = 0, active = true }) {
-  const [swept, setSwept] = useState(false)
-  const ref = useRef(null)
-
-  useEffect(() => {
-    const t = setTimeout(() => setSwept(true), 400 + delay)
-    return () => clearTimeout(t)
-  }, [delay])
-
-  const maxAngle = 80
-  const ratio = active ? Math.min(1, Math.max(0, parseFloat(value) / 10)) : 0
-  const angle = swept ? -45 + ratio * maxAngle : -45
+function SessionOpen({ navigate }) {
+  const clock = useSessionClock()
 
   return (
-    <div className="flex flex-col items-center gap-2" ref={ref}>
-      <div className="relative w-14 h-20 sm:w-16 sm:h-24">
-        <div className="absolute inset-0 rounded-sm bg-gradient-to-b from-neutral-900 to-background border border-foreground/15 overflow-hidden">
-          <div className="absolute bottom-2 left-2 right-2 h-px bg-foreground/20" />
-          <div className="absolute top-3 right-2 w-1.5 h-1.5 rounded-full bg-yellow-400/60" />
-          <div
-            className="absolute bottom-2 left-1/2 w-0.5 origin-bottom transition-transform ease-out"
-            style={{
-              transform: `translateX(-50%) rotate(${angle}deg)`,
-              transitionDuration: `${600 + delay * 0.5}ms`,
-            }}
-          >
-            <div className="w-0.5 h-8 sm:h-10 bg-yellow-400/80 rounded-full" />
-            <div className="absolute -bottom-1 -left-1 w-2 h-2 rounded-full bg-yellow-400" />
+    <section id="top" className="scroll-mt-[60px]" aria-labelledby="session-offer">
+      <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] xl:grid-cols-[248px_1fr]">
+        <TelemetryRail clock={clock} branches={3} />
+
+        <div className="px-5 pb-20 pt-8 sm:px-8 sm:pb-24 sm:pt-12 lg:px-12 lg:pb-28 lg:pt-14">
+          {/* The block header: what this session is, in the log's own record. */}
+          <div className="log-fade mb-7 flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b border-foreground/12 pb-3">
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+              session · keyzai
+            </span>
+            <span className="font-mono text-[11px] text-muted-foreground">
+              3 sources resolved · google auth · d1 sync on
+            </span>
           </div>
-        </div>
-      </div>
-      <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
-        {label}
-      </span>
-      <span className="font-heading text-xs font-medium text-yellow-400 tabular-nums">
-        {active ? `${value} dB` : '—'}
-      </span>
-    </div>
-  )
-}
 
-/* ─── Navbar ─────────────────────────────────────────────────────────────── */
+          {/* The prompt that opened the session. */}
+          <div className="log-fade flex items-baseline gap-3" style={{ '--log-delay': '60ms' }}>
+            <span className="font-mono text-[12px] text-foreground" aria-hidden="true">
+              &gt;
+            </span>
+            <p className="font-mono text-[13px] leading-relaxed text-foreground sm:text-[13.5px]">
+              <span className="text-yellow-400">you</span>
+              <span className="text-muted-foreground"> · </span>
+              draft the intro to my landing page — three angles, no adjectives I can&apos;t prove
+            </p>
+          </div>
 
-function Navbar({ navigate }) {
-  const { user } = useAuth()
-  const [open, setOpen] = useState(false)
-  const progressRef = useRef(null)
-
-  useEffect(() => {
-    const onScroll = () => {
-      const doc = document.documentElement
-      const max = doc.scrollHeight - doc.clientHeight
-      if (progressRef.current) {
-        const ratio = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0
-        progressRef.current.style.transform = `scaleX(${ratio})`
-      }
-    }
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', onScroll)
-    return () => {
-      window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', onScroll)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (!open) return
-    const onKey = (e) => { if (e.key === 'Escape') setOpen(false) }
-    document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
-  }, [open])
-
-  useEffect(() => {
-    const mq = window.matchMedia('(min-width: 768px)')
-    const onChange = (e) => { if (e.matches) setOpen(false) }
-    mq.addEventListener?.('change', onChange)
-    return () => mq.removeEventListener?.('change', onChange)
-  }, [])
-
-  const ctaClass =
-    'inline-flex h-9 items-center gap-1.5 border border-foreground/15 bg-transparent px-4 text-sm font-mono font-medium text-foreground transition-colors hover:border-yellow-400/50 hover:text-yellow-400'
-
-  return (
-    <header
-      className={`absolute inset-x-0 top-0 z-50 border-b transition-colors duration-300 ${
-        open ? 'border-foreground/10 bg-background/95 backdrop-blur-md' : 'border-transparent'
-      }`}
-    >
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[2px] overflow-hidden" aria-hidden="true">
-        <div
-          ref={progressRef}
-          className="h-full w-full origin-left scale-x-0 bg-yellow-400"
-        />
-      </div>
-
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
-        <button
-          type="button"
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          aria-label="Back to top"
-          className="shrink-0 transition-opacity hover:opacity-80"
-        >
-          <Wordmark />
-        </button>
-
-        <div className="hidden shrink-0 items-center gap-2 md:flex">
-          <button type="button" onClick={() => navigate('/chat')} className={ctaClass}>
-            {user ? 'Open chat' : 'Sign in'}
-            <ArrowRight className="size-3" aria-hidden="true" />
-          </button>
-        </div>
-
-        <div className="flex shrink-0 items-center gap-1 md:hidden">
-          <button
-            type="button"
-            onClick={() => setOpen((o) => !o)}
-            aria-label={open ? 'Close menu' : 'Open menu'}
-            aria-expanded={open}
-            aria-controls="landing-mobile-nav"
-            className="relative flex h-11 w-11 items-center justify-center text-foreground transition-colors hover:bg-foreground/[0.06]"
+          {/* The answer, arriving. The pane spans the session; its prose keeps
+              the reading measure, so the log reads as one instrument. */}
+          <article
+            className="log-fade mt-6 border border-foreground/15 bg-card"
+            style={{ '--log-delay': '140ms' }}
           >
-            <MenuIcon open={open} />
-          </button>
-        </div>
-      </div>
-
-      {open && (
-        <div
-          id="landing-mobile-nav"
-          className="animate-fade-up border-t border-foreground/10 md:hidden"
-          style={{ animationDuration: '220ms' }}
-        >
-          <nav className="mx-auto max-w-7xl px-4 pb-3 pt-1">
-            <button
-              type="button"
-              onClick={() => { setOpen(false); navigate('/chat') }}
-              className="my-3 h-11 w-full bg-yellow-400 text-sm font-mono font-medium text-neutral-900 transition-colors hover:bg-yellow-300"
-            >
-              {user ? 'Open chat →' : 'Sign in with Google'}
-            </button>
-          </nav>
-        </div>
-      )}
-    </header>
-  )
-}
-
-function MenuIcon({ open }) {
-  return (
-    <>
-      <Menu className={`h-4 w-4 transition-all duration-300 ${open ? 'rotate-90 scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100'}`} aria-hidden="true" />
-      <X className={`absolute h-4 w-4 transition-all duration-300 ${open ? 'rotate-0 scale-100 opacity-100' : '-rotate-90 scale-0 opacity-0'}`} aria-hidden="true" />
-    </>
-  )
-}
-
-/* ─── Hero ───────────────────────────────────────────────────────────────── */
-
-function Hero({ navigate }) {
-  const meshRef = useRef(null)
-
-  useEffect(() => {
-    const el = meshRef.current
-    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    let raf = 0
-    const update = () => {
-      raf = 0
-      el.style.transform = `translate3d(0, ${window.scrollY * 0.2}px, 0)`
-    }
-    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update) }
-    update()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => { window.removeEventListener('scroll', onScroll); cancelAnimationFrame(raf) }
-  }, [])
-
-  return (
-    <section className="relative overflow-hidden py-16 sm:py-20 lg:flex lg:min-h-[calc(100svh-4rem)] lg:items-center lg:py-24">
-      <div ref={meshRef} className="pointer-events-none absolute inset-0 will-change-transform">
-        <MeshCanvas
-          label="Decorative background: hero-only triangle mesh that bends around the cursor and ripples on click."
-          className="pointer-events-none absolute inset-0"
-        />
-      </div>
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute left-[10%] top-1/2 h-[28rem] w-[min(38rem,70vw)] -translate-y-1/2 rounded-full bg-yellow-400/10 blur-[140px]"
-      />
-
-      <div className="relative mx-auto w-full max-w-7xl px-4 sm:px-6">
-        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
-          {/* Left: copy + CTA */}
-          <div className="min-w-0 lg:col-span-5 xl:col-span-5">
-            <a
-              href="#features"
-              className="animate-rise group mb-5 inline-flex max-w-full items-center gap-2 border border-foreground/15 bg-transparent py-1 pl-1.5 pr-3 text-xs font-mono text-foreground transition-colors hover:border-foreground/35 sm:mb-6 sm:gap-3 sm:py-1.5 sm:pl-2 sm:pr-3.5 sm:text-sm"
-            >
-              <span className="flex size-5 shrink-0 items-center justify-center border border-yellow-400/35 text-yellow-400 sm:size-6">
-                <Check className="size-3 sm:size-3.5" strokeWidth={2.5} aria-hidden="true" />
+            <header className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-foreground/10 px-5 py-3">
+              <span className="font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+                assistant
               </span>
-              <span className="truncate text-muted-foreground">
-                <strong className="font-medium text-foreground">Free for everyone.</strong> No credit card
+              <span className="border border-foreground/15 px-2 py-0.5 font-mono text-[10px] text-muted-foreground">
+                qwen3.8-flash
               </span>
-              <ArrowRight className="size-3 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 sm:size-3.5" aria-hidden="true" />
-            </a>
+              <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-yellow-400">
+                <span className="log-live size-1.5 rounded-full bg-yellow-400" aria-hidden="true" />
+                streaming
+              </span>
+              <span className="ml-auto font-mono text-[10px] tabular-nums text-muted-foreground">
+                msg 02 · branch 2
+              </span>
+            </header>
 
+            <div className="px-5 py-6 sm:px-7 sm:py-7">
+              <p className="max-w-[68ch] text-[15px] leading-[1.7] text-foreground/90 sm:text-base">
+                Three angles, ranked by how much each one asks of the reader.
+              </p>
+
+              <ol className="mt-5 max-w-[68ch] space-y-4">
+                {[
+                  {
+                    n: '1',
+                    lead: 'Tree, not thread.',
+                    body: ' Every other chat keeps one linear log. Edit a message here and regenerate forward — the old answer stays, and so does every path you took to it.',
+                  },
+                  {
+                    n: '2',
+                    lead: 'One workspace, three models.',
+                    body: ' Switch mid-sentence. Nothing is lost in the switch, because nothing was ever overwritten.',
+                  },
+                  {
+                    n: '3',
+                    lead: 'Free without a card.',
+                    body: ' Sign in with Google and start. That is the whole onboarding.',
+                  },
+                ].map((a, i) => (
+                  <li
+                    key={a.n}
+                    className="log-fade flex gap-4"
+                    style={{ '--log-delay': `${280 + i * 170}ms` }}
+                  >
+                    <span className="mt-[3px] font-mono text-[11px] tabular-nums text-yellow-400">
+                      {a.n}
+                    </span>
+                    <p className="text-[15px] leading-[1.7] text-muted-foreground">
+                      <span className="font-medium text-foreground">{a.lead}</span>
+                      {a.body}
+                    </p>
+                  </li>
+                ))}
+              </ol>
+
+              <p
+                className="log-fade mt-6 max-w-[68ch] text-[15px] leading-[1.7] text-muted-foreground sm:text-base"
+                style={{ '--log-delay': '820ms' }}
+              >
+                You edited message 02 while I was writing, so this is branch 2 of 3 — the first
+                take is one click back.
+                <span className="log-caret ml-1" aria-hidden="true" />
+                <span className="sr-only">Response still streaming.</span>
+              </p>
+            </div>
+          </article>
+
+          {/* The branch event: the differentiator, stated as a logged fact. */}
+          <div
+            className="log-fade relative mt-5 border border-foreground/15 bg-card/40 py-3 pl-5 pr-4"
+            style={{ '--log-delay': '980ms' }}
+          >
+            <span
+              className="log-branch-rule absolute inset-y-0 left-0 w-[2px] bg-yellow-400"
+              style={{ '--log-delay': '980ms' }}
+              aria-hidden="true"
+            />
+            <p className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1 font-mono text-[11.5px] leading-relaxed">
+              <span className="font-medium uppercase tracking-[0.14em] text-yellow-400">branch</span>
+              <span className="text-foreground">2 of 3</span>
+              <span className="text-muted-foreground">
+                message 02 edited &ldquo;tighten the intro&rdquo; — original kept, both synced to D1
+              </span>
+            </p>
+          </div>
+
+          {/* The resolution: the offer, as the session's conclusion. */}
+          <div className="mt-12 border-t border-foreground/15 pt-10 sm:mt-14 sm:pt-11">
             <h1
-              className="animate-rise text-balance text-4xl font-medium leading-[1.02] tracking-[-0.03em] text-foreground sm:text-6xl lg:text-[4.5rem]"
-              style={{ animationDelay: '60ms' }}
+              id="session-offer"
+              className="log-fade max-w-[16ch] font-heading text-[2.75rem] font-medium leading-[1.02] tracking-[-0.035em] text-foreground sm:text-6xl lg:text-[4.25rem]"
+              style={{ '--log-delay': '1140ms' }}
             >
-              All channels.<br />
-              <span className="text-yellow-400">One mix.</span>
+              Every model.{' '}
+              <span className="text-yellow-400">One tree.</span>
             </h1>
 
-            <p
-              className="animate-rise mt-6 max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg"
-              style={{ animationDelay: '140ms' }}
-            >
-              Every major AI model in a single workspace. Edit any message, branch your thinking, sync across devices. The interface that responds like the music.
-            </p>
+            <div className="mt-9 grid gap-9 lg:grid-cols-[minmax(0,1fr)_260px] lg:gap-14">
+              <LogProse delay={1260} className="max-w-[52ch]">
+                Chat, code and PRDs in one workspace. Edit any message and regenerate forward — the
+                conversation branches instead of breaking, and every branch is still there on the
+                device you open next.
+              </LogProse>
 
-            <div
-              className="animate-rise mt-8 flex flex-wrap gap-3"
-              style={{ animationDelay: '220ms' }}
-            >
-              <button
-                type="button"
-                onClick={() => navigate('/chat')}
-                className="group inline-flex h-11 items-center justify-center gap-2 bg-yellow-400 px-5 text-sm font-mono font-medium text-neutral-900 shadow-[0_8px_24px_rgba(250,204,21,0.2)] transition-all hover:-translate-y-0.5 hover:bg-yellow-300 hover:shadow-[0_10px_28px_rgba(250,204,21,0.3)] sm:h-12 sm:px-6 sm:text-sm"
-              >
-                Open chat
-                <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
-              </button>
-              <a
-                href="#prd-builder"
-                className="inline-flex h-11 items-center justify-center border border-foreground/15 bg-transparent px-5 text-sm font-mono font-medium text-foreground transition-all hover:-translate-y-0.5 hover:border-yellow-400/50 hover:text-yellow-400 sm:h-12 sm:px-6 sm:text-sm"
-              >
-                From idea to PRD
-              </a>
-            </div>
-
-            <ul
-              className="animate-rise mt-10 flex flex-col gap-2.5 text-sm text-muted-foreground"
-              style={{ animationDelay: '300ms' }}
-            >
-              {[
-                'Sign in with Google, history saved across devices',
-                'Responses stream as you type — no waiting',
-                'Switch models anytime, mid-conversation',
-              ].map((item) => (
-                <li key={item} className="flex items-center gap-2.5">
-                  <Check className="size-4 shrink-0 text-yellow-400" strokeWidth={2.5} aria-hidden="true" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Right: ChatMockup */}
-          <div className="hidden lg:col-span-7 xl:col-span-7 lg:flex lg:items-center lg:justify-center">
-            <div className="w-full max-w-xl">
-              {/* Meter bridge container */}
-              <div className="relative rounded-lg border border-foreground/15 bg-neutral-900/80 p-6 backdrop-blur-sm">
-                {/* Channel labels strip */}
-                <div className="mb-4 flex items-center justify-between border-b border-foreground/10 pb-3">
-                  <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
-                    Input channels
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <span className="size-1.5 rounded-full bg-yellow-400 animate-pulse" aria-hidden="true" />
-                    <span className="font-mono text-[11px] text-yellow-400">LIVE</span>
-                  </span>
-                </div>
-
-                {/* VU Meters row */}
-                <div className="flex justify-between gap-2">
-                  <VuMeter label="Chat" value="8.2" delay={0} />
-                  <VuMeter label="Code" value="6.4" delay={80} />
-                  <VuMeter label="Write" value="7.1" delay={160} />
-                  <VuMeter label="Think" value="9.0" delay={240} />
-                  <VuMeter label="Sync" value="0" active={false} delay={320} />
-                </div>
-
-                {/* Scale markings */}
-                <div className="mt-4 flex justify-between font-mono text-[11px] text-muted-foreground/60">
-                  <span>-∞</span>
-                  <span>-20</span>
-                  <span>-10</span>
-                  <span className="text-yellow-400/60">0</span>
-                  <span className="text-yellow-400/60">+3</span>
-                  <span className="text-red-400/40">+6</span>
-                </div>
-              </div>
-
-              {/* Model ticker below meters */}
-              <div className="mt-4 flex items-center gap-3 rounded border border-foreground/10 bg-neutral-900/60 px-4 py-2.5">
-                <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground shrink-0">
-                  Sources:
-                </span>
-                <div className="flex flex-wrap items-center gap-2">
-                  {MODELS.slice(0, 4).map((m) => (
-                    <span key={m.id} className="font-mono text-[11px] text-foreground/70">
-                      {m.label}
-                    </span>
-                  ))}
-                  <span className="font-mono text-[11px] text-yellow-400">+more</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-/* ─── Features (Channel Strip Cards) ──────────────────────────────────── */
-
-function FeaturesSection() {
-  const FEATURES = [
-    {
-      id: 'chat',
-      title: 'Streamless Chat',
-      desc: 'First token under 2 seconds. Responses flow as you type — no spinning, no waiting. The interface stays out of your way.',
-      icon: MessageSquare,
-      badge: 'Real-time',
-      span: 'col-span-2 md:col-span-2 lg:col-span-2',
-      meter: '8.2',
-    },
-    {
-      id: 'code',
-      title: 'Code Analysis',
-      desc: 'Identify bugs, refactor syntax, and dissect architecture with deep reasoning across every major language.',
-      icon: Code,
-      badge: 'Multi-lang',
-      span: 'col-span-1 md:col-span-1 lg:col-span-1',
-      meter: '6.4',
-    },
-    {
-      id: 'tree',
-      title: 'Tree Branching',
-      desc: 'Edit any message or regenerate forward. Explore multiple reasoning paths without losing the original thread.',
-      icon: GitBranch,
-      badge: 'Zero-loss',
-      span: 'col-span-1 md:col-span-1 lg:col-span-1',
-      meter: '9.0',
-    },
-    {
-      id: 'writing',
-      title: 'Draft & Create',
-      desc: 'Write professional emails, essays, or technical docs with instant style adjustment and tone control.',
-      icon: Pencil,
-      badge: 'Flexible',
-      span: 'col-span-1 md:col-span-1 lg:col-span-1',
-      meter: '7.1',
-    },
-    {
-      id: 'privacy',
-      title: 'Private & Tracked',
-      desc: 'Your data is never sold or used to train public models. Privacy is a feature, not a setting.',
-      icon: Lock,
-      badge: 'Secure',
-      span: 'col-span-1 md:col-span-1 lg:col-span-1',
-      meter: '5.0',
-    },
-  ]
-
-  return (
-    <section id="features" className="relative scroll-mt-20 py-16 sm:py-20 lg:py-24">
-      {/* Subtle grid texture */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage: `linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)`,
-          backgroundSize: '64px 64px',
-        }}
-      />
-
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="mb-10 flex flex-col justify-between gap-4 border-b border-foreground/10 pb-6 sm:flex-row sm:items-end">
-          <h2 className="text-2xl font-medium tracking-tight text-foreground sm:text-3xl lg:text-4xl">
-            What each channel <span className="text-yellow-400">handles</span>
-          </h2>
-          <p className="max-w-sm text-sm leading-relaxed text-muted-foreground sm:text-right">
-            One workspace for thinking, making, and shipping faster.
-          </p>
-        </div>
-
-        <Reveal from="up" className="feature-grid-reveal">
-          <div className="feature-grid relative grid grid-cols-2 md:grid-cols-3">
-            {FEATURES.map((item, index) => {
-              const Icon = item.icon
-              return (
-                <Reveal key={item.id} from="up" delay={index * 60} className={item.span} style={{ '--card-line-delay': `${index * 100}ms` }}>
-                  <div className="feature-card group relative flex h-full flex-col justify-between overflow-hidden p-4 sm:p-6 md:p-8">
-                    <div>
-                      <div className="mb-4 flex flex-col items-start gap-2.5 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="flex size-9 items-center justify-center text-foreground sm:size-10">
-                          <Icon className="size-5 sm:size-6" />
-                        </div>
-                        <span className="bg-background px-2.5 py-0.5 font-mono text-[11px] font-medium text-muted-foreground sm:px-3 sm:py-1">
-                          {item.badge}
-                        </span>
-                      </div>
-                      <h3 className="text-base font-medium text-foreground sm:text-lg">{item.title}</h3>
-                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.desc}</p>
-                    </div>
-
-                    {/* Channel meter strip */}
-                    <div className="mt-5 flex items-center gap-2 pt-3 border-t border-foreground/10">
-                      <div className="flex-1 h-1 rounded-full bg-foreground/10 overflow-hidden">
-                        <div
-                          className="h-full rounded-full bg-yellow-400/70 transition-all duration-1000"
-                          style={{ width: `${(parseFloat(item.meter) / 10) * 100}%`, transitionDelay: `${index * 100 + 200}ms` }}
-                        />
-                      </div>
-                      <span className="font-mono text-[11px] tabular-nums text-yellow-400/80 shrink-0">
-                        {item.meter}
-                      </span>
-                    </div>
-                  </div>
-                </Reveal>
-              )
-            })}
-          </div>
-        </Reveal>
-      </div>
-    </section>
-  )
-}
-
-/* ─── PRD Builder ────────────────────────────────────────────────────────── */
-
-function PrdBuilder({ navigate }) {
-  const steps = [
-    { icon: MessageSquare, label: 'Ideation', desc: 'Describe your product concept in plain language' },
-    { icon: Zap, label: 'Clarify', desc: 'AI asks the right questions to fill gaps' },
-    { icon: Code, label: 'Tech Stack', desc: 'Recommended technologies for your use case' },
-    { icon: GitBranch, label: 'Structure', desc: 'Feature hierarchy and architecture map' },
-    { icon: Pencil, label: 'PRD', desc: 'Complete document, ready to build' },
-  ]
-
-  return (
-    <section id="prd-builder" className="relative scroll-mt-20 py-12 sm:py-14 lg:py-20">
-      <div aria-hidden="true" className="pointer-events-none absolute -left-24 top-16 size-64 rounded-full bg-yellow-400/10 blur-[100px] hidden lg:block" />
-      <div aria-hidden="true" className="pointer-events-none absolute -right-20 bottom-8 size-72 rounded-full bg-yellow-400/10 blur-[100px] hidden lg:block" />
-
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="mb-10 flex flex-col justify-between gap-4 border-b border-foreground/10 pb-6 sm:flex-row sm:items-end">
-          <div>
-            <span className="inline-flex items-center gap-1.5 font-mono text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-              <span className="size-1.5 rounded-full bg-yellow-400" aria-hidden="true" />
-              Beta
-            </span>
-            <h2 className="mt-3 text-2xl font-medium tracking-tight text-foreground sm:text-3xl lg:text-4xl">
-              From idea to PRD in <span className="text-yellow-400">minutes</span>
-            </h2>
-          </div>
-          <p className="max-w-sm text-sm leading-relaxed text-muted-foreground sm:text-right">
-            Turn rough concepts into clear, structured product documents ready to build.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
-          {/* Hero card */}
-          <div className="lg:col-span-3">
-            <Reveal from="up">
-              <div className="feature-card group relative flex h-full flex-col justify-between overflow-hidden p-6 sm:p-8 lg:p-10 border border-foreground/15">
-                <div className="relative space-y-4">
-                  <h3 className="text-xl font-medium text-foreground sm:text-2xl">
-                    AI that understands your vision
-                  </h3>
-                  <p className="max-w-lg text-sm leading-relaxed text-muted-foreground">
-                    Describe your idea and the AI will ask the important things, recommend technologies, structure the product, and produce a complete PRD. Every section is editable.
-                  </p>
+              <div className="log-fade lg:text-right" style={{ '--log-delay': '1360ms' }}>
+                <div className="flex flex-col gap-2.5 sm:flex-row lg:flex-col">
                   <button
                     type="button"
-                    onClick={() => navigate('/prd-builder')}
-                    className="mt-4 inline-flex h-10 items-center gap-2 bg-yellow-400 px-5 text-sm font-mono font-medium text-neutral-900 transition-colors hover:bg-yellow-300 sm:mt-6 sm:h-11"
+                    onClick={() => navigate('/chat')}
+                    className="group inline-flex h-12 items-center justify-center gap-2 bg-foreground px-5 font-mono text-[13px] font-semibold text-background transition-transform hover:-translate-y-0.5"
                   >
-                    Try now
-                    <ArrowRight className="h-4 w-4" />
+                    Open chat
+                    <ArrowRight
+                      className="size-4 transition-transform group-hover:translate-x-0.5"
+                      aria-hidden="true"
+                    />
                   </button>
+                  <a
+                    href="#prd-run"
+                    className="inline-flex h-12 items-center justify-center border border-foreground/20 px-5 font-mono text-[12px] font-medium text-foreground transition-colors hover:border-foreground/45"
+                  >
+                    From idea to PRD
+                  </a>
                 </div>
+                <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground/80 lg:mt-4">
+                  Free · Google sign-in · synced
+                </p>
               </div>
-            </Reveal>
-          </div>
-
-          {/* Steps as channel strip */}
-          <div className="lg:col-span-2">
-            <Reveal from="up" delay={100}>
-              <div className="flex flex-col gap-3">
-                {steps.map((step, i) => (
-                  <div key={step.label} className="flex items-start gap-3 rounded border border-foreground/10 bg-neutral-900/50 p-3 transition-colors hover:border-yellow-400/30">
-                    <span className="font-mono text-xs font-medium text-yellow-400 shrink-0 mt-0.5">
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <step.icon className="size-3.5 text-foreground/60" aria-hidden="true" />
-                        <span className="text-sm font-medium text-foreground">{step.label}</span>
-                      </div>
-                      <p className="mt-1 text-xs text-muted-foreground">{step.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Reveal>
+            </div>
           </div>
         </div>
       </div>
@@ -538,107 +183,428 @@ function PrdBuilder({ navigate }) {
   )
 }
 
-/* ─── Models (Rack Unit Cards) ─────────────────────────────────────────── */
+/* ─── Channels ───────────────────────────────────────────────────────────── */
 
-function ModelsSection() {
+/**
+ * Five channels, measured.
+ *
+ * A measurement strip, not a card grid: each row is a hairline carrying a
+ * channel key, its level and one line of what it does. Every row shares the
+ * log's grid, so the eye reads one instrument rather than five competing
+ * boxes — and the strip's density is deliberately unlike the session above it,
+ * which is what gives the scroll its pacing.
+ */
+const CHANNELS = [
+  {
+    key: 'chat',
+    level: 8.2,
+    title: 'Streamed conversation',
+    body: 'Responses arrive as they are written. Stop mid-answer when you have read enough — the partial text is what gets saved.',
+  },
+  {
+    key: 'code',
+    level: 6.4,
+    title: 'Code and debugging',
+    body: 'Paste the stack trace, describe the bug, get the fix. Argue with it in the next branch when it is wrong.',
+  },
+  {
+    key: 'write',
+    level: 7.1,
+    title: 'Drafting',
+    body: 'Emails, specs, documentation. Adjust tone and length without discarding the version that was nearly right.',
+  },
+  {
+    key: 'think',
+    level: 9.0,
+    title: 'Deep reasoning',
+    body: 'Route a hard question to DeepSeek V4 Flash mid-thread and keep both answers side by side in the tree.',
+  },
+  {
+    key: 'sync',
+    level: null,
+    title: 'Cross-device sync',
+    body: 'Sign in with Google. Every branch lands in your account, so the conversation on your phone is the one you left.',
+  },
+]
+
+function ChannelsBlock() {
+  return (
+    <section
+      id="channels"
+      data-log-block=""
+      className="scroll-mt-[60px] border-t border-foreground/15"
+      aria-labelledby="channels-title"
+    >
+      <div className="mx-auto max-w-[1440px] px-5 py-20 sm:px-8 sm:py-24 lg:px-12 lg:py-28">
+        <BlockHead
+          rule="# channels"
+          title="Five channels, one tree"
+          lede="The same workspace serves each kind of work, and every one of them branches the same way. Pick the channel; the conversation still belongs to you."
+          titleId="channels-title"
+        />
+
+        <div className="mt-14 border-t border-foreground/15 sm:mt-16">
+          {CHANNELS.map((c, i) => (
+            <div
+              key={c.key}
+              className="log-row group grid grid-cols-[auto_1fr] items-baseline gap-x-5 gap-y-2 border-b border-foreground/12 px-1 py-6 sm:grid-cols-[104px_104px_1fr] sm:gap-x-8 sm:py-7"
+            >
+              <EventKey delay={i * 90}>{c.key}</EventKey>
+
+              {/* Level: a bar the reader can compare down the column. */}
+              <div className="col-start-2 row-start-1 flex items-center gap-2.5 sm:col-start-auto sm:row-start-auto">
+                {c.level == null ? (
+                  <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-yellow-400">
+                    always on
+                  </span>
+                ) : (
+                  <>
+                    <span className="h-[3px] w-16 bg-foreground/15 sm:w-20">
+                      <span
+                        className="log-bar-fill block h-full bg-foreground/75"
+                        style={{
+                          width: `${(c.level / 10) * 100}%`,
+                          '--log-delay': `${200 + i * 90}ms`,
+                        }}
+                      />
+                    </span>
+                    <LogValue delay={260 + i * 90}>{c.level.toFixed(1)}</LogValue>
+                  </>
+                )}
+              </div>
+
+              <div className="col-span-2 sm:col-span-1">
+                <h3 className="text-[17px] font-medium text-foreground">{c.title}</h3>
+                <p className="mt-2 max-w-[62ch] text-[15px] leading-relaxed text-muted-foreground">
+                  {c.body}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ─── PRD run ────────────────────────────────────────────────────────────── */
+
+const PRD_STEPS = [
+  {
+    key: 'ideation',
+    label: 'Ideation',
+    out: 'concept captured',
+    body: 'Describe the idea in plain language. No template, no fields to fill in first.',
+  },
+  {
+    key: 'clarify',
+    label: 'Clarify',
+    out: 'gaps resolved',
+    body: 'The model asks the questions that decide scope and waits for your answer before drafting anything.',
+  },
+  {
+    key: 'stack',
+    label: 'Tech stack',
+    out: 'recommendations issued',
+    body: 'Technologies proposed against your constraints, with the reasoning left in the document.',
+  },
+  {
+    key: 'structure',
+    label: 'Structure',
+    out: 'feature map built',
+    body: 'Hierarchy, flows and edge cases laid out as an architecture map you can navigate.',
+  },
+  {
+    key: 'prd',
+    label: 'PRD',
+    out: 'document ready',
+    body: 'A complete requirements document. Every section stays editable — it is a draft, not a verdict.',
+  },
+]
+
+/** The artifact the run produces: a real document outline, not a skeleton. */
+const PRD_SECTIONS = [
+  ['1', 'Summary', '142'],
+  ['2', 'Goals & non-goals', '96'],
+  ['3', 'User stories', '218'],
+  ['4', 'Tech stack', '74'],
+  ['5', 'Architecture', '184'],
+  ['6', 'Milestones', '88'],
+  ['7', 'Risks', '62'],
+]
+
+function PrdRunBlock({ navigate }) {
+  return (
+    <section
+      id="prd-run"
+      data-log-block=""
+      className="scroll-mt-[60px] border-t border-foreground/15"
+      aria-labelledby="prd-title"
+    >
+      <div className="mx-auto max-w-[1440px] px-5 py-20 sm:px-8 sm:py-24 lg:px-12 lg:py-28">
+        <BlockHead
+          rule="# prd.run"
+          title="An idea, run to a document"
+          lede="A second mode of the same workspace. Same tree, same sync — it just keeps asking you questions until the thing is specified."
+          titleId="prd-title"
+          badge="Beta"
+        />
+
+        {/* The run, then the document it produced. */}
+        <div className="mt-14 grid gap-12 sm:mt-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,400px)] lg:gap-16">
+          <ol className="border-t border-foreground/15">
+            {PRD_STEPS.map((s, i) => (
+              <li key={s.key} className="border-b border-foreground/12 py-5 sm:py-6">
+                <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                  <span className="font-mono text-[11px] tabular-nums text-muted-foreground">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <EventKey delay={i * 80}>{s.key}</EventKey>
+                  <span className="text-[15px] font-medium text-foreground">{s.label}</span>
+                  <span className="ml-auto font-mono text-[11px] text-muted-foreground/70">
+                    {s.out}
+                  </span>
+                </div>
+                <p className="mt-2 max-w-[56ch] text-[15px] leading-relaxed text-muted-foreground sm:pl-[7.6rem]">
+                  {s.body}
+                </p>
+              </li>
+            ))}
+          </ol>
+
+          <div className="lg:pt-1">
+            <div className="border border-foreground/15 bg-card">
+              <div className="flex items-center justify-between gap-3 border-b border-foreground/10 px-4 py-3">
+                <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                  prd.md
+                </span>
+                <span className="font-mono text-[10px] tabular-nums text-muted-foreground">
+                  864 words
+                </span>
+              </div>
+
+              <ul className="px-4 py-3">
+                {PRD_SECTIONS.map(([n, name, words], i) => (
+                  <li
+                    key={n}
+                    className="log-fade flex items-baseline gap-3 border-b border-foreground/8 py-2 last:border-b-0"
+                    style={{ '--log-delay': `${220 + i * 70}ms` }}
+                  >
+                    <span className="font-mono text-[10px] tabular-nums text-yellow-400/90">
+                      {n}
+                    </span>
+                    <span className="min-w-0 flex-1 truncate text-[13.5px] text-foreground/85">
+                      {name}
+                    </span>
+                    <span className="font-mono text-[10px] tabular-nums text-muted-foreground">
+                      {words}w
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="border-t border-foreground/10 px-4 py-3.5">
+                <button
+                  type="button"
+                  onClick={() => navigate('/prd-builder')}
+                  className="group inline-flex h-10 w-full items-center justify-center gap-2 bg-foreground font-mono text-[12px] font-semibold text-background transition-transform hover:-translate-y-0.5"
+                >
+                  Run it yourself
+                  <ArrowRight
+                    className="size-3.5 transition-transform group-hover:translate-x-0.5"
+                    aria-hidden="true"
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ─── Sources ────────────────────────────────────────────────────────────── */
+
+function SourcesBlock() {
   const [copied, setCopied] = useState(null)
-  const copyId = (id) => {
-    navigator.clipboard.writeText(id).then(() => {
-      setCopied(id)
-      setTimeout(() => setCopied(null), 1200)
-    })
+
+  useEffect(() => {
+    if (!copied) return
+    const id = setTimeout(() => setCopied(null), 1600)
+    return () => clearTimeout(id)
+  }, [copied])
+
+  const copy = (id) => {
+    navigator.clipboard?.writeText(id).then(
+      () => setCopied(id),
+      () => setCopied(null)
+    )
   }
 
   return (
-    <section id="models" className="relative scroll-mt-20 py-16 sm:py-20 lg:py-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <Reveal from="up">
-          <div className="mb-10 flex flex-col justify-between gap-4 border-b border-foreground/10 pb-6 sm:flex-row sm:items-end">
-            <h2 className="text-2xl font-medium tracking-tight text-foreground sm:text-3xl lg:text-4xl">
-              Every model. <span className="text-yellow-400">Zero cost.</span>
-            </h2>
-            <p className="max-w-sm text-sm leading-relaxed text-muted-foreground sm:text-right">
-              Pick the model that fits each conversation. Switch mid-chat.
-            </p>
-          </div>
+    <section
+      id="sources"
+      data-log-block=""
+      className="scroll-mt-[60px] border-t border-foreground/15"
+      aria-labelledby="sources-title"
+    >
+      <div className="mx-auto max-w-[1440px] px-5 py-20 sm:px-8 sm:py-24 lg:px-12 lg:py-28">
+        <BlockHead
+          rule="# sources"
+          title="Every model, zero cost"
+          lede="Three sources are live and free. Switch between them at any point in a conversation — the tree keeps both answers."
+          titleId="sources-title"
+        />
 
-          <div className="grid grid-cols-1 md:grid-cols-3">
-            {MODELS.map((m, index) => (
-              <div key={m.id} className="feature-card relative p-6 sm:p-8 border border-foreground/10" style={{ '--card-line-delay': `${index * 100}ms` }}>
-                <ModelCard model={m} copied={copied} onCopy={copyId} />
+        <div className="mt-14 border-t border-foreground/15 sm:mt-16">
+          {MODELS.map((m) => (
+            <div
+              key={m.id}
+              className="log-row grid grid-cols-[auto_1fr] items-center gap-x-5 gap-y-3 border-b border-foreground/12 px-1 py-5 sm:grid-cols-[44px_minmax(0,1fr)_auto] sm:gap-x-8 sm:py-6"
+            >
+              <img src={m.logo} alt="" className="size-9 shrink-0 object-contain sm:size-10" />
+
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <h3 className="text-[17px] font-medium text-foreground">{m.label}</h3>
+                  <span className="font-mono text-[11px] text-muted-foreground">{m.provider}</span>
+                  {m.isNew && (
+                    <span className="border border-yellow-400/40 px-1.5 py-px font-mono text-[10px] uppercase tracking-[0.12em] text-yellow-400">
+                      New
+                    </span>
+                  )}
+                </div>
+                <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
+                  <code className="font-mono text-[11px] text-muted-foreground/80">{m.id}</code>
+                  <span className="text-[14px] text-muted-foreground">{m.taglineEn}</span>
+                </div>
               </div>
-            ))}
-          </div>
-        </Reveal>
+
+              <div className="col-start-2 flex items-center gap-3 sm:col-start-auto">
+                <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-yellow-400">
+                  Free
+                </span>
+                <button
+                  type="button"
+                  onClick={() => copy(m.id)}
+                  className="inline-flex h-8 items-center gap-1.5 border border-foreground/15 px-2.5 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground"
+                  aria-label={`Copy model ID ${m.id}`}
+                >
+                  {copied === m.id ? (
+                    <>
+                      <Check className="size-3 text-yellow-400" strokeWidth={2.5} aria-hidden="true" />
+                      Copied
+                    </>
+                  ) : (
+                    'Copy id'
+                  )}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   )
 }
 
-function ModelCard({ model, copied, onCopy }) {
-  return (
-    <div className="group relative overflow-hidden bg-neutral-900/30 transition-colors duration-200">
-      {/* Watermark */}
-      <img
-        src={model.logo}
-        alt=""
-        aria-hidden="true"
-        className="pointer-events-none absolute right-0 top-1/2 h-[64%] w-[64%] -translate-y-1/2 object-contain opacity-[0.06]"
-      />
-      <div className="relative z-10 flex flex-col gap-3">
-        <div className="flex items-center gap-2">
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden bg-background ring-1 ring-border rounded">
-            <img src={model.logo} alt="" className="h-full w-full object-contain" />
-          </span>
-          <span className="font-mono text-xs font-medium text-muted-foreground">{model.provider}</span>
-        </div>
+/* ─── Block head ─────────────────────────────────────────────────────────── */
 
-        <div className="flex items-center gap-2">
-          <h3 className="text-base font-medium text-foreground">{model.label}</h3>
-          {model.tagline === 'Baru & eksperimental' && (
-            <span className="bg-yellow-400/15 px-1.5 py-0.5 font-mono text-[11px] font-semibold uppercase tracking-wide text-yellow-400">
-              New
+/**
+ * The log's block header. The rule name (`# channels`) is the record separator
+ * the session would have written when the block started — the heading itself
+ * carries the weight, with no eyebrow above it.
+ */
+function BlockHead({ rule, title, titleId, lede, badge }) {
+  return (
+    <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,44ch)] lg:items-end lg:gap-16">
+      <div>
+        <div className="flex items-center gap-3">
+          <EventKey>{rule}</EventKey>
+          {badge && (
+            <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-yellow-400">
+              <span className="size-1.5 rounded-full bg-yellow-400" aria-hidden="true" />
+              {badge}
             </span>
           )}
         </div>
-
-        <div className="flex items-center gap-1.5">
-          <span className="bg-background/80 px-2 py-1 font-mono text-[11px] text-muted-foreground ring-1 ring-border/60 rounded">
-            {model.id}
-          </span>
-          <button
-            type="button"
-            onClick={() => onCopy(model.id)}
-            title="Copy model ID"
-            className="flex h-6 w-6 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:bg-accent hover:text-foreground rounded"
-          >
-            {copied === model.id ? (
-              <Check className="h-3.5 w-3.5 text-yellow-400" />
-            ) : (
-              <CopyIcon />
-            )}
-          </button>
-        </div>
-
-        <div className="mt-auto flex items-center justify-between">
-          <span className="font-mono text-[11px] font-medium text-yellow-400/90">
-            Free
-          </span>
-          <span className="font-mono text-[11px] text-muted-foreground">
-            {model.tagline}
-          </span>
-        </div>
+        <h2
+          id={titleId}
+          className="mt-5 max-w-[18ch] font-heading text-[2rem] font-medium leading-[1.08] tracking-[-0.03em] text-foreground sm:text-[2.5rem]"
+        >
+          {title}
+        </h2>
       </div>
+      <LogProse className="max-w-[46ch] lg:pb-2">{lede}</LogProse>
     </div>
   )
 }
 
-function CopyIcon() {
+/* ─── Session close ──────────────────────────────────────────────────────── */
+
+const CLOSE_LINKS = [
+  { to: '/chat', label: 'Open chat' },
+  { to: '/prd-builder', label: 'PRD Builder', chip: 'Beta' },
+  { to: '/changelog', label: 'Changelog' },
+  { to: '/privacy', label: 'Privacy' },
+  { to: '/terms', label: 'Terms' },
+]
+
+function SessionClose({ navigate }) {
   return (
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-3.5 w-3.5" aria-hidden="true">
-      <rect x="5" y="5" width="9" height="9" rx="1" />
-      <path d="M11 5V3a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h2" />
-    </svg>
+    <footer className="border-t border-foreground/15">
+      <div className="mx-auto max-w-[1440px] px-5 py-14 sm:px-8 lg:px-12 lg:py-16">
+        {/* The log closes on its own line, the way a session does. */}
+        <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b border-foreground/12 pb-6">
+          <span className="font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+            session closed
+          </span>
+          <span className="font-mono text-[11px] text-muted-foreground/70">
+            nothing charged · no card on file
+          </span>
+        </div>
+
+        <div className="flex flex-col gap-8 pt-8 sm:flex-row sm:items-start sm:justify-between">
+          <p className="max-w-[38ch] text-[14px] leading-relaxed text-muted-foreground">
+            KeyzAI — every major AI model, free. Chat, code and PRDs in one workspace.
+          </p>
+
+          <nav aria-label="Footer" className="flex flex-wrap items-center gap-x-2 gap-y-1 sm:gap-x-4">
+            {CLOSE_LINKS.map((l) => (
+              <a
+                key={l.to}
+                href={l.to}
+                onClick={(e) => {
+                  e.preventDefault()
+                  navigate(l.to)
+                }}
+                className="inline-flex min-h-[36px] items-center gap-2 px-1 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {l.label}
+                {l.chip && (
+                  <span className="border border-yellow-400/40 px-1 py-px text-[9px] text-yellow-400">
+                    {l.chip}
+                  </span>
+                )}
+              </a>
+            ))}
+          </nav>
+        </div>
+
+        <p className="mt-10 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+          © 2026 KeyzAI · by{' '}
+          <a
+            href="https://github.com/keyzakyy-dev"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-[24px] items-center text-foreground transition-colors hover:text-yellow-400"
+          >
+            Keyzakyy
+          </a>
+        </p>
+      </div>
+    </footer>
   )
 }
 
@@ -658,7 +624,7 @@ export function LandingPage() {
           name: 'Is KeyzAI free?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Yes, KeyzAI is free with no credit card required. Sign in with Google and start chatting with any AI model instantly.',
+            text: 'Yes. KeyzAI is free with no credit card required. Sign in with Google and start chatting with any available model.',
           },
         },
         {
@@ -666,7 +632,7 @@ export function LandingPage() {
           name: 'What AI models are available on KeyzAI?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'KeyzAI provides access to multiple AI models including Qwen, DeepSeek, and Atria. You can switch between models anytime during a conversation.',
+            text: 'KeyzAI provides access to multiple AI models including Qwen 3.8 Flash and DeepSeek V4 Flash. You can switch between models at any point during a conversation.',
           },
         },
         {
@@ -674,7 +640,7 @@ export function LandingPage() {
           name: 'Are chat histories saved?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Yes. Chat history syncs automatically across all devices you use. Data is stored in Cloudflare D1 and protected by your Google login session.',
+            text: 'Yes. Chat history syncs automatically across all devices you use, protected by your Google login session.',
           },
         },
         {
@@ -682,7 +648,7 @@ export function LandingPage() {
           name: 'What is the PRD Builder?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'The PRD Builder turns rough product ideas into complete Product Requirements Documents. You enter through chat, the AI clarifies details, recommends technology, and structures the product.',
+            text: 'The PRD Builder turns rough product ideas into complete Product Requirements Documents. You describe the idea, the AI clarifies details, recommends technology, and structures the product.',
           },
         },
         {
@@ -690,7 +656,7 @@ export function LandingPage() {
           name: 'How does streaming work?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'KeyzAI uses SSE (Server-Sent Events) to stream AI responses as they are generated. You do not need to wait for completion and can stop anytime with the stop button.',
+            text: 'KeyzAI streams AI responses as they are generated, so you can read along and stop at any point instead of waiting for completion.',
           },
         },
       ],
@@ -703,17 +669,15 @@ export function LandingPage() {
   }, [])
 
   return (
-    <div className="relative min-h-dvh bg-background text-foreground antialiased">
-      <div className="relative">
-        <Navbar navigate={navigate} />
-        <main>
-          <Hero navigate={navigate} />
-          <FeaturesSection />
-          <PrdBuilder navigate={navigate} />
-          <ModelsSection />
-        </main>
-        <Footer />
-      </div>
+    <div className="log-shell min-h-dvh bg-background text-foreground antialiased">
+      <SessionNav />
+      <main>
+        <SessionOpen navigate={navigate} />
+        <ChannelsBlock />
+        <PrdRunBlock navigate={navigate} />
+        <SourcesBlock />
+      </main>
+      <SessionClose />
     </div>
   )
 }

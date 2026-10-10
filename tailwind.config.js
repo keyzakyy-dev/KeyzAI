@@ -9,8 +9,25 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
-        heading: ['Space Grotesk', 'Inter', 'system-ui', 'sans-serif'],
+        // Geist is the face actually loaded in index.html. Space Grotesk is
+        // not fetched, so naming it here silently fell back to a system face.
+        heading: ['Geist', 'Inter', 'system-ui', 'sans-serif'],
         serif: ['Lora', 'Georgia', '"Times New Roman"', 'serif'],
+        // DESIGN.md "The Mono Rule": mono is IBM Plex Sans for its geometric
+        // warmth, used only for TUI chrome, data labels, and measurement.
+        mono: ['IBM Plex Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        // Genuine monospace, reserved for code where column alignment is
+        // functional rather than decorative.
+        code: [
+          'ui-monospace',
+          'SFMono-Regular',
+          'Menlo',
+          'Monaco',
+          'Consolas',
+          '"Liberation Mono"',
+          '"Courier New"',
+          'monospace',
+        ],
       },
       colors: {
         border: "hsl(var(--border))",

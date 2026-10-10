@@ -44,7 +44,7 @@ export function Footer() {
         <div className="grid gap-10 py-12 sm:grid-cols-12 sm:py-14">
           {/* Brand */}
           <div className="sm:col-span-5">
-            <Link to="/" aria-label="Kembali ke beranda" className="inline-flex transition-opacity hover:opacity-80">
+            <Link to="/" aria-label="KeyzAI home" className="inline-flex transition-opacity hover:opacity-80">
               <Wordmark className="text-lg" />
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
@@ -101,7 +101,7 @@ export function Footer() {
               href="https://github.com/keyzakyy-dev"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-foreground/80 transition-colors hover:text-foreground"
+              className="inline-flex min-h-8 items-center font-medium text-foreground/80 transition-colors hover:text-foreground"
             >
               Keyzakyy
             </a>

@@ -3,122 +3,546 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KeyzAI - VU Meter Bridge</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<title>Particle Event Display — KeyzAI Landing</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;700&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500&display=swap');
+  
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #0a0a0a; color: #f5f5f4; font-family: 'Inter', sans-serif; }
   
-  /* Header: strip labels like channel numbers */
-  .vu-header { padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1a1a1a; }
-  .vu-logo { font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; }
-  .vu-logo span { color: #facc15; }
-  .vu-nav { display: flex; gap: 32px; font-family: 'IBM Plex Sans', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #a8a29e; }
-  .vu-nav a { color: #a8a29e; text-decoration: none; transition: color 0.2s; }
-  .vu-nav a:hover { color: #facc15; }
-  
-  /* Hero: VU meter bridge */
-  .vu-hero { padding: 80px 32px 60px; text-align: center; }
-  .vu-headline { font-family: 'Space Grotesk', sans-serif; font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 24px; }
-  .vu-headline span { color: #facc15; }
-  .vu-sub { font-size: 1.125rem; color: #a8a29e; max-width: 560px; margin: 0 auto 48px; line-height: 1.7; }
-  
-  /* The meter bridge: row of VU meters */
-  .vu-bridge { display: flex; justify-content: center; gap: 24px; margin-bottom: 48px; flex-wrap: wrap; }
-  .vu-meter { display: flex; flex-direction: column; align-items: center; gap: 12px; }
-  .vu-meter-face { width: 80px; height: 120px; background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%); border: 1px solid #2e2e2e; border-radius: 4px; position: relative; overflow: hidden; }
-  .vu-meter-scale { position: absolute; bottom: 8px; left: 8px; right: 8px; height: 4px; background: #2e2e2e; border-radius: 2px; }
-  .vu-meter-needle { position: absolute; bottom: 8px; left: 50%; width: 2px; height: 50px; background: #facc15; transform-origin: bottom center; transform: translateX(-50%) rotate(-45deg); transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
-  .vu-meter-needle.active { transform: translateX(-50%) rotate(35deg); }
-  .vu-meter-label { font-family: 'IBM Plex Sans', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: #a8a29e; text-align: center; }
-  .vu-meter-value { font-family: 'Space Grotesk', sans-serif; font-size: 0.75rem; color: #facc15; }
-  
-  /* CTA */
-  .vu-cta { display: flex; justify-content: center; gap: 16px; }
-  .vu-btn { height: 48px; padding: 0 32px; font-family: 'IBM Plex Sans', monospace; font-size: 13px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; border: none; cursor: pointer; transition: all 0.2s; }
-  .vu-btn-primary { background: #facc15; color: #0a0a0a; }
-  .vu-btn-primary:hover { background: #fde047; transform: translateY(-1px); }
-  .vu-btn-secondary { background: transparent; color: #f5f5f4; border: 1px solid #2e2e2e; }
-  .vu-btn-secondary:hover { border-color: #facc15; color: #facc15; }
-  
-  /* Footer info */
-  .vu-footer { padding: 24px 32px; text-align: center; font-family: 'IBM Plex Sans', monospace; font-size: 11px; color: #a8a29e; letter-spacing: 0.08em; text-transform: uppercase; border-top: 1px solid #1a1a1a; }
-  
-  /* Animated needles on load */
-  @keyframes needle-sweep {
-    0% { transform: translateX(-50%) rotate(-45deg); }
-    60% { transform: translateX(-50%) rotate(40deg); }
-    80% { transform: translateX(-50%) rotate(30deg); }
-    100% { transform: translateX(-50%) rotate(35deg); }
+  body {
+    background: #0a0a0a;
+    color: #f5f5f4;
+    font-family: 'Inter', system-ui, sans-serif;
+    overflow-x: hidden;
+    height: 900px;
+    position: relative;
   }
-  .vu-meter.animate .vu-meter-needle { animation: needle-sweep 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+  
+  /* Nav */
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    border-bottom: 1px solid rgba(245,245,244,0.12);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+  }
+  .nav-brand {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-family: 'IBM Plex Sans', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgba(245,245,244,0.55);
+    text-decoration: none;
+  }
+  .nav-cta {
+    font-family: 'IBM Plex Sans', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    background: #f5f5f4;
+    color: #0a0a0a;
+    padding: 8px 16px;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+  }
+  
+  /* Hero */
+  .hero {
+    padding-top: 56px;
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    min-height: 900px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* Particle canvas area */
+  .particle-bg {
+    position: absolute;
+    inset: 0;
+    opacity: 0.6;
+  }
+  
+  /* Concentric rings decoration */
+  .rings {
+    position: absolute;
+    top: 50%;
+    left: 30%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+  }
+  .ring {
+    position: absolute;
+    border: 1px solid rgba(74,96,112,0.3);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .ring:nth-child(1) { width: 120px; height: 120px; border-color: rgba(250,204,21,0.25); }
+  .ring:nth-child(2) { width: 220px; height: 220px; }
+  .ring:nth-child(3) { width: 340px; height: 340px; }
+  .ring:nth-child(4) { width: 480px; height: 480px; border-color: rgba(74,96,112,0.15); }
+  .ring:nth-child(5) { width: 600px; height: 600px; border-color: rgba(74,96,112,0.08); }
+  
+  /* Track lines */
+  .tracks {
+    position: absolute;
+    top: 50%;
+    left: 30%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+  }
+  .track {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1px;
+    height: 200px;
+    transform-origin: top center;
+    opacity: 0.4;
+  }
+  .track::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: linear-gradient(to bottom, transparent, #facc15);
+  }
+  .track:nth-child(1) { transform: rotate(15deg); }
+  .track:nth-child(2) { transform: rotate(-25deg); }
+  .track:nth-child(3) { transform: rotate(45deg); }
+  .track:nth-child(4) { transform: rotate(-60deg); }
+  .track:nth-child(5) { transform: rotate(75deg); }
+  .track:nth-child(6) { transform: rotate(-100deg); }
+  .track:nth-child(7) { transform: rotate(130deg); }
+  .track:nth-child(8) { transform: rotate(-155deg); }
+  
+  /* Left hero copy */
+  .hero-copy {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 0 80px 72px;
+  }
+  .hero-eyebrow {
+    font-family: 'IBM Plex Sans', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: #facc15;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    width: 20px;
+    height: 1px;
+    background: #facc15;
+  }
+  .hero-headline {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(2.75rem, 4.5vw, 4.25rem);
+    font-weight: 500;
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    color: #f5f5f4;
+    max-width: 18ch;
+    margin-bottom: 28px;
+  }
+  .hero-headline span {
+    color: #facc15;
+  }
+  .hero-body {
+    font-size: 15px;
+    line-height: 1.7;
+    color: rgba(245,245,244,0.6);
+    max-width: 44ch;
+    margin-bottom: 36px;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .btn-primary {
+    font-family: 'IBM Plex Sans', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    background: #f5f5f4;
+    color: #0a0a0a;
+    padding: 12px 24px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-secondary {
+    font-family: 'IBM Plex Sans', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    background: transparent;
+    color: #f5f5f4;
+    padding: 12px 24px;
+    border: 1px solid rgba(245,245,244,0.2);
+    cursor: pointer;
+  }
+  .hero-meta {
+    font-family: 'IBM Plex Sans', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgba(245,245,244,0.4);
+    margin-top: 20px;
+  }
+  
+  /* Right: live event display */
+  .event-panel {
+    position: relative;
+    z-index: 10;
+    padding: 48px 32px;
+    border-left: 1px solid rgba(245,245,244,0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .event-header {
+    font-family: 'IBM Plex Sans', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgba(245,245,244,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .event-dot {
+    width: 6px;
+    height: 6px;
+    background: #facc15;
+    border-radius: 50%;
+    animation: breathe 2.4s ease-in-out infinite;
+  }
+  @keyframes breathe {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.82); }
+  }
+  
+  /* Canvas event visualization */
+  .event-canvas {
+    width: 100%;
+    height: 280px;
+    position: relative;
+    background: radial-gradient(ellipse at center, rgba(74,96,112,0.08) 0%, transparent 70%);
+    border: 1px solid rgba(74,96,112,0.2);
+    overflow: hidden;
+  }
+  .event-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background: #facc15;
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(250,204,21,0.5);
+  }
+  .event-ring {
+    position: absolute;
+    border: 1px solid rgba(74,96,112,0.35);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .event-ring:nth-child(2) { width: 80px; height: 80px; }
+  .event-ring:nth-child(3) { width: 140px; height: 140px; border-color: rgba(74,96,112,0.2); }
+  .event-ring:nth-child(4) { width: 200px; height: 200px; border-color: rgba(74,96,112,0.12); }
+  
+  /* Tracks in event canvas */
+  .event-track {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1px;
+    height: 90px;
+    transform-origin: top center;
+  }
+  .event-track::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, #facc15);
+  }
+  .event-track.blue::after { background: linear-gradient(to bottom, transparent, #22d3ee); }
+  .event-track.red::after { background: linear-gradient(to bottom, transparent, #dc2626); }
+  .event-track:nth-child(5) { transform: rotate(20deg); }
+  .event-track:nth-child(6) { transform: rotate(-35deg); }
+  .event-track:nth-child(7) { transform: rotate(55deg); }
+  .event-track:nth-child(8) { transform: rotate(-80deg); }
+  .event-track:nth-child(9) { transform: rotate(100deg); }
+  .event-track:nth-child(10) { transform: rotate(-130deg); }
+  
+  /* Event data readout */
+  .event-readout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 16px;
+    font-family: 'IBM Plex Sans', monospace;
+    font-size: 10px;
+  }
+  .readout-label {
+    color: rgba(245,245,244,0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .readout-value {
+    color: #f5f5f4;
+    text-align: right;
+  }
+  .readout-value.accent { color: #facc15; }
+  .readout-value.cyan { color: #22d3ee; }
+  
+  /* Branch list */
+  .branch-list {
+    border-top: 1px solid rgba(245,245,244,0.08);
+    padding-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .branch-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    background: rgba(245,245,244,0.03);
+    border: 1px solid rgba(245,245,244,0.06);
+    cursor: pointer;
+    font-family: 'IBM Plex Sans', monospace;
+    font-size: 11px;
+    color: rgba(245,245,244,0.7);
+  }
+  .branch-item.active {
+    border-color: rgba(250,204,21,0.3);
+    background: rgba(250,204,21,0.05);
+  }
+  .branch-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #facc15;
+    flex-shrink: 0;
+  }
+  .branch-dot.blue { background: #22d3ee; }
+  .branch-label { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .branch-meta { color: rgba(245,245,244,0.35); font-size: 10px; }
+  
+  /* Calorimeter wedges */
+  .calorimeter {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 48px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(245,245,244,0.06);
+  }
+  .wedge {
+    flex: 1;
+    background: #dc2626;
+    opacity: 0.6;
+    min-width: 4px;
+    border-radius: 1px 1px 0 0;
+  }
+  
+  /* Section indicators */
+  .section-nav {
+    position: fixed;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 50;
+  }
+  .section-dot {
+    width: 6px;
+    height: 6px;
+    border: 1px solid rgba(245,245,244,0.3);
+    border-radius: 50%;
+  }
+  .section-dot.active {
+    background: #facc15;
+    border-color: #facc15;
+  }
 </style>
 </head>
 <body>
-<div class="vu-header">
-  <div class="vu-logo">Key<span>z</span>AI</div>
-  <nav class="vu-nav">
-    <a href="#">Features</a>
-    <a href="#">PRD Builder</a>
-    <a href="#">Sign In</a>
-  </nav>
-</div>
 
-<div class="vu-hero">
-  <h1 class="vu-headline">All channels.<br><span>One mix.</span></h1>
-  <p class="vu-sub">Every major AI model in a single workspace. Edit any message, branch your thinking, sync across devices. The interface that responds like the music.</p>
-  
-  <div class="vu-bridge">
-    <div class="vu-meter">
-      <div class="vu-meter-face">
-        <div class="vu-meter-scale"></div>
-        <div class="vu-meter-needle active"></div>
-      </div>
-      <div class="vu-meter-label">Chat</div>
-      <div class="vu-meter-value">-3 dB</div>
-    </div>
-    <div class="vu-meter">
-      <div class="vu-meter-face">
-        <div class="vu-meter-scale"></div>
-        <div class="vu-meter-needle active"></div>
-      </div>
-      <div class="vu-meter-label">Code</div>
-      <div class="vu-meter-value">-6 dB</div>
-    </div>
-    <div class="vu-meter">
-      <div class="vu-meter-face">
-        <div class="vu-meter-scale"></div>
-        <div class="vu-meter-needle active"></div>
-      </div>
-      <div class="vu-meter-label">Write</div>
-      <div class="vu-meter-value">-2 dB</div>
-    </div>
-    <div class="vu-meter">
-      <div class="vu-meter-face">
-        <div class="vu-meter-scale"></div>
-        <div class="vu-meter-needle active"></div>
-      </div>
-      <div class="vu-meter-label">Brain</div>
-      <div class="vu-meter-value">0 dB</div>
-    </div>
-    <div class="vu-meter">
-      <div class="vu-meter-face">
-        <div class="vu-meter-scale"></div>
-        <div class="vu-meter-needle"></div>
-      </div>
-      <div class="vu-meter-label">Sync</div>
-      <div class="vu-meter-value">—</div>
-    </div>
+<!-- Navigation -->
+<nav class="nav">
+  <div class="nav-brand">KeyzAI</div>
+  <ul class="nav-links">
+    <li><a href="#channels">Channels</a></li>
+    <li><a href="#prd">PRD</a></li>
+    <li><a href="#sources">Sources</a></li>
+  </ul>
+  <button class="nav-cta">Open chat →</button>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <!-- Background rings -->
+  <div class="rings">
+    <div class="ring"></div>
+    <div class="ring"></div>
+    <div class="ring"></div>
+    <div class="ring"></div>
+    <div class="ring"></div>
+  </div>
+  <div class="tracks">
+    <div class="track"></div>
+    <div class="track"></div>
+    <div class="track"></div>
+    <div class="track"></div>
+    <div class="track"></div>
+    <div class="track"></div>
+    <div class="track"></div>
+    <div class="track"></div>
   </div>
   
-  <div class="vu-cta">
-    <button class="vu-btn vu-btn-primary">Open Chat</button>
-    <button class="vu-btn vu-btn-secondary">From Idea to PRD</button>
+  <!-- Left: copy -->
+  <div class="hero-copy">
+    <div class="hero-eyebrow">Every model · One tree</div>
+    <h1 class="hero-headline">
+      Every model.<br>
+      <span>One tree.</span>
+    </h1>
+    <p class="hero-body">
+      Chat, code and PRDs in one workspace. Edit any message and regenerate forward — the conversation branches instead of breaking, and every branch is still there on the device you open next.
+    </p>
+    <div class="hero-actions">
+      <button class="btn-primary">Open chat <span>→</span></button>
+      <button class="btn-secondary">From idea to PRD</button>
+    </div>
+    <div class="hero-meta">Free · Google sign-in · synced</div>
   </div>
+  
+  <!-- Right: live event panel -->
+  <div class="event-panel">
+    <div class="event-header">
+      <span>event display · live</span>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="event-dot"></div>
+        <span style="font-family:'IBM Plex Sans',monospace;font-size:10px;color:rgba(245,245,244,0.5);">00:04:21</span>
+      </div>
+    </div>
+    
+    <div class="event-canvas">
+      <div class="event-center"></div>
+      <div class="event-ring"></div>
+      <div class="event-ring"></div>
+      <div class="event-ring"></div>
+      <div class="event-track"></div>
+      <div class="event-track blue"></div>
+      <div class="event-track"></div>
+      <div class="event-track red"></div>
+      <div class="event-track blue"></div>
+      <div class="event-track"></div>
+    </div>
+    
+    <div class="event-readout">
+      <span class="readout-label">branches</span>
+      <span class="readout-value accent">3</span>
+      <span class="readout-label">first token</span>
+      <span class="readout-value">1.4s</span>
+      <span class="readout-label">active model</span>
+      <span class="readout-value cyan">deepseek-v4</span>
+      <span class="readout-label">synced</span>
+      <span class="readout-value">✓ 3 devices</span>
+    </div>
+    
+    <div class="branch-list">
+      <div class="branch-item active">
+        <div class="branch-dot"></div>
+        <span class="branch-label">qwen3.8-flash · draft intro</span>
+        <span class="branch-meta">main</span>
+      </div>
+      <div class="branch-item">
+        <div class="branch-dot blue"></div>
+        <span class="branch-label">deepseek-v4 · tighten flow</span>
+        <span class="branch-meta">br:2</span>
+      </div>
+      <div class="branch-item">
+        <div class="branch-dot blue"></div>
+        <span class="branch-label">atria-dawn · experimental take</span>
+        <span class="branch-meta">br:3</span>
+      </div>
+    </div>
+    
+    <div class="calorimeter">
+      <div class="wedge" style="height:30%"></div>
+      <div class="wedge" style="height:55%"></div>
+      <div class="wedge" style="height:40%"></div>
+      <div class="wedge" style="height:70%"></div>
+      <div class="wedge" style="height:85%"></div>
+      <div class="wedge" style="height:60%"></div>
+      <div class="wedge" style="height:45%"></div>
+      <div class="wedge" style="height:90%"></div>
+      <div class="wedge" style="height:75%"></div>
+      <div class="wedge" style="height:50%"></div>
+      <div class="wedge" style="height:35%"></div>
+      <div class="wedge" style="height:65%"></div>
+      <div class="wedge" style="height:80%"></div>
+      <div class="wedge" style="height:55%"></div>
+      <div class="wedge" style="height:40%"></div>
+      <div class="wedge" style="height:70%"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Section nav dots -->
+<div class="section-nav">
+  <div class="section-dot active"></div>
+  <div class="section-dot"></div>
+  <div class="section-dot"></div>
+  <div class="section-dot"></div>
 </div>
 
-<div class="vu-footer">
-  Free · Google Sign-In · No Credit Card · All Models Included
-</div>
 </body>
 </html>
