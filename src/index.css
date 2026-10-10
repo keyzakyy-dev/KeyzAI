@@ -81,7 +81,7 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    font-family: 'Space Grotesk', 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
       'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
       'Helvetica Neue', sans-serif;
     font-weight: 500;
@@ -676,155 +676,33 @@ html:not(.hydrated) [data-reveal] {
   }
 }
 
-/* ═══ Landing: Session Log ═══════════════════════════════════════════════
-   The landing page is one continuous logged session. Every section is a
-   block of the same log: a hairline rule, a mono event key, and prose. The
-   motion grammar is sequence, not ornament — events light in order, rules
-   draw once, and nothing loops except the caret and the live dot.
+/* ═══ Landing: Particle Event Display ════════════════════════════════════
+   Vacuum-black ground (#080F14). Detector steel chrome (#4a6070).
+   Track Yellow (#FFD23A) for active states, Track Cyan (#35D0FF) for branches.
+   Space Grotesk display type. Mono labels via IBM Plex Sans / JetBrains Mono.
+   Motion: exponential ease-out, plays once, never loops. */
 
-   Log blocks reveal WITHOUT the blur-stack the generic [data-reveal] uses:
-   a log line arrives by drawing its own rule, so the reveal animation is
-   per-rule (scaleX) plus a 220ms opacity fade. No translate, no blur. */
-
-.log-shell {
-  --log-accent: #facc15;
-  --log-dim: hsl(var(--foreground) / 0.34);
-  --log-faint: hsl(var(--foreground) / 0.18);
-}
-
-/* Stream gutter: pinned telemetry rail. On mobile it becomes a horizontal
-   strip above the session body rather than a column, so the events stay
-   readable at 390px without a horizontal scroll. */
-.log-rail {
-  border-right: 1px solid hsl(var(--foreground) / 0.14);
-}
-@media (max-width: 1023px) {
-  .log-rail {
-    border-right: 0;
-    border-bottom: 1px solid hsl(var(--foreground) / 0.14);
-  }
+.landing-shell {
+  --evt-vacuum: #080F14;
+  --evt-steel: #4a6070;
+  --evt-panel: #0d1520;
+  --evt-yellow: #FFD23A;
+  --evt-cyan: #35D0FF;
+  --evt-red: #FF4D4D;
 }
 
-/* An event row in the gutter: timestamp, key, and — once the session has
-   played — a lit state. Unlit rows are dimmed but never invisible: the log
-   must be fully readable with all motion disabled.
-   Both states clear 4.5:1 on the near-black ground at this size (10.5px), so
-   a row is never legible only while the animation is running. */
-.log-ev {
-  color: hsl(var(--foreground) / 0.55);
-  transition: color 260ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-.log-ev[data-lit='1'] {
-  color: hsl(var(--muted-foreground) / 0.95);
-}
-.log-ev[data-lit='1'][data-accent='1'] {
-  color: var(--log-accent);
-}
-
-/* The rule that draws itself when a log line arrives. */
-.log-rule {
-  transform-origin: left center;
-  animation: log-rule-draw 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: var(--log-delay, 0ms);
-}
-@keyframes log-rule-draw {
-  from { transform: scaleX(0); }
-  to   { transform: scaleX(1); }
-}
-
-.log-fade {
-  animation: log-fade-in 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: var(--log-delay, 0ms);
-}
-@keyframes log-fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-/* The branch event's 2px yellow rule draws once, left to right. */
-.log-branch-rule {
-  transform-origin: left center;
-  animation: log-rule-draw 760ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: var(--log-delay, 0ms);
-}
-
-/* Streaming caret: the only looping animation in the hero besides the dot. */
-.log-caret {
-  display: inline-block;
-  width: 0.5em;
-  height: 1.05em;
-  vertical-align: -0.18em;
-  background: var(--log-accent);
-  animation: log-caret-blink 1.05s steps(2, start) infinite;
-}
-@keyframes log-caret-blink {
-  0%, 100% { opacity: 1; }
-  50%      { opacity: 0; }
-}
-
-/* Live dot on the gutter header and the nav: a slow breath, not a blink. */
-.log-live {
-  animation: log-live-breathe 2.4s ease-in-out infinite;
-}
-@keyframes log-live-breathe {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%      { opacity: 0.45; transform: scale(0.82); }
-}
-
-/* The five channel rows: a measurement strip, not a card grid. Each row is
-   a hairline rule with a channel key, a level bar, and one line of prose.
-   The bar fills on reveal from its own left edge. */
-.log-bar-fill {
-  transform-origin: left center;
-  animation: log-rule-draw 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: var(--log-delay, 0ms);
-}
-
-/* Reveal for log sections further down the page: the block's top rule draws
-   and its body fades. Deliberately unlike the blur-stack reveal. */
-[data-reveal='log'] {
-  opacity: 1;
-  filter: none;
-  transform: none;
-}
-[data-reveal='log'] {
-  animation: log-fade-in 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: var(--reveal-delay, 0ms);
-}
-[data-reveal='log'][data-revealed] {
-  animation: log-fade-in 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: var(--reveal-delay, 0ms);
-}
-
-/* Selection + caret belong to the page, not to the browser default. */
-.log-shell ::selection {
-  background: rgba(250, 204, 21, 0.26);
-  color: hsl(var(--foreground));
-}
-
-/* Hover on a channel row: the row lifts to a full-contrast hairline and its
-   bar brightens. One authored state, not five scattered hovers. */
-.log-row {
-  transition: background-color 200ms ease, border-color 200ms ease;
-}
-.log-row:hover,
-.log-row:focus-within {
-  background-color: hsl(var(--foreground) / 0.035);
+/* Selection in the collider world */
+.landing-shell ::selection {
+  background: rgba(255, 210, 60, 0.2);
+  color: #f5f5f4;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .log-rule,
-  .log-branch-rule,
-  .log-bar-fill,
-  .log-fade,
-  [data-reveal='log'] {
-    animation: none !important;
-    transform: none !important;
-    opacity: 1 !important;
-  }
-  .log-caret,
-  .log-live {
-    animation: none !important;
-    opacity: 1 !important;
+  .landing-shell *,
+  .landing-shell *::before,
+  .landing-shell *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
