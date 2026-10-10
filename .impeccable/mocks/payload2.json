@@ -1,0 +1,49 @@
+{
+  "title": "Choose the landing structure",
+  "question": "Three structural directions for the landing page. Pick one.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "VU Meter Bridge",
+      "kicker": "THE ROLL",
+      "thesis": "The landing as a row of instrument meters — each channel a feature, needles lean together on the chorus, the whole bridge reads the room at a glance.",
+      "palette": ["#0a0a0a", "#facc15", "#f5f5f4", "#2e2e2e"],
+      "materials": ["analog instrumentation", "ballistic needles"],
+      "viewport": "Hero: a horizontal bank of VU meters where the needles all lean into yellow on scroll entrance. Each meter is a feature channel. Navigation sits above as strip labels.",
+      "risk": "Can read decorative if the needles don't respond to real interaction.",
+      "comp": ".impeccable/mocks/decision/assigned.html",
+      "htmlFrame": "1440x900"
+    },
+    {
+      "id": "challenger-hypercard",
+      "label": "HyperCard Stack",
+      "kicker": "COMPETITIVE",
+      "thesis": "The landing as a card stack: each section a removable card with visible buttons, history trail, and the reader is also the author.",
+      "palette": ["#0a0a0a", "#f5f5f4", "#a8a29e", "#2e2e2e"],
+      "materials": ["one-bit cards", "painted buttons", "stipple dither"],
+      "viewport": "Hero: a single card with hand-drawn border, bold pixel-style header, and a large painted CTA button. Sections below are cards in a stack with visible link buttons between them.",
+      "case": "Fuses with the tree-branch product truth — each card is a conversation branch, history is a trail through cards.",
+      "risk": "Reads nostalgic for a demographic that won't recognize the reference.",
+      "comp": ".impeccable/mocks/decision/challenger-hypercard.html",
+      "htmlFrame": "1440x900"
+    },
+    {
+      "id": "challenger-ticket",
+      "label": "Jet-Age Wallet",
+      "kicker": "COMPETITIVE",
+      "thesis": "The landing as a coupon book: each leg is a feature, validation stamps mark progress, the user carries their journey.",
+      "palette": ["#0a0a0a", "#facc15", "#1b2a52", "#f5f5f4"],
+      "materials": ["carbon-copy coupons", "ruled hairlines", "VOID stamp"],
+      "viewport": "Hero: a folded coupon booklet with KeyzAI as the carrier name, numbered legs (features) listed as route stops, a large CTA as the boarding pass stamp.",
+      "case": "Strong metaphor for the journey-of-thinking product. Loses on warmth — too official for a companion tool.",
+      "risk": "Reads like a travel agency when the ruling is too strict.",
+      "comp": ".impeccable/mocks/decision/challenger-ticket.html",
+      "htmlFrame": "1440x900"
+    }
+  ],
+  "reroll": true,
+  "buildPath": {
+    "value": "code",
+    "toggle": true
+  }
+}

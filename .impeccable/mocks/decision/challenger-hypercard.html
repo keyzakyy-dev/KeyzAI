@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KeyzAI - HyperCard Stack</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f5f5f4; color: #0a0a0a; font-family: 'Inter', sans-serif; }
+  
+  /* Card-based layout with visible borders */
+  .stack { max-width: 900px; margin: 0 auto; padding: 32px; }
+  
+  /* Each section is a card */
+  .card { background: #ffffff; border: 2px solid #0a0a0a; border-radius: 0; padding: 32px; margin-bottom: 24px; position: relative; box-shadow: 8px 8px 0 #0a0a0a; }
+  
+  /* Header card */
+  .card-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 32px; }
+  .card-logo { font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; }
+  .card-logo span { background: #0a0a0a; color: #f5f5f4; padding: 2px 6px; }
+  .card-nav { display: flex; gap: 24px; }
+  .card-nav a { color: #0a0a0a; text-decoration: none; font-family: 'IBM Plex Sans', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; border-bottom: 1px solid #0a0a0a; padding-bottom: 2px; }
+  
+  /* Hero card */
+  .card-hero { text-align: center; }
+  .card-hero h1 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 24px; }
+  .card-hero p { font-size: 1.125rem; color: #44403c; max-width: 500px; margin: 0 auto 32px; line-height: 1.7; }
+  
+  /* Painted button style */
+  .btn-paint { display: inline-flex; align-items: center; gap: 8px; height: 48px; padding: 0 32px; background: #0a0a0a; color: #f5f5f4; font-family: 'IBM Plex Sans', monospace; font-size: 13px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; border: none; cursor: pointer; transition: all 0.1s; box-shadow: 4px 4px 0 #a8a29e; }
+  .btn-paint:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 #a8a29e; }
+  .btn-paint-secondary { background: transparent; color: #0a0a0a; border: 2px solid #0a0a0a; box-shadow: 4px 4px 0 transparent; }
+  .btn-paint-secondary:hover { box-shadow: 4px 4px 0 #0a0a0a; }
+  
+  /* Button grid for navigation */
+  .btn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 32px; }
+  .btn-card { height: 48px; background: transparent; border: 2px solid #0a0a0a; color: #0a0a0a; font-family: 'IBM Plex Sans', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: all 0.1s; display: flex; align-items: center; justify-content: center; }
+  .btn-card:hover { background: #0a0a0a; color: #f5f5f4; }
+  
+  /* Feature cards with hand-drawn feel */
+  .card-features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .feature-item { padding: 24px; border: 1px dashed #a8a29e; }
+  .feature-num { font-family: 'Space Grotesk', sans-serif; font-size: 2rem; font-weight: 700; color: #0a0a0a; margin-bottom: 12px; }
+  .feature-title { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 500; margin-bottom: 8px; }
+  .feature-desc { font-size: 0.875rem; color: #57534e; line-height: 1.6; }
+  
+  /* History trail */
+  .history-trail { padding: 20px 32px; background: #1a1a1a; color: #f5f5f4; font-family: 'IBM Plex Sans', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+  .history-trail span { color: #a8a29e; }
+  .history-trail strong { color: #facc15; }
+</style>
+</head>
+<body>
+<div class="stack">
+  <!-- Header as top card -->
+  <div class="card card-header">
+    <div class="card-logo">Key<span>z</span>AI</div>
+    <nav class="card-nav">
+      <a href="#">Features</a>
+      <a href="#">PRD</a>
+      <a href="#">Sign In</a>
+    </nav>
+  </div>
+  
+  <!-- Hero card -->
+  <div class="card card-hero">
+    <h1>Your thinking,<br>card by card.</h1>
+    <p>Each conversation is a card you can edit, branch, and pass forward. From rough idea to structured PRD — one click at a time.</p>
+    <button class="btn-paint">Open Chat →</button>
+    
+    <div class="btn-grid">
+      <button class="btn-card">Feature 01</button>
+      <button class="btn-card">Feature 02</button>
+      <button class="btn-card">Feature 03</button>
+    </div>
+  </div>
+  
+  <!-- Features as stacked cards -->
+  <div class="card">
+    <div class="card-features">
+      <div class="feature-item">
+        <div class="feature-num">01</div>
+        <div class="feature-title">Tree Branching</div>
+        <div class="feature-desc">Edit any message, regenerate forward. Each branch is its own card in the stack.</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-num">02</div>
+        <div class="feature-title">Multi-Model</div>
+        <div class="feature-desc">GPT-4o, Claude, Gemini — switch models mid-conversation like flipping cards.</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-num">03</div>
+        <div class="feature-title">PRD Builder</div>
+        <div class="feature-desc">Turn ideas into structured specs. Each section is a card you can reorder.</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- History trail -->
+  <div class="history-trail">
+    <span>History:</span>
+    <span>Home → <strong>Chat</strong> → Branch 3</span>
+  </div>
+</div>
+</body>
+</html>

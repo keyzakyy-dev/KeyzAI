@@ -1,44 +1,84 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { usePageMeta, SITE_NAME, SITE_DESC } from '../lib/seo'
-import { Reveal } from '../lib/reveal'
 import { useAuth } from '../hooks/useAuth'
 import { Wordmark } from '../lib/logo-img'
-import { ModelMarquee } from '../components/ModelMarquee'
 import { MODELS } from '../lib/models'
 import {
   ArrowRight,
   MessageSquare,
   Code,
-  CircleHelp,
+  Pencil,
+  Lock,
+  GitBranch,
+  Check,
+  Zap,
   Menu,
   X,
-  FileText,
-  Copy,
-  Check,
 } from 'lucide-react'
 import { MeshCanvas } from '../components/MeshCanvas'
 import { ChatMockup } from '../components/landing/ChatMockup'
 import { FeaturesBento } from '../components/landing/FeaturesBento'
 import { Footer } from '../components/landing/Footer'
+import { Reveal } from '../lib/reveal'
 
-function Logo() {
+/* ─── VU Meter ─────────────────────────────────────────────────────────── */
+
+function VuMeter({ label, value, delay = 0, active = true }) {
+  const [swept, setSwept] = useState(false)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    const t = setTimeout(() => setSwept(true), 400 + delay)
+    return () => clearTimeout(t)
+  }, [delay])
+
+  // Needle angle: -45° (rest) → 35° (active). Map value to angle.
+  const maxAngle = 80 // total sweep range
+  const ratio = active ? Math.min(1, Math.max(0, parseFloat(value) / 10)) : 0
+  const angle = swept ? -45 + ratio * maxAngle : -45
+
   return (
-    <div className="flex items-center gap-2.5">
-      <Wordmark />
+    <div className="flex flex-col items-center gap-2" ref={ref}>
+      <div className="relative w-16 h-24 sm:w-20 sm:h-28">
+        {/* Meter face */}
+        <div className="absolute inset-0 rounded-sm bg-gradient-to-b from-neutral-900 to-background border border-foreground/15 overflow-hidden">
+          {/* Scale arc marks */}
+          <div className="absolute bottom-2 left-2 right-2 h-px bg-foreground/20" />
+          {/* Red zone indicator */}
+          <div className="absolute top-3 right-2 w-1.5 h-1.5 rounded-full bg-yellow-400/60" />
+          {/* Needle pivot */}
+          <div
+            className="absolute bottom-2 left-1/2 w-0.5 origin-bottom transition-transform ease-out"
+            style={{
+              transform: `translateX(-50%) rotate(${angle}deg)`,
+              transitionDuration: `${600 + delay * 0.5}ms`,
+            }}
+          >
+            <div className="w-0.5 h-10 sm:h-12 bg-yellow-400/80 rounded-full" />
+            <div className="absolute -bottom-1 -left-1 w-2 h-2 rounded-full bg-yellow-400" />
+          </div>
+        </div>
+      </div>
+      <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+        {label}
+      </span>
+      <span className="font-heading text-xs font-medium text-yellow-400 tabular-nums">
+        {active ? `${value} dB` : '—'}
+      </span>
     </div>
   )
 }
+
+/* ─── Navbar ─────────────────────────────────────────────────────────────── */
 
 function Navbar({ navigate }) {
   const { user } = useAuth()
   const [open, setOpen] = useState(false)
   const progressRef = useRef(null)
 
-  // Listener untuk progress baca dan scroll-spy.
   useEffect(() => {
     const onScroll = () => {
-      // progress baca: ditulis langsung ke DOM agar tidak memicu re-render tiap frame
       const doc = document.documentElement
       const max = doc.scrollHeight - doc.clientHeight
       if (progressRef.current) {
@@ -55,28 +95,22 @@ function Navbar({ navigate }) {
     }
   }, [])
 
-  // Tutup panel mobile dengan Escape
   useEffect(() => {
     if (!open) return
-    const onKey = (e) => {
-      if (e.key === 'Escape') setOpen(false)
-    }
+    const onKey = (e) => { if (e.key === 'Escape') setOpen(false) }
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
   }, [open])
 
-  // Panel mobile tidak relevan lagi saat layar melebar ke desktop
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 768px)')
-    const onChange = (e) => {
-      if (e.matches) setOpen(false)
-    }
+    const onChange = (e) => { if (e.matches) setOpen(false) }
     mq.addEventListener?.('change', onChange)
     return () => mq.removeEventListener?.('change', onChange)
   }, [])
 
   const ctaClass =
-    'inline-flex h-9 items-center gap-1.5 border border-foreground/15 bg-transparent px-4 text-sm font-medium text-foreground transition-colors hover:border-foreground/40 hover:bg-foreground/[0.04]'
+    'inline-flex h-9 items-center gap-1.5 border border-foreground/15 bg-transparent px-4 text-sm font-mono font-medium text-foreground transition-colors hover:border-yellow-400/50 hover:text-yellow-400'
 
   return (
     <header
@@ -84,11 +118,11 @@ function Navbar({ navigate }) {
         open ? 'border-foreground/10 bg-background/95 backdrop-blur-md' : 'border-transparent'
       }`}
     >
-      {/* Hairline progress baca */}
+      {/* Hairline progress */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[2px] overflow-hidden" aria-hidden="true">
         <div
           ref={progressRef}
-          className="h-full w-full origin-left scale-x-0 bg-primary"
+          className="h-full w-full origin-left scale-x-0 bg-yellow-400"
         />
       </div>
 
@@ -96,44 +130,33 @@ function Navbar({ navigate }) {
         <button
           type="button"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          aria-label="Kembali ke atas"
+          aria-label="Back to top"
           className="shrink-0 transition-opacity hover:opacity-80"
         >
-          <Logo />
+          <Wordmark />
         </button>
 
-        {/* Desktop */}
         <div className="hidden shrink-0 items-center gap-2 md:flex">
           <button type="button" onClick={() => navigate('/chat')} className={ctaClass}>
-            {user ? 'Buka chat' : 'Masuk'}
+            {user ? 'Open chat' : 'Sign in'}
+            <ArrowRight className="size-3" aria-hidden="true" />
           </button>
         </div>
 
-        {/* Mobile */}
         <div className="flex shrink-0 items-center gap-1 md:hidden">
           <button
             type="button"
             onClick={() => setOpen((o) => !o)}
-            aria-label={open ? 'Tutup menu' : 'Buka menu'}
+            aria-label={open ? 'Close menu' : 'Open menu'}
             aria-expanded={open}
             aria-controls="landing-mobile-nav"
             className="relative flex h-11 w-11 items-center justify-center text-foreground transition-colors hover:bg-foreground/[0.06]"
           >
-            <Menu
-              className={`h-4 w-4 transition-all duration-300 ${
-                open ? 'rotate-90 scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100'
-              }`}
-            />
-            <X
-              className={`absolute h-4 w-4 transition-all duration-300 ${
-                open ? 'rotate-0 scale-100 opacity-100' : '-rotate-90 scale-0 opacity-0'
-              }`}
-            />
+            <MenuIcon open={open} />
           </button>
         </div>
       </div>
 
-      {/* Panel menu mobile */}
       {open && (
         <div
           id="landing-mobile-nav"
@@ -143,13 +166,10 @@ function Navbar({ navigate }) {
           <nav className="mx-auto max-w-7xl px-4 pb-3 pt-1">
             <button
               type="button"
-              onClick={() => {
-                setOpen(false)
-                navigate('/chat')
-              }}
-              className="my-3 h-11 w-full bg-primary text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              onClick={() => { setOpen(false); navigate('/chat') }}
+              className="my-3 h-11 w-full bg-yellow-400 text-sm font-mono font-medium text-neutral-900 transition-colors hover:bg-yellow-300"
             >
-              {user ? 'Buka chat' : 'Masuk dengan Google'}
+              {user ? 'Open chat →' : 'Sign in with Google'}
             </button>
           </nav>
         </div>
@@ -158,13 +178,20 @@ function Navbar({ navigate }) {
   )
 }
 
+function MenuIcon({ open }) {
+  return (
+    <>
+      <Menu className={`h-4 w-4 transition-all duration-300 ${open ? 'rotate-90 scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100'}`} aria-hidden="true" />
+      <X className={`absolute h-4 w-4 transition-all duration-300 ${open ? 'rotate-0 scale-100 opacity-100' : '-rotate-90 scale-0 opacity-0'}`} aria-hidden="true" />
+    </>
+  )
+}
+
+/* ─── Hero ───────────────────────────────────────────────────────────────── */
+
 function Hero({ navigate }) {
   const meshRef = useRef(null)
 
-  // Parallax: mesh bergeser 20% dari kecepatan scroll (lebih lambat dari
-  // konten). Ditulis langsung ke DOM via rAF, tanpa re-render. Hero di
-  // puncak halaman, jadi tepi atas mesh selalu di luar viewport — tanpa
-  // gap. Dihormati prefers-reduced-motion.
   useEffect(() => {
     const el = meshRef.current
     if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
@@ -176,16 +203,10 @@ function Hero({ navigate }) {
     const onScroll = () => { if (!raf) raf = requestAnimationFrame(update) }
     update()
     window.addEventListener('scroll', onScroll, { passive: true })
-    return () => {
-      window.removeEventListener('scroll', onScroll)
-      cancelAnimationFrame(raf)
-    }
+    return () => { window.removeEventListener('scroll', onScroll); cancelAnimationFrame(raf) }
   }, [])
 
   return (
-    /* Tinggi = viewport dikurangi header fixed (h-16) supaya isi hero tepat
-       satu layar tanpa memaksa scroll. Kolom kanan berisi mockup chat TUI
-       yang dekoratif (disembunyikan di mobile). */
     <section className="relative overflow-hidden py-16 sm:py-20 lg:flex lg:min-h-[calc(100svh-4rem)] lg:items-center lg:py-24">
       <div ref={meshRef} className="pointer-events-none absolute inset-0 will-change-transform">
         <MeshCanvas
@@ -197,38 +218,37 @@ function Hero({ navigate }) {
         aria-hidden="true"
         className="pointer-events-none absolute left-[10%] top-1/2 h-[28rem] w-[min(38rem,70vw)] -translate-y-1/2 rounded-full bg-yellow-400/10 blur-[140px]"
       />
+
       <div className="relative mx-auto w-full max-w-7xl px-4 sm:px-6">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
+          {/* Left: copy + CTA */}
           <div className="min-w-0 lg:col-span-6 xl:col-span-5">
             <a
-              href="#models"
-              className="animate-rise group mb-5 inline-flex max-w-full items-center gap-2 border border-foreground/15 bg-transparent py-1 pl-1.5 pr-3 text-xs text-foreground transition-colors hover:border-foreground/35 sm:mb-6 sm:gap-3 sm:py-1.5 sm:pl-2 sm:pr-3.5 sm:text-sm"
+              href="#features"
+              className="animate-rise group mb-5 inline-flex max-w-full items-center gap-2 border border-foreground/15 bg-transparent py-1 pl-1.5 pr-3 text-xs font-mono text-foreground transition-colors hover:border-foreground/35 sm:mb-6 sm:gap-3 sm:py-1.5 sm:pl-2 sm:pr-3.5 sm:text-sm"
             >
-              <span className="flex size-5 shrink-0 items-center justify-center border border-yellow-400/35 text-yellow-600 dark:text-yellow-400 sm:size-6">
+              <span className="flex size-5 shrink-0 items-center justify-center border border-yellow-400/35 text-yellow-400 sm:size-6">
                 <Check className="size-3 sm:size-3.5" strokeWidth={2.5} aria-hidden="true" />
               </span>
               <span className="truncate text-muted-foreground">
-                <strong className="font-medium text-foreground">Gratis untuk semua.</strong>{' '}
-                Tanpa kartu kredit
+                <strong className="font-medium text-foreground">Free for everyone.</strong> No credit card
               </span>
-              <ArrowRight
-                className="size-3 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 sm:size-3.5"
-                aria-hidden="true"
-              />
+              <ArrowRight className="size-3 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 sm:size-3.5" aria-hidden="true" />
             </a>
 
             <h1
               className="animate-rise text-balance text-4xl font-medium leading-[1.02] tracking-[-0.03em] text-foreground sm:text-6xl lg:text-[4.5rem]"
               style={{ animationDelay: '60ms' }}
             >
-              Akses semua AI favorit, gratis.
+              All channels.<br />
+              <span className="text-yellow-400">One mix.</span>
             </h1>
 
             <p
               className="animate-rise mt-6 max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg"
               style={{ animationDelay: '140ms' }}
             >
-              Satu tempat untuk semua kebutuhan AI. Chat, edit, dan eksplorasi tanpa batas.
+              Every major AI model in a single workspace. Edit any message, branch your thinking, sync across devices. The interface that responds like the music.
             </p>
 
             <div
@@ -238,16 +258,16 @@ function Hero({ navigate }) {
               <button
                 type="button"
                 onClick={() => navigate('/chat')}
-                className="group inline-flex h-11 items-center justify-center gap-2 bg-primary px-5 text-sm font-medium text-primary-foreground shadow-[0_8px_24px_hsl(var(--foreground)/0.12)] transition-all hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-[0_10px_28px_hsl(var(--foreground)/0.18)] sm:h-12 sm:px-6 sm:text-[15px]"
+                className="group inline-flex h-11 items-center justify-center gap-2 bg-yellow-400 px-5 text-sm font-mono font-medium text-neutral-900 shadow-[0_8px_24px_rgba(250,204,21,0.2)] transition-all hover:-translate-y-0.5 hover:bg-yellow-300 hover:shadow-[0_10px_28px_rgba(250,204,21,0.3)] sm:h-12 sm:px-6 sm:text-sm"
               >
-                Buka chat
+                Open chat
                 <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
               </button>
               <a
                 href="#prd-builder"
-                className="inline-flex h-11 items-center justify-center border border-foreground/15 bg-transparent px-5 text-sm font-medium text-foreground transition-all hover:-translate-y-0.5 hover:border-foreground/40 hover:bg-foreground/[0.04] sm:h-12 sm:px-6 sm:text-[15px]"
+                className="inline-flex h-11 items-center justify-center border border-foreground/15 bg-transparent px-5 text-sm font-mono font-medium text-foreground transition-all hover:-translate-y-0.5 hover:border-yellow-400/50 hover:text-yellow-400 sm:h-12 sm:px-6 sm:text-sm"
               >
-                Dari ide jadi PRD
+                From idea to PRD
               </a>
             </div>
 
@@ -256,116 +276,167 @@ function Hero({ navigate }) {
               style={{ animationDelay: '300ms' }}
             >
               {[
-                'Masuk dengan Google, riwayat otomatis tersimpan',
-                'Jawaban mengalir saat diketik, tidak perlu ditunggu',
-                'Bisa ganti model kapan saja',
+                'Sign in with Google, history saved across devices',
+                'Responses stream as you type — no waiting',
+                'Switch models anytime, mid-conversation',
               ].map((item) => (
                 <li key={item} className="flex items-center gap-2.5">
-                  <Check className="size-4 shrink-0 text-yellow-600 dark:text-yellow-400" strokeWidth={2.5} aria-hidden="true" />
+                  <Check className="size-4 shrink-0 text-yellow-400" strokeWidth={2.5} aria-hidden="true" />
                   <span>{item}</span>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Kolom kanan: mockup chat TUI (dekoratif, hidden di mobile) */}
-          <div className="hidden lg:col-span-6 lg:flex lg:items-center lg:justify-center xl:col-span-7">
-            <ChatMockup />
+          {/* Right: VU Meter Bridge */}
+          <div className="hidden lg:col-span-6 xl:col-span-7 lg:flex lg:items-center lg:justify-center">
+            <div className="w-full max-w-xl">
+              {/* Meter bridge container */}
+              <div className="relative rounded-lg border border-foreground/15 bg-neutral-900/80 p-6 backdrop-blur-sm">
+                {/* Channel labels strip */}
+                <div className="mb-4 flex items-center justify-between border-b border-foreground/10 pb-3">
+                  <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+                    Input channels
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="size-1.5 rounded-full bg-yellow-400 animate-pulse" aria-hidden="true" />
+                    <span className="font-mono text-[11px] text-yellow-400">LIVE</span>
+                  </span>
+                </div>
+
+                {/* VU Meters row */}
+                <div className="flex justify-between gap-2">
+                  <VuMeter label="Chat" value="8.2" delay={0} />
+                  <VuMeter label="Code" value="6.4" delay={80} />
+                  <VuMeter label="Write" value="7.1" delay={160} />
+                  <VuMeter label="Think" value="9.0" delay={240} />
+                  <VuMeter label="Sync" value="0" active={false} delay={320} />
+                </div>
+
+                {/* Scale markings */}
+                <div className="mt-4 flex justify-between font-mono text-[11px] text-muted-foreground/60">
+                  <span>-∞</span>
+                  <span>-20</span>
+                  <span>-10</span>
+                  <span className="text-yellow-400/60">0</span>
+                  <span className="text-yellow-400/60">+3</span>
+                  <span className="text-red-400/40">+6</span>
+                </div>
+              </div>
+
+              {/* Model ticker below meters */}
+              <div className="mt-4 flex items-center gap-3 rounded border border-foreground/10 bg-neutral-900/60 px-4 py-2.5">
+                <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground shrink-0">
+                  Sources:
+                </span>
+                <div className="flex flex-wrap items-center gap-2">
+                  {MODELS.slice(0, 4).map((m) => (
+                    <span key={m.id} className="font-mono text-[11px] text-foreground/70">
+                      {m.label}
+                    </span>
+                  ))}
+                  <span className="font-mono text-[11px] text-yellow-400">+more</span>
+                </div>
+              </div>
+            </div>
           </div>
-
         </div>
       </div>
     </section>
   )
 }
 
-function ModelMarqueeSection() {
-  return (
-    <section className="border-y border-foreground/10 py-3 sm:py-4">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="mb-1 flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
-          <span className="size-1.5 bg-yellow-400" aria-hidden="true" />
-          Model tersedia
-        </div>
-        <ModelMarquee />
-      </div>
-    </section>
-  )
-}
+/* ─── Features (Channel Cards) ──────────────────────────────────────────── */
 
-
-function PrdBuilder({ navigate }) {
-  const steps = [
-    { icon: MessageSquare, label: 'Ide', desc: 'Ceritakan konsep produkmu' },
-    { icon: CircleHelp, label: 'Klarifikasi', desc: 'AI menggali detail penting' },
-    { icon: Code, label: 'Teknologi', desc: 'Rekomendasi stack yang tepat' },
-    { icon: FileText, label: 'Struktur', desc: 'Susunan fitur & arsitektur' },
-    { icon: FileText, label: 'PRD', desc: 'Dokumen siap pakai' },
+function FeaturesSection() {
+  const FEATURES = [
+    {
+      id: 'chat',
+      title: 'Streamless Chat',
+      desc: 'First token under 2 seconds. Responses flow as you type — no spinning, no waiting. The interface stays out of your way.',
+      icon: MessageSquare,
+      badge: 'Real-time',
+      span: 'col-span-2 md:col-span-2 lg:col-span-2',
+      value: '8.2',
+    },
+    {
+      id: 'code',
+      title: 'Code Analysis',
+      desc: 'Identify bugs, refactor syntax, and dissect architecture with deep reasoning across every major language.',
+      icon: Code,
+      badge: 'Multi-lang',
+      span: 'col-span-1 md:col-span-1 lg:col-span-1',
+      value: '6.4',
+    },
+    {
+      id: 'tree',
+      title: 'Tree Branching',
+      desc: 'Edit any message or regenerate forward. Explore multiple reasoning paths without losing the original thread.',
+      icon: GitBranch,
+      badge: 'Zero-loss',
+      span: 'col-span-1 md:col-span-1 lg:col-span-1',
+      value: '9.0',
+    },
+    {
+      id: 'writing',
+      title: 'Draft & Create',
+      desc: 'Write professional emails, essays, or technical docs with instant style adjustment and tone control.',
+      icon: Pencil,
+      badge: 'Flexible',
+      span: 'col-span-1 md:col-span-1 lg:col-span-1',
+      value: '7.1',
+    },
+    {
+      id: 'privacy',
+      title: 'Private & Tracked',
+      desc: 'Your data is never sold or used to train public models. Privacy is a feature, not a setting.',
+      icon: Lock,
+      badge: 'Secure',
+      span: 'col-span-1 md:col-span-1 lg:col-span-1',
+      value: '5.0',
+    },
   ]
 
   return (
-    <section id="prd-builder" className="relative scroll-mt-20 py-12 sm:py-14 lg:py-20">
-      <div aria-hidden="true" className="pointer-events-none absolute -left-24 top-16 size-64 rounded-full bg-yellow-400/10 blur-[100px] hidden lg:block" />
-      <div aria-hidden="true" className="pointer-events-none absolute -right-20 bottom-8 size-72 rounded-full bg-yellow-400/10 blur-[100px] hidden lg:block" />
-      <div aria-hidden="true" className="pointer-events-none absolute right-[32%] -top-16 size-40 rounded-full bg-yellow-400/10 blur-[90px] hidden lg:block" />
-
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
+    <section id="features" className="relative scroll-mt-20 py-16 sm:py-20 lg:py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="mb-10 flex flex-col justify-between gap-4 border-b border-foreground/10 pb-6 sm:flex-row sm:items-end">
           <div>
-            <span className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-              Beta
+            <span className="font-mono text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
+              Channel mapping
             </span>
             <h2 className="mt-3 text-2xl font-medium tracking-tight text-foreground sm:text-3xl lg:text-4xl">
-              Dari ide jadi PRD dalam{' '}
-              <span className="text-yellow-600 dark:text-yellow-400">hitungan menit</span>
+              What each channel <span className="text-yellow-400">handles</span>
             </h2>
           </div>
           <p className="max-w-sm text-sm leading-relaxed text-muted-foreground sm:text-right">
-            Ubah ide mentah menjadi dokumen produk yang jelas, terstruktur, dan siap dibangun.
+            One workspace for thinking, making, and shipping faster.
           </p>
         </div>
 
-        {/* Bento Grid */}
         <Reveal from="up" className="feature-grid-reveal">
           <div className="feature-grid relative grid grid-cols-2 md:grid-cols-3">
-          {/* Hero Card - spans 2 cols on lg */}
-          <Reveal from="up" className="col-span-2 sm:col-span-2 lg:col-span-2 lg:row-span-2">
-            <div className="feature-card group relative flex h-full flex-col justify-between overflow-hidden p-5 sm:p-8 lg:p-10">
-              <div className="relative space-y-4">
-                <h3 className="text-xl font-medium text-foreground sm:text-2xl">
-                  AI yang memahami visimu
-                </h3>
-                <p className="max-w-lg text-sm leading-relaxed text-muted-foreground">
-                  Ceritakan idemu, AI akan menanyakan hal-hal penting, merekomendasikan teknologi, menyusun struktur produk, sampai PRD siap pakai. Semua bagiannya bisa diedit.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => navigate('/prd-builder')}
-                  className="mt-4 inline-flex h-10 items-center gap-2 bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:mt-6 sm:h-11"
-                >
-                  Coba sekarang
-                  <ArrowRight className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          </Reveal>
-
-          {/* Step Cards */}
-          {steps.map((step, i) => (
-            <Reveal key={step.label} from="up" delay={100 + i * 50}>
-              <div className="feature-card h-full p-4 sm:p-6 md:p-8">
-                <div className="flex items-center gap-2.5 sm:gap-4">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center text-foreground sm:h-10 sm:w-10">
-                    <step.icon className="h-4 w-4 text-primary sm:h-5 sm:w-5" />
+            {FEATURES.map((item, index) => {
+              const Icon = item.icon
+              return (
+                <Reveal key={item.id} from="up" delay={index * 60} className={item.span} style={{ '--card-line-delay': `${index * 100}ms` }}>
+                  <div className="feature-card group relative flex h-full flex-col justify-between overflow-hidden p-4 sm:p-6 md:p-8">
+                    <div>
+                      <div className="mb-4 flex flex-col items-start gap-2.5 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex size-9 items-center justify-center text-foreground sm:size-10">
+                          <Icon className="size-5 sm:size-6" />
+                        </div>
+                        <span className="bg-background px-2.5 py-0.5 font-mono text-[11px] font-medium text-muted-foreground sm:px-3 sm:py-1">
+                          {item.badge}
+                        </span>
+                      </div>
+                      <h3 className="text-base font-medium text-foreground sm:text-lg">{item.title}</h3>
+                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.desc}</p>
+                    </div>
                   </div>
-                  <h4 className="text-sm font-medium text-foreground sm:text-base md:text-lg">{step.label}</h4>
-                </div>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:mt-5">
-                  {step.desc}
-                </p>
-              </div>
-            </Reveal>
-          ))}
+                </Reveal>
+              )
+            })}
           </div>
         </Reveal>
       </div>
@@ -373,7 +444,93 @@ function PrdBuilder({ navigate }) {
   )
 }
 
-function Models() {
+/* ─── PRD Builder ────────────────────────────────────────────────────────── */
+
+function PrdBuilder({ navigate }) {
+  const steps = [
+    { icon: MessageSquare, label: 'Ideation', desc: 'Describe your product concept in plain language' },
+    { icon: Zap, label: 'Clarify', desc: 'AI asks the right questions to fill gaps' },
+    { icon: Code, label: 'Tech Stack', desc: 'Recommended technologies for your use case' },
+    { icon: GitBranch, label: 'Structure', desc: 'Feature hierarchy and architecture map' },
+    { icon: Pencil, label: 'PRD', desc: 'Complete document, ready to build' },
+  ]
+
+  return (
+    <section id="prd-builder" className="relative scroll-mt-20 py-12 sm:py-14 lg:py-20">
+      <div aria-hidden="true" className="pointer-events-none absolute -left-24 top-16 size-64 rounded-full bg-yellow-400/10 blur-[100px] hidden lg:block" />
+      <div aria-hidden="true" className="pointer-events-none absolute -right-20 bottom-8 size-72 rounded-full bg-yellow-400/10 blur-[100px] hidden lg:block" />
+
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="mb-10 flex flex-col justify-between gap-4 border-b border-foreground/10 pb-6 sm:flex-row sm:items-end">
+          <div>
+            <span className="inline-flex items-center gap-1.5 font-mono text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
+              <span className="size-1.5 rounded-full bg-yellow-400" aria-hidden="true" />
+              Beta
+            </span>
+            <h2 className="mt-3 text-2xl font-medium tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+              From idea to PRD in <span className="text-yellow-400">minutes</span>
+            </h2>
+          </div>
+          <p className="max-w-sm text-sm leading-relaxed text-muted-foreground sm:text-right">
+            Turn rough concepts into clear, structured product documents ready to build.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
+          {/* Hero card */}
+          <div className="lg:col-span-3">
+            <Reveal from="up">
+              <div className="feature-card group relative flex h-full flex-col justify-between overflow-hidden p-6 sm:p-8 lg:p-10 border border-foreground/15">
+                <div className="relative space-y-4">
+                  <h3 className="text-xl font-medium text-foreground sm:text-2xl">
+                    AI that understands your vision
+                  </h3>
+                  <p className="max-w-lg text-sm leading-relaxed text-muted-foreground">
+                    Describe your idea and the AI will ask the important things, recommend technologies, structure the product, and produce a complete PRD. Every section is editable.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => navigate('/prd-builder')}
+                    className="mt-4 inline-flex h-10 items-center gap-2 bg-yellow-400 px-5 text-sm font-mono font-medium text-neutral-900 transition-colors hover:bg-yellow-300 sm:mt-6 sm:h-11"
+                  >
+                    Try now
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            </Reveal>
+          </div>
+
+          {/* Steps as channel strip */}
+          <div className="lg:col-span-2">
+            <Reveal from="up" delay={100}>
+              <div className="flex flex-col gap-3">
+                {steps.map((step, i) => (
+                  <div key={step.label} className="flex items-start gap-3 rounded border border-foreground/10 bg-neutral-900/50 p-3 transition-colors hover:border-yellow-400/30">
+                    <span className="font-mono text-xs font-medium text-yellow-400 shrink-0 mt-0.5">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <step.icon className="size-3.5 text-foreground/60" aria-hidden="true" />
+                        <span className="text-sm font-medium text-foreground">{step.label}</span>
+                      </div>
+                      <p className="mt-1 text-xs text-muted-foreground">{step.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ─── Models (Channel Selector) ─────────────────────────────────────────── */
+
+function ModelsSection() {
   const [copied, setCopied] = useState(null)
   const copyId = (id) => {
     navigator.clipboard.writeText(id).then(() => {
@@ -381,28 +538,28 @@ function Models() {
       setTimeout(() => setCopied(null), 1200)
     })
   }
+
   return (
     <section id="models" className="relative scroll-mt-20 py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <Reveal from="up" className="mx-auto max-w-7xl">
+        <Reveal from="up">
           <div className="mb-10 flex flex-col justify-between gap-4 border-b border-foreground/10 pb-6 sm:flex-row sm:items-end">
             <div>
-              <span className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-                Model AI
+              <span className="font-mono text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
+                Channel selector
               </span>
               <h2 className="mt-3 text-2xl font-medium tracking-tight text-foreground sm:text-3xl lg:text-4xl">
-                Beragam model,{' '}
-                <span className="text-yellow-600 dark:text-yellow-400">semua gratis</span>
+                Every model. <span className="text-yellow-400">Zero cost.</span>
               </h2>
             </div>
             <p className="max-w-sm text-sm leading-relaxed text-muted-foreground sm:text-right">
-              Pilih model yang paling cocok untuk tiap percakapan.
+              Pick the model that fits each conversation. Switch mid-chat.
             </p>
           </div>
 
-          <div className="feature-grid relative grid grid-cols-1 md:grid-cols-3">
+          <div className="grid grid-cols-1 md:grid-cols-3">
             {MODELS.map((m, index) => (
-              <div key={m.id} className="feature-card relative p-7 sm:p-8" style={{ '--card-line-delay': `${index * 100}ms` }}>
+              <div key={m.id} className="feature-card relative p-6 sm:p-8 border border-foreground/10" style={{ '--card-line-delay': `${index * 100}ms` }}>
                 <ModelCard model={m} copied={copied} onCopy={copyId} />
               </div>
             ))}
@@ -415,58 +572,72 @@ function Models() {
 
 function ModelCard({ model, copied, onCopy }) {
   return (
-    <div className="group relative overflow-hidden bg-background transition-colors duration-200">
-      {/* Watermark logo: brand glyph besar dan samar di belakang */}
+    <div className="group relative overflow-hidden bg-neutral-900/30 transition-colors duration-200">
+      {/* Watermark */}
       <img
         src={model.logo}
         alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute right-0 top-1/2 h-[64%] w-[64%] -translate-y-1/2 object-contain opacity-[0.08]"
+        className="pointer-events-none absolute right-0 top-1/2 h-[64%] w-[64%] -translate-y-1/2 object-contain opacity-[0.06]"
       />
       <div className="relative z-10 flex flex-col gap-3">
         <div className="flex items-center gap-2">
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden bg-background ring-1 ring-border">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden bg-background ring-1 ring-border rounded">
             <img src={model.logo} alt="" className="h-full w-full object-contain" />
           </span>
-          <span className="text-xs font-medium text-muted-foreground">{model.provider}</span>
+          <span className="font-mono text-xs font-medium text-muted-foreground">{model.provider}</span>
         </div>
 
         <div className="flex items-center gap-2">
           <h3 className="text-base font-medium text-foreground">{model.label}</h3>
           {model.tagline === 'Baru & eksperimental' && (
-            <span className="bg-primary/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
-              Baru
+            <span className="bg-yellow-400/15 px-1.5 py-0.5 font-mono text-[11px] font-semibold uppercase tracking-wide text-yellow-400">
+              New
             </span>
           )}
         </div>
 
         <div className="flex items-center gap-1.5">
-          <span className="bg-background/80 px-2 py-1 font-mono text-[11px] text-muted-foreground ring-1 ring-border/60">
+          <span className="bg-background/80 px-2 py-1 font-mono text-[11px] text-muted-foreground ring-1 ring-border/60 rounded">
             {model.id}
           </span>
           <button
             type="button"
             onClick={() => onCopy(model.id)}
-            title="Salin id model"
-            className="flex h-6 w-6 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            title="Copy model ID"
+            className="flex h-6 w-6 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:bg-accent hover:text-foreground rounded"
           >
             {copied === model.id ? (
-              <Check className="h-3.5 w-3.5 text-yellow-600 dark:text-yellow-400" />
+              <Check className="h-3.5 w-3.5 text-yellow-400" />
             ) : (
-              <Copy className="h-3.5 w-3.5" />
+              <CopyIcon />
             )}
           </button>
         </div>
 
-        <div className="mt-auto flex items-center">
-          <span className="ml-auto text-[10px] font-medium text-yellow-700 dark:text-yellow-400/90">
+        <div className="mt-auto flex items-center justify-between">
+          <span className="font-mono text-[11px] font-medium text-yellow-400/90">
             Free
+          </span>
+          <span className="font-mono text-[11px] text-muted-foreground">
+            {model.tagline}
           </span>
         </div>
       </div>
     </div>
   )
 }
+
+function CopyIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-3.5 w-3.5" aria-hidden="true">
+      <rect x="5" y="5" width="9" height="9" rx="1" />
+      <path d="M11 5V3a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h2" />
+    </svg>
+  )
+}
+
+/* ─── Page ───────────────────────────────────────────────────────────────── */
 
 export function LandingPage() {
   const navigate = useNavigate()
@@ -479,42 +650,42 @@ export function LandingPage() {
       mainEntity: [
         {
           '@type': 'Question',
-          name: 'Apakah KeyzAI gratis?',
+          name: 'Is KeyzAI free?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Ya, KeyzAI gratis tanpa kartu kredit. Cukup masuk dengan Google dan mulai chat AI. Semua model AI yang tersedia bisa digunakan tanpa biaya.',
+            text: 'Yes, KeyzAI is free with no credit card required. Sign in with Google and start chatting with any AI model instantly.',
           },
         },
         {
           '@type': 'Question',
-          name: 'Model AI apa saja yang tersedia di KeyzAI?',
+          name: 'What AI models are available on KeyzAI?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'KeyzAI menyediakan multi-model AI termasuk Qwen, DeepSeek, dan Atria. Kamu bisa beralih antar model kapan saja saat chat.',
+            text: 'KeyzAI provides access to multiple AI models including Qwen, DeepSeek, and Atria. You can switch between models anytime during a conversation.',
           },
         },
         {
           '@type': 'Question',
-          name: 'Apakah riwayat chat tersimpan?',
+          name: 'Are chat histories saved?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Ya. Riwayat chat tersinkron otomatis di semua perangkat yang kamu gunakan. Data disimpan di Cloudflare D1 dan dilindungi sesi login Google.',
+            text: 'Yes. Chat history syncs automatically across all devices you use. Data is stored in Cloudflare D1 and protected by your Google login session.',
           },
         },
         {
           '@type': 'Question',
-          name: 'Apa itu PRD Builder di KeyzAI?',
+          name: 'What is the PRD Builder?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'PRD Builder adalah fitur yang mengubah ide aplikasi menjadi Product Requirements Document lengkap. Kamu masuk lewat chat, AI mengklarifikasi detail, merekomendasikan teknologi, dan menyusun struktur produk.',
+            text: 'The PRD Builder turns rough product ideas into complete Product Requirements Documents. You enter through chat, the AI clarifies details, recommends technology, and structures the product.',
           },
         },
         {
           '@type': 'Question',
-          name: 'Bagaimana cara kerja streaming di KeyzAI?',
+          name: 'How does streaming work?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'KeyzAI menggunakan SSE (Server-Sent Events) untuk streaming respons AI langsung saat model menulis, tidak perlu menunggu selesai. Kamu juga bisa berhenti kapan saja dengan tombol stop.',
+            text: 'KeyzAI uses SSE (Server-Sent Events) to stream AI responses as they are generated. You do not need to wait for completion and can stop anytime with the stop button.',
           },
         },
       ],
@@ -532,10 +703,9 @@ export function LandingPage() {
         <Navbar navigate={navigate} />
         <main>
           <Hero navigate={navigate} />
-          <ModelMarqueeSection />
-          <FeaturesBento />
+          <FeaturesSection />
           <PrdBuilder navigate={navigate} />
-          <Models />
+          <ModelsSection />
         </main>
         <Footer />
       </div>

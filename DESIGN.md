@@ -37,6 +37,13 @@ typography:
     lineHeight: 1.4
     letterSpacing: "0.08em"
     textTransform: "uppercase"
+  label-tiny:
+    fontFamily: "'IBM Plex Sans', ui-monospace, SFMono-Regular, Menlo, monospace"
+    fontSize: "0.6875rem"
+    fontWeight: 500
+    lineHeight: 1.4
+    letterSpacing: "0.08em"
+    textTransform: "uppercase"
   mono:
     fontFamily: "'IBM Plex Sans', ui-monospace, SFMono-Regular, Menlo, monospace"
     fontSize: "0.8125rem"

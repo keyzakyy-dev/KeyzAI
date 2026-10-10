@@ -214,6 +214,14 @@
     clip-path var(--reveal-duration, 0.9s) cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0ms);
   will-change: opacity, filter, transform;
 }
+/* Bila HTML sudah tersedia tapi React belum hydrate (slow mobile / JS tertunda),
+   semua section yang tersembunyi tetap terlihat — tidak ada masa "blank".
+   Kelas .hydrated dipasang satu frame setelah React mount via useEffect di main.jsx. */
+html:not(.hydrated) [data-reveal] {
+  opacity: 1;
+  filter: none;
+  transform: none;
+}
 [data-reveal='left']  { transform: translate3d(-36px, 10px, 0) scale(0.985); }
 [data-reveal='right'] { transform: translate3d(36px, 10px, 0) scale(0.985); }
 [data-reveal='scale'] { transform: translate3d(0, 0, 0) scale(0.9); }

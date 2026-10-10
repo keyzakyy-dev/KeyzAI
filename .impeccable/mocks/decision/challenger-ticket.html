@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KeyzAI - Jet-Age Wallet</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f5f5f4; color: #0a0a0a; font-family: 'Inter', sans-serif; }
+  
+  /* Coupon book layout */
+  .wallet { max-width: 800px; margin: 0 auto; padding: 32px; }
+  
+  /* Header: carrier name on ticket stock */
+  .ticket-header { background: #1b2a52; color: #f5f5f4; padding: 24px 32px; display: flex; justify-content: space-between; align-items: center; }
+  .carrier { font-family: 'Space Grotesk', sans-serif; font-size: 1.25rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+  .carrier span { color: #facc15; }
+  .ticket-route { font-family: 'IBM Plex Sans', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #a8a29e; }
+  
+  /* Coupon book body */
+  .coupon-book { background: #ffffff; border: 2px solid #0a0a0a; border-top: none; }
+  
+  /* Perforated coupon sections */
+  .coupon { padding: 32px; border-bottom: 2px dashed #a8a29e; position: relative; }
+  .coupon:last-child { border-bottom: none; }
+  
+  /* Coupon header with tab */
+  .coupon-tab { position: absolute; top: -12px; left: 32px; background: #1b2a52; color: #f5f5f4; padding: 4px 16px; font-family: 'IBM Plex Sans', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
+  
+  .coupon-num { font-family: 'Space Grotesk', sans-serif; font-size: 3rem; font-weight: 700; color: #1b2a52; line-height: 1; margin-bottom: 8px; }
+  .coupon-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.25rem; font-weight: 500; margin-bottom: 8px; }
+  .coupon-desc { font-size: 0.875rem; color: #57534e; line-height: 1.6; max-width: 400px; }
+  
+  /* Validation stamp */
+  .stamp { position: absolute; top: 24px; right: 32px; font-family: 'IBM Plex Sans', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #a33327; border: 2px solid #a33327; padding: 4px 8px; transform: rotate(-5deg); opacity: 0.7; }
+  .stamp.valid { color: #16a34a; border-color: #16a34a; }
+  
+  /* CTA coupon: boarding pass style */
+  .coupon-cta { background: #0a0a0a; color: #f5f5f4; padding: 40px 32px; text-align: center; }
+  .coupon-cta h2 { font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; font-weight: 700; margin-bottom: 16px; }
+  .coupon-cta p { font-size: 0.875rem; color: #a8a29e; margin-bottom: 24px; }
+  
+  .boarding-pass { display: inline-flex; align-items: center; gap: 16px; background: #facc15; color: #0a0a0a; padding: 16px 32px; font-family: 'IBM Plex Sans', monospace; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; border: none; cursor: pointer; }
+  
+  /* Footer: baggage claim style */
+  .baggage-claim { padding: 20px 32px; font-family: 'IBM Plex Sans', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #a8a29e; text-align: center; border-top: 2px dashed #a8a29e; }
+  
+  /* Carbon copy effect */
+  .carbon { background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(27,42,82,0.03) 2px, rgba(27,42,82,0.03) 4px); }
+</style>
+</head>
+<body>
+<div class="wallet">
+  <div class="ticket-header">
+    <div class="carrier">Key<span>z</span>AI Airlines</div>
+    <div class="ticket-route">Journey to Better Thinking</div>
+  </div>
+  
+  <div class="coupon-book carbon">
+    <!-- Coupon 1 -->
+    <div class="coupon">
+      <div class="coupon-tab">Coupon 01</div>
+      <div class="coupon-num">01</div>
+      <div class="coupon-title">Streamless Chat</div>
+      <div class="coupon-desc">First token under 2 seconds. Responses flow as you type — no waiting, no spinning wheels.</div>
+      <div class="stamp valid">✓ VALIDATED</div>
+    </div>
+    
+    <!-- Coupon 2 -->
+    <div class="coupon">
+      <div class="coupon-tab">Coupon 02</div>
+      <div class="coupon-num">02</div>
+      <div class="coupon-title">Tree-Branch Conversations</div>
+      <div class="coupon-desc">Edit any message, regenerate forward. Explore multiple reasoning paths without losing history.</div>
+      <div class="stamp valid">✓ VALIDATED</div>
+    </div>
+    
+    <!-- Coupon 3 -->
+    <div class="coupon">
+      <div class="coupon-tab">Coupon 03</div>
+      <div class="coupon-num">03</div>
+      <div class="coupon-title">Multi-Model Access</div>
+      <div class="coupon-desc">GPT-4o, Claude, Gemini, Llama — switch mid-conversation. One ticket, all carriers.</div>
+      <div class="stamp">PENDING</div>
+    </div>
+    
+    <!-- Coupon 4: CTA -->
+    <div class="coupon coupon-cta">
+      <div class="coupon-tab" style="background:#facc15;color:#0a0a0a;">Boarding Pass</div>
+      <h2>Ready to board?</h2>
+      <p>Free forever. Google sign-in. No credit card required.</p>
+      <button class="boarding-pass">Board Now →</button>
+    </div>
+  </div>
+  
+  <div class="baggage-claim">
+    Baggage: Your conversations · Connected: All devices · Class: Economy of Thought
+  </div>
+</div>
+</body>
+</html>

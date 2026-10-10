@@ -12,9 +12,9 @@ export function GithubMark({ className, ...props }) {
 
 const GROUPS = [
   {
-    h: 'Produk',
+    h: 'Product',
     links: [
-      { to: '/chat', label: 'Buka chat' },
+      { to: '/chat', label: 'Open chat' },
       { to: '/prd-builder', label: 'PRD Builder', chip: 'Beta' },
       { to: '/changelog', label: 'Changelog' },
     ],
@@ -22,12 +22,12 @@ const GROUPS = [
   {
     h: 'Legal',
     links: [
-      { to: '/privacy', label: 'Kebijakan Privasi' },
-      { to: '/terms', label: 'Syarat & Ketentuan' },
+      { to: '/privacy', label: 'Privacy Policy' },
+      { to: '/terms', label: 'Terms of Service' },
     ],
   },
   {
-    h: 'Lainnya',
+    h: 'Other',
     links: [
       { to: 'https://github.com/keyzakyy-dev', label: 'GitHub', external: true, icon: true },
     ],
@@ -48,7 +48,7 @@ export function Footer() {
               <Wordmark className="text-lg" />
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
-              Akses semua AI favorit, gratis. Chat, kode, dan ubah ide jadi PRD — satu tempat.
+              Every major AI model, free. Chat, code, and turn ideas into PRDs — one workspace.
             </p>
           </div>
 
@@ -79,7 +79,7 @@ export function Footer() {
                         >
                           {l.label}
                           {l.chip && (
-                            <span className="bg-primary/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                            <span className="bg-primary/15 px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-primary">
                               {l.chip}
                             </span>
                           )}
@@ -96,7 +96,7 @@ export function Footer() {
         {/* Bar bawah */}
         <div className="flex flex-col-reverse gap-4 border-t border-foreground/10 py-5 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-muted-foreground">
-            © 2026 KeyzAI · oleh{' '}
+            © 2026 KeyzAI · by{' '}
             <a
               href="https://github.com/keyzakyy-dev"
               target="_blank"
@@ -109,9 +109,9 @@ export function Footer() {
           <button
             type="button"
             onClick={toTop}
-            className="inline-flex h-9 w-fit items-center gap-1.5 border border-foreground/15 bg-transparent px-4 text-sm font-medium text-foreground transition-colors hover:border-foreground/40 hover:bg-foreground/[0.04]"
+            className="inline-flex h-9 w-fit items-center gap-1.5 border border-foreground/15 bg-transparent px-4 text-sm font-mono font-medium text-foreground transition-colors hover:border-yellow-400/50 hover:text-yellow-400"
           >
-            Ke atas
+            Back to top
             <ArrowUp className="h-3.5 w-3.5" aria-hidden="true" />
           </button>
         </div>
