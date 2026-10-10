@@ -327,6 +327,111 @@ export function SessionNav() {
 
 /* ─── Hero ────────────────────────────────────────────────────────────────── */
 
+/**
+ * ChatMockup: Simulated conversation panel showing the tree-branching feature.
+ * Displays 3 message bubbles with a branching indicator, proving "demonstrate not claim".
+ */
+function ChatMockup() {
+  return (
+    <div className="w-full lg:max-w-[520px]">
+      {/* Window frame */}
+      <div className="rounded-sm border border-[#4a6070]/30 bg-[#0d1520]/90 backdrop-blur-md overflow-hidden">
+        {/* Title bar */}
+        <div className="flex items-center gap-2 border-b border-[#4a6070]/20 px-4 py-2.5">
+          <div className="flex gap-1.5">
+            <span className="size-2 rounded-full bg-[#ff5f57]/70" aria-hidden="true" />
+            <span className="size-2 rounded-full bg-[#febc2e]/70" aria-hidden="true" />
+            <span className="size-2 rounded-full bg-[#28c840]/70" aria-hidden="true" />
+          </div>
+          <span className="flex-1 text-center font-mono text-[10px] uppercase tracking-[0.14em] text-[#94a3b8]/60">
+            conversation · tree mode
+          </span>
+          <span className="inline-flex items-center gap-1.5 font-mono text-[9px] text-[#FFD23A]/80">
+            <span className="size-1.5 rounded-full bg-[#FFD23A]/60 animate-pulse" aria-hidden="true" />
+            live
+          </span>
+        </div>
+
+        {/* Messages */}
+        <div className="p-4 space-y-4 min-h-[280px]">
+          {/* User message */}
+          <div className="flex justify-end">
+            <div className="max-w-[80%] rounded-sm bg-[#1a2634]/80 border border-[#4a6070]/20 px-3.5 py-2.5">
+              <p className="text-[13px] leading-relaxed text-[#f5f5f4]/90">
+                帮我把这个想法写成 PRD：一个 AI 驱动的代码审查工具
+              </p>
+            </div>
+          </div>
+
+          {/* Assistant message */}
+          <div className="flex justify-start">
+            <div className="max-w-[85%] rounded-sm bg-[#0a0f18]/60 border border-[#4a6070]/15 px-3.5 py-2.5">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#94a3b8]">DeepSeek V4</span>
+                <span className="font-mono text-[9px] text-[#FFD23A]/60">· streaming</span>
+              </div>
+              <p className="text-[13px] leading-relaxed text-[#f5f5f4]/80">
+                好的，我来帮你生成完整的 PRD。首先让我clarify几个关键问题...
+              </p>
+            </div>
+          </div>
+
+          {/* Branch indicator */}
+          <div className="relative pl-6 border-l-2 border-[#4a6070]/30 ml-2">
+            <div className="absolute -left-[9px] top-0 flex items-center justify-center">
+              <span className="font-mono text-[9px] uppercase tracking-[0.12em] bg-[#0d1520] px-1.5 text-[#FFD23A]/70 border border-[#FFD23A]/30 rounded-sm">
+                branch
+              </span>
+            </div>
+            <div className="pt-1">
+              <div className="flex justify-start">
+                <div className="max-w-[85%] rounded-sm bg-[#0a0f18]/60 border border-[#4a6070]/15 px-3.5 py-2.5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#35D0FF]/70">Qwen 3.8</span>
+                    <span className="font-mono text-[9px] text-[#94a3b8]/40">· alternative view</span>
+                  </div>
+                  <p className="text-[13px] leading-relaxed text-[#f5f5f4]/70">
+                    我建议先从目标用户画像开始，这样能更精准地定义功能范围...
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Branch junction point */}
+          <div className="flex items-center gap-2 px-2">
+            <span className="h-px flex-1 bg-[#4a6070]/20" aria-hidden="true" />
+            <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#94a3b8]/40">
+              conversation tree · 2 branches
+            </span>
+            <span className="h-px flex-1 bg-[#4a6070]/20" aria-hidden="true" />
+          </div>
+        </div>
+
+        {/* Input bar */}
+        <div className="border-t border-[#4a6070]/20 px-4 py-3">
+          <div className="flex items-center gap-2 rounded-sm border border-[#4a6070]/25 bg-[#0a0f18]/50 px-3 py-2">
+            <span className="font-mono text-[11px] text-[#94a3b8]/40">{'>'}</span>
+            <span className="flex-1 font-mono text-[12px] text-[#94a3b8]/30">输入消息...</span>
+            <button
+              type="button"
+              className="rounded-sm bg-[#FFD23A]/15 border border-[#FFD23A]/30 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#FFD23A]/80 hover:bg-[#FFD23A]/25 transition-colors"
+              aria-label="Send"
+            >
+              send
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Caption */}
+      <p className="mt-3 font-mono text-[10px] text-[#94a3b8]/40 text-center">
+        编辑任意消息 · 向前重新生成 · 分支永存
+      </p>
+    </div>
+  )
+}
+
 function HeroSection({ navigate }) {
   return (
     <section
@@ -336,77 +441,61 @@ function HeroSection({ navigate }) {
       {/* Event canvas */}
       <EventCanvas />
 
-      {/* Gradient overlay at bottom for content readability */}
+      {/* Subtle radial glow behind content */}
       <div
-        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#080F14]"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: 'radial-gradient(ellipse 60% 50% at 30% 50%, rgba(20,40,60,0.4) 0%, transparent 70%)',
+        }}
         aria-hidden="true"
       />
 
       {/* Content */}
-      <div className="relative z-10 mx-auto flex min-h-dvh max-w-[1440px] flex-col justify-center px-5 py-28 sm:px-8 sm:py-32 lg:flex-row lg:px-12 lg:pb-32 lg:pt-32">
-        {/* Left: event label */}
-        <div className="mb-10 flex-1 lg:mb-0 lg:mr-12 xl:mr-16">
-          <h1 className="font-heading text-[3.5rem] font-medium leading-[1.02] tracking-[-0.04em] text-[#f5f5f4] sm:text-[4.5rem] lg:text-[5rem] xl:text-[5.5rem]">
-            Every model.{' '}
+      <div className="relative z-10 mx-auto flex min-h-dvh max-w-[1440px] flex-col justify-center px-5 py-24 sm:px-8 sm:py-28 lg:flex-row lg:px-12 lg:pb-28 lg:pt-28">
+        {/* Left: headline + CTA */}
+        <div className="mb-12 flex-1 lg:mb-0 lg:mr-16 xl:mr-20">
+          <h1 className="font-heading text-[3.25rem] font-medium leading-[1.02] tracking-[-0.04em] text-[#f5f5f4] sm:text-[4.25rem] lg:text-[5rem] xl:text-[5.5rem]">
+            Every model.<br />
             <span className="text-[#FFD23A]">One tree.</span>
           </h1>
-          <p className="mt-6 max-w-[52ch] text-[16px] leading-[1.7] text-[#94a3b8] sm:text-[17px]">
+
+          <p className="mt-5 max-w-[50ch] text-[16px] leading-[1.7] text-[#94a3b8] sm:text-[17px] lg:max-w-[46ch]">
             Chat, code and PRDs in one workspace. Edit any message and regenerate forward — the
             conversation branches instead of breaking, and every branch stays on every device.
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center gap-3">
+          <div className="mt-7 flex flex-wrap items-center gap-3">
             <button
               type="button"
               onClick={() => navigate('/chat')}
-              className="group inline-flex h-12 items-center gap-2.5 rounded-sm bg-[#f5f5f4] px-6 font-mono text-[13px] font-semibold text-[#080F14] transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFD23A] focus-visible:ring-offset-2 focus-visible:ring-offset-[#080F14]"
+              className="group inline-flex h-11 items-center gap-2.5 rounded-sm bg-[#f5f5f4] px-5 font-mono text-[13px] font-semibold text-[#080F14] transition-all hover:-translate-y-0.5 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFD23A] focus-visible:ring-offset-2 focus-visible:ring-offset-[#080F14]"
             >
               Open chat
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
             </button>
             <a
               href="#prd-run"
-              className="inline-flex h-12 items-center rounded-sm border border-[#4a6070]/40 px-5 font-mono text-[12px] font-medium text-[#94a3b8] transition-colors hover:border-[#4a6070]/70 hover:text-[#f5f5f4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFD23A] focus-visible:ring-offset-2 focus-visible:ring-offset-[#080F14]"
+              className="inline-flex h-11 items-center rounded-sm border border-[#4a6070]/40 px-5 font-mono text-[12px] font-medium text-[#94a3b8] transition-colors hover:border-[#4a6070]/70 hover:text-[#f5f5f4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFD23A] focus-visible:ring-offset-2 focus-visible:ring-offset-[#080F14]"
             >
               From idea to PRD
             </a>
           </div>
 
-          <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.14em] text-[#94a3b8]/60">
+          <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.14em] text-[#94a3b8]/50">
             Free · Google sign-in · no card
           </p>
         </div>
 
-        {/* Right: model count + sync badge */}
-        <div className="flex-1 lg:max-w-[280px]">
-          <div className="rounded-sm border border-[#4a6070]/25 bg-[#0d1520]/80 backdrop-blur-sm p-5">
-            <div className="mb-4 flex items-center justify-between border-b border-[#4a6070]/20 pb-3">
-              <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#94a3b8]">Sources</span>
-              <span className="inline-flex items-center gap-1.5 font-mono text-[10px] text-[#FFD23A]">
-                <span className="size-1.5 rounded-full bg-[#FFD23A]" aria-hidden="true" />
-                3 live
-              </span>
-            </div>
-            <dl className="space-y-2.5 font-mono text-[11px]">
-              {[
-                { label: 'qwen 3.8 flash', value: 'Alibaba' },
-                { label: 'deepseek v4 flash', value: 'DeepSeek' },
-                { label: 'atria dawn preview', value: 'Z.ai', accent: true },
-              ].map((item) => (
-                <div key={item.label} className="flex items-baseline justify-between gap-4">
-                  <dt className="text-[#94a3b8]/70">{item.label}</dt>
-                  <dd className={item.accent ? 'text-[#FFD23A]' : 'text-[#f5f5f4]/80'}>{item.value}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
+        {/* Right: chat mockup */}
+        <div className="flex-1 lg:max-w-[560px]">
+          <ChatMockup />
         </div>
       </div>
 
       {/* Bottom scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-[#94a3b8]/30">
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-[#94a3b8]/25">
         <span className="font-mono text-[9px] uppercase tracking-[0.2em]">Scroll</span>
-        <span className="block h-5 w-px bg-gradient-to-b from-[#94a3b8]/40 to-transparent" aria-hidden="true" />
+        <span className="block h-4 w-px bg-gradient-to-b from-[#94a3b8]/30 to-transparent" aria-hidden="true" />
       </div>
     </section>
   )
