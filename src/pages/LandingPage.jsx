@@ -6,6 +6,23 @@ import { MODELS } from '../lib/models'
 import { Wordmark } from '../lib/logo-img'
 import { useAuth } from '../hooks/useAuth'
 
+/* ─── useReveal: IntersectionObserver scroll-reveal ─────────────────────── */
+
+function useReveal() {
+  const ref = useRef(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!el || typeof IntersectionObserver === 'undefined') return
+    const io = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { el.dataset.revealed = 'true'; io.disconnect() } },
+      { threshold: 0.15, rootMargin: '0px 0px -40px 0px' },
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+  return ref
+}
+
 /* ─── Hero Canvas: Particle Event Display ────────────────────────────────── */
 
 /**
@@ -272,7 +289,7 @@ export function SessionNav() {
         <a
           href="#top"
           onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-          className="shrink-0 transition-opacity hover:opacity-75"
+          className="shrink-0 rounded-sm transition-opacity hover:opacity-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFD23A] focus-visible:ring-offset-2 focus-visible:ring-offset-[#080F14]"
           aria-label="KeyzAI, back to top"
         >
           <Wordmark className="text-[14px] text-[#f5f5f4]" />
@@ -287,7 +304,7 @@ export function SessionNav() {
             <a
               key={l.href}
               href={l.href}
-              className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#94a3b8] transition-colors hover:text-[#f5f5f4]"
+              className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#94a3b8] transition-colors hover:text-[#f5f5f4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFD23A] focus-visible:ring-offset-2 focus-visible:ring-offset-[#080F14] focus-visible:ring-offset-1 rounded-sm"
             >
               {l.label}
             </a>
@@ -297,7 +314,7 @@ export function SessionNav() {
         <button
           type="button"
           onClick={() => navigate('/chat')}
-          className="group inline-flex h-8 shrink-0 items-center gap-2 border border-[#4a6070]/40 bg-[#f5f5f4]/95 px-3.5 font-mono text-[11px] font-semibold text-[#080F14] transition-transform hover:-translate-y-0.5 hover:bg-white"
+          className="group inline-flex h-8 shrink-0 items-center gap-2 border border-[#4a6070]/40 bg-[#f5f5f4]/95 px-3.5 font-mono text-[11px] font-semibold text-[#080F14] transition-transform hover:-translate-y-0.5 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFD23A] focus-visible:ring-offset-2 focus-visible:ring-offset-[#080F14] rounded-sm"
         >
           <span className="hidden sm:inline">{user ? 'Open chat' : 'Sign in'}</span>
           <span className="sm:hidden">{user ? 'Chat' : 'Sign in'}</span>
@@ -321,7 +338,7 @@ function HeroSection({ navigate }) {
 
       {/* Gradient overlay at bottom for content readability */}
       <div
-        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#080F14]/0 via-[#080F14]/0 to-[#080F14]"
+        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#080F14]"
         aria-hidden="true"
       />
 
@@ -329,13 +346,6 @@ function HeroSection({ navigate }) {
       <div className="relative z-10 mx-auto flex min-h-dvh max-w-[1440px] flex-col justify-center px-5 py-28 sm:px-8 sm:py-32 lg:flex-row lg:px-12 lg:pb-32 lg:pt-32">
         {/* Left: event label */}
         <div className="mb-10 flex-1 lg:mb-0 lg:mr-12 xl:mr-16">
-          <div className="mb-4 flex items-center gap-3">
-            <span className="inline-flex items-center gap-2 font-mono text-[10px] font-medium uppercase tracking-[0.16em] text-[#94a3b8]">
-              <span className="size-1.5 rounded-full bg-[#FFD23A] animate-pulse" aria-hidden="true" />
-              live event
-            </span>
-            <span className="font-mono text-[10px] text-[#94a3b8]/60">vertex · 3 tracks</span>
-          </div>
           <h1 className="font-heading text-[3.5rem] font-medium leading-[1.02] tracking-[-0.04em] text-[#f5f5f4] sm:text-[4.5rem] lg:text-[5rem] xl:text-[5.5rem]">
             Every model.{' '}
             <span className="text-[#FFD23A]">One tree.</span>
@@ -349,14 +359,14 @@ function HeroSection({ navigate }) {
             <button
               type="button"
               onClick={() => navigate('/chat')}
-              className="group inline-flex h-12 items-center gap-2.5 bg-[#f5f5f4] px-6 font-mono text-[13px] font-semibold text-[#080F14] transition-transform hover:-translate-y-0.5"
+              className="group inline-flex h-12 items-center gap-2.5 rounded-sm bg-[#f5f5f4] px-6 font-mono text-[13px] font-semibold text-[#080F14] transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFD23A] focus-visible:ring-offset-2 focus-visible:ring-offset-[#080F14]"
             >
               Open chat
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
             </button>
             <a
               href="#prd-run"
-              className="inline-flex h-12 items-center border border-[#4a6070]/40 px-5 font-mono text-[12px] font-medium text-[#94a3b8] transition-colors hover:border-[#4a6070]/70 hover:text-[#f5f5f4]"
+              className="inline-flex h-12 items-center rounded-sm border border-[#4a6070]/40 px-5 font-mono text-[12px] font-medium text-[#94a3b8] transition-colors hover:border-[#4a6070]/70 hover:text-[#f5f5f4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFD23A] focus-visible:ring-offset-2 focus-visible:ring-offset-[#080F14]"
             >
               From idea to PRD
             </a>
@@ -367,55 +377,36 @@ function HeroSection({ navigate }) {
           </p>
         </div>
 
-        {/* Right: telemetry strip */}
-        <div className="flex-1 lg:max-w-[320px]">
+        {/* Right: model count + sync badge */}
+        <div className="flex-1 lg:max-w-[280px]">
           <div className="rounded-sm border border-[#4a6070]/25 bg-[#0d1520]/80 backdrop-blur-sm p-5">
             <div className="mb-4 flex items-center justify-between border-b border-[#4a6070]/20 pb-3">
-              <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#94a3b8]">Telemetry</span>
-              <span className="inline-flex items-center gap-1.5 font-mono text-[10px] text-[#94a3b8]/60">
-                <span className="size-1.5 rounded-full bg-[#FFD23A] animate-pulse" aria-hidden="true" />
-                active
+              <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#94a3b8]">Sources</span>
+              <span className="inline-flex items-center gap-1.5 font-mono text-[10px] text-[#FFD23A]">
+                <span className="size-1.5 rounded-full bg-[#FFD23A]" aria-hidden="true" />
+                3 live
               </span>
             </div>
-            <dl className="space-y-3 font-mono text-[11px]">
+            <dl className="space-y-2.5 font-mono text-[11px]">
               {[
-                { label: 'first token', value: '1.4s', accent: false },
-                { label: 'branches', value: '3', accent: true },
-                { label: 'sync', value: 'D1 ✓', accent: false },
-                { label: 'models', value: '3 live', accent: false },
+                { label: 'qwen 3.8 flash', value: 'Alibaba' },
+                { label: 'deepseek v4 flash', value: 'DeepSeek' },
+                { label: 'atria dawn preview', value: 'Z.ai', accent: true },
               ].map((item) => (
                 <div key={item.label} className="flex items-baseline justify-between gap-4">
                   <dt className="text-[#94a3b8]/70">{item.label}</dt>
-                  <dd className={item.accent ? 'text-[#FFD23A]' : 'text-[#f5f5f4]'}>{item.value}</dd>
+                  <dd className={item.accent ? 'text-[#FFD23A]' : 'text-[#f5f5f4]/80'}>{item.value}</dd>
                 </div>
               ))}
             </dl>
-          </div>
-
-          {/* Track legend */}
-          <div className="mt-4 rounded-sm border border-[#4a6070]/20 bg-[#0d1520]/60 p-4">
-            <div className="mb-2 font-mono text-[9px] uppercase tracking-[0.14em] text-[#94a3b8]/50">Track legend</div>
-            <div className="space-y-1.5 text-[11px] font-mono">
-              <div className="flex items-center gap-2.5">
-                <span className="size-3 rounded-sm bg-[#FFD23A]/80" aria-hidden="true" />
-                <span className="text-[#94a3b8]">Main thread</span>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <span className="size-3 rounded-sm bg-[#35D0FF]/80" aria-hidden="true" />
-                <span className="text-[#94a3b8]">Branch</span>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <span className="size-3 rounded-sm bg-[#FF4D4D]/60" aria-hidden="true" />
-                <span className="text-[#94a3b8]">Calorimeter</span>
-              </div>
-            </div>
           </div>
         </div>
       </div>
 
       {/* Bottom scroll indicator */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 font-mono text-[10px] uppercase tracking-[0.2em] text-[#94a3b8]/40">
-        <span className="animate-bounce block">↓</span>
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-[#94a3b8]/30">
+        <span className="font-mono text-[9px] uppercase tracking-[0.2em]">Scroll</span>
+        <span className="block h-5 w-px bg-gradient-to-b from-[#94a3b8]/40 to-transparent" aria-hidden="true" />
       </div>
     </section>
   )
@@ -426,31 +417,26 @@ function HeroSection({ navigate }) {
 const CHANNELS = [
   {
     key: 'chat',
-    level: 8.2,
     title: 'Streamed conversation',
     body: 'Responses arrive as they are written. Stop mid-answer when you have read enough — the partial text is what gets saved.',
   },
   {
     key: 'code',
-    level: 6.4,
     title: 'Code and debugging',
     body: 'Paste the stack trace, describe the bug, get the fix. Argue with it in the next branch when it is wrong.',
   },
   {
     key: 'write',
-    level: 7.1,
     title: 'Drafting',
     body: 'Emails, specs, documentation. Adjust tone and length without discarding the version that was nearly right.',
   },
   {
     key: 'think',
-    level: 9.0,
     title: 'Deep reasoning',
     body: 'Route a hard question to DeepSeek V4 Flash mid-thread and keep both answers side by side in the tree.',
   },
   {
     key: 'sync',
-    level: null,
     title: 'Cross-device sync',
     body: 'Sign in with Google. Every branch lands in your account, so the conversation on your phone is the one you left.',
   },
@@ -460,6 +446,7 @@ function ChannelsBlock() {
   return (
     <section
       id="channels"
+      ref={useReveal()}
       className="scroll-mt-[56px] border-t border-[#4a6070]/15 bg-[#080F14] py-20 sm:py-24 lg:py-28"
       aria-labelledby="channels-title"
     >
@@ -483,36 +470,14 @@ function ChannelsBlock() {
         </div>
 
         <div className="overflow-hidden rounded-sm border border-[#4a6070]/20 bg-[#0d1520]/50">
-          {CHANNELS.map((c, i) => (
+          {CHANNELS.map((c) => (
             <div
               key={c.key}
-              className="grid grid-cols-[auto_1fr] items-center gap-x-5 gap-y-2 px-5 py-5 sm:grid-cols-[100px_100px_1fr] sm:gap-x-8 sm:py-6"
+              className="grid grid-cols-[auto_1fr] items-center gap-x-5 gap-y-2 px-5 py-5 sm:grid-cols-[80px_1fr] sm:gap-x-8 sm:py-6"
             >
               <span className="font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-[#94a3b8]">
                 {c.key}
               </span>
-
-              {/* Calorimeter bar */}
-              <div className="flex items-center gap-2.5">
-                {c.level == null ? (
-                  <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#FFD23A]">
-                    always on
-                  </span>
-                ) : (
-                  <>
-                    <div className="h-[3px] w-16 rounded-sm bg-[#4a6070]/25 sm:w-20">
-                      <div
-                        className="h-full rounded-sm bg-[#94a3b8]"
-                        style={{ width: `${(c.level / 10) * 100}%` }}
-                      />
-                    </div>
-                    <span className="font-mono text-[11px] tabular-nums text-[#f5f5f4]/80">
-                      {c.level.toFixed(1)}
-                    </span>
-                  </>
-                )}
-              </div>
-
               <div>
                 <h3 className="text-[16px] font-medium text-[#f5f5f4]">{c.title}</h3>
                 <p className="mt-1 text-[14px] leading-relaxed text-[#94a3b8]">{c.body}</p>
@@ -549,6 +514,7 @@ function PrdRunBlock({ navigate }) {
   return (
     <section
       id="prd-run"
+      ref={useReveal()}
       className="scroll-mt-[56px] border-t border-[#4a6070]/15 bg-[#080F14] py-20 sm:py-24 lg:py-28"
       aria-labelledby="prd-title"
     >
@@ -585,9 +551,6 @@ function PrdRunBlock({ navigate }) {
                 key={s.key}
                 className="group flex items-baseline gap-4 border-b border-[#4a6070]/15 py-5 first:border-t sm:gap-6"
               >
-                <span className="font-mono text-[10px] tabular-nums text-[#94a3b8]/50">
-                  {String(i + 1).padStart(2, '0')}
-                </span>
                 <span
                   className={`h-px w-8 transition-all duration-300 group-hover:w-14 ${
                     i === PRD_STEPS.length - 1 ? 'bg-[#FFD23A]' : 'bg-[#4a6070]/40'
@@ -628,7 +591,7 @@ function PrdRunBlock({ navigate }) {
               <button
                 type="button"
                 onClick={() => navigate('/prd-builder')}
-                className="group inline-flex h-10 w-full items-center justify-center gap-2 bg-[#f5f5f4] font-mono text-[12px] font-semibold text-[#080F14] transition-transform hover:-translate-y-0.5"
+                className="group inline-flex h-10 w-full items-center justify-center gap-2 rounded-sm bg-[#f5f5f4] font-mono text-[12px] font-semibold text-[#080F14] transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFD23A] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0d1520]"
               >
                 Run it yourself
                 <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
@@ -659,6 +622,7 @@ function SourcesBlock() {
   return (
     <section
       id="sources"
+      ref={useReveal()}
       className="scroll-mt-[56px] border-t border-[#4a6070]/15 bg-[#080F14] py-20 sm:py-24 lg:py-28"
       aria-labelledby="sources-title"
     >
@@ -685,7 +649,7 @@ function SourcesBlock() {
           {MODELS.map((m, i) => (
             <div
               key={m.id}
-              className={`grid grid-cols-[auto_1fr_auto] items-center gap-x-5 gap-y-2 px-5 py-5 sm:grid-cols-[48px_minmax(0,1fr)_auto] sm:gap-x-8 sm:py-6 ${
+              className={`relative grid grid-cols-[auto_1fr_auto] items-center gap-x-5 gap-y-2 px-5 py-5 sm:grid-cols-[48px_minmax(0,1fr)_auto] sm:gap-x-8 sm:py-6 ${
                 i < MODELS.length - 1 ? 'border-b border-[#4a6070]/15' : ''
               }`}
             >
@@ -717,7 +681,7 @@ function SourcesBlock() {
                 <button
                   type="button"
                   onClick={() => copy(m.id)}
-                  className="inline-flex h-8 items-center gap-1.5 border border-[#4a6070]/30 px-2.5 font-mono text-[10px] uppercase tracking-[0.12em] text-[#94a3b8] transition-colors hover:border-[#4a6070]/60 hover:text-[#f5f5f4]"
+                  className="inline-flex h-8 items-center gap-1.5 rounded-sm border border-[#4a6070]/30 px-2.5 font-mono text-[10px] uppercase tracking-[0.12em] text-[#94a3b8] transition-colors hover:border-[#4a6070]/60 hover:text-[#f5f5f4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFD23A] focus-visible:ring-offset-1 focus-visible:ring-offset-[#0d1520]"
                   aria-label={`Copy model ID ${m.id}`}
                 >
                   {copied === m.id ? (
@@ -782,7 +746,7 @@ function Footer() {
                 key={l.to}
                 href={l.to}
                 onClick={(e) => { e.preventDefault(); navigate(l.to) }}
-                className="inline-flex min-h-[36px] items-center gap-2 font-mono text-[11px] uppercase tracking-[0.12em] text-[#94a3b8]/70 transition-colors hover:text-[#f5f5f4]"
+                className="inline-flex min-h-[36px] items-center gap-2 rounded-sm font-mono text-[11px] uppercase tracking-[0.12em] text-[#94a3b8]/70 transition-colors hover:text-[#f5f5f4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFD23A] focus-visible:ring-offset-1 focus-visible:ring-offset-[#080F14]"
               >
                 {l.label}
                 {l.chip && (
